@@ -154,6 +154,417 @@ Si perdieras tu libro de conjuros, podrías recurrir al mismo procedimiento para
 
 ---
 
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el mago en cada avance.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Lanzamiento de Conjuros, Recuperación Arcana
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 2 de nivel 1
+- **Dado de Golpe:** 1d6
+- **Puntos de golpe:** 6 + modificador por Constitución
+- **Libro de conjuros:** 6 conjuros de mago de nivel 1
+- **Conjuros preparables:** nivel de mago + modificador por Inteligencia
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Tradición Arcana (ej. Escuela de Evocación → Experto en Evocación, Esculpir Conjuros)
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 3 de nivel 1
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 4 de nivel 1, 2 de nivel 2
+- **Conjuros nuevos en el libro:** +2
+- *(Se desbloquean los conjuros de nivel 2)*
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Trucos conocidos:** 4 *(sube)*
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 2 de nivel 3
+- **Conjuros nuevos en el libro:** +2
+- *(Se desbloquean los conjuros de nivel 3)*
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Rasgo de Tradición Arcana (Evocación → Truco Potente)
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 1 de nivel 4
+- **Conjuros nuevos en el libro:** +2
+- *(Se desbloquean los conjuros de nivel 4)*
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 2 de nivel 4
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 1 de nivel 5
+- **Conjuros nuevos en el libro:** +2
+- *(Se desbloquean los conjuros de nivel 5)*
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Rasgo de Tradición Arcana (Evocación → Evocación Potenciada)
+- **Trucos conocidos:** 5 *(sube)*
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6
+- **Conjuros nuevos en el libro:** +2
+- *(Se desbloquean los conjuros de nivel 6)*
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7
+- **Conjuros nuevos en el libro:** +2
+- *(Se desbloquean los conjuros de nivel 7)*
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Rasgo de Tradición Arcana (Evocación → Sobrecanalizar)
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8
+- **Conjuros nuevos en el libro:** +2
+- *(Se desbloquean los conjuros de nivel 8)*
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+- **Conjuros nuevos en el libro:** +2
+- *(Se desbloquean los conjuros de nivel 9)*
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Maestría sobre Conjuros (1 conjuro de nivel 1 y 1 de nivel 2 a voluntad sin gastar espacio)
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5 *(sube)*, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5, 2 de nivel 6 *(sube)*, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+- **Conjuros nuevos en el libro:** +2
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Conjuros Característicos (2 conjuros de nivel 3 siempre preparados, lanzables 1 vez sin espacio por descanso)
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5, 2 de nivel 6, 2 de nivel 7 *(sube)*, 1 de nivel 8, 1 de nivel 9
+- **Conjuros nuevos en el libro:** +2
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El mago obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 8, 12, 16 y 19**.
+
+### Resumen del Libro de Conjuros
+
+- **Nivel 1:** empiezas con 6 conjuros de nivel 1 en tu libro.
+- **Cada nivel posterior:** añades 2 conjuros gratis de un nivel que puedas lanzar.
+- **Total acumulado a nivel 20 (solo por subida de nivel):** 6 + (19 × 2) = **44 conjuros**.
+- También puedes copiar conjuros encontrados durante tus aventuras (coste: 2 horas y 50 po por nivel del conjuro).
+
+### Resumen de Recuperación Arcana
+
+Una vez al día tras un descanso corto, recuperas espacios de conjuro gastados cuya suma de niveles sea ≤ mitad de tu nivel de mago (redondeado hacia arriba), sin que ningún espacio sea de nivel 6+.
+
+### Resumen de la Escuela de Evocación
+
+| Nivel | Rasgo |
+|---|---|
+| 2 | **Experto en Evocación** — copiar conjuros de evocación cuesta la mitad de tiempo y dinero. **Esculpir Conjuros** — al lanzar un conjuro de evocación, elige hasta 1 + nivel del conjuro criaturas que superan automáticamente la salvación y no reciben daño. |
+| 6 | **Truco Potente** — cuando una criatura supera la salvación contra un truco tuyo, recibe la mitad de daño (sin otros efectos). |
+| 10 | **Evocación Potenciada** — suma tu modificador por Inteligencia a una tirada de daño de conjuros de evocación de mago. |
+| 14 | **Sobrecanalizar** — al lanzar un conjuro de mago de nivel 1–5 que cause daño, infliges el daño máximo. La primera vez no tiene penalización; usos posteriores (sin descanso largo) causan 2d12 (y +1d12 adicional cada vez) de daño necrótico por nivel del conjuro. |
+
+---
+
+## Lista de Conjuros del Mago
+
+### Trucos (nivel 0)
+- Agarre electrizante
+- Descarga de fuego
+- Ilusión menor
+- Impacto certero
+- Luces danzantes
+- Luz
+- Mano de mago
+- Mensaje
+- Prestidigitación
+- Rayo de escarcha
+- Reparar
+- Rociada venenosa
+- Salpicadura ácida
+- Toque helado
+
+### Nivel 1
+- Alarma
+- Armadura de mago
+- Caída de pluma
+- Detectar magia
+- Disco flotante
+- Disfrazarse
+- Dormir
+- Encontrar familiar
+- Entender idiomas
+- Escudo
+- Falsa vida
+- Grasa
+- Hechizar persona
+- Identificar
+- Imagen silenciosa
+- Manos ardientes
+- Nube de oscurecimiento
+- Ola atronadora
+- Protección contra el bien y el mal
+- Proyectil mágico
+- Retirada expeditiva
+- Risa horrible
+- Rociada de color
+- Salto
+- Sirviente invisible
+- Texto ilusorio
+- Zancada prodigiosa
+
+### Nivel 2
+- Abrir
+- Agrandar/reducir
+- Alterar el propio aspecto
+- Arma mágica
+- Aura mágica de arcanista
+- Boca mágica
+- Cerradura arcana
+- Contorno borroso
+- Detectar pensamientos
+- Dulce descanso
+- Esfera de llamas
+- Flecha ácida
+- Hacer añicos
+- Imagen múltiple
+- Inmovilizar persona
+- Invisibilidad
+- Levitar
+- Llama permanente
+- Localizar objeto
+- Oscuridad
+- Paso brumoso
+- Ráfaga de viento
+- Rayo abrasador
+- Rayo debilitador
+- Sordera/ceguera
+- Sugestión
+- Telaraña
+- Trepar cual arácnido
+- Truco de la cuerda
+- Ver invisibilidad
+- Visión en la oscuridad
+
+### Nivel 3
+- Acelerar
+- Animar a los muertos
+- Bola de fuego
+- Círculo mágico
+- Clarividencia
+- Contrahechizo
+- Corcel fantasma
+- Desplazamiento
+- Disipar magia
+- Don de lenguas
+- Forma gaseosa
+- Glifo custodio
+- Imagen mayor
+- Imponer maldición
+- Indetectable
+- Levantar maldición
+- Nube apestosa
+- Patrón hipnótico
+- Pequeña choza
+- Protección contra energía
+- Ralentizar
+- Recado
+- Relámpago
+- Respirar bajo el agua
+- Terror
+- Toque vampírico
+- Tormenta de aguanieve
+- Volar
+
+### Nivel 4
+- Asesino fantasmal
+- Cofre oculto
+- Confusión
+- Conjurar elementales menores
+- Controlar agua
+- Destierro
+- Escudo de fuego
+- Esfera elástica
+- Fabricar
+- Invisibilidad mejorada
+- Localizar criatura
+- Marchitar
+- Mastín fiel
+- Moldear la piedra
+- Muro de fuego
+- Ojo arcano
+- Piel pétrea
+- Polimorfar
+- Puerta dimensional
+- Sanctasanctórum privado
+- Tentáculos negros
+- Terreno alucinatorio
+- Tormenta de hielo
+
+### Nivel 5
+- Alterar los recuerdos
+- Animar objetos
+- Apariencia
+- Atadura planar
+- Círculo de teletransportación
+- Conjurar elemental
+- Cono de frío
+- Conocer las leyendas
+- Contactar con otro plano
+- Creación
+- Dominar persona
+- Engañar
+- Enlace telepático
+- Ensueño
+- Escudriñar
+- Geas
+- Inmovilizar monstruo
+- Mano arcana
+- Muro de fuerza
+- Muro de piedra
+- Nube aniquiladora
+- Pasamuros
+- Telequinesis
+
+### Nivel 6
+- Baile irresistible
+- Círculo de muerte
+- Contingencia
+- Crear muerto viviente
+- De la carne a la piedra
+- Desintegrar
+- Esfera congelante
+- Globo de invulnerabilidad
+- Guardas y guardias
+- Ilusión programada
+- Invocación instantánea
+- Mal de ojo
+- Mover la tierra
+- Muro de hielo
+- Rayo solar
+- Relámpago en cadena
+- Sugestión en masa
+- Urna mágica
+- Visión veraz
+
+### Nivel 7
+- Bola de fuego de explosión retardada
+- Dedo de la muerte
+- Desplazamiento entre planos
+- Espada arcana
+- Espejismo arcano
+- Excursión etérea
+- Invertir la gravedad
+- Jaula de fuerza
+- Mansión magnífica
+- Proyectar imagen
+- Recluir
+- Rociada prismática
+- Símbolo
+- Simulacro
+- Teletransporte
+
+### Nivel 8
+- Antipatía/simpatía
+- Campo antimagia
+- Clon
+- Controlar el clima
+- Dominar monstruo
+- Explosión solar
+- Laberinto
+- Mente en blanco
+- Nube incendiaria
+- Palabra de poder: aturdir
+- Romper la mente
+- Semiplano
+
+### Nivel 9
+- Cambiar de forma
+- Cautiverio
+- Deseo
+- Muro prismático
+- Palabra de poder: matar
+- Parar el tiempo
+- Polimorfar verdadero
+- Portal
+- Presagio
+- Proyección astral
+- Terror abyecto
+- Tormenta de meteoritos
+
+---
+
 ## Tradición Arcana: Escuela de Evocación
 
 Haces hincapié en el estudio de la magia capaz de crear poderosos efectos elementales, como un frío penetrante, llamas abrasadoras, ácidos corrosivos, truenos reverberantes o violentos relámpagos. Algunos evocadores encuentran empleo en las fuerzas armadas, concretamente en los regimientos de artillería para destrozar al enemigo desde lejos. Otros emplean sus espectaculares poderes para proteger a los débiles, y los hay que incluso buscan su propio beneficio y viven como bandidos, aventureros o aspirantes a tirano.

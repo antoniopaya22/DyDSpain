@@ -204,3 +204,218 @@ A nivel 15, obtienes uno de los siguientes rasgos, a tu elección:
 - **Aguantar la Marea.** Cuando una criatura hostil falle un ataque cuerpo a cuerpo contra ti, puedes utilizar tu reacción para obligar a la criatura a repetir su ataque, pero contra otra criatura de tu elección que no sea ella misma.
 - **Esquiva Asombrosa.** Cuando un atacante que puedas ver te impacte con un ataque, puedes usar tu reacción para reducir a la mitad el daño que te causa dicho ataque.
 - **Evasión.** Cuando sufras un efecto que te permita hacer una tirada de salvación de Destreza para sufrir solo la mitad de daño (como el aliento abrasador de un dragón rojo o un conjuro *relámpago*), no recibes daño alguno si la superas y solo sufres la mitad si la fallas.
+
+---
+
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el explorador en cada avance.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Enemigo Predilecto, Explorador Nato
+- **Conjuros conocidos:** —
+- **Espacios de conjuro:** —
+- **Dado de Golpe:** 1d10
+- **Puntos de golpe:** 10 + modificador por Constitución
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Estilo de Combate, Lanzamiento de Conjuros
+- **Conjuros conocidos:** 2
+- **Espacios de conjuro:** 2 de nivel 1
+- *(Se desbloquean los conjuros de nivel 1)*
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Arquetipo de Explorador (ej. Cazador → El Cazador y la Presa), Percepción Primigenia
+- **Conjuros conocidos:** 3
+- **Espacios de conjuro:** 3 de nivel 1
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Conjuros conocidos:** 3
+- **Espacios de conjuro:** 3 de nivel 1
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** Ataque Adicional
+- **Conjuros conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 2 de nivel 2
+- *(Se desbloquean los conjuros de nivel 2)*
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejoras de Enemigo Predilecto (elige un enemigo predilecto adicional + idioma) y Explorador Nato (elige un terreno predilecto adicional)
+- **Conjuros conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 2 de nivel 2
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Rasgo de Arquetipo de Explorador (Cazador → Tácticas Defensivas)
+- **Conjuros conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica, Paso de la Tierra
+- **Conjuros conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** —
+- **Conjuros conocidos:** 6
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 2 de nivel 3
+- *(Se desbloquean los conjuros de nivel 3)*
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Explorador Nato (elige otro terreno predilecto), Esconderse a Plena Vista
+- **Conjuros conocidos:** 6
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 2 de nivel 3
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Rasgo de Arquetipo de Explorador (Cazador → Ataque Múltiple)
+- **Conjuros conocidos:** 7
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Conjuros conocidos:** 7
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** —
+- **Conjuros conocidos:** 8
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 1 de nivel 4
+- *(Se desbloquean los conjuros de nivel 4)*
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Enemigo Predilecto (elige un tercer enemigo predilecto + idioma), Desvanecerse
+- **Conjuros conocidos:** 8
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 1 de nivel 4
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Rasgo de Arquetipo de Explorador (Cazador → Defensa de Cazador Experto)
+- **Conjuros conocidos:** 9
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 2 de nivel 4
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **Conjuros conocidos:** 9
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 2 de nivel 4
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** —
+- **Conjuros conocidos:** 10
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 1 de nivel 5
+- *(Se desbloquean los conjuros de nivel 5)*
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Sentidos Salvajes
+- **Conjuros conocidos:** 10
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 1 de nivel 5
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **Conjuros conocidos:** 11
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Azote de Enemigos (suma modificador por SAB al ataque o daño contra enemigos predilectos)
+- **Conjuros conocidos:** 11
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El explorador obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 8, 12, 16 y 19**.
+
+### Resumen de Enemigo Predilecto
+
+| Nivel | Enemigos predilectos |
+|---|---|
+| 1 | 1 tipo (o 2 razas de humanoides) + 1 idioma |
+| 6 | +1 tipo adicional + 1 idioma |
+| 14 | +1 tipo adicional + 1 idioma |
+
+### Resumen de Explorador Nato
+
+| Nivel | Terrenos predilectos |
+|---|---|
+| 1 | 1 |
+| 6 | 2 |
+| 10 | 3 |
+
+### Resumen del Arquetipo de Explorador: Cazador
+
+| Nivel | Rasgo del Cazador |
+|---|---|
+| 3 | **El Cazador y la Presa** — elige entre Asesino de Gigantes, Azote de Colosos o Destructor de Hordas. |
+| 7 | **Tácticas Defensivas** — elige entre Defensa contra Ataques Múltiples, Escapar de la Horda o Voluntad de Acero. |
+| 11 | **Ataque Múltiple** — elige entre Andanada (a distancia contra múltiples criaturas) o Ataque Huracanado (cuerpo a cuerpo contra múltiples criaturas). |
+| 15 | **Defensa de Cazador Experto** — elige entre Aguantar la Marea, Esquiva Asombrosa o Evasión. |
+
+---
+
+## Lista de Conjuros del Explorador
+
+### Nivel 1
+- Alarma
+- Buenas bayas
+- Curar heridas
+- Detectar magia
+- Detectar venenos y enfermedades
+- Encantar animal
+- Hablar con los animales
+- Marca del cazador
+- Nube de oscurecimiento
+- Salto
+- Zancada prodigiosa
+
+### Nivel 2
+- Crecimiento espinoso
+- Detectar trampas
+- Localizar animales o plantas
+- Localizar objeto
+- Mensajero animal
+- Pasar sin rastro
+- Piel robliza
+- Protección contra veneno
+- Restablecimiento menor
+- Silencio
+- Visión en la oscuridad
+
+### Nivel 3
+- Caminar sobre el agua
+- Conjurar animales
+- Crecimiento vegetal
+- Hablar con las plantas
+- Indetectable
+- Luz del día
+- Muro de viento
+- Protección contra energía
+- Respirar bajo el agua
+
+### Nivel 4
+- Conjurar seres del bosque
+- Libertad de movimiento
+- Localizar criatura
+- Piel pétrea
+
+### Nivel 5
+- Comunión con la naturaleza
+- Paso arbóreo

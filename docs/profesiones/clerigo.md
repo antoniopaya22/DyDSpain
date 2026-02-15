@@ -159,6 +159,316 @@ A **nivel 20**, tu petición de auxilio tiene **éxito automáticamente**, sin n
 
 ---
 
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el clérigo en cada avance.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Lanzamiento de Conjuros, Dominio Divino (ej. Dominio de la Vida → Competencia Adicional con armaduras pesadas, Discípulo de la Vida)
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 2 de nivel 1
+- **Dado de Golpe:** 1d8
+- **Puntos de golpe:** 8 + modificador por Constitución
+- **Conjuros preparables:** nivel de clérigo + modificador por Sabiduría
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Canalizar Divinidad (1/descanso) — Expulsar Muertos Vivientes + rasgo de Dominio Divino (Vida → Canalizar Divinidad: Preservar Vida)
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 3 de nivel 1
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 4 de nivel 1, 2 de nivel 2
+- *(Se desbloquean los conjuros de nivel 2)*
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Trucos conocidos:** 4 *(sube)*
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** Destruir Muertos Vivientes (VD 1/2)
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 2 de nivel 3
+- *(Se desbloquean los conjuros de nivel 3)*
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Canalizar Divinidad (2/descanso), rasgo de Dominio Divino (Vida → Sanador Bendito)
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 1 de nivel 4
+- *(Se desbloquean los conjuros de nivel 4)*
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica, Destruir Muertos Vivientes (VD 1), rasgo de Dominio Divino (Vida → Golpe Divino 1d8 radiante)
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 2 de nivel 4
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 1 de nivel 5
+- *(Se desbloquean los conjuros de nivel 5)*
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Intercesión Divina
+- **Trucos conocidos:** 5 *(sube)*
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Destruir Muertos Vivientes (VD 2)
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6
+- *(Se desbloquean los conjuros de nivel 6)*
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7
+- *(Se desbloquean los conjuros de nivel 7)*
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Destruir Muertos Vivientes (VD 3); Golpe Divino sube a 2d8
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8
+- *(Se desbloquean los conjuros de nivel 8)*
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** Destruir Muertos Vivientes (VD 4), rasgo de Dominio Divino (Vida → Sanación Suprema)
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+- *(Se desbloquean los conjuros de nivel 9)*
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Canalizar Divinidad (3/descanso)
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5 *(sube)*, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5, 2 de nivel 6 *(sube)*, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Intercesión Divina (éxito automático)
+- **Trucos conocidos:** 5
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5, 2 de nivel 6, 2 de nivel 7 *(sube)*, 1 de nivel 8, 1 de nivel 9
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El clérigo obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 8, 12, 16 y 19**.
+
+### Resumen de Canalizar Divinidad
+
+| Nivel | Usos por descanso |
+|---|---|
+| 2–5 | 1 |
+| 6–17 | 2 |
+| 18+ | 3 |
+
+### Resumen de Destruir Muertos Vivientes
+
+| Nivel de clérigo | Destruye muertos vivientes de VD... |
+|---|---|
+| 5 | 1/2 o inferior |
+| 8 | 1 o inferior |
+| 11 | 2 o inferior |
+| 14 | 3 o inferior |
+| 17 | 4 o inferior |
+
+### Resumen del Dominio de la Vida
+
+| Nivel | Rasgo |
+|---|---|
+| 1 | **Competencia Adicional** — armaduras pesadas. **Discípulo de la Vida** — los conjuros de curación recuperan 2 + nivel del conjuro pg adicionales. |
+| 2 | **Canalizar Divinidad: Preservar Vida** — recupera 5 × nivel de clérigo pg repartidos entre criaturas a 9 m. |
+| 6 | **Sanador Bendito** — al curar a otro, tú recuperas 2 + nivel del conjuro pg. |
+| 8 | **Golpe Divino** — +1d8 radiante una vez por turno al impactar con arma (2d8 a nivel 14). |
+| 17 | **Sanación Suprema** — en lugar de tirar dados de curación, usas el máximo de cada dado. |
+
+### Conjuros de dominio de la Vida (siempre preparados)
+
+| Nivel de clérigo | Conjuros |
+|---|---|
+| 1 | Bendición, Curar heridas |
+| 3 | Arma espiritual, Restablecimiento menor |
+| 5 | Revivir, Señal de esperanza |
+| 7 | Guarda contra la muerte, Guardián de la fe |
+| 9 | Alzar a los muertos, Curar heridas en masa |
+
+---
+
+## Lista de Conjuros del Clérigo
+
+### Trucos (nivel 0)
+- Guía
+- Llama sagrada
+- Luz
+- Piedad con los moribundos
+- Reparar
+- Resistencia
+- Taumaturgia
+
+### Nivel 1
+- Bendición
+- Crear o destruir agua
+- Curar heridas
+- Detectar el bien y el mal
+- Detectar magia
+- Detectar venenos y enfermedades
+- Escudo de fe
+- Infligir heridas
+- Orden imperiosa
+- Palabra de curación
+- Perdición
+- Protección contra el bien y el mal
+- Purificar comida y bebida
+- Saeta guía
+- Santuario
+
+### Nivel 2
+- Arma espiritual
+- Augurio
+- Auxilio
+- Calmar emociones
+- Detectar trampas
+- Dulce descanso
+- Inmovilizar persona
+- Llama permanente
+- Localizar objeto
+- Plegaria de curación
+- Potenciar característica
+- Protección contra veneno
+- Restablecimiento menor
+- Silencio
+- Sordera/ceguera
+- Vínculo protector
+- Zona de la verdad
+
+### Nivel 3
+- Animar a los muertos
+- Caminar sobre el agua
+- Círculo mágico
+- Clarividencia
+- Crear comida y agua
+- Disipar magia
+- Don de lenguas
+- Espíritus guardianes
+- Fundirse con la piedra
+- Glifo custodio
+- Hablar con los muertos
+- Imponer maldición
+- Levantar maldición
+- Luz del día
+- Palabra de curación en masa
+- Protección contra energía
+- Recado
+- Revivir
+- Señal de esperanza
+
+### Nivel 4
+- Adivinación
+- Controlar agua
+- Destierro
+- Guarda contra la muerte
+- Guardián de la fe
+- Libertad de movimiento
+- Localizar criatura
+- Moldear la piedra
+
+### Nivel 5
+- Alzar a los muertos
+- Atadura planar
+- Comunión
+- Conocer las leyendas
+- Consagrar
+- Contagio
+- Curar heridas en masa
+- Disipar el bien y el mal
+- Escudriñar
+- Geas
+- Golpe flamígero
+- Plaga de insectos
+- Restablecimiento mayor
+
+### Nivel 6
+- Aliado planar
+- Barrera de cuchillas
+- Crear muerto viviente
+- Curar
+- Dañar
+- Encontrar el camino
+- Festín de héroes
+- Palabra de regreso
+- Prohibición
+- Visión veraz
+
+### Nivel 7
+- Conjurar celestial
+- Desplazamiento entre planos
+- Excursión etérea
+- Palabra divina
+- Regenerar
+- Resurrección
+- Símbolo
+- Tormenta de fuego
+
+### Nivel 8
+- Aura sagrada
+- Campo antimagia
+- Controlar el clima
+- Terremoto
+
+### Nivel 9
+- Curar en masa
+- Portal
+- Proyección astral
+- Resurrección verdadera
+
+---
+
 ## Dominio Divino: Dominio de la Vida
 
 El dominio de la Vida se centra en la vibrante energía positiva (una de las fuerzas fundamentales del universo) que sustenta a todos los seres vivos. Los dioses de la vida promueven la vitalidad y la salud curando a los enfermos y a los heridos, cuidando de los necesitados y expulsando a las fuerzas de la muerte y a los muertos vivientes. Prácticamente todas las deidades no malvadas están asociadas a este dominio, en especial las de la agricultura (como Chauntea, Arawai y Deméter), las solares (como Lathander, Pelor y Ra), las de la curación y la resistencia (como Ilmater, Mishakal, Apolo y Dian Cecht) y las del hogar y la comunidad (como Hestia, Hathor y Boldrei).

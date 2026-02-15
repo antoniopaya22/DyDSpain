@@ -131,4 +131,151 @@ A partir del nivel 15, tus ataques con armas causarán **críticos con un result
 
 ### Superviviente
 
-A nivel 18, alcanzas la cumbre de la resistencia en batalla. Al comienzo de cada uno de tus turnos, recuperas una cantidad de puntos de golpe igual a **5 + tu modificador por Constitución** si no te quedan más de la mitad de tus puntos de golpe. No recibes este beneficio si tienes 0 puntos de golpe.
+A nivel 18, alcanzas la cúspide de tu resistencia en batalla. Al inicio de cada uno de tus turnos, recuperas puntos de golpe igual a 5 + tu modificador por Constitución si no te quedan más de la mitad de los puntos de golpe. No obtienes este beneficio si tienes 0 puntos de golpe.
+
+---
+
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el guerrero en cada avance.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos:** Estilo de Combate, Tomar Aliento
+- **Dado de Golpe:** 1d10
+- **Puntos de golpe:** 10 + modificador por Constitución
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Acción Súbita (un uso)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Arquetipo Marcial (ej. Campeón)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** Ataque Adicional (2 ataques por acción de atacar)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Rasgo de Arquetipo Marcial (Campeón: Atleta Sobresaliente)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** Indómito (un uso; repite una tirada de salvación fallida)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Rasgo de Arquetipo Marcial (Campeón: Estilo de Combate Adicional)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Ataque Adicional (2) — ahora 3 ataques por acción de atacar
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** Indómito (dos usos)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Rasgo de Arquetipo Marcial (Campeón: Crítico Superior)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** Acción Súbita (dos usos), Indómito (tres usos)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Rasgo de Arquetipo Marcial (Campeón: Superviviente)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Ataque Adicional (3) — ahora 4 ataques por acción de atacar
+- **Puntos de golpe:** +1d10 (o 6) + modificador por Constitución
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El guerrero obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 6, 8, 12, 14, 16 y 19** — un total de **7 veces**, más que cualquier otra clase.
+
+### Resumen de Acción Súbita
+
+| Nivel | Usos por descanso largo |
+|---|---|
+| 2 | 1 |
+| 17 | 2 |
+
+### Resumen de Indómito
+
+| Nivel | Usos por descanso largo |
+|---|---|
+| 9 | 1 |
+| 13 | 2 |
+| 17 | 3 |
+
+### Resumen de Ataque Adicional
+
+| Nivel | Ataques por acción de atacar |
+|---|---|
+| 1–4 | 1 |
+| 5–10 | 2 |
+| 11–19 | 3 |
+| 20 | 4 |
+
+### Resumen del Arquetipo Marcial: Campeón
+
+| Nivel | Rasgo del Campeón |
+|---|---|
+| 3 | **Crítico Mejorado** — tus ataques con armas consiguen un crítico con un 19 o un 20. |
+| 7 | **Atleta Sobresaliente** — sumas la mitad de tu bonificador por competencia (redondeado hacia arriba) a cualquier prueba de Fuerza, Destreza o Constitución que no se beneficie ya de dicho bonificador. Además, la distancia de tus saltos con carrerilla aumenta en una cantidad de metros igual a tu modificador por Fuerza. |
+| 10 | **Estilo de Combate Adicional** — eliges un segundo Estilo de Combate. |
+| 15 | **Crítico Superior** — tus ataques con armas consiguen un crítico con un 18, 19 o 20. |
+| 18 | **Superviviente** — al inicio de cada uno de tus turnos, recuperas pg igual a 5 + tu modificador por Constitución si no te quedan más de la mitad de tus pg máximos (y tienes al menos 1 pg). |

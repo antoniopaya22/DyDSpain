@@ -199,3 +199,327 @@ A nivel 6, aprendes **dos conjuros** a tu elección de las listas de cualquier c
 ### Habilidad sin Parangón
 
 A partir del nivel 14, cuando hagas una prueba de característica, podrás gastar uno de tus usos de Inspiración Bárdica. Tira el dado de Inspiración Bárdica y **suma** el número obtenido al resultado de la prueba. Puedes elegir hacer esto después de tirar el dado para la prueba, pero antes de que el GM te diga si la superas o no.
+
+---
+
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el bardo en cada avance.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Lanzamiento de Conjuros, Inspiración Bárdica (d6)
+- **Trucos conocidos:** 2
+- **Conjuros conocidos:** 4
+- **Espacios de conjuro:** 2 de nivel 1
+- **Dado de Golpe:** 1d8
+- **Puntos de golpe:** 8 + modificador por Constitución
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Aprendiz de Mucho, Canción de Descanso (d6)
+- **Trucos conocidos:** 2
+- **Conjuros conocidos:** 5
+- **Espacios de conjuro:** 3 de nivel 1
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Colegio Bárdico (ej. Colegio del Conocimiento → Competencias Adicionales, Palabras Cortantes), Pericia (elige 2 habilidades para duplicar bonificador)
+- **Trucos conocidos:** 2
+- **Conjuros conocidos:** 6
+- **Espacios de conjuro:** 4 de nivel 1, 2 de nivel 2
+- *(Se desbloquean los conjuros de nivel 2)*
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Trucos conocidos:** 3 *(sube)*
+- **Conjuros conocidos:** 7
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** Inspiración Bárdica (d8), Fuente de Inspiración (recuperas usos tras descanso corto o largo)
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 8
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 2 de nivel 3
+- *(Se desbloquean los conjuros de nivel 3)*
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Contraencantamiento, rasgo de Colegio Bárdico (Conocimiento → Secretos Mágicos adicionales: 2 conjuros de cualquier clase)
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 9
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 10
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 1 de nivel 4
+- *(Se desbloquean los conjuros de nivel 4)*
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 11
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 2 de nivel 4
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** Canción de Descanso (d8)
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 12
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 1 de nivel 5
+- *(Se desbloquean los conjuros de nivel 5)*
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Inspiración Bárdica (d10), Pericia (elige otras 2 habilidades), Secretos Mágicos (2 conjuros de cualquier clase)
+- **Trucos conocidos:** 4 *(sube)*
+- **Conjuros conocidos:** 14
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 15
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6
+- *(Se desbloquean los conjuros de nivel 6)*
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 15
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** Canción de Descanso (d10)
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 16
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7
+- *(Se desbloquean los conjuros de nivel 7)*
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Secretos Mágicos (2 conjuros más de cualquier clase), rasgo de Colegio Bárdico (Conocimiento → Habilidad sin Parangón)
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 18
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Inspiración Bárdica (d12)
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 19
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8
+- *(Se desbloquean los conjuros de nivel 8)*
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 19
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** Canción de Descanso (d12)
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 20
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+- *(Se desbloquean los conjuros de nivel 9)*
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Secretos Mágicos (2 conjuros más de cualquier clase)
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 22
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5 *(sube)*, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 22
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5, 2 de nivel 6 *(sube)*, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Inspiración Superior (recuperas 1 uso de Inspiración Bárdica al tirar iniciativa si no te quedan)
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 22
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5, 2 de nivel 6, 2 de nivel 7 *(sube)*, 1 de nivel 8, 1 de nivel 9
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El bardo obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 8, 12, 16 y 19**.
+
+### Resumen de Inspiración Bárdica
+
+| Nivel | Dado | Recuperación |
+|---|---|---|
+| 1–4 | d6 | Descanso largo |
+| 5–9 | d8 | Descanso corto o largo |
+| 10–14 | d10 | Descanso corto o largo |
+| 15–20 | d12 | Descanso corto o largo |
+
+### Resumen de Canción de Descanso
+
+| Nivel | Dado |
+|---|---|
+| 2–8 | d6 |
+| 9–12 | d8 |
+| 13–16 | d10 |
+| 17+ | d12 |
+
+### Resumen del Colegio del Conocimiento
+
+| Nivel | Rasgo |
+|---|---|
+| 3 | **Competencias Adicionales** — competencia en 3 habilidades cualesquiera. **Palabras Cortantes** — usa reacción + dado de Inspiración Bárdica para restar al ataque, prueba de característica o daño de una criatura. |
+| 6 | **Secretos Mágicos adicionales** — aprende 2 conjuros de cualquier clase (no cuentan para el total de conjuros conocidos). |
+| 14 | **Habilidad sin Parangón** — gasta un dado de Inspiración Bárdica y suma el resultado a una prueba de característica. |
+
+---
+
+## Lista de Conjuros del Bardo
+
+### Trucos (nivel 0)
+- Burla dañina
+- Ilusión menor
+- Impacto certero
+- Luces danzantes
+- Luz
+- Mano de mago
+- Mensaje
+- Prestidigitación
+- Reparar
+
+### Nivel 1
+- Caída de pluma
+- Curar heridas
+- Detectar magia
+- Disfrazarse
+- Dormir
+- Encantar animal
+- Entender idiomas
+- Fuego feérico
+- Hablar con los animales
+- Hechizar persona
+- Heroísmo
+- Identificar
+- Imagen silenciosa
+- Ola atronadora
+- Palabra de curación
+- Perdición
+- Risa horrible
+- Sirviente invisible
+- Texto ilusorio
+- Zancada prodigiosa
+
+### Nivel 2
+- Abrir
+- Boca mágica
+- Calentar metal
+- Calmar emociones
+- Detectar pensamientos
+- Embelesar
+- Hacer añicos
+- Inmovilizar persona
+- Invisibilidad
+- Localizar animales o plantas
+- Localizar objeto
+- Mensajero animal
+- Potenciar característica
+- Restablecimiento menor
+- Silencio
+- Sordera/ceguera
+- Sugestión
+- Ver invisibilidad
+- Zona de la verdad
+
+### Nivel 3
+- Clarividencia
+- Crecimiento vegetal
+- Disipar magia
+- Don de lenguas
+- Glifo custodio
+- Hablar con las plantas
+- Hablar con los muertos
+- Imagen mayor
+- Imponer maldición
+- Indetectable
+- Nube apestosa
+- Patrón hipnótico
+- Pequeña choza
+- Recado
+- Terror
+
+### Nivel 4
+- Compulsión
+- Confusión
+- Invisibilidad mejorada
+- Libertad de movimiento
+- Localizar criatura
+- Polimorfar
+- Puerta dimensional
+- Terreno alucinatorio
+
+### Nivel 5
+- Alterar los recuerdos
+- Alzar a los muertos
+- Animar objetos
+- Apariencia
+- Atadura planar
+- Círculo de teletransportación
+- Conocer las leyendas
+- Curar heridas en masa
+- Despertar
+- Dominar persona
+- Engañar
+- Ensueño
+- Escudriñar
+- Geas
+- Inmovilizar monstruo
+- Restablecimiento mayor
+
+### Nivel 6
+- Baile irresistible
+- Encontrar el camino
+- Guardas y guardias
+- Ilusión programada
+- Mal de ojo
+- Sugestión en masa
+- Visión veraz
+
+### Nivel 7
+- Espada arcana
+- Espejismo arcano
+- Excursión etérea
+- Jaula de fuerza
+- Mansión magnífica
+- Proyectar imagen
+- Regenerar
+- Resurrección
+- Símbolo
+- Teletransporte
+
+### Nivel 8
+- Dominar monstruo
+- Labia
+- Mente en blanco
+- Palabra de poder: aturdir
+- Romper la mente
+
+### Nivel 9
+- Palabra de poder: matar
+- Polimorfar verdadero
+- Presagio

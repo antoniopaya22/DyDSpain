@@ -26,6 +26,12 @@ Historias de usuario relacionadas con el sistema de hechizos: aprendizaje, consu
 - Los datos de hechizos se cargan desde la base de datos local de la SRD 5.1 en español.
 - Clases con acceso a hechizos: Bardo, Brujo, Clérigo, Druida, Explorador, Hechicero, Mago, Paladín.
 - Cada clase tiene su propia lista de hechizos disponibles.
+- **Nota importante:** Los archivos de conjuros documentados (`docs/conjuros/`) no incluyen el campo "clases que pueden usarlo". La asignación hechizo-clase debe extraerse de los documentos de cada clase (`docs/profesiones/`) y almacenarse como una relación en el modelo de datos.
+- Se deben considerar tres sistemas de lanzamiento de conjuros distintos:
+  - **Hechizos conocidos** (lista fija, se intercambian al subir de nivel): Bardo, Brujo, Hechicero, Explorador.
+  - **Hechizos preparados de lista completa** (acceso a toda la lista de clase, se preparan diariamente): Clérigo, Druida, Paladín.
+  - **Hechizos preparados de libro** (solo se preparan los del libro de conjuros): Mago.
+- Las fórmulas de preparación varían: Clérigo/Druida = nivel + mod. SAB; Mago = nivel + mod. INT; Paladín = **⌊nivel/2⌋ + mod. CAR**.
 
 ---
 
@@ -49,7 +55,7 @@ Historias de usuario relacionadas con el sistema de hechizos: aprendizaje, consu
   - Si es un ritual.
   - Descripción completa del efecto.
   - Efecto a niveles superiores (si aplica).
-  - Clases que pueden usarlo.
+  - Clases que pueden usarlo (dato obtenido de la relación hechizo-clase, no del archivo del hechizo).
 - [ ] La descripción se muestra con formato legible (negrita, cursiva, listas, tablas si las hay).
 - [ ] Se puede marcar un hechizo como "favorito" para acceso rápido.
 

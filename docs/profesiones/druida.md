@@ -249,3 +249,295 @@ A partir del nivel 10, no puedes ser **asustado** ni **hechizado** por elemental
 Cuando alcanzas el nivel 14, las criaturas del mundo natural sienten tu conexión con la naturaleza y se muestran reticentes a atacarte. Cuando una bestia o criatura de tipo "planta" te ataque, deberá hacer una tirada de salvación de Sabiduría contra tu CD de salvación de conjuros de druida. Si la falla, la criatura debe elegir un nuevo objetivo o el ataque errará automáticamente. Si la supera, será inmune a este efecto durante 24 horas.
 
 La criatura es consciente de este efecto antes de decidir si atacarte.
+
+---
+
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el druida en cada avance.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Druídico, Lanzamiento de Conjuros
+- **Trucos conocidos:** 2
+- **Espacios de conjuro:** 2 de nivel 1
+- **Dado de Golpe:** 1d8
+- **Puntos de golpe:** 8 + modificador por Constitución
+- **Conjuros preparables:** nivel de druida + modificador por Sabiduría
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Forma Salvaje (2 usos/descanso, VD máx. 1/4, sin nadar ni volar), Círculo Druídico (ej. Círculo de la Tierra → Truco Adicional, Recuperación Natural)
+- **Trucos conocidos:** 2
+- **Espacios de conjuro:** 3 de nivel 1
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** — *(Conjuros de círculo de nivel 3 si es Círculo de la Tierra)*
+- **Trucos conocidos:** 2
+- **Espacios de conjuro:** 4 de nivel 1, 2 de nivel 2
+- *(Se desbloquean los conjuros de nivel 2)*
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Forma Salvaje (VD máx. 1/2, sin volar), Mejora de Característica (+2 a una característica o +1 a dos)
+- **Trucos conocidos:** 3 *(sube)*
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** — *(Conjuros de círculo de nivel 5 si es Círculo de la Tierra)*
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 2 de nivel 3
+- *(Se desbloquean los conjuros de nivel 3)*
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Rasgo de Círculo Druídico (Tierra → Paso de la Tierra)
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** — *(Conjuros de círculo de nivel 7 si es Círculo de la Tierra)*
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 1 de nivel 4
+- *(Se desbloquean los conjuros de nivel 4)*
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Forma Salvaje (VD máx. 1, sin restricciones), Mejora de Característica
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 2 de nivel 4
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** — *(Conjuros de círculo de nivel 9 si es Círculo de la Tierra)*
+- **Trucos conocidos:** 3
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 1 de nivel 5
+- *(Se desbloquean los conjuros de nivel 5)*
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Rasgo de Círculo Druídico (Tierra → Protección de la Naturaleza)
+- **Trucos conocidos:** 4 *(sube)*
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6
+- *(Se desbloquean los conjuros de nivel 6)*
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7
+- *(Se desbloquean los conjuros de nivel 7)*
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Rasgo de Círculo Druídico (Tierra → Santuario de la Naturaleza)
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8
+- *(Se desbloquean los conjuros de nivel 8)*
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+- *(Se desbloquean los conjuros de nivel 9)*
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Cuerpo Atemporal (envejeces 1 año por cada 10), Conjurar como Bestia (lanzar conjuros en Forma Salvaje)
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5 *(sube)*, 1 de nivel 6, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5, 2 de nivel 6 *(sube)*, 1 de nivel 7, 1 de nivel 8, 1 de nivel 9
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Archidruida (Forma Salvaje ilimitada; ignora componentes somáticos, verbales y materiales sin coste)
+- **Trucos conocidos:** 4
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 3 de nivel 5, 2 de nivel 6, 2 de nivel 7 *(sube)*, 1 de nivel 8, 1 de nivel 9
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El druida obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 8, 12, 16 y 19**.
+
+### Resumen de Forma Salvaje
+
+| Nivel | VD máx. | Limitaciones | Duración máx. |
+|---|---|---|---|
+| 2–3 | 1/4 | Sin nadar ni volar | 1 hora |
+| 4–7 | 1/2 | Sin volar | 2–3 horas |
+| 8+ | 1 | Ninguna | 4–10 horas |
+
+- **Usos:** 2 por descanso corto o largo (ilimitados a nivel 20).
+
+### Resumen del Círculo de la Tierra
+
+| Nivel | Rasgo |
+|---|---|
+| 2 | **Truco Adicional** — aprende un truco de druida extra. **Recuperación Natural** — recupera espacios de conjuro durante un descanso corto (suma de niveles ≤ mitad del nivel de druida, máx. nivel 5). |
+| 3, 5, 7, 9 | **Conjuros de círculo** — conjuros siempre preparados según el terreno elegido. |
+| 6 | **Paso de la Tierra** — el terreno difícil no mágico no cuesta movimiento extra; las plantas no mágicas no te ralentizan ni dañan. |
+| 10 | **Protección de la Naturaleza** — no puedes ser asustado ni hechizado por elementales o feéricos; inmune a veneno y enfermedades. |
+| 14 | **Santuario de la Naturaleza** — bestias y plantas deben superar una salvación de SAB para atacarte. |
+
+---
+
+## Lista de Conjuros del Druida
+
+### Trucos (nivel 0)
+- Crear llama
+- Guía
+- Reparar
+- Resistencia
+- Rociada venenosa
+- Saber druídico
+- Shillelagh
+
+### Nivel 1
+- Buenas bayas
+- Crear o destruir agua
+- Curar heridas
+- Detectar magia
+- Detectar venenos y enfermedades
+- Encantar animal
+- Enmarañar
+- Fuego feérico
+- Hablar con los animales
+- Hechizar persona
+- Nube de oscurecimiento
+- Ola atronadora
+- Palabra de curación
+- Purificar comida y bebida
+- Salto
+- Zancada prodigiosa
+
+### Nivel 2
+- Calentar metal
+- Crecimiento espinoso
+- Detectar trampas
+- Esfera de llamas
+- Hoja de fuego
+- Inmovilizar persona
+- Localizar animales o plantas
+- Localizar objeto
+- Mensajero animal
+- Pasar sin rastro
+- Piel robliza
+- Potenciar característica
+- Protección contra veneno
+- Ráfaga de viento
+- Rayo de luna
+- Restablecimiento menor
+- Visión en la oscuridad
+
+### Nivel 3
+- Caminar sobre el agua
+- Conjurar animales
+- Crecimiento vegetal
+- Disipar magia
+- Fundirse con la piedra
+- Hablar con las plantas
+- Llamar al relámpago
+- Luz del día
+- Muro de viento
+- Protección contra energía
+- Respirar bajo el agua
+- Tormenta de aguanieve
+
+### Nivel 4
+- Confusión
+- Conjurar elementales menores
+- Conjurar seres del bosque
+- Controlar agua
+- Dominar bestia
+- Insecto gigante
+- Libertad de movimiento
+- Localizar criatura
+- Marchitar
+- Moldear la piedra
+- Muro de fuego
+- Piel pétrea
+- Polimorfar
+- Terreno alucinatorio
+- Tormenta de hielo
+
+### Nivel 5
+- Atadura planar
+- Caparazón antivida
+- Comunión con la naturaleza
+- Conjurar elemental
+- Contagio
+- Curar heridas en masa
+- Despertar
+- Escudriñar
+- Geas
+- Muro de piedra
+- Paso arbóreo
+- Plaga de insectos
+- Reencarnar
+- Restablecimiento mayor
+
+### Nivel 6
+- Conjurar feérico
+- Curar
+- Encontrar el camino
+- Festín de héroes
+- Mover la tierra
+- Muro de espinas
+- Rayo solar
+- Viajar con el viento
+- Viajar mediante plantas
+
+### Nivel 7
+- Desplazamiento entre planos
+- Espejismo arcano
+- Invertir la gravedad
+- Regenerar
+- Tormenta de fuego
+
+### Nivel 8
+- Antipatía/simpatía
+- Aspectos animales
+- Controlar el clima
+- Explosión solar
+- Romper la mente
+- Terremoto
+
+### Nivel 9
+- Cambiar de forma
+- Presagio
+- Resurrección verdadera
+- Tormenta de la venganza

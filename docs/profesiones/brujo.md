@@ -392,3 +392,326 @@ Cada opción de Beneficio del Pacto crea una criatura especial o un objeto que r
 - **Pacto de la Cadena:** Tu familiar es más astuto de lo normal. Su forma natural puede ser un reflejo de tu patrón. Los diablillos y los quasits están vinculados con el Infernal.
 - **Pacto del Filo:** Si sirves al Infernal, tu arma podría ser un hacha fabricada con metal negro y adornada con filigranas que imiten llamas.
 - **Pacto del Grimorio:** Tu Libro de las Sombras podría ser un pesado tomo encuadernado en piel de demonio con remaches de hierro, que contuviera magia de conjuración y abundantes saberes prohibidos acerca de las regiones más siniestras del cosmos, regalo del Infernal.
+
+---
+
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el brujo en cada avance. Recuerda que la Magia del Pacto funciona de forma diferente a otras clases lanzadoras: tienes pocos espacios de conjuro pero todos del mismo nivel, y se recuperan tras un **descanso corto o largo**.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Patrón Sobrenatural (ej. El Infernal → Bendición del Oscuro), Magia del Pacto
+- **Trucos conocidos:** 2
+- **Conjuros conocidos:** 2
+- **Espacios de conjuro:** 1 (nivel 1)
+- **Invocaciones conocidas:** —
+- **Dado de Golpe:** 1d8
+- **Puntos de golpe:** 8 + modificador por Constitución
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Invocaciones Sobrenaturales (elige 2)
+- **Trucos conocidos:** 2
+- **Conjuros conocidos:** 3
+- **Espacios de conjuro:** 2 (nivel 1)
+- **Invocaciones conocidas:** 2
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Beneficio del Pacto (Cadena, Filo o Grimorio)
+- **Trucos conocidos:** 2
+- **Conjuros conocidos:** 4
+- **Espacios de conjuro:** 2 (nivel 2) *(sube)*
+- **Invocaciones conocidas:** 2
+- *(Se desbloquean los conjuros de nivel 2)*
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Trucos conocidos:** 3 *(sube)*
+- **Conjuros conocidos:** 5
+- **Espacios de conjuro:** 2 (nivel 2)
+- **Invocaciones conocidas:** 2
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 6
+- **Espacios de conjuro:** 2 (nivel 3) *(sube)*
+- **Invocaciones conocidas:** 3 *(sube)*
+- *(Se desbloquean los conjuros de nivel 3)*
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Rasgo de Patrón Sobrenatural (Infernal → La Suerte del Oscuro)
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 7
+- **Espacios de conjuro:** 2 (nivel 3)
+- **Invocaciones conocidas:** 3
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 8
+- **Espacios de conjuro:** 2 (nivel 4) *(sube)*
+- **Invocaciones conocidas:** 4 *(sube)*
+- *(Se desbloquean los conjuros de nivel 4)*
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 9
+- **Espacios de conjuro:** 2 (nivel 4)
+- **Invocaciones conocidas:** 4
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 3
+- **Conjuros conocidos:** 10
+- **Espacios de conjuro:** 2 (nivel 5) *(sube)*
+- **Invocaciones conocidas:** 5 *(sube)*
+- *(Se desbloquean los conjuros de nivel 5)*
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Rasgo de Patrón Sobrenatural (Infernal → Resistencia Infernal)
+- **Trucos conocidos:** 4 *(sube)*
+- **Conjuros conocidos:** 10
+- **Espacios de conjuro:** 2 (nivel 5)
+- **Invocaciones conocidas:** 5
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Arcanum Místico (nivel 6) — 1 conjuro de nivel 6 lanzable 1 vez por descanso largo
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 11
+- **Espacios de conjuro:** 3 (nivel 5) *(sube)*
+- **Invocaciones conocidas:** 5
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 11
+- **Espacios de conjuro:** 3 (nivel 5)
+- **Invocaciones conocidas:** 6 *(sube)*
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** Arcanum Místico (nivel 7) — 1 conjuro de nivel 7 lanzable 1 vez por descanso largo
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 12
+- **Espacios de conjuro:** 3 (nivel 5)
+- **Invocaciones conocidas:** 6
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Rasgo de Patrón Sobrenatural (Infernal → Arrastrar por el Infierno)
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 12
+- **Espacios de conjuro:** 3 (nivel 5)
+- **Invocaciones conocidas:** 6
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Arcanum Místico (nivel 8) — 1 conjuro de nivel 8 lanzable 1 vez por descanso largo
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 13
+- **Espacios de conjuro:** 3 (nivel 5)
+- **Invocaciones conocidas:** 7 *(sube)*
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 13
+- **Espacios de conjuro:** 3 (nivel 5)
+- **Invocaciones conocidas:** 7
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** Arcanum Místico (nivel 9) — 1 conjuro de nivel 9 lanzable 1 vez por descanso largo
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 14
+- **Espacios de conjuro:** 4 (nivel 5) *(sube)*
+- **Invocaciones conocidas:** 7
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** —
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 14
+- **Espacios de conjuro:** 4 (nivel 5)
+- **Invocaciones conocidas:** 8 *(sube)*
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 15
+- **Espacios de conjuro:** 4 (nivel 5)
+- **Invocaciones conocidas:** 8
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Maestro Sobrenatural (1 conjuro de nivel 1 a voluntad sin gastar espacio; recuperas todos los espacios de Magia del Pacto en 1 minuto de petición al patrón 1 vez por descanso largo)
+- **Trucos conocidos:** 4
+- **Conjuros conocidos:** 15
+- **Espacios de conjuro:** 4 (nivel 5)
+- **Invocaciones conocidas:** 8
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El brujo obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 8, 12, 16 y 19**.
+
+### Resumen de Espacios de Conjuro (Magia del Pacto)
+
+| Niveles | Espacios | Nivel de los espacios |
+|---|---|---|
+| 1 | 1 | 1 |
+| 2 | 2 | 1 |
+| 3–4 | 2 | 2 |
+| 5–6 | 2 | 3 |
+| 7–8 | 2 | 4 |
+| 9–10 | 2 | 5 |
+| 11–16 | 3 | 5 |
+| 17–20 | 4 | 5 |
+
+- Se recuperan tras un **descanso corto o largo**.
+
+### Resumen de Arcanum Místico
+
+A partir del nivel 11, aprendes un conjuro de nivel superior que puedes lanzar **una vez por descanso largo** sin gastar un espacio de conjuro.
+
+| Nivel | Arcanum |
+|---|---|
+| 11 | 1 conjuro de nivel 6 |
+| 13 | 1 conjuro de nivel 7 |
+| 15 | 1 conjuro de nivel 8 |
+| 17 | 1 conjuro de nivel 9 |
+
+### Resumen de Invocaciones Sobrenaturales
+
+| Niveles | Invocaciones conocidas |
+|---|---|
+| 2 | 2 |
+| 5–6 | 3 |
+| 7–8 | 4 |
+| 9–11 | 5 |
+| 12–14 | 6 |
+| 15–17 | 7 |
+| 18–20 | 8 |
+
+### Resumen del Patrón Sobrenatural: El Infernal
+
+| Nivel | Rasgo |
+|---|---|
+| 1 | **Bendición del Oscuro** — cuando reduces los pg de una criatura hostil a 0, ganas tu mod. CAR + nivel de brujo en pg temporales (mín. 1). **Lista de conjuros ampliada.** |
+| 6 | **La Suerte del Oscuro** — cuando haces una prueba de característica o tirada de salvación, puedes sumar 1d10 al resultado (1 vez por descanso corto o largo). |
+| 10 | **Resistencia Infernal** — elige un tipo de daño; tienes resistencia a él; puedes cambiar la elección tras cada descanso corto o largo. |
+| 14 | **Arrastrar por el Infierno** — al impactar a una criatura con un ataque, la teletransportas al Infierno; al volver sufre 10d10 de daño psíquico (si no es infernal). 1 vez por descanso largo. |
+
+### Conjuros adicionales del Infernal (siempre conocidos)
+
+| Nivel de brujo | Conjuros |
+|---|---|
+| 1 | Manos ardientes, Orden imperiosa |
+| 3 | Rayo abrasador, Sordera/ceguera |
+| 5 | Bola de fuego, Nube apestosa |
+| 7 | Escudo de fuego, Muro de fuego |
+| 9 | Golpe flamígero, Plaga de insectos |
+
+---
+
+## Lista de Conjuros del Brujo
+
+### Trucos (nivel 0)
+- Descarga sobrenatural
+- Ilusión menor
+- Impacto certero
+- Mano de mago
+- Prestidigitación
+- Rociada venenosa
+- Toque helado
+
+### Nivel 1
+- Entender idiomas
+- Hechizar persona
+- Protección contra el bien y el mal
+- Reprensión infernal
+- Retirada expeditiva
+- Sirviente invisible
+- Texto ilusorio
+
+### Nivel 2
+- Embelesar
+- Hacer añicos
+- Imagen múltiple
+- Inmovilizar persona
+- Invisibilidad
+- Oscuridad
+- Paso brumoso
+- Rayo debilitador
+- Sugestión
+- Trepar cual arácnido
+
+### Nivel 3
+- Círculo mágico
+- Contrahechizo
+- Disipar magia
+- Don de lenguas
+- Forma gaseosa
+- Imagen mayor
+- Levantar maldición
+- Patrón hipnótico
+- Terror
+- Toque vampírico
+- Volar
+
+### Nivel 4
+- Destierro
+- Marchitar
+- Puerta dimensional
+- Terreno alucinatorio
+
+### Nivel 5
+- Contactar con otro plano
+- Ensueño
+- Escudriñar
+- Inmovilizar monstruo
+
+### Nivel 6 *(Arcanum Místico)*
+- Círculo de muerte
+- Conjurar feérico
+- Crear muerto viviente
+- De la carne a la piedra
+- Mal de ojo
+- Sugestión en masa
+- Visión veraz
+
+### Nivel 7 *(Arcanum Místico)*
+- Dedo de la muerte
+- Desplazamiento entre planos
+- Excursión etérea
+- Jaula de fuerza
+
+### Nivel 8 *(Arcanum Místico)*
+- Dominar monstruo
+- Labia
+- Palabra de poder: aturdir
+- Romper la mente
+- Semiplano
+
+### Nivel 9 *(Arcanum Místico)*
+- Cautiverio
+- Palabra de poder: matar
+- Polimorfar verdadero
+- Presagio
+- Proyección astral

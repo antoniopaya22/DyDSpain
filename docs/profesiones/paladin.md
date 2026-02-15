@@ -245,3 +245,206 @@ Cuando uses este rasgo, no podrás volver a hacerlo hasta que finalices un desca
 ---
 
 > **Romper tu juramento:** Un paladín siempre intenta alcanzar los más altos estándares de conducta, pero incluso el más virtuoso de ellos es falible. A veces, el camino correcto es demasiado exigente, una situación fuerza a elegir el menor de dos males o el calor de las emociones hace que un paladín viole su propio juramento. Lo normal es que un paladín que haya roto sus votos busque que un clérigo que comparta su fe u otro paladín de la misma orden le absuelva. Si un paladín viola su juramento a sabiendas y no muestra señal alguna de arrepentimiento, las consecuencias pueden ser más graves. Si el GM lo considera oportuno, el paladín impenitente podría verse forzado a abandonar esta clase y adoptar otra.
+
+---
+
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el paladín en cada avance.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Sentidos Divinos, Imponer las Manos
+- **Espacios de conjuro:** —
+- **Dado de Golpe:** 1d10
+- **Puntos de golpe:** 10 + modificador por Constitución
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Estilo de Combate, Lanzamiento de Conjuros, Castigo Divino
+- **Espacios de conjuro:** 2 de nivel 1
+- **Conjuros preparables:** nivel de paladín / 2 (redondeo abajo, mín. 1) + modificador por Carisma
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Salud Divina (inmune a enfermedades), Juramento Sagrado (ej. Juramento de Entrega → Conjuros de juramento, Canalizar Divinidad)
+- **Espacios de conjuro:** 3 de nivel 1
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Espacios de conjuro:** 3 de nivel 1
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** Ataque Adicional (2 ataques por acción de atacar)
+- **Espacios de conjuro:** 4 de nivel 1, 2 de nivel 2
+- *(Se desbloquean los conjuros de nivel 2)*
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Aura de Protección (tú y aliados a 3 m sumáis tu mod. CAR a tiradas de salvación)
+- **Espacios de conjuro:** 4 de nivel 1, 2 de nivel 2
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Rasgo de Juramento Sagrado (Entrega → Aura de Entrega)
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** —
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 2 de nivel 3
+- *(Se desbloquean los conjuros de nivel 3)*
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Aura de Coraje (tú y aliados a 3 m no podéis ser asustados)
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 2 de nivel 3
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Castigo Divino Mejorado (+1d8 radiante a todos los impactos con arma)
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** —
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 1 de nivel 4
+- *(Se desbloquean los conjuros de nivel 4)*
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Toque Purificador (gasta 5 pg de Imponer las Manos para acabar con un conjuro sobre la criatura tocada)
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 1 de nivel 4
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Rasgo de Juramento Sagrado (Entrega → Pureza de Espíritu)
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 2 de nivel 4
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 2 de nivel 4
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** —
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 1 de nivel 5
+- *(Se desbloquean los conjuros de nivel 5)*
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejoras de auras (Aura de Protección y Aura de Coraje se extienden a 9 m)
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 1 de nivel 5
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Rasgo de Juramento Sagrado (Entrega → Halo Sagrado)
+- **Espacios de conjuro:** 4 de nivel 1, 3 de nivel 2, 3 de nivel 3, 3 de nivel 4, 2 de nivel 5
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El paladín obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 8, 12, 16 y 19**.
+
+### Resumen de Imponer las Manos
+
+- **Reserva de curación:** nivel de paladín × 5 puntos de golpe. Se recupera tras un descanso largo.
+- **Curar:** como acción, toca a una criatura y gasta puntos de la reserva para curar esa cantidad de pg.
+- **Curar enfermedades/venenos:** gasta 5 puntos de la reserva por cada enfermedad o veneno.
+
+### Resumen de Castigo Divino
+
+Al impactar con un ataque cuerpo a cuerpo con arma, puedes gastar un espacio de conjuro para infligir daño radiante adicional:
+
+| Nivel del espacio | Daño radiante |
+|---|---|
+| 1 | 2d8 |
+| 2 | 3d8 |
+| 3 | 4d8 |
+| 4 | 5d8 |
+| 5 (máximo) | 5d8 |
+
++1d8 adicional si el objetivo es un muerto viviente o un infernal.
+
+### Resumen del Juramento de Entrega
+
+| Nivel | Rasgo |
+|---|---|
+| 3 | **Conjuros de juramento** (siempre preparados). **Canalizar Divinidad:** Arma Sagrada (+mod. CAR a ataques con un arma durante 1 minuto) o Expulsar al Impío (expulsa infernales y muertos vivientes). |
+| 7 | **Aura de Entrega** — tú y aliados a 3 m tenéis resistencia al daño de conjuros (9 m a nivel 18). |
+| 15 | **Pureza de Espíritu** — siempre bajo el efecto de *protección contra el bien y el mal*. |
+| 20 | **Halo Sagrado** — como acción, emites luz durante 1 minuto: enemigos en la luz brillante sufren 10 de daño radiante; ventaja en salvaciones contra conjuros de infernales/muertos vivientes. |
+
+### Conjuros del Juramento de Entrega (siempre preparados)
+
+| Nivel de paladín | Conjuros |
+|---|---|
+| 3 | Protección contra el bien y el mal, Santuario |
+| 5 | Restablecimiento menor, Zona de la verdad |
+| 9 | Señal de esperanza, Espíritus guardianes |
+| 13 | Libertad de movimiento, Guardián de la fe |
+| 17 | Comunión, Golpe flamígero |
+
+---
+
+## Lista de Conjuros del Paladín
+
+### Nivel 1
+- Bendición
+- Curar heridas
+- Detectar el bien y el mal
+- Detectar magia
+- Detectar venenos y enfermedades
+- Escudo de fe
+- Favor divino
+- Heroísmo
+- Orden imperiosa
+- Protección contra el bien y el mal
+- Purificar comida y bebida
+
+### Nivel 2
+- Arma mágica
+- Auxilio
+- Castigo marcador
+- Hallar corcel
+- Localizar objeto
+- Protección contra veneno
+- Restablecimiento menor
+- Zona de la verdad
+
+### Nivel 3
+- Círculo mágico
+- Crear comida y agua
+- Disipar magia
+- Levantar maldición
+- Luz del día
+- Revivir
+
+### Nivel 4
+- Destierro
+- Guarda contra la muerte
+- Localizar criatura
+
+### Nivel 5
+- Alzar a los muertos
+- Disipar el bien y el mal
+- Geas

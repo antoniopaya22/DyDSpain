@@ -171,3 +171,129 @@ Si la criatura supera la tirada de salvación, no podrás volver a usar este ras
 ### Represalia
 
 A partir del nivel 14, cuando recibas daño de una criatura que esté a **1,5 m o menos** de ti, podrás utilizar tu **reacción** para hacer un ataque con arma cuerpo a cuerpo contra ella.
+
+---
+
+## Guía de Subida de Nivel
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Furia, Defensa sin Armadura
+- **N.º de furias:** 2
+- **Daño por furia:** +2
+- **Dados de Golpe:** 1d12
+- **Puntos de golpe:** 12 + modificador por Constitución
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Ataque Temerario, Sentir el Peligro
+- **N.º de furias:** 2
+- **Daño por furia:** +2
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Senda Primordial (ej. Senda del Berserker → Frenesí)
+- **N.º de furias:** 3
+- **Daño por furia:** +2
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una o +1 a dos)
+- **N.º de furias:** 3
+- **Daño por furia:** +2
+
+### Nivel 5
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Ataque Adicional, Movimiento Rápido (+3 m sin armadura pesada)
+- **N.º de furias:** 3
+- **Daño por furia:** +2
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Rasgo de Senda (Berserker → Furia Irracional)
+- **N.º de furias:** 4
+- **Daño por furia:** +2
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Instinto Salvaje (ventaja en iniciativa)
+- **N.º de furias:** 4
+- **Daño por furia:** +2
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica
+- **N.º de furias:** 4
+- **Daño por furia:** +2
+
+### Nivel 9
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Crítico Brutal (1 dado adicional)
+- **N.º de furias:** 4
+- **Daño por furia:** +3
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Rasgo de Senda (Berserker → Presencia Intimidante)
+- **N.º de furias:** 4
+- **Daño por furia:** +3
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Furia Implacable
+- **N.º de furias:** 4
+- **Daño por furia:** +3
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **N.º de furias:** 5
+- **Daño por furia:** +3
+
+### Nivel 13
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Crítico Brutal (2 dados adicionales)
+- **N.º de furias:** 5
+- **Daño por furia:** +3
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Rasgo de Senda (Berserker → Represalia)
+- **N.º de furias:** 5
+- **Daño por furia:** +3
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Furia Persistente
+- **N.º de furias:** 5
+- **Daño por furia:** +3
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **N.º de furias:** 5
+- **Daño por furia:** +4
+
+### Nivel 17
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Crítico Brutal (3 dados adicionales)
+- **N.º de furias:** 6
+- **Daño por furia:** +4
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Poderío Indómito
+- **N.º de furias:** 6
+- **Daño por furia:** +4
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **N.º de furias:** 6
+- **Daño por furia:** +4
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Campeón Primordial (FUE y CON +4, máximo 24)
+- **N.º de furias:** Ilimitadas
+- **Daño por furia:** +4

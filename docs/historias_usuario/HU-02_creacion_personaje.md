@@ -52,36 +52,47 @@ Historias de usuario relacionadas con el flujo de creación de un nuevo personaj
 ### Criterios de Aceptación
 
 - Se muestra una lista con todas las razas disponibles del SRD 5e en español:
-  - Enano (Enano de las Colinas, Enano de las Montañas)
-  - Elfo (Alto Elfo, Elfo del Bosque, Elfo Oscuro/Drow)
-  - Mediano (Mediano Piesligeros, Mediano Fornido)
+  - Enano (Enano de las Colinas)
+  - Elfo (Alto Elfo)
+  - Mediano (Piesligeros)
   - Humano
   - Dracónido
-  - Gnomo (Gnomo del Bosque, Gnomo de las Rocas)
+  - Gnomo (Gnomo de las Rocas)
   - Semielfo
   - Semiorco
   - Tiefling
+  > **Nota SRD:** El SRD 5.1 solo incluye una subraza por raza. Las subrazas adicionales (Enano de las Montañas, Elfo del Bosque, Elfo Oscuro/Drow, Mediano Fornido, Gnomo del Bosque) no están incluidas en el SRD y podrían añadirse en versiones futuras.
 - Cada raza muestra una descripción breve y sus rasgos principales.
 - Al seleccionar una raza con subrazas, se despliega la selección de subraza.
 - Se muestran claramente los bonificadores de estadísticas que aporta la raza.
 - Se muestran los rasgos raciales (visión en la oscuridad, resistencias, competencias, etc.).
-- Para el Alto Elfo, se permite elegir un truco de mago adicional.
-- Para el Humano, se aplica +1 a todas las características.
+- **Selecciones raciales durante la creación:**
+  - **Dracónido:** se debe elegir un Linaje Dracónico (tipo de dragón: Azul, Blanco, Bronce, Cobre, Negro, Oro, Oropel, Plata, Rojo, Verde), que determina el Ataque de Aliento y la resistencia al daño.
+  - **Enano:** se debe elegir competencia con herramientas de artesano (albañil, herrero o cervecero).
+  - **Alto Elfo:** se debe elegir un truco de la lista de conjuros de mago y un idioma adicional.
+  - **Semielfo:** se deben elegir 2 competencias en habilidades adicionales (rasgo "Versátil con Habilidades") y un idioma adicional.
+  - **Humano:** se debe elegir un idioma adicional.
+  - **Gnomo de las Rocas:** es competente con herramientas de manitas (rasgo "Manitas").
+- Se aplica +1 a todas las características del Humano.
+- **Hechizos raciales:** se registran los hechizos que otorgan ciertas razas:
+  - **Tiefling** (Linaje Infernal): Taumaturgia (truco, desde nivel 1), Reprensión Infernal (nivel 2, disponible desde nivel 3 del personaje), Oscuridad (disponible desde nivel 5 del personaje). Aptitud mágica: Carisma.
+  - **Alto Elfo**: un truco de mago elegido en la creación. Aptitud mágica: Inteligencia.
+- Se muestran las razas con **Visión en la Oscuridad** (18 m): Enano, Elfo, Gnomo, Semielfo, Semiorco, Tiefling.
 - Se aplican automáticamente los idiomas que otorga la raza.
 
 ### Datos por Raza (Resumen)
 
-| Raza | Bonificador | Velocidad | Tamaño |
-|------|-------------|-----------|--------|
-| Enano | CON +2 | 7,5 m (25 pies) | Mediano |
-| Elfo | DES +2 | 9 m (30 pies) | Mediano |
-| Mediano | DES +2 | 7,5 m (25 pies) | Pequeño |
-| Humano | Todos +1 | 9 m (30 pies) | Mediano |
-| Dracónido | FUE +2, CAR +1 | 9 m (30 pies) | Mediano |
-| Gnomo | INT +2 | 7,5 m (25 pies) | Pequeño |
-| Semielfo | CAR +2, dos a elegir +1 | 9 m (30 pies) | Mediano |
-| Semiorco | FUE +2, CON +1 | 9 m (30 pies) | Mediano |
-| Tiefling | CAR +2, INT +1 | 9 m (30 pies) | Mediano |
+| Raza | Bonificador base | Subraza (bonif.) | Velocidad | Tamaño | Visión Oscuridad | Rasgos destacados |
+|------|-----------------|------------------|-----------|--------|-----------------|--------------------|
+| Enano | CON +2 | Colinas: SAB +1 | 7,5 m | Mediano | Sí (18 m) | Resistencia al veneno, competencia armas/herramientas, Aguante Enano (+1 PG/nivel) |
+| Elfo | DES +2 | Alto Elfo: INT +1 | 9 m | Mediano | Sí (18 m) | Linaje Feérico, Trance, Sentidos Agudos (Percepción), truco de mago + idioma extra |
+| Mediano | DES +2 | Piesligeros: CAR +1 | 7,5 m | Pequeño | No | Afortunado (repetir 1 natural), Valiente, Sigiloso por Naturaleza |
+| Humano | Todos +1 | — | 9 m | Mediano | No | Idioma adicional a elegir |
+| Dracónido | FUE +2, CAR +1 | — | 9 m | Mediano | No | Linaje Dracónico (elegir tipo de dragón), Ataque de Aliento, Resistencia al daño |
+| Gnomo | INT +2 | Rocas: CON +1 | 7,5 m | Pequeño | Sí (18 m) | Astucia Gnoma (ventaja salvaciones INT/SAB/CAR vs magia), Manitas |
+| Semielfo | CAR +2, dos a elegir +1 | — | 9 m | Mediano | Sí (18 m) | Linaje Feérico, 2 competencias habilidades extra, idioma extra |
+| Semiorco | FUE +2, CON +1 | — | 9 m | Mediano | Sí (18 m) | Amenazador (Intimidación), Aguante Incansable, Ataques Salvajes |
+| Tiefling | CAR +2, INT +1 | — | 9 m | Mediano | Sí (18 m) | Resistencia al fuego, Hechizos raciales (Taumaturgia, Reprensión Infernal, Oscuridad) |
 
 ---
 
@@ -119,20 +130,26 @@ Historias de usuario relacionadas con el flujo de creación de un nuevo personaj
 
 ### Datos por Clase (Resumen)
 
-| Clase | Dado de Golpe | Salvaciones | Habilidad Clave |
-|-------|---------------|-------------|-----------------|
-| Bárbaro | d12 | FUE, CON | FUE |
-| Bardo | d8 | DES, CAR | CAR |
-| Brujo | d8 | SAB, CAR | CAR |
-| Clérigo | d8 | SAB, CAR | SAB |
-| Druida | d8 | INT, SAB | SAB |
-| Explorador | d10 | FUE, DES | DES/SAB |
-| Guerrero | d10 | FUE, CON | FUE/DES |
-| Hechicero | d6 | CON, CAR | CAR |
-| Mago | d6 | INT, SAB | INT |
-| Monje | d8 | FUE, DES | DES/SAB |
-| Paladín | d10 | SAB, CAR | FUE/CAR |
-| Pícaro | d8 | DES, INT | DES |
+| Clase | Dado de Golpe | Salvaciones | Habilidad Clave | Habilidades a elegir | Notas |
+|-------|---------------|-------------|-----------------|---------------------|-------|
+| Bárbaro | d12 | FUE, CON | FUE | 2 de lista restringida | Defensa sin Armadura (CA=10+DES+CON) |
+| Bardo | d8 | DES, CAR | CAR | **3 de cualquier habilidad** | Lanzador completo, hechizos conocidos |
+| Brujo | d8 | SAB, CAR | CAR | 2 de lista restringida | Magia de Pacto (espacios especiales) |
+| Clérigo | d8 | SAB, CAR | SAB | 2 de lista restringida | Subclase a **nivel 1** (Dominio Divino) |
+| Druida | d8 | INT, SAB | SAB | 2 de lista restringida | Subclase a **nivel 2** (Círculo) |
+| Explorador | d10 | FUE, DES | DES/SAB | **3 de lista restringida** | Medio lanzador, **empieza a lanzar en nivel 2** |
+| Guerrero | d10 | FUE, CON | FUE/DES | 2 de lista restringida | Estilo de Combate (6 opciones), **7 MPC** |
+| Hechicero | d6 | CON, CAR | CAR | 2 de lista restringida | Subclase a **nivel 1** (Origen) |
+| Mago | d6 | INT, SAB | INT | 2 de lista restringida | Subclase a **nivel 2**, Libro de Conjuros |
+| Monje | d8 | FUE, DES | DES/SAB | 2 de lista restringida | Defensa sin Armadura (CA=10+DES+SAB) |
+| Paladín | d10 | SAB, CAR | FUE/CAR | 2 de lista restringida | Medio lanzador, **empieza a lanzar en nivel 2** |
+| Pícaro | d8 | DES, INT | DES | **4 de lista amplia** | Pericia (doble competencia), **6 MPC** |
+
+> **MPC** = Mejoras de Puntuación de Característica. La mayoría de clases obtienen 5 (niveles 4, 8, 12, 16, 19). El Guerrero obtiene 7 (añade niveles 6 y 14) y el Pícaro obtiene 6 (añade nivel 10).
+>
+> **Estilo de Combate:** El Guerrero elige entre 6 opciones a nivel 1; el Paladín y el Explorador eligen entre 4 opciones a nivel 2. Las listas se solapan parcialmente.
+>
+> **Lanzamiento de conjuros retrasado:** El Explorador y el Paladín no tienen acceso a hechizos en nivel 1; comienzan a lanzar conjuros en nivel 2. A diferencia de los lanzadores completos, su nivel máximo de conjuro es 5º y no obtienen trucos.
 
 ---
 
@@ -182,25 +199,29 @@ Historias de usuario relacionadas con el flujo de creación de un nuevo personaj
 - Se muestra una lista con los trasfondos del SRD 5e en español:
   - Acólito
   - Charlatán
-  - Criminal / Espía
-  - Artista
+  - Criminal / Espía (variante)
+  - Artista / Gladiador (variante)
   - Héroe del Pueblo
-  - Artesano Gremial
+  - Artesano Gremial / Mercader Gremial (variante)
   - Ermitaño
-  - Noble
+  - Noble / Caballero (variante)
   - Forastero
   - Sabio
-  - Marinero / Pirata
+  - Marinero / Pirata (variante)
   - Soldado
   - Huérfano (Pilluelo)
+- Para los trasfondos con **variante** (Criminal/Espía, Artista/Gladiador, Noble/Caballero, Marinero/Pirata, Artesano/Mercader), se permite elegir la variante correspondiente, que puede cambiar el rasgo especial o el equipamiento.
 - Cada trasfondo muestra:
   - Descripción breve.
-  - Competencias en habilidades que otorga.
+  - Competencias en habilidades que otorga (siempre 2).
   - Competencias con herramientas o idiomas adicionales.
   - Equipamiento inicial del trasfondo.
   - Rasgo especial del trasfondo.
+  - **Tabla de especialidad/origen** (d6 a d20 según trasfondo) para personalizar la historia del personaje.
 - Se aplican automáticamente las competencias en habilidades.
 - Si el trasfondo otorga idiomas a elegir, se muestra un selector de idiomas.
+- Se muestra el **oro inicial** que aporta el trasfondo (varía: 5 po Ermitaño, 10 po la mayoría, 15 po Acólito/Criminal/Artista/Artesano/Charlatán, 25 po Noble).
+- Cada trasfondo ofrece **8 rasgos de personalidad, 6 ideales, 6 vínculos y 6 defectos** como sugerencias (ver HU-02.10).
 
 ---
 
@@ -216,9 +237,10 @@ Historias de usuario relacionadas con el flujo de creación de un nuevo personaj
   - **FUE**: Atletismo
   - **DES**: Acrobacias, Juego de Manos, Sigilo
   - **INT**: Arcanos, Historia, Investigación, Naturaleza, Religión
-  - **SAB**: Conocimiento de la Naturaleza (Supervivencia), Medicina, Percepción, Perspicacia, Trato con Animales
+  - **SAB**: Supervivencia, Medicina, Percepción, Perspicacia, Trato con Animales
   - **CAR**: Engaño, Intimidación, Interpretación, Persuasión
 - Se marcan automáticamente las competencias otorgadas por el trasfondo.
+- Se marcan automáticamente las competencias otorgadas por la raza (ej: Semielfo obtiene 2 habilidades extra por "Versátil con Habilidades", Semiorco obtiene Intimidación, Elfo obtiene Percepción).
 - Se permite elegir el número correcto de habilidades adicionales según la clase (de la lista permitida por la clase).
 - No se permite seleccionar más habilidades de las permitidas.
 - Se muestra el modificador total de cada habilidad (mod. de característica + bonificador de competencia si aplica).

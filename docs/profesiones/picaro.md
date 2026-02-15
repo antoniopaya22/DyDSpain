@@ -153,3 +153,141 @@ A nivel 13, has aprendido lo suficiente sobre el funcionamiento de la magia como
 Cuando alcances el nivel 17, te habrás vuelto un experto en preparar emboscadas y escapar rápidamente del peligro. Puedes actuar **dos turnos** durante el primer asalto de cualquier combate. Llevarás a cabo tu primer turno según tu iniciativa normal y el segundo en tu **iniciativa menos 10**.
 
 No puedes usar este rasgo si estás sorprendido.
+
+---
+
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el pícaro en cada avance.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Pericia, Ataque Furtivo, Jerga de Ladrones
+- **Ataque Furtivo:** 1d6
+- **Dado de Golpe:** 1d8
+- **Puntos de golpe:** 8 + modificador por Constitución
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Acción Astuta (correr, destrabarse o esconderse como acción adicional)
+- **Ataque Furtivo:** 1d6
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Arquetipo de Pícaro (ej. Ladrón → Manos Rápidas, Balconero)
+- **Ataque Furtivo:** 2d6
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una característica o +1 a dos)
+- **Ataque Furtivo:** 2d6
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** Esquiva Asombrosa (reacción para reducir a la mitad el daño de un ataque)
+- **Ataque Furtivo:** 3d6
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Pericia (elige otras dos competencias para duplicar el bonificador)
+- **Ataque Furtivo:** 3d6
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Evasión (0 daño en salvación de DES exitosa, mitad si falla)
+- **Ataque Furtivo:** 4d6
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica
+- **Ataque Furtivo:** 4d6
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** Rasgo de Arquetipo de Pícaro (Ladrón → Sigilo Supremo)
+- **Ataque Furtivo:** 5d6
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Ataque Furtivo:** 5d6
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Talentos Fiables (mínimo 10 en el d20 con competencias)
+- **Ataque Furtivo:** 6d6
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Ataque Furtivo:** 6d6
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** Rasgo de Arquetipo de Pícaro (Ladrón → Usar Objetos Mágicos)
+- **Ataque Furtivo:** 7d6
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Sentir sin Ver (detectar criaturas ocultas/invisibles a 3 m)
+- **Ataque Furtivo:** 7d6
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mente Escurridiza (competencia en tiradas de salvación de Sabiduría)
+- **Ataque Furtivo:** 8d6
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **Ataque Furtivo:** 8d6
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** Rasgo de Arquetipo de Pícaro (Ladrón → Reflejos de Ladrón)
+- **Ataque Furtivo:** 9d6
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Elusivo (ningún ataque contra ti tiene ventaja mientras no estés incapacitado)
+- **Ataque Furtivo:** 9d6
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **Ataque Furtivo:** 10d6
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Golpe de Suerte (convierte un fallo en impacto o un resultado en 20; 1 uso por descanso)
+- **Ataque Furtivo:** 10d6
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El pícaro obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 8, 10, 12, 16 y 19** — un total de **6 veces**.
+
+### Resumen de Ataque Furtivo
+
+| Nivel | Daño de Ataque Furtivo |
+|---|---|
+| 1–2 | 1d6 |
+| 3–4 | 2d6 |
+| 5–6 | 3d6 |
+| 7–8 | 4d6 |
+| 9–10 | 5d6 |
+| 11–12 | 6d6 |
+| 13–14 | 7d6 |
+| 15–16 | 8d6 |
+| 17–18 | 9d6 |
+| 19–20 | 10d6 |
+
+### Resumen del Arquetipo de Pícaro: Ladrón
+
+| Nivel | Rasgo del Ladrón |
+|---|---|
+| 3 | **Manos Rápidas** — usa Acción Astuta para Juego de Manos, herramientas de ladrón o usar un objeto. **Balconero** — trepar no cuesta movimiento adicional; mayor distancia de salto. |
+| 9 | **Sigilo Supremo** — ventaja en Sigilo si no te mueves más de la mitad de tu velocidad. |
+| 13 | **Usar Objetos Mágicos** — ignoras restricciones de clase, raza y nivel para usar objetos mágicos. |
+| 17 | **Reflejos de Ladrón** — dos turnos en el primer asalto de combate (iniciativa normal e iniciativa −10). |

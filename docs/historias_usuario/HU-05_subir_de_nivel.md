@@ -75,6 +75,11 @@ Historias de usuario relacionadas con el sistema de progresión de nivel del per
 ### Notas
 
 - Algunas clases obtienen esta mejora en niveles adicionales (por ejemplo, el Guerrero en los niveles 6 y 14, y el Pícaro en el nivel 10).
+- **Niveles de MPC por clase:**
+  - **Estándar** (Bárbaro, Bardo, Brujo, Clérigo, Druida, Explorador, Hechicero, Mago, Monje, Paladín): niveles 4, 8, 12, 16, 19 (5 total).
+  - **Pícaro**: niveles 4, 8, **10**, 12, 16, 19 (6 total).
+  - **Guerrero**: niveles 4, **6**, 8, 12, **14**, 16, 19 (7 total).
+- El modelo de datos debe almacenar los niveles de MPC **por clase**, no de forma global.
 - En futuras versiones se podrían implementar dotes como alternativa a la mejora de puntuación.
 
 ---

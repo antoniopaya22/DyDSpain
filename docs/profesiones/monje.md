@@ -234,3 +234,190 @@ A partir del nivel 11, puedes iniciar una meditación especial que te rodea de u
 A nivel 17, consigues la capacidad de transmitir vibraciones letales al cuerpo de un oponente. Cuando impactas a una criatura con un ataque sin armas, puedes gastar **3 puntos de ki** para iniciar estas vibraciones imperceptibles, que durarán tantos días como tu nivel de monje. Las vibraciones son inofensivas, salvo si usas tu acción para hacer que terminen. Para hacerlo, tu objetivo debe estar en el mismo plano de existencia que tú. Cuando lleves a cabo esta acción, la criatura deberá hacer una **tirada de salvación de Constitución**. Si la falla, sus **puntos de golpe se reducirán a 0**. Si la supera, sufrirá **10d10 de daño necrótico**.
 
 Solo puedes tener a una criatura bajo el efecto de este rasgo al mismo tiempo. Puedes elegir finalizar las vibraciones de forma inocua sin necesidad de usar ninguna acción.
+
+---
+
+## Guía de Subida de Nivel
+
+A continuación se detalla, nivel a nivel, qué obtiene el monje en cada avance.
+
+### Nivel 1
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Defensa sin Armadura, Artes Marciales
+- **Dado de Artes Marciales:** 1d4
+- **Puntos de ki:** —
+- **Movimiento sin Armadura:** —
+- **Dados de Golpe:** 1d8
+- **Puntos de golpe:** 8 + modificador por Constitución
+
+### Nivel 2
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Ki (Defensa Paciente, Paso del Viento, Ráfaga de Golpes), Movimiento sin Armadura
+- **Dado de Artes Marciales:** 1d4
+- **Puntos de ki:** 2
+- **Movimiento sin Armadura:** +3 m
+
+### Nivel 3
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Tradición Monástica (ej. Camino de la Mano Abierta → Técnica de la Mano Abierta), Desviar Proyectiles
+- **Dado de Artes Marciales:** 1d4
+- **Puntos de ki:** 3
+- **Movimiento sin Armadura:** +3 m
+
+### Nivel 4
+- **Bonificador por competencia:** +2
+- **Rasgos nuevos:** Mejora de Característica (+2 a una o +1 a dos), Caída Lenta
+- **Dado de Artes Marciales:** 1d4
+- **Puntos de ki:** 4
+- **Movimiento sin Armadura:** +3 m
+
+### Nivel 5
+- **Bonificador por competencia:** +3 *(sube)*
+- **Rasgos nuevos:** Ataque Adicional, Golpe Aturdidor
+- **Dado de Artes Marciales:** 1d6 *(sube)*
+- **Puntos de ki:** 5
+- **Movimiento sin Armadura:** +3 m
+
+### Nivel 6
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Golpes Potenciados con Ki (ataques sin armas cuentan como mágicos), rasgo de Tradición Monástica (Mano Abierta → Plenitud de Cuerpo)
+- **Dado de Artes Marciales:** 1d6
+- **Puntos de ki:** 6
+- **Movimiento sin Armadura:** +4,5 m *(sube)*
+
+### Nivel 7
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Evasión, Quietud Mental
+- **Dado de Artes Marciales:** 1d6
+- **Puntos de ki:** 7
+- **Movimiento sin Armadura:** +4,5 m
+
+### Nivel 8
+- **Bonificador por competencia:** +3
+- **Rasgos nuevos:** Mejora de Característica
+- **Dado de Artes Marciales:** 1d6
+- **Puntos de ki:** 8
+- **Movimiento sin Armadura:** +4,5 m
+
+### Nivel 9
+- **Bonificador por competencia:** +4 *(sube)*
+- **Rasgos nuevos:** Mejora de Movimiento sin Armadura (puedes moverte por superficies verticales y sobre líquidos)
+- **Dado de Artes Marciales:** 1d6
+- **Puntos de ki:** 9
+- **Movimiento sin Armadura:** +4,5 m
+
+### Nivel 10
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Pureza de Cuerpo (inmune a enfermedades y veneno)
+- **Dado de Artes Marciales:** 1d6
+- **Puntos de ki:** 10
+- **Movimiento sin Armadura:** +6 m *(sube)*
+
+### Nivel 11
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Rasgo de Tradición Monástica (Mano Abierta → Tranquilidad)
+- **Dado de Artes Marciales:** 1d8 *(sube)*
+- **Puntos de ki:** 11
+- **Movimiento sin Armadura:** +6 m
+
+### Nivel 12
+- **Bonificador por competencia:** +4
+- **Rasgos nuevos:** Mejora de Característica
+- **Dado de Artes Marciales:** 1d8
+- **Puntos de ki:** 12
+- **Movimiento sin Armadura:** +6 m
+
+### Nivel 13
+- **Bonificador por competencia:** +5 *(sube)*
+- **Rasgos nuevos:** Lengua del Sol y la Luna (entiendes todos los idiomas hablados)
+- **Dado de Artes Marciales:** 1d8
+- **Puntos de ki:** 13
+- **Movimiento sin Armadura:** +6 m
+
+### Nivel 14
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Alma Diamantina (competencia en todas las tiradas de salvación; gastar 1 ki para repetir salvación fallida)
+- **Dado de Artes Marciales:** 1d8
+- **Puntos de ki:** 14
+- **Movimiento sin Armadura:** +7,5 m *(sube)*
+
+### Nivel 15
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Cuerpo Atemporal (no envejeces, no necesitas comida ni agua)
+- **Dado de Artes Marciales:** 1d8
+- **Puntos de ki:** 15
+- **Movimiento sin Armadura:** +7,5 m
+
+### Nivel 16
+- **Bonificador por competencia:** +5
+- **Rasgos nuevos:** Mejora de Característica
+- **Dado de Artes Marciales:** 1d8
+- **Puntos de ki:** 16
+- **Movimiento sin Armadura:** +7,5 m
+
+### Nivel 17
+- **Bonificador por competencia:** +6 *(sube)*
+- **Rasgos nuevos:** Rasgo de Tradición Monástica (Mano Abierta → Palma Estremecedora)
+- **Dado de Artes Marciales:** 1d10 *(sube)*
+- **Puntos de ki:** 17
+- **Movimiento sin Armadura:** +7,5 m
+
+### Nivel 18
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Cuerpo Vacío (invisibilidad por 4 ki; proyección astral por 8 ki)
+- **Dado de Artes Marciales:** 1d10
+- **Puntos de ki:** 18
+- **Movimiento sin Armadura:** +9 m *(sube)*
+
+### Nivel 19
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Mejora de Característica
+- **Dado de Artes Marciales:** 1d10
+- **Puntos de ki:** 19
+- **Movimiento sin Armadura:** +9 m
+
+### Nivel 20
+- **Bonificador por competencia:** +6
+- **Rasgos nuevos:** Yo Perfecto (recuperas 4 ki al tirar iniciativa si no te quedan)
+- **Dado de Artes Marciales:** 1d10
+- **Puntos de ki:** 20
+- **Movimiento sin Armadura:** +9 m
+
+---
+
+### Resumen de Mejoras de Característica / Dotes
+
+El monje obtiene Mejora de Característica (o una dote, si el GM las permite) en los niveles: **4, 8, 12, 16 y 19**.
+
+### Resumen del Dado de Artes Marciales
+
+| Niveles | Dado |
+|---|---|
+| 1–4 | 1d4 |
+| 5–10 | 1d6 |
+| 11–16 | 1d8 |
+| 17–20 | 1d10 |
+
+### Resumen de Puntos de Ki
+
+Los puntos de ki son iguales a tu nivel de monje (a partir del nivel 2). Se recuperan tras un descanso corto o largo.
+
+### Resumen de Movimiento sin Armadura
+
+| Niveles | Bonificador |
+|---|---|
+| 1 | — |
+| 2–5 | +3 m |
+| 6–9 | +4,5 m |
+| 10–13 | +6 m |
+| 14–17 | +7,5 m |
+| 18–20 | +9 m |
+
+### Resumen de la Tradición Monástica: Camino de la Mano Abierta
+
+| Nivel | Rasgo |
+|---|---|
+| 3 | **Técnica de la Mano Abierta** — al impactar con Ráfaga de Golpes, puedes derribar, empujar o impedir reacciones al objetivo. |
+| 6 | **Plenitud de Cuerpo** — como acción, recuperas pg igual a 3 × tu nivel de monje (una vez por descanso largo). |
+| 11 | **Tranquilidad** — al terminar un descanso largo, obtienes el efecto de *santuario* hasta tu próximo descanso largo. |
+| 17 | **Palma Estremecedora** — al impactar con un ataque sin armas, gastas 3 ki para iniciar vibraciones que pueden reducir los pg del objetivo a 0. |
