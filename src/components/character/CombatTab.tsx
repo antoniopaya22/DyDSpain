@@ -27,7 +27,6 @@ import {
 function showToastLegacy(message: string) {
   // Legacy fallback - no longer used, kept for reference
   void message;
-  }
 }
 
 function getHpColor(current: number, max: number): string {
