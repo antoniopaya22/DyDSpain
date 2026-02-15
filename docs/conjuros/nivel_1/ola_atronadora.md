@@ -1,0 +1,29 @@
+# Ola atronadora
+
+**Evocación — Nivel 1**
+
+---
+
+- **Tiempo de lanzamiento:** 1 acción
+- **Alcance:** Lanzador (cubo de 4,5 m)
+- **Componentes:** V, S
+- **Duración:** Instantáneo
+
+---
+
+Una ola de fuerza atronadora surge de tu cuerpo.
+Todas las criaturas en un cubo de 4,5 m adyacente
+a ti deben hacer una tirada de salvación de
+Constitución. Si la fallan, recibirán 2d8 de daño
+de trueno y serán empujadas 3 m respecto a ti.
+Si la superan, recibirán la mitad de daño y no se
+las empujará.
+Además, a los objetos sueltos que estén
+completamente dentro del área de efecto se
+les empujará automáticamente 3 m respecto a ti.
+El conjuro provoca un retumbo audible a 90 m
+de distancia.
+**_A niveles superiores._** Cuando lanzas este conjuro
+mediante un espacio de conjuro de nivel 2 o superior,
+el daño aumenta en 1d8 por cada nivel por encima
+de 1 que tenga el espacio que hayas empleado.

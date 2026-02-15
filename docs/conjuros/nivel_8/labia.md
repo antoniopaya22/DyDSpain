@@ -1,0 +1,18 @@
+# Labia
+
+**Transmutación — Nivel 8**
+
+---
+
+- **Tiempo de lanzamiento:** 1 acción
+- **Alcance:** Lanzador
+- **Componentes:** V
+- **Duración:** 1 hora
+
+---
+
+Hasta que el conjuro termine, cuando hagas una
+prueba de Carisma, puedes sustituir el resultado
+de la tirada por un 15. Además, digas lo que digas,
+cualquier magia usada para detectar si dices la
+verdad indicará que la estás diciendo.

@@ -1,0 +1,18 @@
+# Piel pétrea
+
+**Abjuración — Nivel 4**
+
+---
+
+- **Tiempo de lanzamiento:** 1 acción
+- **Alcance:** Toque
+- **Componentes:** V, S, M (polvo de diamante que
+- **Duración:** Concentración, hasta 1 hora
+
+---
+
+Este conjuro hace que la carne de una criatura
+voluntaria a la que toques se vuelva tan dura como
+la piedra. Hasta que el conjuro termine, el objetivo
+tiene resistencia al daño contundente, cortante
+y perforante no mágico.

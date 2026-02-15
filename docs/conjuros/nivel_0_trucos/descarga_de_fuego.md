@@ -1,0 +1,22 @@
+# Descarga de fuego
+
+**Evocación — Truco (nivel 0)**
+
+---
+
+- **Tiempo de lanzamiento:** 1 acción
+- **Alcance:** 36 m
+- **Componentes:** V, S
+- **Duración:** Instantáneo
+
+---
+
+Arrojas una mota de fuego a una criatura u objeto
+dentro del alcance. Haz un ataque de conjuro
+a distancia contra el objetivo. Si impacta, el objetivo
+recibe 1d10 de daño de fuego. Los objetos inflama-
+bles a los que impacte el conjuro arderán si nadie
+los lleva o viste.
+El daño del conjuro aumenta en 1d10 cuando
+alcanzas el nivel 5 (2d10), el nivel 11 (3d10) y el
+nivel 17 (4d10).
