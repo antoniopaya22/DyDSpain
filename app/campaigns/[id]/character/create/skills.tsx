@@ -1,0 +1,567 @@
+import { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  useCreationStore,
+  TOTAL_STEPS,
+  getGrantedSkills,
+  getAvailableClassSkills,
+  getRequiredSkillCount,
+} from "@/stores/creationStore";
+import {
+  SKILLS,
+  ABILITY_NAMES,
+  type SkillKey,
+} from "@/types/character";
+
+const CURRENT_STEP = 6;
+
+export default function SkillsStep() {
+  const router = useRouter();
+  const { id: campaignId } = useLocalSearchParams<{ id: string }>();
+
+  const {
+    draft,
+    setSkillChoices,
+    saveDraft,
+    loadDraft,
+  } = useCreationStore();
+
+  const [selectedSkills, setSelectedSkills] = useState<SkillKey[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const init = async () => {
+        if (!campaignId) return;
+        await loadDraft(campaignId);
+        const currentDraft = useCreationStore.getState().draft;
+        if (currentDraft?.skillChoices && currentDraft.skillChoices.length > 0) {
+          setSelectedSkills([...currentDraft.skillChoices]);
+        }
+      };
+      init();
+    }, [campaignId])
+  );
+
+  const classId = draft?.clase;
+  const raceId = draft?.raza;
+  const backgroundId = draft?.trasfondo;
+
+  // Skills already granted by race and background
+  const grantedSkills = getGrantedSkills(raceId, backgroundId);
+
+  // Skills available to pick from class pool (excluding granted)
+  const availableClassSkills: SkillKey[] = classId
+    ? getAvailableClassSkills(classId, raceId, backgroundId)
+    : [];
+
+  // How many skills the player must choose
+  const requiredCount = getRequiredSkillCount(classId, raceId);
+
+  const isValid = selectedSkills.length === requiredCount;
+
+  const handleToggleSkill = (skill: SkillKey) => {
+    setSelectedSkills((prev) => {
+      if (prev.includes(skill)) {
+        return prev.filter((s) => s !== skill);
+      }
+      if (prev.length >= requiredCount) {
+        return prev;
+      }
+      return [...prev, skill];
+    });
+  };
+
+  const handleNext = async () => {
+    if (!isValid) return;
+    setSkillChoices(selectedSkills);
+    await saveDraft();
+    router.push({
+      pathname: "/campaigns/[id]/character/create/spells",
+      params: { id: campaignId },
+    });
+  };
+
+  const handleBack = () => {
+    if (selectedSkills.length > 0) {
+      setSkillChoices(selectedSkills);
+    }
+    router.back();
+  };
+
+  const progressPercent = (CURRENT_STEP / TOTAL_STEPS) * 100;
+
+  // Group skills by ability
+  const skillsByAbility: Record<string, { key: SkillKey; def: (typeof SKILLS)[SkillKey] }[]> = {};
+  const allSkillKeys = Object.keys(SKILLS) as SkillKey[];
+  for (const key of allSkillKeys) {
+    const def = SKILLS[key];
+    const abilityName = ABILITY_NAMES[def.habilidad];
+    if (!skillsByAbility[abilityName]) {
+      skillsByAbility[abilityName] = [];
+    }
+    skillsByAbility[abilityName].push({ key, def });
+  }
+
+  return (
+    <View style={styles.container}>
+      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerRow}>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <Ionicons name="arrow-back" size={22} color="white" />
+            </TouchableOpacity>
+            <Text style={styles.stepText}>
+              Paso {CURRENT_STEP} de {TOTAL_STEPS}
+            </Text>
+            <View style={{ height: 40, width: 40 }} />
+          </View>
+          <View style={styles.progressBar}>
+            <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
+          </View>
+        </View>
+
+        {/* Title */}
+        <View style={styles.titleSection}>
+          <View style={styles.iconCircle}>
+            <Ionicons name="school-outline" size={40} color="#c62828" />
+          </View>
+          <Text style={styles.title}>Competencias en Habilidades</Text>
+          <Text style={styles.subtitle}>
+            Elige {requiredCount} habilidad{requiredCount !== 1 ? "es" : ""} de
+            la lista de tu clase. Las habilidades ya otorgadas por raza y
+            trasfondo aparecen marcadas.
+          </Text>
+        </View>
+
+        {/* Selection counter */}
+        <View style={styles.counterRow}>
+          <View style={styles.counterBadge}>
+            <Text
+              style={[
+                styles.counterText,
+                isValid && styles.counterTextValid,
+              ]}
+            >
+              {selectedSkills.length} / {requiredCount} seleccionadas
+            </Text>
+          </View>
+        </View>
+
+        {/* Granted skills */}
+        {grantedSkills.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              Habilidades Otorgadas (Raza / Trasfondo)
+            </Text>
+            {grantedSkills.map((sk) => {
+              const def = SKILLS[sk];
+              return (
+                <View key={sk} style={styles.grantedRow}>
+                  <View style={styles.grantedIcon}>
+                    <Ionicons name="checkmark-circle" size={20} color="#22c55e" />
+                  </View>
+                  <View style={styles.skillInfo}>
+                    <Text style={styles.grantedName}>{def.nombre}</Text>
+                    <Text style={styles.skillAbility}>
+                      {ABILITY_NAMES[def.habilidad]}
+                    </Text>
+                  </View>
+                  <View style={styles.grantedBadge}>
+                    <Text style={styles.grantedBadgeText}>Otorgada</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        )}
+
+        {/* Available class skills */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Habilidades de Clase Disponibles</Text>
+          {availableClassSkills.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="information-circle" size={24} color="#666699" />
+              <Text style={styles.emptyText}>
+                No hay habilidades disponibles para elegir. Esto puede ocurrir si todas ya fueron otorgadas por raza y trasfondo.
+              </Text>
+            </View>
+          ) : (
+            availableClassSkills.map((sk) => {
+              const def = SKILLS[sk];
+              const isSelected = selectedSkills.includes(sk);
+              const isDisabled = !isSelected && selectedSkills.length >= requiredCount;
+
+              return (
+                <TouchableOpacity
+                  key={sk}
+                  style={[
+                    styles.skillCard,
+                    isSelected && styles.skillCardSelected,
+                    isDisabled && styles.skillCardDisabled,
+                  ]}
+                  onPress={() => handleToggleSkill(sk)}
+                  disabled={isDisabled && !isSelected}
+                >
+                  <View style={styles.skillCardRow}>
+                    <View
+                      style={[
+                        styles.checkbox,
+                        isSelected && styles.checkboxSelected,
+                      ]}
+                    >
+                      {isSelected && (
+                        <Ionicons name="checkmark" size={16} color="white" />
+                      )}
+                    </View>
+                    <View style={styles.skillInfo}>
+                      <Text
+                        style={[
+                          styles.skillName,
+                          isSelected && styles.skillNameSelected,
+                        ]}
+                      >
+                        {def.nombre}
+                      </Text>
+                      <Text style={styles.skillAbility}>
+                        {ABILITY_NAMES[def.habilidad]}
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </View>
+
+        {/* All skills reference (collapsed) */}
+        <View style={styles.section}>
+          <Text style={styles.refTitle}>Referencia: Todas las Habilidades</Text>
+          {Object.entries(skillsByAbility)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([abilityName, skills]) => (
+              <View key={abilityName} style={styles.refGroup}>
+                <Text style={styles.refAbility}>{abilityName}</Text>
+                <View style={styles.refSkillRow}>
+                  {skills.map(({ key, def }) => {
+                    const isGranted = grantedSkills.includes(key);
+                    const isChosen = selectedSkills.includes(key);
+                    return (
+                      <View
+                        key={key}
+                        style={[
+                          styles.refBadge,
+                          isGranted && styles.refBadgeGranted,
+                          isChosen && styles.refBadgeChosen,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.refBadgeText,
+                            (isGranted || isChosen) && styles.refBadgeTextActive,
+                          ]}
+                        >
+                          {def.nombre}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            ))}
+        </View>
+      </ScrollView>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.nextButton, !isValid && styles.nextButtonDisabled]}
+          onPress={handleNext}
+          disabled={!isValid}
+        >
+          <Text style={styles.nextButtonText}>Siguiente: Hechizos</Text>
+          <Ionicons name="arrow-forward" size={20} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#1a1a2e",
+  },
+  scroll: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 64,
+    paddingBottom: 16,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  backButton: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    backgroundColor: "#1e1e38",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  stepText: {
+    color: "#8c8cb3",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  progressBar: {
+    height: 6,
+    backgroundColor: "#1e1e38",
+    borderRadius: 3,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#c62828",
+    borderRadius: 3,
+  },
+  titleSection: {
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  iconCircle: {
+    height: 80,
+    width: 80,
+    borderRadius: 40,
+    backgroundColor: "rgba(198,40,40,0.15)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  title: {
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: "#8c8cb3",
+    fontSize: 15,
+    textAlign: "center",
+    lineHeight: 22,
+    paddingHorizontal: 16,
+  },
+  counterRow: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  counterBadge: {
+    backgroundColor: "#23233d",
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: "#3a3a5c",
+  },
+  counterText: {
+    color: "#fbbf24",
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  counterTextValid: {
+    color: "#22c55e",
+  },
+  section: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    color: "#d9d9e6",
+    fontSize: 13,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 1.2,
+    marginBottom: 12,
+  },
+  grantedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1e2e1e",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 6,
+    borderWidth: 1,
+    borderColor: "rgba(34,197,94,0.3)",
+  },
+  grantedIcon: {
+    marginRight: 12,
+  },
+  grantedName: {
+    color: "#22c55e",
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  grantedBadge: {
+    backgroundColor: "rgba(34,197,94,0.15)",
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  grantedBadgeText: {
+    color: "#22c55e",
+    fontSize: 11,
+    fontWeight: "700",
+    textTransform: "uppercase",
+  },
+  emptyState: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#23233d",
+    borderRadius: 10,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "#3a3a5c",
+  },
+  emptyText: {
+    color: "#8c8cb3",
+    fontSize: 14,
+    lineHeight: 20,
+    marginLeft: 10,
+    flex: 1,
+  },
+  skillCard: {
+    backgroundColor: "#23233d",
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 6,
+    borderWidth: 1,
+    borderColor: "#3a3a5c",
+  },
+  skillCardSelected: {
+    borderColor: "#c62828",
+    backgroundColor: "#2a1a2e",
+  },
+  skillCardDisabled: {
+    opacity: 0.4,
+  },
+  skillCardRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  checkbox: {
+    height: 28,
+    width: 28,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "#666699",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 14,
+  },
+  checkboxSelected: {
+    borderColor: "#c62828",
+    backgroundColor: "#c62828",
+  },
+  skillInfo: {
+    flex: 1,
+  },
+  skillName: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  skillNameSelected: {
+    color: "#ffffff",
+  },
+  skillAbility: {
+    color: "#8c8cb3",
+    fontSize: 13,
+  },
+  refTitle: {
+    color: "#666699",
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 10,
+  },
+  refGroup: {
+    marginBottom: 10,
+  },
+  refAbility: {
+    color: "#fbbf24",
+    fontSize: 12,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  refSkillRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
+  },
+  refBadge: {
+    backgroundColor: "#1e1e38",
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: "#3a3a5c",
+  },
+  refBadgeGranted: {
+    borderColor: "rgba(34,197,94,0.4)",
+    backgroundColor: "rgba(34,197,94,0.1)",
+  },
+  refBadgeChosen: {
+    borderColor: "rgba(198,40,40,0.5)",
+    backgroundColor: "rgba(198,40,40,0.15)",
+  },
+  refBadgeText: {
+    color: "#666699",
+    fontSize: 12,
+  },
+  refBadgeTextActive: {
+    color: "#d9d9e6",
+    fontWeight: "600",
+  },
+  footer: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#3a3a5c",
+  },
+  nextButton: {
+    backgroundColor: "#c62828",
+    borderRadius: 12,
+    paddingVertical: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  nextButtonDisabled: {
+    backgroundColor: "#2d2d44",
+    opacity: 0.5,
+  },
+  nextButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginRight: 8,
+  },
+});

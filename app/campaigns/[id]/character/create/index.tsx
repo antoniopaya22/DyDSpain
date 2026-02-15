@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,24 +6,63 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
+import { ConfirmDialog } from "@/components/ui";
+import { useDialog } from "@/hooks/useDialog";
 
-const TOTAL_STEPS = 11;
 const CURRENT_STEP = 1;
 
 export default function CharacterNameStep() {
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
-  const [nombre, setNombre] = useState("");
+  const { draft, startCreation, loadDraft, saveDraft, setNombre, isStepValid } =
+    useCreationStore();
+
+  const [nombre, setNombreLocal] = useState("");
+  const [initialized, setInitialized] = useState(false);
+  const { dialogProps, showDestructive } = useDialog();
+
+  // Inicializar o cargar borrador al montar
+  useFocusEffect(
+    useCallback(() => {
+      const init = async () => {
+        if (!campaignId) return;
+
+        // Intentar cargar borrador existente
+        const loaded = await loadDraft(campaignId);
+        if (loaded) {
+          const currentDraft = useCreationStore.getState().draft;
+          if (currentDraft?.nombre) {
+            setNombreLocal(currentDraft.nombre);
+          }
+        } else {
+          // Crear nuevo borrador
+          await startCreation(campaignId);
+        }
+        setInitialized(true);
+      };
+      init();
+    }, [campaignId]),
+  );
+
+  // Sincronizar el nombre local con el store
+  useEffect(() => {
+    if (initialized && nombre !== draft?.nombre) {
+      setNombre(nombre);
+    }
+  }, [nombre, initialized]);
 
   const isValid = nombre.trim().length >= 1;
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!isValid) return;
+    // Guardar borrador antes de navegar
+    setNombre(nombre.trim());
+    await saveDraft();
     router.push({
       pathname: "/campaigns/[id]/character/create/race",
       params: { id: campaignId },
@@ -32,17 +71,17 @@ export default function CharacterNameStep() {
 
   const handleCancel = () => {
     if (nombre.trim().length > 0) {
-      Alert.alert(
+      showDestructive(
         "Cancelar creación",
-        "¿Estás seguro de que quieres cancelar? Se perderá el progreso actual.",
-        [
-          { text: "Seguir editando", style: "cancel" },
-          {
-            text: "Cancelar",
-            style: "destructive",
-            onPress: () => router.back(),
-          },
-        ]
+        "¿Estás seguro de que quieres cancelar? El borrador se guardará automáticamente y podrás continuar más tarde.",
+        async () => {
+          if (nombre.trim().length > 0) {
+            setNombre(nombre.trim());
+            await saveDraft();
+          }
+          router.back();
+        },
+        { confirmText: "Salir", cancelText: "Seguir editando" },
       );
     } else {
       router.back();
@@ -107,7 +146,7 @@ export default function CharacterNameStep() {
               placeholder="Nombre del personaje"
               placeholderTextColor="#666699"
               value={nombre}
-              onChangeText={setNombre}
+              onChangeText={setNombreLocal}
               maxLength={50}
               autoFocus
               autoCorrect={false}
@@ -138,7 +177,7 @@ export default function CharacterNameStep() {
                 <TouchableOpacity
                   key={suggestion}
                   className="bg-surface-card border border-surface-border rounded-full px-4 py-2 m-1 active:bg-surface-light"
-                  onPress={() => setNombre(suggestion)}
+                  onPress={() => setNombreLocal(suggestion)}
                 >
                   <Text className="text-dark-200 text-sm">{suggestion}</Text>
                 </TouchableOpacity>
@@ -165,6 +204,8 @@ export default function CharacterNameStep() {
           </TouchableOpacity>
         </View>
       </View>
+      {/* Custom dialog (replaces Alert.alert) */}
+      <ConfirmDialog {...dialogProps} />
     </KeyboardAvoidingView>
   );
 }

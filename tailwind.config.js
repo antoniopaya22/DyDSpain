@@ -7,6 +7,12 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
+      // ─── Animation Durations ─────────────────────────────────
+      transitionDuration: {
+        250: "250ms",
+        350: "350ms",
+        450: "450ms",
+      },
       colors: {
         // Colores principales de la app
         primary: {
@@ -104,11 +110,54 @@ module.exports = {
         sans: ["System"],
       },
       borderRadius: {
-        card: "12px",
+        card: "14px",
+        "card-lg": "18px",
+        "card-sm": "10px",
       },
       spacing: {
+        13: "3.25rem",
+        15: "3.75rem",
         18: "4.5rem",
+        22: "5.5rem",
+        26: "6.5rem",
+        30: "7.5rem",
         88: "22rem",
+        100: "25rem",
+        120: "30rem",
+      },
+      // ─── Opacity Tokens ────────────────────────────────────
+      opacity: {
+        3: "0.03",
+        4: "0.04",
+        6: "0.06",
+        8: "0.08",
+        12: "0.12",
+        15: "0.15",
+        85: "0.85",
+      },
+      // ─── Font Size Extensions ──────────────────────────────
+      fontSize: {
+        "2xs": ["10px", { lineHeight: "14px" }],
+        "3xs": ["8px", { lineHeight: "12px" }],
+      },
+      // ─── Letter Spacing ────────────────────────────────────
+      letterSpacing: {
+        "extra-wide": "0.15em",
+        "ultra-wide": "0.25em",
+      },
+      // ─── Z-index ───────────────────────────────────────────
+      zIndex: {
+        60: "60",
+        70: "70",
+        80: "80",
+        90: "90",
+        100: "100",
+      },
+      // ─── Min/Max Heights ───────────────────────────────────
+      minHeight: {
+        14: "3.5rem",
+        16: "4rem",
+        20: "5rem",
       },
     },
   },

@@ -4,7 +4,7 @@
  */
 
 import { create } from "zustand";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "expo-crypto";
 import type { Campaign, CreateCampaignInput, UpdateCampaignInput } from "@/types/campaign";
 import { STORAGE_KEYS, setItem, getItem, removeItem } from "@/utils/storage";
 
@@ -92,7 +92,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
   createCampaign: async (input: CreateCampaignInput) => {
     const now = new Date().toISOString();
     const newCampaign: Campaign = {
-      id: uuidv4(),
+      id: randomUUID(),
       nombre: input.nombre.trim(),
       descripcion: input.descripcion?.trim() || undefined,
       imagen: input.imagen || undefined,

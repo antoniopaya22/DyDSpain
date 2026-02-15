@@ -13,7 +13,7 @@ export default function CharacterLayout() {
       <Stack.Screen
         name="sheet"
         options={{
-          animation: "fade",
+          animation: "slide_from_bottom",
         }}
       />
     </Stack>

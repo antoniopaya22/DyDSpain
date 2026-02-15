@@ -10,15 +10,8 @@ export default function CampaignDetailLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="edit" />
       <Stack.Screen
         name="character"
-        options={{
-          animation: "slide_from_bottom",
-        }}
-      />
-      <Stack.Screen
-        name="master"
         options={{
           animation: "slide_from_bottom",
         }}

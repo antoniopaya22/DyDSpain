@@ -500,6 +500,8 @@ export interface CharacterCreationDraft {
   personality?: Personality;
   alineamiento?: Alignment;
   appearance?: Appearance;
+  /** Bonificadores de característica libres elegidos (ej: semielfo elige 2 × +1) */
+  freeAbilityBonuses?: AbilityKey[];
 
   /** Timestamp para recuperar borradores */
   lastSaved: string;

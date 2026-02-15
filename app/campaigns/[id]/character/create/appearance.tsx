@@ -1,0 +1,511 @@
+import { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  useCreationStore,
+  TOTAL_STEPS,
+} from "@/stores/creationStore";
+import type { Appearance } from "@/types/character";
+
+const CURRENT_STEP = 10;
+
+export default function AppearanceStep() {
+  const router = useRouter();
+  const { id: campaignId } = useLocalSearchParams<{ id: string }>();
+
+  const {
+    draft,
+    setAppearance,
+    saveDraft,
+    loadDraft,
+  } = useCreationStore();
+
+  const [age, setAge] = useState("");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [eyeColor, setEyeColor] = useState("");
+  const [hairColor, setHairColor] = useState("");
+  const [skinColor, setSkinColor] = useState("");
+  const [description, setDescription] = useState("");
+
+  useFocusEffect(
+    useCallback(() => {
+      const init = async () => {
+        if (!campaignId) return;
+        await loadDraft(campaignId);
+        const currentDraft = useCreationStore.getState().draft;
+        if (currentDraft?.appearance) {
+          const a = currentDraft.appearance;
+          setAge(a.age ?? "");
+          setHeight(a.height ?? "");
+          setWeight(a.weight ?? "");
+          setEyeColor(a.eyeColor ?? "");
+          setHairColor(a.hairColor ?? "");
+          setSkinColor(a.skinColor ?? "");
+          setDescription(a.description ?? "");
+        }
+      };
+      init();
+    }, [campaignId])
+  );
+
+  const buildAppearance = (): Appearance => ({
+    age: age.trim() || undefined,
+    height: height.trim() || undefined,
+    weight: weight.trim() || undefined,
+    eyeColor: eyeColor.trim() || undefined,
+    hairColor: hairColor.trim() || undefined,
+    skinColor: skinColor.trim() || undefined,
+    description: description.trim() || undefined,
+  });
+
+  const handleNext = async () => {
+    setAppearance(buildAppearance());
+    await saveDraft();
+    router.push({
+      pathname: "/campaigns/[id]/character/create/summary",
+      params: { id: campaignId },
+    });
+  };
+
+  const handleBack = () => {
+    setAppearance(buildAppearance());
+    router.back();
+  };
+
+  const progressPercent = (CURRENT_STEP / TOTAL_STEPS) * 100;
+
+  const QUICK_COLORS = [
+    { label: "Negro", value: "Negro" },
+    { label: "Castaño", value: "Castaño" },
+    { label: "Rubio", value: "Rubio" },
+    { label: "Pelirrojo", value: "Pelirrojo" },
+    { label: "Blanco", value: "Blanco" },
+    { label: "Gris", value: "Gris" },
+    { label: "Azul", value: "Azul" },
+    { label: "Verde", value: "Verde" },
+  ];
+
+  const QUICK_EYE_COLORS = [
+    { label: "Marrón", value: "Marrón" },
+    { label: "Azul", value: "Azul" },
+    { label: "Verde", value: "Verde" },
+    { label: "Gris", value: "Gris" },
+    { label: "Avellana", value: "Avellana" },
+    { label: "Negro", value: "Negro" },
+    { label: "Ámbar", value: "Ámbar" },
+    { label: "Rojo", value: "Rojo" },
+    { label: "Violeta", value: "Violeta" },
+  ];
+
+  return (
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerRow}>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <Ionicons name="arrow-back" size={22} color="white" />
+            </TouchableOpacity>
+            <Text style={styles.stepText}>
+              Paso {CURRENT_STEP} de {TOTAL_STEPS}
+            </Text>
+            <View style={{ height: 40, width: 40 }} />
+          </View>
+          <View style={styles.progressBar}>
+            <View
+              style={[styles.progressFill, { width: `${progressPercent}%` }]}
+            />
+          </View>
+        </View>
+
+        {/* Title */}
+        <View style={styles.titleSection}>
+          <View style={styles.iconCircle}>
+            <Ionicons name="body-outline" size={40} color="#c62828" />
+          </View>
+          <Text style={styles.title}>Apariencia</Text>
+          <Text style={styles.subtitle}>
+            Describe el aspecto físico de tu personaje. Todos los campos son
+            opcionales — puedes completarlos más adelante desde la hoja de
+            personaje.
+          </Text>
+        </View>
+
+        {/* Quick fields in a grid */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Datos Físicos</Text>
+
+          <View style={styles.fieldGrid}>
+            {/* Age */}
+            <View style={styles.fieldHalf}>
+              <Text style={styles.fieldLabel}>Edad</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ej: 25 años"
+                placeholderTextColor="#666699"
+                value={age}
+                onChangeText={setAge}
+                maxLength={30}
+              />
+            </View>
+
+            {/* Height */}
+            <View style={styles.fieldHalf}>
+              <Text style={styles.fieldLabel}>Altura</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ej: 1,75 m"
+                placeholderTextColor="#666699"
+                value={height}
+                onChangeText={setHeight}
+                maxLength={30}
+              />
+            </View>
+          </View>
+
+          <View style={styles.fieldGrid}>
+            {/* Weight */}
+            <View style={styles.fieldHalf}>
+              <Text style={styles.fieldLabel}>Peso</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ej: 70 kg"
+                placeholderTextColor="#666699"
+                value={weight}
+                onChangeText={setWeight}
+                maxLength={30}
+              />
+            </View>
+
+            {/* Skin Color */}
+            <View style={styles.fieldHalf}>
+              <Text style={styles.fieldLabel}>Piel</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ej: Clara"
+                placeholderTextColor="#666699"
+                value={skinColor}
+                onChangeText={setSkinColor}
+                maxLength={40}
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* Hair Color */}
+        <View style={styles.section}>
+          <Text style={styles.fieldLabel}>Color de Pelo</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ej: Castaño oscuro"
+            placeholderTextColor="#666699"
+            value={hairColor}
+            onChangeText={setHairColor}
+            maxLength={40}
+          />
+          <View style={styles.quickRow}>
+            {QUICK_COLORS.map((c) => (
+              <TouchableOpacity
+                key={c.value}
+                style={[
+                  styles.quickChip,
+                  hairColor === c.value && styles.quickChipSelected,
+                ]}
+                onPress={() =>
+                  setHairColor((prev) => (prev === c.value ? "" : c.value))
+                }
+              >
+                <Text
+                  style={[
+                    styles.quickChipText,
+                    hairColor === c.value && styles.quickChipTextSelected,
+                  ]}
+                >
+                  {c.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Eye Color */}
+        <View style={styles.section}>
+          <Text style={styles.fieldLabel}>Color de Ojos</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ej: Verde esmeralda"
+            placeholderTextColor="#666699"
+            value={eyeColor}
+            onChangeText={setEyeColor}
+            maxLength={40}
+          />
+          <View style={styles.quickRow}>
+            {QUICK_EYE_COLORS.map((c) => (
+              <TouchableOpacity
+                key={c.value}
+                style={[
+                  styles.quickChip,
+                  eyeColor === c.value && styles.quickChipSelected,
+                ]}
+                onPress={() =>
+                  setEyeColor((prev) => (prev === c.value ? "" : c.value))
+                }
+              >
+                <Text
+                  style={[
+                    styles.quickChipText,
+                    eyeColor === c.value && styles.quickChipTextSelected,
+                  ]}
+                >
+                  {c.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Description */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Descripción General</Text>
+          <Text style={styles.fieldHint}>
+            Describe libremente el aspecto de tu personaje: rasgos distintivos,
+            cicatrices, tatuajes, vestimenta habitual, etc.
+          </Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            placeholder="Ej: Un elfo de porte elegante, con una cicatriz que cruza su mejilla izquierda. Viste una capa gris desgastada por los viajes..."
+            placeholderTextColor="#666699"
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            numberOfLines={5}
+            maxLength={1000}
+            textAlignVertical="top"
+          />
+          <Text style={styles.charCount}>{description.length}/1000</Text>
+        </View>
+
+        {/* Skip hint */}
+        <View style={styles.section}>
+          <View style={styles.hintBox}>
+            <Ionicons name="information-circle" size={20} color="#fbbf24" />
+            <Text style={styles.hintText}>
+              Este paso es completamente opcional. Si prefieres, puedes pulsar
+              "Siguiente" directamente y rellenar estos datos más adelante.
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+          <Text style={styles.nextButtonText}>Siguiente: Resumen Final</Text>
+          <Ionicons name="arrow-forward" size={20} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#1a1a2e",
+  },
+  scroll: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 64,
+    paddingBottom: 16,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  backButton: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    backgroundColor: "#1e1e38",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  stepText: {
+    color: "#8c8cb3",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  progressBar: {
+    height: 6,
+    backgroundColor: "#1e1e38",
+    borderRadius: 3,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#c62828",
+    borderRadius: 3,
+  },
+  titleSection: {
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  iconCircle: {
+    height: 80,
+    width: 80,
+    borderRadius: 40,
+    backgroundColor: "rgba(198,40,40,0.15)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  title: {
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: "#8c8cb3",
+    fontSize: 15,
+    textAlign: "center",
+    lineHeight: 22,
+    paddingHorizontal: 16,
+  },
+  section: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    color: "#d9d9e6",
+    fontSize: 13,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 1.2,
+    marginBottom: 12,
+  },
+  fieldLabel: {
+    color: "#d9d9e6",
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  fieldHint: {
+    color: "#8c8cb3",
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 10,
+  },
+  fieldGrid: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 12,
+  },
+  fieldHalf: {
+    flex: 1,
+  },
+  input: {
+    backgroundColor: "#1e1e38",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#3a3a5c",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    color: "#ffffff",
+    fontSize: 15,
+  },
+  textArea: {
+    minHeight: 130,
+    lineHeight: 22,
+    textAlignVertical: "top",
+  },
+  charCount: {
+    color: "#666699",
+    fontSize: 12,
+    textAlign: "right",
+    marginTop: 4,
+  },
+  quickRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    marginTop: 10,
+  },
+  quickChip: {
+    backgroundColor: "#23233d",
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderWidth: 1,
+    borderColor: "#3a3a5c",
+  },
+  quickChipSelected: {
+    borderColor: "#c62828",
+    backgroundColor: "rgba(198,40,40,0.2)",
+  },
+  quickChipText: {
+    color: "#8c8cb3",
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  quickChipTextSelected: {
+    color: "#ffffff",
+  },
+  hintBox: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    backgroundColor: "rgba(251,191,36,0.1)",
+    borderRadius: 10,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "rgba(251,191,36,0.2)",
+  },
+  hintText: {
+    color: "#d9d9e6",
+    fontSize: 13,
+    lineHeight: 18,
+    marginLeft: 10,
+    flex: 1,
+  },
+  footer: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#3a3a5c",
+  },
+  nextButton: {
+    backgroundColor: "#c62828",
+    borderRadius: 12,
+    paddingVertical: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  nextButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginRight: 8,
+  },
+});
