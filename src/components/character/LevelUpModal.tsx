@@ -48,7 +48,16 @@ import {
   getSpellById,
   type SrdSpell,
 } from "@/data/srd/spells";
-import { SPELL_LEVEL_NAMES, type SpellLevel } from "@/types/spell";
+import { getSpellDescription } from "@/data/srd/spellDescriptions";
+import {
+  SPELL_LEVEL_NAMES,
+  type SpellLevel,
+  type MetamagicOption,
+  METAMAGIC_NAMES,
+  METAMAGIC_DESCRIPTIONS,
+  METAMAGIC_COSTS,
+  ALL_METAMAGIC_OPTIONS,
+} from "@/types/spell";
 import {
   ABILITY_NAMES,
   ABILITY_ABBR,
@@ -79,7 +88,7 @@ const ABILITY_COLORS: Record<AbilityKey, string> = {
 
 // ─── Step identifiers ────────────────────────────────────────────────
 
-type StepId = "summary" | "hp" | "asi" | "spells" | "subclass" | "confirm";
+type StepId = "summary" | "hp" | "asi" | "spells" | "subclass" | "metamagic" | "confirm";
 
 interface StepDef {
   id: StepId;
@@ -138,6 +147,12 @@ export default function LevelUpModal({
   const [swapNewSpell, setSwapNewSpell] = useState("");
   const [wantsToSwap, setWantsToSwap] = useState(false);
   const [spellSearch, setSpellSearch] = useState("");
+
+  // ── Metamagic state ──
+  const [selectedMetamagic, setSelectedMetamagic] = useState<string[]>([]);
+
+  // ── Spell description expand state ──
+  const [expandedSpellIds, setExpandedSpellIds] = useState<Set<string>>(new Set());
 
   // ── Animations ──
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -201,6 +216,14 @@ export default function LevelUpModal({
         });
       }
 
+      if (s.newMetamagicChoices > 0) {
+        buildSteps.push({
+          id: "metamagic",
+          title: "Metamagia",
+          icon: "flash-outline",
+        });
+      }
+
       buildSteps.push({
         id: "confirm",
         title: "Confirmar",
@@ -228,6 +251,8 @@ export default function LevelUpModal({
       setSwapNewSpell("");
       setWantsToSwap(false);
       setSpellSearch("");
+      setSelectedMetamagic([]);
+      setExpandedSpellIds(new Set());
     }
   }, [visible, character]);
 
@@ -298,6 +323,8 @@ export default function LevelUpModal({
       }
       case "subclass":
         return subclassName.trim().length > 0;
+      case "metamagic":
+        return summary ? selectedMetamagic.length === summary.newMetamagicChoices : false;
       case "confirm":
         return true;
       default:
@@ -368,6 +395,8 @@ export default function LevelUpModal({
           wantsToSwap && swapOldSpell && swapNewSpell
             ? [swapOldSpell, swapNewSpell]
             : undefined,
+        metamagicChosen:
+          selectedMetamagic.length > 0 ? selectedMetamagic : undefined,
       };
 
       await levelUp(options);
@@ -1354,70 +1383,150 @@ export default function LevelUpModal({
     ) => {
       const bgColor = selected ? "rgba(59, 130, 246, 0.12)" : colors.bgCard;
       const cardBorderColor = selected ? colors.accentBlue : colors.borderSubtle;
+      const isExpanded = expandedSpellIds.has(spell.id);
+      const desc = getSpellDescription(spell.id);
+
+      const toggleExpand = () => {
+        setExpandedSpellIds((prev) => {
+          const next = new Set(prev);
+          if (next.has(spell.id)) next.delete(spell.id);
+          else next.add(spell.id);
+          return next;
+        });
+      };
 
       return (
-        <TouchableOpacity
+        <View
           key={spell.id}
-          onPress={disabled && !selected ? undefined : onPress}
-          activeOpacity={0.7}
           style={{
             backgroundColor: bgColor,
             borderRadius: 12,
             borderWidth: selected ? 2 : 1,
             borderColor: cardBorderColor,
-            padding: 12,
             marginBottom: 8,
             opacity: disabled && !selected ? 0.45 : 1,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 10,
           }}
         >
-          {/* Check indicator */}
-          <View
+          <TouchableOpacity
+            onPress={disabled && !selected ? undefined : onPress}
+            activeOpacity={0.7}
             style={{
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-              borderWidth: 2,
-              borderColor: selected
-                ? colors.accentBlue
-                : colors.textMuted + "44",
-              backgroundColor: selected ? colors.accentBlue : "transparent",
+              padding: 12,
+              flexDirection: "row",
               alignItems: "center",
-              justifyContent: "center",
+              gap: 10,
             }}
           >
-            {selected && (
-              <Ionicons name="checkmark" size={14} color="#fff" />
+            {/* Check indicator */}
+            <View
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                borderWidth: 2,
+                borderColor: selected
+                  ? colors.accentBlue
+                  : colors.textMuted + "44",
+                backgroundColor: selected ? colors.accentBlue : "transparent",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {selected && (
+                <Ionicons name="checkmark" size={14} color="#fff" />
+              )}
+            </View>
+            {/* Spell info */}
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  color: selected ? colors.accentBlue : colors.textPrimary,
+                  fontSize: 14,
+                  fontWeight: "700",
+                }}
+              >
+                {spell.nombre}
+              </Text>
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  fontSize: 12,
+                  fontWeight: "500",
+                  marginTop: 2,
+                }}
+              >
+                {spell.escuela}
+                {spell.nivel > 0
+                  ? ` — ${SPELL_LEVEL_NAMES[spell.nivel as SpellLevel]}`
+                  : " — Truco"}
+                {desc ? `  ·  ⏱ ${desc.tiempo}` : ""}
+              </Text>
+            </View>
+            {/* Expand/collapse */}
+            {desc && (
+              <TouchableOpacity
+                onPress={toggleExpand}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                style={{ padding: 4 }}
+              >
+                <Ionicons
+                  name={isExpanded ? "chevron-up" : "information-circle-outline"}
+                  size={18}
+                  color={colors.textMuted}
+                />
+              </TouchableOpacity>
             )}
-          </View>
-          {/* Spell info */}
-          <View style={{ flex: 1 }}>
-            <Text
+          </TouchableOpacity>
+
+          {/* Expanded description */}
+          {isExpanded && desc && (
+            <View
               style={{
-                color: selected ? colors.accentBlue : colors.textPrimary,
-                fontSize: 14,
-                fontWeight: "700",
+                paddingHorizontal: 12,
+                paddingBottom: 12,
+                paddingTop: 0,
+                borderTopWidth: 1,
+                borderTopColor: colors.borderSubtle,
+                marginHorizontal: 8,
               }}
             >
-              {spell.nombre}
-            </Text>
-            <Text
-              style={{
-                color: colors.textMuted,
-                fontSize: 12,
-                fontWeight: "500",
-                marginTop: 2,
-              }}
-            >
-              {spell.escuela}
-              {spell.nivel > 0
-                ? ` — ${SPELL_LEVEL_NAMES[spell.nivel as SpellLevel]}`
-                : " — Truco"}
-            </Text>
-          </View>
-        </TouchableOpacity>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: 6,
+                  marginTop: 8,
+                  marginBottom: 6,
+                }}
+              >
+                {desc.alcance ? (
+                  <Text style={{ color: colors.textMuted, fontSize: 11 }}>
+                    📏 {desc.alcance}
+                  </Text>
+                ) : null}
+                {desc.duracion ? (
+                  <Text style={{ color: colors.textMuted, fontSize: 11 }}>
+                    · ⏳ {desc.duracion}
+                  </Text>
+                ) : null}
+                {desc.componentes ? (
+                  <Text style={{ color: colors.textMuted, fontSize: 11 }}>
+                    · 🧩 {desc.componentes}
+                  </Text>
+                ) : null}
+              </View>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontSize: 12,
+                  lineHeight: 18,
+                }}
+              >
+                {desc.descripcion}
+              </Text>
+            </View>
+          )}
+        </View>
       );
     };
 
@@ -2318,6 +2427,238 @@ export default function LevelUpModal({
     );
   };
 
+  const renderMetamagicStep = () => {
+    const magicState = getMagicState();
+    const alreadyChosen = magicState?.metamagicChosen ?? [];
+    const available = ALL_METAMAGIC_OPTIONS.filter(
+      (id) => !alreadyChosen.includes(id),
+    );
+    const needed = summary?.newMetamagicChoices ?? 0;
+
+    const toggleOption = (id: string) => {
+      setSelectedMetamagic((prev) => {
+        if (prev.includes(id)) return prev.filter((x) => x !== id);
+        if (prev.length >= needed) return prev;
+        return [...prev, id];
+      });
+    };
+
+    return (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        {/* Header */}
+        <View style={{ alignItems: "center", marginBottom: 20 }}>
+          <View
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 32,
+              backgroundColor: "rgba(168, 85, 247, 0.1)",
+              borderWidth: 1,
+              borderColor: "rgba(168, 85, 247, 0.2)",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 12,
+            }}
+          >
+            <Ionicons name="flash" size={28} color={colors.accentPurple} />
+          </View>
+          <Text
+            style={{
+              color: colors.textPrimary,
+              fontSize: 18,
+              fontWeight: "700",
+              textAlign: "center",
+            }}
+          >
+            Elige tu Metamagia
+          </Text>
+          <Text
+            style={{
+              color: colors.textSecondary,
+              fontSize: 14,
+              fontWeight: "500",
+              textAlign: "center",
+              marginTop: 6,
+              lineHeight: 20,
+              paddingHorizontal: 20,
+            }}
+          >
+            Selecciona {needed} {needed === 1 ? "opción" : "opciones"} de
+            Metamagia. Gastarás Puntos de Hechicería (PH) al usarlas.
+          </Text>
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontSize: 13,
+              fontWeight: "600",
+              textAlign: "center",
+              marginTop: 8,
+            }}
+          >
+            {selectedMetamagic.length} / {needed} seleccionadas
+          </Text>
+        </View>
+
+        {/* Already chosen info */}
+        {alreadyChosen.length > 0 && (
+          <View
+            style={{
+              backgroundColor: colors.borderSubtle,
+              borderRadius: 12,
+              padding: 12,
+              marginBottom: 12,
+              borderWidth: 1,
+              borderColor: colors.borderSeparator,
+            }}
+          >
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontSize: 12,
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+                marginBottom: 4,
+              }}
+            >
+              Ya posees
+            </Text>
+            <Text
+              style={{
+                color: colors.textSecondary,
+                fontSize: 13,
+                fontWeight: "500",
+              }}
+            >
+              {alreadyChosen
+                .map((id) => METAMAGIC_NAMES[id as MetamagicOption] ?? id)
+                .join(", ")}
+            </Text>
+          </View>
+        )}
+
+        {/* Metamagic option cards */}
+        <View style={{ gap: 8 }}>
+          {available.map((id) => {
+            const isSelected = selectedMetamagic.includes(id);
+            const isFull = selectedMetamagic.length >= needed && !isSelected;
+
+            return (
+              <TouchableOpacity
+                key={id}
+                onPress={() => toggleOption(id)}
+                activeOpacity={0.7}
+                disabled={isFull}
+                style={{
+                  backgroundColor: isSelected
+                    ? "rgba(168, 85, 247, 0.1)"
+                    : isFull
+                      ? colors.borderSubtle + "88"
+                      : colors.borderSubtle,
+                  borderRadius: 14,
+                  borderWidth: isSelected ? 2 : 1,
+                  borderColor: isSelected
+                    ? "rgba(168, 85, 247, 0.5)"
+                    : colors.borderSeparator,
+                  padding: 14,
+                  opacity: isFull ? 0.5 : 1,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 12,
+                  }}
+                >
+                  {/* Checkbox indicator */}
+                  <View
+                    style={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: 6,
+                      borderWidth: 2,
+                      borderColor: isSelected
+                        ? colors.accentPurple
+                        : colors.textMuted + "55",
+                      backgroundColor: isSelected
+                        ? colors.accentPurple
+                        : "transparent",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {isSelected && (
+                      <Ionicons name="checkmark" size={14} color="#fff" />
+                    )}
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: isSelected
+                            ? colors.accentPurple
+                            : colors.textPrimary,
+                          fontSize: 15,
+                          fontWeight: "700",
+                        }}
+                      >
+                        {METAMAGIC_NAMES[id]}
+                      </Text>
+                      <View
+                        style={{
+                          backgroundColor: isSelected
+                            ? "rgba(168, 85, 247, 0.15)"
+                            : colors.borderSeparator,
+                          paddingHorizontal: 8,
+                          paddingVertical: 2,
+                          borderRadius: 8,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: isSelected
+                              ? colors.accentPurple
+                              : colors.textMuted,
+                            fontSize: 11,
+                            fontWeight: "700",
+                          }}
+                        >
+                          {METAMAGIC_COSTS[id]} PH
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+                <Text
+                  style={{
+                    color: colors.textMuted,
+                    fontSize: 12,
+                    fontWeight: "500",
+                    marginTop: 6,
+                    marginLeft: 34,
+                    lineHeight: 17,
+                  }}
+                >
+                  {METAMAGIC_DESCRIPTIONS[id]}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </ScrollView>
+    );
+  };
+
   const renderConfirmStep = () => {
     // Compute all changes for review
     const changes: Array<{
@@ -2434,6 +2775,18 @@ export default function LevelUpModal({
       });
     }
 
+    // Metamagic
+    if (selectedMetamagic.length > 0) {
+      changes.push({
+        icon: "flash",
+        color: colors.accentPurple,
+        label: "Metamagia",
+        detail: selectedMetamagic
+          .map((id) => METAMAGIC_NAMES[id as MetamagicOption] ?? id)
+          .join(", "),
+      });
+    }
+
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -2545,6 +2898,8 @@ export default function LevelUpModal({
         return renderSpellsStep();
       case "subclass":
         return renderSubclassStep();
+      case "metamagic":
+        return renderMetamagicStep();
       case "confirm":
         return renderConfirmStep();
       default:

@@ -104,6 +104,8 @@ export {
   CLASS_SPELL_PREPARATION,
   METAMAGIC_NAMES,
   METAMAGIC_COSTS,
+  METAMAGIC_DESCRIPTIONS,
+  ALL_METAMAGIC_OPTIONS,
   calcPreparedSpells,
   calcSpellSaveDC,
   calcSpellAttackBonus,

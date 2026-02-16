@@ -188,6 +188,8 @@ interface InternalMagicState {
   concentration: null;
   favoriteSpellIds: string[];
   sorceryPoints?: InternalSorceryPoints;
+  /** Opciones de Metamagia elegidas (solo hechicero) */
+  metamagicChosen?: string[];
 }
 import { STORAGE_KEYS, setItem, getItem, removeItem } from "@/utils/storage";
 
@@ -230,6 +232,8 @@ export interface LevelUpOptions {
   spellSwapped?: [string, string];
   /** Hechizos añadidos al libro de conjuros (solo mago) */
   spellbookAdded?: string[];
+  /** Opciones de Metamagia elegidas (solo hechicero) */
+  metamagicChosen?: string[];
 }
 
 interface CharacterActions {
@@ -394,6 +398,8 @@ function createDefaultMagicState(character: Character): InternalMagicState {
             current: Math.max(0, character.nivel),
           }
         : undefined,
+    metamagicChosen:
+      character.clase === "hechicero" ? [] : undefined,
   };
 }
 
@@ -718,6 +724,10 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       newMagicState.preparedSpellIds = [...magicState.preparedSpellIds];
       newMagicState.spellbookIds = [...magicState.spellbookIds];
       newMagicState.favoriteSpellIds = [...magicState.favoriteSpellIds];
+      // Preservar metamagia existente y añadir nuevas opciones
+      const existingMetamagic = magicState.metamagicChosen ?? [];
+      const newMetamagic = options.metamagicChosen ?? [];
+      newMagicState.metamagicChosen = [...existingMetamagic, ...newMetamagic];
 
       // ── Aplicar hechizos aprendidos al subir de nivel ──
       // Trucos y hechizos conocidos van a knownSpellIds

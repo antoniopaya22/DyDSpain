@@ -23,6 +23,10 @@ import {
   SPELLCASTING_ABILITY,
   CLASS_CASTER_TYPE,
   CLASS_SPELL_PREPARATION,
+  type MetamagicOption,
+  METAMAGIC_NAMES,
+  METAMAGIC_DESCRIPTIONS,
+  METAMAGIC_COSTS,
 } from "@/types/spell";
 import { formatModifier, ABILITY_NAMES } from "@/types/character";
 import type { ClassId, Trait } from "@/types/character";
@@ -37,6 +41,7 @@ import {
 } from "@/data/srd/leveling";
 import { getClassData } from "@/data/srd/classes";
 import { getSpellById } from "@/data/srd/spells";
+import { getSpellDescription } from "@/data/srd/spellDescriptions";
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -1695,6 +1700,98 @@ export default function AbilitiesTab() {
     );
   };
 
+  const renderMetamagicSection = () => {
+    if (character.clase !== "hechicero") return null;
+    const chosen = magicState?.metamagicChosen ?? [];
+    if (chosen.length === 0) return null;
+
+    return (
+      <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+        <View className="flex-row items-center mb-3">
+          <Ionicons name="flash" size={20} color={colors.accentPurple} />
+          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
+            Metamagia
+          </Text>
+        </View>
+
+        <View style={{ gap: 8 }}>
+          {chosen.map((id) => {
+            const name = METAMAGIC_NAMES[id as MetamagicOption] ?? id;
+            const cost = METAMAGIC_COSTS[id as MetamagicOption];
+            const desc = METAMAGIC_DESCRIPTIONS[id as MetamagicOption];
+
+            return (
+              <View
+                key={id}
+                style={{
+                  backgroundColor: isDark
+                    ? "rgba(168, 85, 247, 0.08)"
+                    : "rgba(168, 85, 247, 0.05)",
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: isDark
+                    ? "rgba(168, 85, 247, 0.2)"
+                    : "rgba(168, 85, 247, 0.15)",
+                  padding: 12,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: 4,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: colors.accentPurple,
+                      fontSize: 14,
+                      fontWeight: "700",
+                    }}
+                  >
+                    {name}
+                  </Text>
+                  {cost !== undefined && (
+                    <View
+                      style={{
+                        backgroundColor: "rgba(168, 85, 247, 0.15)",
+                        paddingHorizontal: 8,
+                        paddingVertical: 2,
+                        borderRadius: 8,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: colors.accentPurple,
+                          fontSize: 11,
+                          fontWeight: "700",
+                        }}
+                      >
+                        {cost} PH
+                      </Text>
+                    </View>
+                  )}
+                </View>
+                {desc && (
+                  <Text
+                    style={{
+                      color: colors.textMuted,
+                      fontSize: 12,
+                      lineHeight: 17,
+                    }}
+                  >
+                    {desc}
+                  </Text>
+                )}
+              </View>
+            );
+          })}
+        </View>
+      </View>
+    );
+  };
+
   const renderConcentration = () => {
     const { concentration } = character;
     if (!concentration) return null;
@@ -1904,6 +2001,7 @@ export default function AbilitiesTab() {
         {renderConcentration()}
         {renderSpellSlots()}
         {renderSorceryPoints()}
+        {renderMetamagicSection()}
         {renderCantrips()}
         {renderSpellList()}
         {renderEmptySpells()}
@@ -2162,30 +2260,67 @@ function SpellCard({
         <View className="mt-2 pt-2 border-t border-dark-100 dark:border-surface-border/50">
           {(() => {
             const srdSpell = getSpellById(spellId);
-            if (srdSpell) {
-              return (
-                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                  <Text className="text-dark-500 dark:text-dark-300 text-xs">
-                    {srdSpell.escuela}
-                  </Text>
-                  {!isCantrip && (
-                    <Text className="text-dark-400 text-xs">
-                      · Nivel {srdSpell.nivel}
-                    </Text>
-                  )}
-                </View>
-              );
-            }
+            const desc = getSpellDescription(spellId);
             return (
-              <Text className="text-dark-500 dark:text-dark-300 text-xs leading-5">
-                ID: {spellId}
-              </Text>
+              <View>
+                {srdSpell && (
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: desc ? 8 : 0 }}>
+                    <Text className="text-dark-500 dark:text-dark-300 text-xs">
+                      {srdSpell.escuela}
+                    </Text>
+                    {!isCantrip && (
+                      <Text className="text-dark-400 text-xs">
+                        · Nivel {srdSpell.nivel}
+                      </Text>
+                    )}
+                  </View>
+                )}
+                {desc && (
+                  <View>
+                    {/* Casting properties */}
+                    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, marginBottom: 6 }}>
+                      {desc.tiempo ? (
+                        <Text className="text-dark-400 dark:text-dark-500 text-[10px]">
+                          ⏱ {desc.tiempo}
+                        </Text>
+                      ) : null}
+                      {desc.alcance ? (
+                        <Text className="text-dark-400 dark:text-dark-500 text-[10px]">
+                          · 📏 {desc.alcance}
+                        </Text>
+                      ) : null}
+                      {desc.duracion ? (
+                        <Text className="text-dark-400 dark:text-dark-500 text-[10px]">
+                          · ⏳ {desc.duracion}
+                        </Text>
+                      ) : null}
+                    </View>
+                    {desc.componentes ? (
+                      <Text className="text-dark-400 dark:text-dark-500 text-[10px] mb-1">
+                        Componentes: {desc.componentes}
+                      </Text>
+                    ) : null}
+                    {/* Spell effect description */}
+                    <Text
+                      style={{
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                        lineHeight: 18,
+                        marginTop: 4,
+                      }}
+                    >
+                      {desc.descripcion}
+                    </Text>
+                  </View>
+                )}
+                {!desc && !srdSpell && (
+                  <Text className="text-dark-500 dark:text-dark-300 text-xs leading-5">
+                    ID: {spellId}
+                  </Text>
+                )}
+              </View>
             );
           })()}
-          <Text className="text-dark-400 text-[10px] mt-1 italic">
-            La descripción detallada del conjuro se mostrará cuando se carguen
-            los datos completos del SRD.
-          </Text>
         </View>
       )}
     </TouchableOpacity>

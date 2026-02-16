@@ -473,6 +473,8 @@ export interface LevelUpSummary {
   xpThreshold: number;
   /** Información sobre hechizos que se aprenden al subir */
   spellLearning: SpellLearningInfo | null;
+  /** Número de opciones de Metamagia nuevas que se eligen (solo hechicero) */
+  newMetamagicChoices: number;
 }
 
 /**
@@ -503,6 +505,13 @@ export function getLevelUpSummary(
   classId: ClassId,
   newLevel: number
 ): LevelUpSummary {
+  // Metamagia: hechicero gana 2 opciones al nivel 3, 1 más al 10 y 17
+  let newMetamagicChoices = 0;
+  if (classId === "hechicero") {
+    if (newLevel === 3) newMetamagicChoices = 2;
+    else if (newLevel === 10 || newLevel === 17) newMetamagicChoices = 1;
+  }
+
   return {
     newLevel,
     features: getFeaturesForLevel(classId, newLevel),
@@ -511,6 +520,7 @@ export function getLevelUpSummary(
     proficiencyBonus: Math.floor((newLevel - 1) / 4) + 2,
     xpThreshold: XP_THRESHOLDS[newLevel],
     spellLearning: getSpellLearningInfo(classId, newLevel),
+    newMetamagicChoices,
   };
 }
 

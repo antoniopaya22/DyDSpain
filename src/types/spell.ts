@@ -454,6 +454,36 @@ export const METAMAGIC_COSTS: Record<MetamagicOption, number> = {
   hechizo_duplicado: 1,
 };
 
+export const METAMAGIC_DESCRIPTIONS: Record<MetamagicOption, string> = {
+  hechizo_cuidadoso:
+    "Al lanzar un conjuro que obliga a tiradas de salvación, protege a tantas criaturas como tu mod. CAR (superan automáticamente la salvación). Coste: 1 PH.",
+  hechizo_distante:
+    "Duplica el alcance de un conjuro (mín. 1,5 m) o cambia un conjuro de toque a 9 m de alcance. Coste: 1 PH.",
+  hechizo_potenciado:
+    "Repite hasta mod. CAR dados de daño de un conjuro (mín. 1). Compatible con otra Metamagia. Coste: 1 PH.",
+  hechizo_extendido:
+    "Duplica la duración de un conjuro (mín. 1 minuto, máx. 24 h). Coste: 1 PH.",
+  hechizo_intensificado:
+    "Un objetivo del conjuro tiene desventaja en su primera tirada de salvación contra él. Coste: 3 PH.",
+  hechizo_rapido:
+    "Cambia el tiempo de lanzamiento de 1 acción a 1 acción adicional. Coste: 2 PH.",
+  hechizo_sutil:
+    "Lanza el conjuro sin componentes somáticos ni verbales. Coste: 1 PH.",
+  hechizo_duplicado:
+    "Haz objetivo a una segunda criatura con un conjuro de objetivo único. Coste: nivel del conjuro en PH (1 PH para trucos).",
+};
+
+export const ALL_METAMAGIC_OPTIONS: MetamagicOption[] = [
+  "hechizo_cuidadoso",
+  "hechizo_distante",
+  "hechizo_potenciado",
+  "hechizo_extendido",
+  "hechizo_intensificado",
+  "hechizo_rapido",
+  "hechizo_sutil",
+  "hechizo_duplicado",
+];
+
 /**
  * Invocaciones sobrenaturales del Brujo
  */

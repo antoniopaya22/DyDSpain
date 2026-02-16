@@ -10,37 +10,51 @@ import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import { getClassData, isSpellcaster, hasSpellsAtLevel1 } from "@/data/srd";
+import { getCantripsForClass, getSpellsForClass } from "@/data/srd/spells";
+import { getSpellDescription } from "@/data/srd/spellDescriptions";
 import type { ClassId } from "@/types/character";
 import { useTheme } from "@/hooks/useTheme";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 7;
 
-// Simplified cantrip/spell data for the SRD classes at level 1
-// In a full implementation this would come from a spells database
-const CLASS_CANTRIPS: Record<
-  string,
-  { id: string; nombre: string; descripcion: string }[]
-> = {
-  bardo: [
-    {
-      id: "amigos",
-      nombre: "Amigos",
-      descripcion: "Un objetivo te ve como un amigo durante 1 minuto.",
-    },
-    {
-      id: "burla_viciosa",
-      nombre: "Burla Viciosa",
-      descripcion: "Insultas a una criatura, causando 1d4 daño psíquico.",
-    },
-    {
-      id: "luz",
-      nombre: "Luz",
-      descripcion: "Un objeto emite luz brillante en 6m.",
-    },
-    {
-      id: "mano_de_mago",
-      nombre: "Mano de Mago",
+// ─── Helper: build spell display objects from SRD data ───────────────
+
+function buildSpellList(
+  classId: string,
+  level: number,
+): { id: string; nombre: string; descripcion: string }[] {
+  const spells =
+    level === 0
+      ? getCantripsForClass(classId as ClassId)
+      : getSpellsForClass(classId as ClassId, level);
+
+  return spells.map((s) => {
+    const desc = getSpellDescription(s.id);
+    // Build a short summary: first sentence of description, or fallback
+    let shortDesc = desc?.descripcion ?? "";
+    // Take first sentence (up to first period followed by space or end)
+    const firstSentence = shortDesc.match(/^[^.]+\./);
+    if (firstSentence && firstSentence[0].length < 120) {
+      shortDesc = firstSentence[0];
+    } else if (shortDesc.length > 120) {
+      shortDesc = shortDesc.slice(0, 117) + "...";
+    }
+    return {
+      id: s.id,
+      nombre: s.nombre,
+      descripcion: shortDesc,
+    };
+  });
+}
+
+export default function SpellsStep() {
+  const { colors, isDark } = useTheme();
+  const themed = getCreationThemeOverrides(colors);
+  const router = useRouter();
+  const { id: campaignId } = useLocalSearchParams<{ id: string }>();
+
+  const { draft, setSpellChoices, saveDraft, loadDraft } = useCreationStore();
       descripcion: "Creas una mano espectral flotante.",
     },
     {
