@@ -8,10 +8,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  useCreationStore,
-  TOTAL_STEPS,
-} from "@/stores/creationStore";
+import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import {
   getBackgroundList,
   getBackgroundData,
@@ -19,19 +16,18 @@ import {
   type BackgroundData,
 } from "@/data/srd";
 import type { BackgroundId } from "@/types/character";
+import { useTheme } from "@/hooks/useTheme";
+import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 5;
 
 export default function BackgroundStep() {
+  const { colors, isDark } = useTheme();
+  const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
-  const {
-    draft,
-    setTrasfondo,
-    saveDraft,
-    loadDraft,
-  } = useCreationStore();
+  const { draft, setTrasfondo, saveDraft, loadDraft } = useCreationStore();
 
   const [selectedBg, setSelectedBg] = useState<BackgroundId | null>(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -49,7 +45,7 @@ export default function BackgroundStep() {
         }
       };
       init();
-    }, [campaignId])
+    }, [campaignId]),
   );
 
   const currentBgData: BackgroundData | null = selectedBg
@@ -85,32 +81,46 @@ export default function BackgroundStep() {
   const progressPercent = (CURRENT_STEP / TOTAL_STEPS) * 100;
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+    <View style={[styles.container, themed.container]}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Ionicons name="arrow-back" size={22} color="white" />
+            <TouchableOpacity
+              style={[styles.backButton, themed.backButton]}
+              onPress={handleBack}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={22}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
-            <Text style={styles.stepText}>
+            <Text style={[styles.stepText, themed.stepText]}>
               Paso {CURRENT_STEP} de {TOTAL_STEPS}
             </Text>
             <View style={{ height: 40, width: 40 }} />
           </View>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
+          <View style={[styles.progressBar, themed.progressBar]}>
+            <View
+              style={[styles.progressFill, { width: `${progressPercent}%` }]}
+            />
           </View>
         </View>
 
         {/* Title */}
         <View style={styles.titleSection}>
           <View style={styles.iconCircle}>
-            <Ionicons name="book-outline" size={40} color="#c62828" />
+            <Ionicons name="book-outline" size={40} color={colors.accentRed} />
           </View>
-          <Text style={styles.title}>Trasfondo</Text>
-          <Text style={styles.subtitle}>
-            El trasfondo define la historia de tu personaje antes de convertirse en aventurero. Otorga competencias en habilidades, herramientas e idiomas.
+          <Text style={[styles.title, themed.title]}>Trasfondo</Text>
+          <Text style={[styles.subtitle, themed.subtitle]}>
+            El trasfondo define la historia de tu personaje antes de convertirse
+            en aventurero. Otorga competencias en habilidades, herramientas e
+            idiomas.
           </Text>
         </View>
 
@@ -124,6 +134,7 @@ export default function BackgroundStep() {
                 <TouchableOpacity
                   style={[
                     styles.bgCard,
+                    themed.card,
                     isSelected && styles.bgCardSelected,
                   ]}
                   onPress={() => handleSelectBg(bg.id)}
@@ -132,16 +143,26 @@ export default function BackgroundStep() {
                     <View
                       style={[
                         styles.bgIcon,
+                        themed.cardAlt,
                         isSelected && styles.bgIconSelected,
                       ]}
                     >
                       <Text style={styles.bgIconText}>{icon}</Text>
                     </View>
                     <View style={styles.bgInfo}>
-                      <Text style={[styles.bgName, isSelected && styles.bgNameSelected]}>
+                      <Text
+                        style={[
+                          styles.bgName,
+                          themed.textPrimary,
+                          isSelected && themed.bgNameSelected,
+                        ]}
+                      >
                         {bg.nombre}
                       </Text>
-                      <Text style={styles.bgSkills} numberOfLines={1}>
+                      <Text
+                        style={[styles.bgSkills, themed.bgSkills]}
+                        numberOfLines={1}
+                      >
                         {bg.skillProficiencies
                           .map((sk) => {
                             const names: Record<string, string> = {
@@ -172,22 +193,29 @@ export default function BackgroundStep() {
                     <Ionicons
                       name={isSelected ? "checkmark-circle" : "ellipse-outline"}
                       size={24}
-                      color={isSelected ? "#c62828" : "#666699"}
+                      color={isSelected ? colors.accentRed : colors.textMuted}
                     />
                   </View>
                 </TouchableOpacity>
 
                 {/* Expanded details */}
                 {isSelected && showDetails && currentBgData && (
-                  <View style={styles.detailsCard}>
-                    <Text style={styles.detailsDescription}>
+                  <View style={[styles.detailsCard, themed.detailsCard]}>
+                    <Text
+                      style={[
+                        styles.detailsDescription,
+                        themed.detailsDescription,
+                      ]}
+                    >
                       {currentBgData.descripcion}
                     </Text>
 
                     {/* Proficiencies */}
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Habilidades:</Text>
-                      <Text style={styles.detailValue}>
+                      <Text style={[styles.detailLabel, themed.detailLabel]}>
+                        Habilidades:
+                      </Text>
+                      <Text style={[styles.detailValue, themed.detailValue]}>
                         {currentBgData.skillProficiencies
                           .map((sk) => {
                             const names: Record<string, string> = {
@@ -218,8 +246,10 @@ export default function BackgroundStep() {
 
                     {currentBgData.toolProficiencies.length > 0 && (
                       <View style={styles.detailRow}>
-                        <Text style={styles.detailLabel}>Herramientas:</Text>
-                        <Text style={styles.detailValue}>
+                        <Text style={[styles.detailLabel, themed.detailLabel]}>
+                          Herramientas:
+                        </Text>
+                        <Text style={[styles.detailValue, themed.detailValue]}>
                           {currentBgData.toolProficiencies.join(", ")}
                         </Text>
                       </View>
@@ -227,37 +257,47 @@ export default function BackgroundStep() {
 
                     {currentBgData.extraLanguages > 0 && (
                       <View style={styles.detailRow}>
-                        <Text style={styles.detailLabel}>Idiomas extra:</Text>
-                        <Text style={styles.detailValue}>
+                        <Text style={[styles.detailLabel, themed.detailLabel]}>
+                          Idiomas extra:
+                        </Text>
+                        <Text style={[styles.detailValue, themed.detailValue]}>
                           {currentBgData.extraLanguages}
                         </Text>
                       </View>
                     )}
 
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Oro inicial:</Text>
-                      <Text style={styles.detailValue}>
+                      <Text style={[styles.detailLabel, themed.detailLabel]}>
+                        Oro inicial:
+                      </Text>
+                      <Text style={[styles.detailValue, themed.detailValue]}>
                         {currentBgData.startingGold} po
                       </Text>
                     </View>
 
                     {/* Feature */}
-                    <View style={styles.featureBox}>
+                    <View style={[styles.featureBox, themed.featureBox]}>
                       <View style={styles.featureHeader}>
-                        <Ionicons name="star" size={16} color="#fbbf24" />
-                        <Text style={styles.featureName}>
+                        <Ionicons
+                          name="star"
+                          size={16}
+                          color={colors.accentGold}
+                        />
+                        <Text style={[styles.featureName, themed.featureName]}>
                           {currentBgData.featureName}
                         </Text>
                       </View>
-                      <Text style={styles.featureDesc}>
+                      <Text style={[styles.featureDesc, themed.featureDesc]}>
                         {currentBgData.featureDescription}
                       </Text>
                     </View>
 
                     {/* Equipment */}
                     <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Equipo:</Text>
-                      <Text style={styles.detailValue}>
+                      <Text style={[styles.detailLabel, themed.detailLabel]}>
+                        Equipo:
+                      </Text>
+                      <Text style={[styles.detailValue, themed.detailValue]}>
                         {currentBgData.equipment.join(", ")}
                       </Text>
                     </View>
@@ -270,9 +310,15 @@ export default function BackgroundStep() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, themed.footer]}>
         <TouchableOpacity
-          style={[styles.nextButton, !selectedBg && styles.nextButtonDisabled]}
+          style={[
+            styles.nextButton,
+            !selectedBg && [
+              styles.nextButtonDisabled,
+              themed.nextButtonDisabled,
+            ],
+          ]}
           onPress={handleNext}
           disabled={!selectedBg}
         >
@@ -368,7 +414,7 @@ const styles = StyleSheet.create({
   },
   bgCardSelected: {
     borderColor: "#c62828",
-    backgroundColor: "#2a1a2e",
+    backgroundColor: "rgba(198,40,40,0.08)",
   },
   bgCardRow: {
     flexDirection: "row",
@@ -397,9 +443,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 2,
-  },
-  bgNameSelected: {
-    color: "#ffffff",
   },
   bgSkills: {
     color: "#8c8cb3",

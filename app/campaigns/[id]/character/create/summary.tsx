@@ -27,6 +27,8 @@ import {
   calcModifier,
   type AbilityKey,
 } from "@/types/character";
+import { useTheme } from "@/hooks/useTheme";
+import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 11;
 
@@ -37,6 +39,8 @@ function formatMod(mod: number): string {
 }
 
 export default function SummaryStep() {
+  const { colors, isDark } = useTheme();
+  const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
   const { dialogProps, showConfirm, showSuccess, showError } = useDialog();
@@ -64,7 +68,7 @@ export default function SummaryStep() {
         setInitialized(true);
       };
       init();
-    }, [campaignId])
+    }, [campaignId]),
   );
 
   const completedSteps = initialized ? getCompletedSteps() : [];
@@ -73,20 +77,36 @@ export default function SummaryStep() {
   // Draft data
   const raceData = draft?.raza ? getRaceData(draft.raza) : null;
   const classData = draft?.clase ? getClassData(draft.clase) : null;
-  const backgroundData = draft?.trasfondo ? getBackgroundData(draft.trasfondo) : null;
+  const backgroundData = draft?.trasfondo
+    ? getBackgroundData(draft.trasfondo)
+    : null;
 
   // Ability scores preview
   const baseScores = draft?.abilityScoresBase;
   const totalScores =
     baseScores && draft?.raza
-      ? calcTotalScoresPreview(baseScores, draft.raza, draft.subraza ?? null, draft.freeAbilityBonuses)
+      ? calcTotalScoresPreview(
+          baseScores,
+          draft.raza,
+          draft.subraza ?? null,
+          draft.freeAbilityBonuses,
+        )
       : null;
 
   // Granted + chosen skills
   const allSkills = draft?.skillChoices ?? [];
 
   const handleCreate = async () => {
-    if (!allRequiredComplete || creating) return;
+    console.log(
+      "[SummaryStep] handleCreate llamado. allRequiredComplete:",
+      allRequiredComplete,
+      "creating:",
+      creating,
+    );
+    if (!allRequiredComplete || creating) {
+      console.log("[SummaryStep] handleCreate abortado (botón deshabilitado)");
+      return;
+    }
 
     showConfirm(
       "Crear Personaje",
@@ -94,47 +114,74 @@ export default function SummaryStep() {
       async () => {
         setCreating(true);
         try {
+          console.log("[SummaryStep] Construyendo personaje...");
           const character = buildCharacter();
           if (!character) {
-            throw new Error("No se pudo construir el personaje. Revisa todos los pasos.");
+            const missing: string[] = [];
+            if (!draft?.nombre) missing.push("Nombre");
+            if (!draft?.raza) missing.push("Raza");
+            if (!draft?.clase) missing.push("Clase");
+            if (!draft?.abilityScoresBase) missing.push("Estadísticas");
+            if (!draft?.trasfondo) missing.push("Trasfondo");
+            if (!draft?.alineamiento) missing.push("Alineamiento");
+            throw new Error(
+              `No se pudo construir el personaje. Faltan datos: ${missing.join(", ") || "desconocido"}.`,
+            );
           }
 
-          // Save character to AsyncStorage
+          console.log("[SummaryStep] Guardando personaje:", character.id);
+
           const { setItem } = await import("@/utils/storage");
           const { STORAGE_KEYS } = await import("@/utils/storage");
           const { createDefaultInventory } = await import("@/types/item");
 
           await setItem(STORAGE_KEYS.CHARACTER(character.id), character);
+          console.log("[SummaryStep] Personaje guardado en storage");
 
-          // Create default inventory
-          const inventory = createDefaultInventory(character.inventoryId, character.id);
+          const inventory = createDefaultInventory(
+            character.inventoryId,
+            character.id,
+          );
           await setItem(STORAGE_KEYS.INVENTORY(character.id), inventory);
+          console.log("[SummaryStep] Inventario creado");
 
-          // Link character to campaign
           await linkCharacter(campaignId!, character.id);
+          console.log("[SummaryStep] Personaje vinculado a campaña");
 
-          // Discard the draft
-          await discardDraft(campaignId!);
+          const charName = character.nombre;
+          const cId = campaignId!;
 
-          // Reload campaigns
-          await loadCampaigns();
+          console.log("[SummaryStep] Mostrando diálogo de éxito...");
 
-          // Navigate back to campaign detail
+          // Show success dialog BEFORE discarding the draft to prevent
+          // a re-render (draft→null) that could interfere with the dialog
           showSuccess(
             "¡Personaje Creado!",
-            `${character.nombre} ha sido creado exitosamente. ¡Buena aventura!`,
-            () => {
-              router.dismissAll();
-              router.replace(`/campaigns/${campaignId}`);
+            `${charName} ha sido creado exitosamente. ¡Buena aventura!`,
+            async () => {
+              console.log("[SummaryStep] OK pulsado, navegando...");
+              // Clean up draft and reload campaigns
+              try {
+                await discardDraft(cId);
+                await loadCampaigns();
+              } catch (e) {
+                console.warn("[SummaryStep] Error limpiando draft:", e);
+              }
+              // Navigate back to campaign detail with a single replace call.
+              // Absolute paths in Expo Router resolve across nested stacks.
+              router.replace(`/campaigns/${cId}`);
             },
           );
+
+          // Keep creating=true so the button stays disabled while
+          // the success dialog is visible
         } catch (error) {
+          console.error("[SummaryStep] Error creando personaje:", error);
           const message =
             error instanceof Error
               ? error.message
               : "Error desconocido al crear el personaje";
           showError("Error", message);
-        } finally {
           setCreating(false);
         }
       },
@@ -172,71 +219,104 @@ export default function SummaryStep() {
 
   if (!initialized) {
     return (
-      <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#c62828" />
-        <Text style={styles.loadingText}>Cargando resumen...</Text>
+      <View style={[styles.container, themed.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={colors.accentRed} />
+        <Text style={[styles.loadingText, themed.loadingText]}>
+          Cargando resumen...
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+    <View style={[styles.container, themed.container]}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Ionicons name="arrow-back" size={22} color="white" />
+            <TouchableOpacity
+              style={[styles.backButton, themed.backButton]}
+              onPress={handleBack}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={22}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
-            <Text style={styles.stepText}>
+            <Text style={[styles.stepText, themed.stepText]}>
               Paso {CURRENT_STEP} de {TOTAL_STEPS}
             </Text>
             <View style={{ height: 40, width: 40 }} />
           </View>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
+          <View style={[styles.progressBar, themed.progressBar]}>
+            <View
+              style={[styles.progressFill, { width: `${progressPercent}%` }]}
+            />
           </View>
         </View>
 
         {/* Title */}
         <View style={styles.titleSection}>
           <View style={styles.iconCircle}>
-            <Ionicons name="checkmark-circle-outline" size={44} color="#c62828" />
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={44}
+              color={colors.accentRed}
+            />
           </View>
-          <Text style={styles.title}>Resumen del Personaje</Text>
-          <Text style={styles.subtitle}>
-            Revisa todos los datos de tu personaje antes de crearlo.
-            Pulsa en cualquier sección para editarla.
+          <Text style={[styles.title, themed.title]}>
+            Resumen del Personaje
+          </Text>
+          <Text style={[styles.subtitle, themed.subtitle]}>
+            Revisa todos los datos de tu personaje antes de crearlo. Pulsa en
+            cualquier sección para editarla.
           </Text>
         </View>
 
         {/* Steps completion checklist */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Estado de Pasos</Text>
-          <View style={styles.checklistCard}>
+          <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+            Estado de Pasos
+          </Text>
+          <View style={[styles.checklistCard, themed.card]}>
             {Array.from({ length: 10 }, (_, i) => i + 1).map((step) => {
               const valid = isStepValid(step);
               const stepName = STEP_NAMES[step] ?? `Paso ${step}`;
               return (
                 <TouchableOpacity
                   key={step}
-                  style={styles.checklistRow}
+                  style={[
+                    styles.checklistRow,
+                    { borderBottomColor: colors.borderSubtle },
+                  ]}
                   onPress={() => handleGoToStep(step)}
                 >
                   <Ionicons
                     name={valid ? "checkmark-circle" : "ellipse-outline"}
                     size={22}
-                    color={valid ? "#22c55e" : "#666699"}
+                    color={valid ? colors.accentGreen : colors.textMuted}
                   />
                   <Text
                     style={[
                       styles.checklistText,
-                      valid && styles.checklistTextDone,
+                      { color: colors.textMuted },
+                      valid && [
+                        styles.checklistTextDone,
+                        { color: colors.textPrimary },
+                      ],
                     ]}
                   >
                     {step}. {stepName}
                   </Text>
-                  <Ionicons name="chevron-forward" size={18} color="#666699" />
+                  <Ionicons
+                    name="chevron-forward"
+                    size={18}
+                    color={colors.textMuted}
+                  />
                 </TouchableOpacity>
               );
             })}
@@ -248,19 +328,37 @@ export default function SummaryStep() {
           <>
             {/* Basic Info */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Información Básica</Text>
-              <View style={styles.summaryCard}>
+              <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+                Información Básica
+              </Text>
+              <View style={[styles.summaryCard, themed.card]}>
                 {draft.nombre && (
-                  <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Nombre</Text>
-                    <Text style={styles.summaryValue}>{draft.nombre}</Text>
+                  <View
+                    style={[
+                      styles.summaryRow,
+                      { borderBottomColor: colors.borderSubtle },
+                    ]}
+                  >
+                    <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                      Nombre
+                    </Text>
+                    <Text style={[styles.summaryValue, themed.textPrimary]}>
+                      {draft.nombre}
+                    </Text>
                   </View>
                 )}
 
                 {raceData && (
-                  <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Raza</Text>
-                    <Text style={styles.summaryValue}>
+                  <View
+                    style={[
+                      styles.summaryRow,
+                      { borderBottomColor: colors.borderSubtle },
+                    ]}
+                  >
+                    <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                      Raza
+                    </Text>
+                    <Text style={[styles.summaryValue, themed.textPrimary]}>
                       {raceData.nombre}
                       {draft.subraza
                         ? ` (${raceData.subraces.find((s) => s.id === draft.subraza)?.nombre ?? draft.subraza})`
@@ -270,27 +368,48 @@ export default function SummaryStep() {
                 )}
 
                 {classData && (
-                  <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Clase</Text>
-                    <Text style={styles.summaryValue}>
+                  <View
+                    style={[
+                      styles.summaryRow,
+                      { borderBottomColor: colors.borderSubtle },
+                    ]}
+                  >
+                    <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                      Clase
+                    </Text>
+                    <Text style={[styles.summaryValue, themed.textPrimary]}>
                       {classData.nombre} (Nivel 1)
                     </Text>
                   </View>
                 )}
 
                 {backgroundData && (
-                  <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Trasfondo</Text>
-                    <Text style={styles.summaryValue}>
+                  <View
+                    style={[
+                      styles.summaryRow,
+                      { borderBottomColor: colors.borderSubtle },
+                    ]}
+                  >
+                    <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                      Trasfondo
+                    </Text>
+                    <Text style={[styles.summaryValue, themed.textPrimary]}>
                       {backgroundData.nombre}
                     </Text>
                   </View>
                 )}
 
                 {draft.alineamiento && (
-                  <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Alineamiento</Text>
-                    <Text style={styles.summaryValue}>
+                  <View
+                    style={[
+                      styles.summaryRow,
+                      { borderBottomColor: colors.borderSubtle },
+                    ]}
+                  >
+                    <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                      Alineamiento
+                    </Text>
+                    <Text style={[styles.summaryValue, themed.textPrimary]}>
                       {ALIGNMENT_NAMES[draft.alineamiento]}
                     </Text>
                   </View>
@@ -301,16 +420,29 @@ export default function SummaryStep() {
             {/* Ability Scores */}
             {totalScores && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Puntuaciones de Característica</Text>
+                <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+                  Puntuaciones de Característica
+                </Text>
                 <View style={styles.scoresGrid}>
                   {ABILITY_KEYS.map((key) => {
                     const total = totalScores[key];
                     const mod = calcModifier(total);
                     return (
-                      <View key={key} style={styles.scoreCard}>
-                        <Text style={styles.scoreAbbr}>{ABILITY_ABBR[key]}</Text>
-                        <Text style={styles.scoreTotal}>{total}</Text>
-                        <Text style={styles.scoreMod}>{formatMod(mod)}</Text>
+                      <View key={key} style={[styles.scoreCard, themed.card]}>
+                        <Text
+                          style={[
+                            styles.scoreAbbr,
+                            { color: colors.accentGold },
+                          ]}
+                        >
+                          {ABILITY_ABBR[key]}
+                        </Text>
+                        <Text style={[styles.scoreTotal, themed.textPrimary]}>
+                          {total}
+                        </Text>
+                        <Text style={[styles.scoreMod, themed.textSecondary]}>
+                          {formatMod(mod)}
+                        </Text>
                       </View>
                     );
                   })}
@@ -318,18 +450,26 @@ export default function SummaryStep() {
 
                 {/* HP Preview */}
                 {classData && totalScores && (
-                  <View style={styles.hpPreview}>
+                  <View style={[styles.hpPreview, themed.hpPreview]}>
                     <View style={styles.hpIcon}>
-                      <Ionicons name="heart" size={20} color="#22c55e" />
+                      <Ionicons
+                        name="heart"
+                        size={20}
+                        color={colors.accentGreen}
+                      />
                     </View>
                     <View style={styles.hpInfo}>
-                      <Text style={styles.hpLabel}>Puntos de Golpe a Nivel 1</Text>
-                      <Text style={styles.hpValue}>
+                      <Text style={[styles.hpLabel, themed.hpLabel]}>
+                        Puntos de Golpe a Nivel 1
+                      </Text>
+                      <Text
+                        style={[styles.hpValue, { color: colors.accentGreen }]}
+                      >
                         {classData.hitDieMax + calcModifier(totalScores.con)} PG
                       </Text>
                     </View>
-                    <View style={styles.hitDieBadge}>
-                      <Text style={styles.hitDieText}>
+                    <View style={[styles.hitDieBadge, themed.hitDieBadge]}>
+                      <Text style={[styles.hitDieText, themed.hitDieText]}>
                         Dado: {classData.hitDie}
                       </Text>
                     </View>
@@ -341,18 +481,31 @@ export default function SummaryStep() {
             {/* Skills */}
             {allSkills.length > 0 && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Competencias en Habilidades</Text>
+                <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+                  Competencias en Habilidades
+                </Text>
                 <View style={styles.skillsGrid}>
                   {allSkills.map((sk) => {
                     const def = SKILLS[sk];
                     return (
-                      <View key={sk} style={styles.skillBadge}>
+                      <View
+                        key={sk}
+                        style={[
+                          styles.skillBadge,
+                          {
+                            backgroundColor: colors.bgCard,
+                            borderColor: `${colors.accentGreen}30`,
+                          },
+                        ]}
+                      >
                         <Ionicons
                           name="checkmark-circle"
                           size={14}
-                          color="#22c55e"
+                          color={colors.accentGreen}
                         />
-                        <Text style={styles.skillBadgeText}>
+                        <Text
+                          style={[styles.skillBadgeText, themed.textPrimary]}
+                        >
                           {def?.nombre ?? sk}
                         </Text>
                       </View>
@@ -367,20 +520,40 @@ export default function SummaryStep() {
               (draft.spellChoices.cantrips.length > 0 ||
                 draft.spellChoices.spells.length > 0) && (
                 <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Hechizos</Text>
-                  <View style={styles.summaryCard}>
+                  <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+                    Habilidades
+                  </Text>
+                  <View style={[styles.summaryCard, themed.card]}>
                     {draft.spellChoices.cantrips.length > 0 && (
-                      <View style={styles.summaryRow}>
-                        <Text style={styles.summaryLabel}>Trucos</Text>
-                        <Text style={styles.summaryValue}>
+                      <View
+                        style={[
+                          styles.summaryRow,
+                          { borderBottomColor: colors.borderSubtle },
+                        ]}
+                      >
+                        <Text
+                          style={[styles.summaryLabel, themed.textSecondary]}
+                        >
+                          Trucos
+                        </Text>
+                        <Text style={[styles.summaryValue, themed.textPrimary]}>
                           {draft.spellChoices.cantrips.length} seleccionados
                         </Text>
                       </View>
                     )}
                     {draft.spellChoices.spells.length > 0 && (
-                      <View style={styles.summaryRow}>
-                        <Text style={styles.summaryLabel}>Conjuros Nv.1</Text>
-                        <Text style={styles.summaryValue}>
+                      <View
+                        style={[
+                          styles.summaryRow,
+                          { borderBottomColor: colors.borderSubtle },
+                        ]}
+                      >
+                        <Text
+                          style={[styles.summaryLabel, themed.textSecondary]}
+                        >
+                          Conjuros Nv.1
+                        </Text>
+                        <Text style={[styles.summaryValue, themed.textPrimary]}>
                           {draft.spellChoices.spells.length} seleccionados
                         </Text>
                       </View>
@@ -392,38 +565,97 @@ export default function SummaryStep() {
             {/* Personality */}
             {draft.personality && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Personalidad</Text>
-                <View style={styles.summaryCard}>
-                  {draft.personality.traits && draft.personality.traits.length > 0 && (
-                    <View style={styles.personalityRow}>
-                      <Text style={styles.personalityLabel}>Rasgos</Text>
-                      <Text style={styles.personalityValue}>
-                        {Array.isArray(draft.personality.traits)
-                          ? draft.personality.traits.join("; ")
-                          : draft.personality.traits}
-                      </Text>
-                    </View>
-                  )}
+                <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+                  Personalidad
+                </Text>
+                <View style={[styles.summaryCard, themed.card]}>
+                  {draft.personality.traits &&
+                    draft.personality.traits.length > 0 && (
+                      <View
+                        style={[
+                          styles.personalityRow,
+                          { borderBottomColor: colors.borderSubtle },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.personalityLabel,
+                            { color: colors.accentGold },
+                          ]}
+                        >
+                          Rasgos
+                        </Text>
+                        <Text
+                          style={[styles.personalityValue, themed.textPrimary]}
+                        >
+                          {Array.isArray(draft.personality.traits)
+                            ? draft.personality.traits.join("; ")
+                            : draft.personality.traits}
+                        </Text>
+                      </View>
+                    )}
                   {draft.personality.ideals && (
-                    <View style={styles.personalityRow}>
-                      <Text style={styles.personalityLabel}>Ideales</Text>
-                      <Text style={styles.personalityValue}>
+                    <View
+                      style={[
+                        styles.personalityRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.personalityLabel,
+                          { color: colors.accentGold },
+                        ]}
+                      >
+                        Ideales
+                      </Text>
+                      <Text
+                        style={[styles.personalityValue, themed.textPrimary]}
+                      >
                         {draft.personality.ideals}
                       </Text>
                     </View>
                   )}
                   {draft.personality.bonds && (
-                    <View style={styles.personalityRow}>
-                      <Text style={styles.personalityLabel}>Vínculos</Text>
-                      <Text style={styles.personalityValue}>
+                    <View
+                      style={[
+                        styles.personalityRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.personalityLabel,
+                          { color: colors.accentGold },
+                        ]}
+                      >
+                        Vínculos
+                      </Text>
+                      <Text
+                        style={[styles.personalityValue, themed.textPrimary]}
+                      >
                         {draft.personality.bonds}
                       </Text>
                     </View>
                   )}
                   {draft.personality.flaws && (
-                    <View style={styles.personalityRow}>
-                      <Text style={styles.personalityLabel}>Defectos</Text>
-                      <Text style={styles.personalityValue}>
+                    <View
+                      style={[
+                        styles.personalityRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.personalityLabel,
+                          { color: colors.accentGold },
+                        ]}
+                      >
+                        Defectos
+                      </Text>
+                      <Text
+                        style={[styles.personalityValue, themed.textPrimary]}
+                      >
                         {draft.personality.flaws}
                       </Text>
                     </View>
@@ -435,48 +667,118 @@ export default function SummaryStep() {
             {/* Appearance */}
             {draft.appearance && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Apariencia</Text>
-                <View style={styles.summaryCard}>
+                <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+                  Apariencia
+                </Text>
+                <View style={[styles.summaryCard, themed.card]}>
                   {draft.appearance.age && (
-                    <View style={styles.summaryRow}>
-                      <Text style={styles.summaryLabel}>Edad</Text>
-                      <Text style={styles.summaryValue}>{draft.appearance.age}</Text>
+                    <View
+                      style={[
+                        styles.summaryRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                        Edad
+                      </Text>
+                      <Text style={[styles.summaryValue, themed.textPrimary]}>
+                        {draft.appearance.age}
+                      </Text>
                     </View>
                   )}
                   {draft.appearance.height && (
-                    <View style={styles.summaryRow}>
-                      <Text style={styles.summaryLabel}>Altura</Text>
-                      <Text style={styles.summaryValue}>{draft.appearance.height}</Text>
+                    <View
+                      style={[
+                        styles.summaryRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                        Altura
+                      </Text>
+                      <Text style={[styles.summaryValue, themed.textPrimary]}>
+                        {draft.appearance.height}
+                      </Text>
                     </View>
                   )}
                   {draft.appearance.weight && (
-                    <View style={styles.summaryRow}>
-                      <Text style={styles.summaryLabel}>Peso</Text>
-                      <Text style={styles.summaryValue}>{draft.appearance.weight}</Text>
+                    <View
+                      style={[
+                        styles.summaryRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                        Peso
+                      </Text>
+                      <Text style={[styles.summaryValue, themed.textPrimary]}>
+                        {draft.appearance.weight}
+                      </Text>
                     </View>
                   )}
                   {draft.appearance.hairColor && (
-                    <View style={styles.summaryRow}>
-                      <Text style={styles.summaryLabel}>Pelo</Text>
-                      <Text style={styles.summaryValue}>{draft.appearance.hairColor}</Text>
+                    <View
+                      style={[
+                        styles.summaryRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                        Pelo
+                      </Text>
+                      <Text style={[styles.summaryValue, themed.textPrimary]}>
+                        {draft.appearance.hairColor}
+                      </Text>
                     </View>
                   )}
                   {draft.appearance.eyeColor && (
-                    <View style={styles.summaryRow}>
-                      <Text style={styles.summaryLabel}>Ojos</Text>
-                      <Text style={styles.summaryValue}>{draft.appearance.eyeColor}</Text>
+                    <View
+                      style={[
+                        styles.summaryRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                        Ojos
+                      </Text>
+                      <Text style={[styles.summaryValue, themed.textPrimary]}>
+                        {draft.appearance.eyeColor}
+                      </Text>
                     </View>
                   )}
                   {draft.appearance.skinColor && (
-                    <View style={styles.summaryRow}>
-                      <Text style={styles.summaryLabel}>Piel</Text>
-                      <Text style={styles.summaryValue}>{draft.appearance.skinColor}</Text>
+                    <View
+                      style={[
+                        styles.summaryRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                        Piel
+                      </Text>
+                      <Text style={[styles.summaryValue, themed.textPrimary]}>
+                        {draft.appearance.skinColor}
+                      </Text>
                     </View>
                   )}
                   {draft.appearance.description && (
-                    <View style={styles.personalityRow}>
-                      <Text style={styles.personalityLabel}>Descripción</Text>
-                      <Text style={styles.personalityValue}>
+                    <View
+                      style={[
+                        styles.personalityRow,
+                        { borderBottomColor: colors.borderSubtle },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.personalityLabel,
+                          { color: colors.accentGold },
+                        ]}
+                      >
+                        Descripción
+                      </Text>
+                      <Text
+                        style={[styles.personalityValue, themed.textPrimary]}
+                      >
                         {draft.appearance.description}
                       </Text>
                     </View>
@@ -488,7 +790,7 @@ export default function SummaryStep() {
                     !draft.appearance.eyeColor &&
                     !draft.appearance.skinColor &&
                     !draft.appearance.description && (
-                      <Text style={styles.emptyNote}>
+                      <Text style={[styles.emptyNote, themed.textMuted]}>
                         Sin datos de apariencia (se puede rellenar después)
                       </Text>
                     )}
@@ -501,13 +803,18 @@ export default function SummaryStep() {
         {/* Validation warning */}
         {!allRequiredComplete && (
           <View style={styles.section}>
-            <View style={styles.warningBox}>
-              <Ionicons name="warning" size={22} color="#f59e0b" />
+            <View style={[styles.warningBox, themed.warningBox]}>
+              <Ionicons name="warning" size={22} color={colors.accentGold} />
               <View style={styles.warningContent}>
-                <Text style={styles.warningTitle}>Pasos incompletos</Text>
-                <Text style={styles.warningText}>
+                <Text
+                  style={[styles.warningTitle, { color: colors.accentGold }]}
+                >
+                  Pasos incompletos
+                </Text>
+                <Text style={[styles.warningText, themed.textPrimary]}>
                   Debes completar al menos los pasos 1-9 antes de crear el
-                  personaje. Pulsa en los pasos marcados con ○ para completarlos.
+                  personaje. Pulsa en los pasos marcados con ○ para
+                  completarlos.
                 </Text>
               </View>
             </View>
@@ -516,11 +823,14 @@ export default function SummaryStep() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, themed.footer]}>
         <TouchableOpacity
           style={[
             styles.createButton,
-            (!allRequiredComplete || creating) && styles.createButtonDisabled,
+            (!allRequiredComplete || creating) && [
+              styles.createButtonDisabled,
+              themed.nextButtonDisabled,
+            ],
           ]}
           onPress={handleCreate}
           disabled={!allRequiredComplete || creating}
@@ -533,9 +843,7 @@ export default function SummaryStep() {
           ) : (
             <>
               <Ionicons name="sparkles" size={22} color="white" />
-              <Text style={styles.createButtonText}>
-                ¡Crear Personaje!
-              </Text>
+              <Text style={styles.createButtonText}>¡Crear Personaje!</Text>
             </>
           )}
         </TouchableOpacity>
@@ -549,7 +857,7 @@ export default function SummaryStep() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#1a1a2e", // overridden by themed.container
   },
   centerContent: {
     alignItems: "center",
@@ -559,7 +867,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingText: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden by themed.loadingText
     fontSize: 16,
     marginTop: 16,
   },
@@ -578,18 +886,18 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#1e1e38", // overridden by themed.backButton
     alignItems: "center",
     justifyContent: "center",
   },
   stepText: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden by themed.stepText
     fontSize: 14,
     fontWeight: "600",
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#1e1e38", // overridden by themed.progressBar
     borderRadius: 3,
     overflow: "hidden",
   },
@@ -613,14 +921,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden by themed.title
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 8,
   },
   subtitle: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden by themed.subtitle
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -631,7 +939,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    color: "#d9d9e6",
+    color: "#d9d9e6", // overridden by themed.sectionTitle
     fontSize: 13,
     fontWeight: "700",
     textTransform: "uppercase",
@@ -639,10 +947,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   checklistCard: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#23233d", // overridden by themed.card
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#3a3a5c", // overridden by themed.card
     overflow: "hidden",
   },
   checklistRow: {
@@ -651,23 +959,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#2d2d52",
+    borderBottomColor: "#2d2d52", // overridden inline
   },
   checklistText: {
     flex: 1,
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden inline
     fontSize: 15,
     marginLeft: 12,
   },
   checklistTextDone: {
-    color: "#d9d9e6",
+    color: "#d9d9e6", // overridden inline
     fontWeight: "600",
   },
   summaryCard: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#23233d", // overridden by themed.card
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#3a3a5c", // overridden by themed.card
     padding: 14,
   },
   summaryRow: {
@@ -676,15 +984,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#2d2d52",
+    borderBottomColor: "#2d2d52", // overridden inline
   },
   summaryLabel: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden by themed.textSecondary
     fontSize: 14,
     fontWeight: "600",
   },
   summaryValue: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden by themed.textPrimary
     fontSize: 15,
     fontWeight: "bold",
     flex: 1,
@@ -699,27 +1007,27 @@ const styles = StyleSheet.create({
   },
   scoreCard: {
     width: "30%",
-    backgroundColor: "#23233d",
+    backgroundColor: "#23233d", // overridden by themed.card
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#3a3a5c", // overridden by themed.card
     padding: 12,
     alignItems: "center",
     marginBottom: 10,
   },
   scoreAbbr: {
-    color: "#fbbf24",
+    color: "#fbbf24", // overridden inline
     fontSize: 12,
     fontWeight: "bold",
     marginBottom: 4,
   },
   scoreTotal: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden by themed.textPrimary
     fontSize: 24,
     fontWeight: "bold",
   },
   scoreMod: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden by themed.textSecondary
     fontSize: 14,
     fontWeight: "600",
     marginTop: 2,
@@ -727,10 +1035,10 @@ const styles = StyleSheet.create({
   hpPreview: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#23233d",
+    backgroundColor: "#23233d", // overridden by themed.card
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#3a3a5c", // overridden by themed.card
     padding: 14,
   },
   hpIcon: {
@@ -746,22 +1054,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   hpLabel: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden by themed.textSecondary
     fontSize: 13,
   },
   hpValue: {
-    color: "#22c55e",
+    color: "#22c55e", // overridden inline
     fontSize: 20,
     fontWeight: "bold",
   },
   hitDieBadge: {
-    backgroundColor: "#2d2d52",
+    backgroundColor: "#2d2d52", // overridden inline
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
   hitDieText: {
-    color: "#b3b3cc",
+    color: "#b3b3cc", // overridden by themed.textSecondary
     fontSize: 13,
     fontWeight: "600",
   },
@@ -773,15 +1081,15 @@ const styles = StyleSheet.create({
   skillBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#23233d",
+    backgroundColor: "#23233d", // overridden inline
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: "rgba(34,197,94,0.3)",
+    borderColor: "rgba(34,197,94,0.3)", // overridden inline
   },
   skillBadgeText: {
-    color: "#d9d9e6",
+    color: "#d9d9e6", // overridden by themed.textPrimary
     fontSize: 13,
     fontWeight: "600",
     marginLeft: 6,
@@ -789,21 +1097,21 @@ const styles = StyleSheet.create({
   personalityRow: {
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#2d2d52",
+    borderBottomColor: "#2d2d52", // overridden inline
   },
   personalityLabel: {
-    color: "#fbbf24",
+    color: "#fbbf24", // overridden inline
     fontSize: 13,
     fontWeight: "700",
     marginBottom: 4,
   },
   personalityValue: {
-    color: "#d9d9e6",
+    color: "#d9d9e6", // overridden by themed.textPrimary
     fontSize: 14,
     lineHeight: 20,
   },
   emptyNote: {
-    color: "#666699",
+    color: "#666699", // overridden by themed.textMuted
     fontSize: 14,
     fontStyle: "italic",
     paddingVertical: 8,
@@ -811,24 +1119,24 @@ const styles = StyleSheet.create({
   warningBox: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: "rgba(245,158,11,0.1)",
+    backgroundColor: "rgba(245,158,11,0.1)", // overridden by themed.warningBox
     borderRadius: 12,
     padding: 14,
     borderWidth: 1,
-    borderColor: "rgba(245,158,11,0.3)",
+    borderColor: "rgba(245,158,11,0.3)", // overridden by themed.warningBox
   },
   warningContent: {
     flex: 1,
     marginLeft: 12,
   },
   warningTitle: {
-    color: "#f59e0b",
+    color: "#f59e0b", // overridden inline
     fontSize: 15,
     fontWeight: "bold",
     marginBottom: 4,
   },
   warningText: {
-    color: "#d9d9e6",
+    color: "#d9d9e6", // overridden by themed.textPrimary
     fontSize: 13,
     lineHeight: 18,
   },
@@ -837,7 +1145,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#3a3a5c",
+    borderTopColor: "#3a3a5c", // overridden by themed.footer
   },
   createButton: {
     backgroundColor: "#c62828",
@@ -848,7 +1156,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   createButtonDisabled: {
-    backgroundColor: "#2d2d44",
+    backgroundColor: "#2d2d44", // overridden by themed.nextButtonDisabled
     opacity: 0.5,
   },
   createButtonText: {

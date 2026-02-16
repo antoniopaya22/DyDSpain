@@ -9,24 +9,20 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  useCreationStore,
-  TOTAL_STEPS,
-} from "@/stores/creationStore";
+import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import type { Appearance } from "@/types/character";
+import { useTheme } from "@/hooks/useTheme";
+import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 10;
 
 export default function AppearanceStep() {
+  const { colors } = useTheme();
+  const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
-  const {
-    draft,
-    setAppearance,
-    saveDraft,
-    loadDraft,
-  } = useCreationStore();
+  const { draft, setAppearance, saveDraft, loadDraft } = useCreationStore();
 
   const [age, setAge] = useState("");
   const [height, setHeight] = useState("");
@@ -54,7 +50,7 @@ export default function AppearanceStep() {
         }
       };
       init();
-    }, [campaignId])
+    }, [campaignId]),
   );
 
   const buildAppearance = (): Appearance => ({
@@ -107,7 +103,7 @@ export default function AppearanceStep() {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, themed.container]}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
@@ -116,15 +112,22 @@ export default function AppearanceStep() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Ionicons name="arrow-back" size={22} color="white" />
+            <TouchableOpacity
+              style={[styles.backButton, themed.backButton]}
+              onPress={handleBack}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={22}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
-            <Text style={styles.stepText}>
+            <Text style={[styles.stepText, themed.stepText]}>
               Paso {CURRENT_STEP} de {TOTAL_STEPS}
             </Text>
             <View style={{ height: 40, width: 40 }} />
           </View>
-          <View style={styles.progressBar}>
+          <View style={[styles.progressBar, themed.progressBar]}>
             <View
               style={[styles.progressFill, { width: `${progressPercent}%` }]}
             />
@@ -134,10 +137,10 @@ export default function AppearanceStep() {
         {/* Title */}
         <View style={styles.titleSection}>
           <View style={styles.iconCircle}>
-            <Ionicons name="body-outline" size={40} color="#c62828" />
+            <Ionicons name="body-outline" size={40} color={colors.accentRed} />
           </View>
-          <Text style={styles.title}>Apariencia</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, themed.title]}>Apariencia</Text>
+          <Text style={[styles.subtitle, themed.subtitle]}>
             Describe el aspecto físico de tu personaje. Todos los campos son
             opcionales — puedes completarlos más adelante desde la hoja de
             personaje.
@@ -146,16 +149,18 @@ export default function AppearanceStep() {
 
         {/* Quick fields in a grid */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Datos Físicos</Text>
+          <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+            Datos Físicos
+          </Text>
 
           <View style={styles.fieldGrid}>
             {/* Age */}
             <View style={styles.fieldHalf}>
-              <Text style={styles.fieldLabel}>Edad</Text>
+              <Text style={[styles.fieldLabel, themed.textPrimary]}>Edad</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, themed.input]}
                 placeholder="Ej: 25 años"
-                placeholderTextColor="#666699"
+                placeholderTextColor={colors.textMuted}
                 value={age}
                 onChangeText={setAge}
                 maxLength={30}
@@ -164,11 +169,13 @@ export default function AppearanceStep() {
 
             {/* Height */}
             <View style={styles.fieldHalf}>
-              <Text style={styles.fieldLabel}>Altura</Text>
+              <Text style={[styles.fieldLabel, themed.textPrimary]}>
+                Altura
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, themed.input]}
                 placeholder="Ej: 1,75 m"
-                placeholderTextColor="#666699"
+                placeholderTextColor={colors.textMuted}
                 value={height}
                 onChangeText={setHeight}
                 maxLength={30}
@@ -179,11 +186,11 @@ export default function AppearanceStep() {
           <View style={styles.fieldGrid}>
             {/* Weight */}
             <View style={styles.fieldHalf}>
-              <Text style={styles.fieldLabel}>Peso</Text>
+              <Text style={[styles.fieldLabel, themed.textPrimary]}>Peso</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, themed.input]}
                 placeholder="Ej: 70 kg"
-                placeholderTextColor="#666699"
+                placeholderTextColor={colors.textMuted}
                 value={weight}
                 onChangeText={setWeight}
                 maxLength={30}
@@ -192,11 +199,11 @@ export default function AppearanceStep() {
 
             {/* Skin Color */}
             <View style={styles.fieldHalf}>
-              <Text style={styles.fieldLabel}>Piel</Text>
+              <Text style={[styles.fieldLabel, themed.textPrimary]}>Piel</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, themed.input]}
                 placeholder="Ej: Clara"
-                placeholderTextColor="#666699"
+                placeholderTextColor={colors.textMuted}
                 value={skinColor}
                 onChangeText={setSkinColor}
                 maxLength={40}
@@ -207,11 +214,13 @@ export default function AppearanceStep() {
 
         {/* Hair Color */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>Color de Pelo</Text>
+          <Text style={[styles.fieldLabel, themed.textPrimary]}>
+            Color de Pelo
+          </Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, themed.input]}
             placeholder="Ej: Castaño oscuro"
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             value={hairColor}
             onChangeText={setHairColor}
             maxLength={40}
@@ -222,6 +231,7 @@ export default function AppearanceStep() {
                 key={c.value}
                 style={[
                   styles.quickChip,
+                  themed.quickChip,
                   hairColor === c.value && styles.quickChipSelected,
                 ]}
                 onPress={() =>
@@ -231,7 +241,11 @@ export default function AppearanceStep() {
                 <Text
                   style={[
                     styles.quickChipText,
-                    hairColor === c.value && styles.quickChipTextSelected,
+                    themed.quickChipText,
+                    hairColor === c.value && [
+                      styles.quickChipTextSelected,
+                      themed.quickChipTextSelected,
+                    ],
                   ]}
                 >
                   {c.label}
@@ -243,11 +257,13 @@ export default function AppearanceStep() {
 
         {/* Eye Color */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>Color de Ojos</Text>
+          <Text style={[styles.fieldLabel, themed.textPrimary]}>
+            Color de Ojos
+          </Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, themed.input]}
             placeholder="Ej: Verde esmeralda"
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             value={eyeColor}
             onChangeText={setEyeColor}
             maxLength={40}
@@ -258,6 +274,7 @@ export default function AppearanceStep() {
                 key={c.value}
                 style={[
                   styles.quickChip,
+                  themed.quickChip,
                   eyeColor === c.value && styles.quickChipSelected,
                 ]}
                 onPress={() =>
@@ -267,7 +284,11 @@ export default function AppearanceStep() {
                 <Text
                   style={[
                     styles.quickChipText,
-                    eyeColor === c.value && styles.quickChipTextSelected,
+                    themed.quickChipText,
+                    eyeColor === c.value && [
+                      styles.quickChipTextSelected,
+                      themed.quickChipTextSelected,
+                    ],
                   ]}
                 >
                   {c.label}
@@ -279,15 +300,17 @@ export default function AppearanceStep() {
 
         {/* Description */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Descripción General</Text>
-          <Text style={styles.fieldHint}>
+          <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+            Descripción General
+          </Text>
+          <Text style={[styles.fieldHint, themed.textSecondary]}>
             Describe libremente el aspecto de tu personaje: rasgos distintivos,
             cicatrices, tatuajes, vestimenta habitual, etc.
           </Text>
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[styles.input, styles.textArea, themed.input]}
             placeholder="Ej: Un elfo de porte elegante, con una cicatriz que cruza su mejilla izquierda. Viste una capa gris desgastada por los viajes..."
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             value={description}
             onChangeText={setDescription}
             multiline
@@ -295,14 +318,20 @@ export default function AppearanceStep() {
             maxLength={1000}
             textAlignVertical="top"
           />
-          <Text style={styles.charCount}>{description.length}/1000</Text>
+          <Text style={[styles.charCount, themed.textMuted]}>
+            {description.length}/1000
+          </Text>
         </View>
 
         {/* Skip hint */}
         <View style={styles.section}>
-          <View style={styles.hintBox}>
-            <Ionicons name="information-circle" size={20} color="#fbbf24" />
-            <Text style={styles.hintText}>
+          <View style={[styles.hintBox, themed.hintBox]}>
+            <Ionicons
+              name="information-circle"
+              size={20}
+              color={colors.accentGold}
+            />
+            <Text style={[styles.hintText, themed.hintText]}>
               Este paso es completamente opcional. Si prefieres, puedes pulsar
               "Siguiente" directamente y rellenar estos datos más adelante.
             </Text>
@@ -311,7 +340,7 @@ export default function AppearanceStep() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, themed.footer]}>
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
           <Text style={styles.nextButtonText}>Siguiente: Resumen Final</Text>
           <Ionicons name="arrow-forward" size={20} color="white" />
@@ -469,7 +498,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   quickChipTextSelected: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden by themed.quickChipTextSelected
   },
   hintBox: {
     flexDirection: "row",

@@ -9,6 +9,7 @@ import { randomUUID } from "expo-crypto";
 import type {
   Character,
   AbilityKey,
+  AbilityScores,
   SkillKey,
   HitPoints,
   DeathSaves,
@@ -16,11 +17,13 @@ import type {
   Condition,
   CombatLogEntry,
   ConcentrationState,
+  LevelUpRecord,
   Trait,
 } from "@/types/character";
 import {
   calcModifier,
   calcProficiencyBonus,
+  hitDieFixedValue,
   formatModifier,
   SKILLS,
 } from "@/types/character";
@@ -57,6 +60,106 @@ import {
   getPactMagicSlots,
   CLASS_CASTER_TYPE,
 } from "@/types/spell";
+import { getClassData, calcLevel1HP } from "@/data/srd/classes";
+import { getSubraceData } from "@/data/srd/races";
+import {
+  XP_THRESHOLDS,
+  MAX_LEVEL,
+  canLevelUp,
+  getLevelForXP,
+  getFeaturesForLevel,
+  isASILevel,
+  isSubclassLevel,
+  getLevelUpSummary,
+  RAGE_USES,
+  type LevelUpSummary,
+} from "@/data/srd/leveling";
+
+// ─── Class Resources State (Ki, Rage, Second Wind, etc.) ─────────────
+
+export interface ClassResourceInfo {
+  id: string;
+  nombre: string;
+  max: number;
+  current: number;
+  recovery: "short_rest" | "long_rest";
+}
+
+export interface ClassResourcesState {
+  resources: Record<string, ClassResourceInfo>;
+}
+
+function createDefaultClassResources(
+  character: Character,
+): ClassResourcesState {
+  const resources: Record<string, ClassResourceInfo> = {};
+  const level = character.nivel;
+  const clase = character.clase;
+
+  if (clase === "barbaro") {
+    const rageMax = RAGE_USES[level] ?? 2;
+    // At level 20, rage is unlimited — we represent that as 999
+    resources["furia"] = {
+      id: "furia",
+      nombre: "Furia",
+      max: rageMax === "ilimitado" ? 999 : (rageMax as number),
+      current: rageMax === "ilimitado" ? 999 : (rageMax as number),
+      recovery: "long_rest",
+    };
+  }
+
+  if (clase === "guerrero") {
+    resources["tomar_aliento"] = {
+      id: "tomar_aliento",
+      nombre: "Tomar Aliento",
+      max: 1,
+      current: 1,
+      recovery: "short_rest",
+    };
+    if (level >= 2) {
+      const oleadaMax = level >= 17 ? 2 : 1;
+      resources["oleada_accion"] = {
+        id: "oleada_accion",
+        nombre: "Oleada de Acción",
+        max: oleadaMax,
+        current: oleadaMax,
+        recovery: "short_rest",
+      };
+    }
+    if (level >= 9) {
+      const indomableMax = level >= 17 ? 3 : level >= 13 ? 2 : 1;
+      resources["indomable"] = {
+        id: "indomable",
+        nombre: "Indomable",
+        max: indomableMax,
+        current: indomableMax,
+        recovery: "long_rest",
+      };
+    }
+  }
+
+  if (clase === "monje" && level >= 2) {
+    resources["ki"] = {
+      id: "ki",
+      nombre: "Puntos de Ki",
+      max: level,
+      current: level,
+      recovery: "short_rest",
+    };
+  }
+
+  if (clase === "picaro" && level >= 20) {
+    resources["golpe_de_suerte"] = {
+      id: "golpe_de_suerte",
+      nombre: "Golpe de Suerte",
+      max: 1,
+      current: 1,
+      recovery: "short_rest",
+    };
+  }
+
+  return { resources };
+}
 
 // ─── Internal Magic State type (simplified for UI) ───────────────────
 
@@ -101,10 +204,32 @@ interface CharacterState {
   customTags: NoteTag[];
   /** Estado mágico (spell slots, etc.) */
   magicState: InternalMagicState | null;
+  /** Recursos de clase (Ki, Furia, etc.) */
+  classResources: ClassResourcesState | null;
   /** Si se están cargando datos */
   loading: boolean;
   /** Mensaje de error */
   error: string | null;
+}
+
+/** Opciones que el jugador elige al subir de nivel */
+export interface LevelUpOptions {
+  /** Método de PG: tirar dado o usar valor fijo */
+  hpMethod: "roll" | "fixed";
+  /** Si el método es "roll", el valor tirado (si no se pasa, se genera) */
+  hpRolled?: number;
+  /** Mejoras de característica elegidas (solo si el nivel otorga ASI) */
+  abilityImprovements?: Partial<AbilityScores>;
+  /** Subclase elegida (solo si el nivel lo requiere y no tiene una) */
+  subclassChosen?: string;
+  /** Hechizos aprendidos al subir de nivel (IDs o nombres) */
+  spellsLearned?: string[];
+  /** Trucos aprendidos al subir de nivel */
+  cantripsLearned?: string[];
+  /** Hechizo intercambiado: [viejo, nuevo] */
+  spellSwapped?: [string, string];
+  /** Hechizos añadidos al libro de conjuros (solo mago) */
+  spellbookAdded?: string[];
 }
 
 interface CharacterActions {
@@ -112,6 +237,15 @@ interface CharacterActions {
   loadCharacter: (characterId: string) => Promise<void>;
   saveCharacter: () => Promise<void>;
   clearCharacter: () => void;
+
+  // ── Experiencia y progresión ──
+  addExperience: (amount: number) => Promise<void>;
+  removeExperience: (amount: number) => Promise<void>;
+  setExperience: (amount: number) => Promise<void>;
+  levelUp: (options: LevelUpOptions) => Promise<LevelUpSummary | null>;
+  getLevelUpPreview: () => LevelUpSummary | null;
+  canLevelUp: () => boolean;
+  resetToLevel1: () => Promise<void>;
 
   // ── HP Management (HU-08) ──
   takeDamage: (amount: number, description?: string) => Promise<void>;
@@ -139,12 +273,24 @@ interface CharacterActions {
   clearConcentration: () => Promise<void>;
 
   // ── Rests ──
-  shortRest: (hitDiceToUse: number) => Promise<{ hpRestored: number; diceUsed: number }>;
+  shortRest: (
+    hitDiceToUse: number,
+  ) => Promise<{ hpRestored: number; diceUsed: number }>;
   longRest: () => Promise<void>;
 
   // ── Trait uses ──
   useTraitCharge: (traitId: string) => Promise<void>;
   restoreTraitCharges: (traitId: string) => Promise<void>;
+
+  // ── Class Resources (Ki, Rage, etc.) ──
+  useClassResource: (resourceId: string) => Promise<boolean>;
+  useClassResourceAmount: (
+    resourceId: string,
+    amount: number,
+  ) => Promise<boolean>;
+  restoreClassResource: (resourceId: string) => Promise<void>;
+  restoreAllClassResources: () => Promise<void>;
+  getClassResources: () => ClassResourcesState | null;
 
   // ── Spell Slots ──
   useSpellSlot: (level: number) => Promise<boolean>;
@@ -157,11 +303,16 @@ interface CharacterActions {
   // ── Inventory ──
   loadInventory: (characterId: string) => Promise<void>;
   addItem: (item: Omit<InventoryItem, "id">) => Promise<void>;
-  updateItem: (itemId: string, updates: Partial<InventoryItem>) => Promise<void>;
+  updateItem: (
+    itemId: string,
+    updates: Partial<InventoryItem>,
+  ) => Promise<void>;
   removeItem: (itemId: string) => Promise<void>;
   toggleEquipItem: (itemId: string) => Promise<void>;
   updateCoins: (coins: Partial<Coins>) => Promise<void>;
-  addCoinTransaction: (transaction: Omit<CoinTransaction, "id" | "timestamp">) => Promise<void>;
+  addCoinTransaction: (
+    transaction: Omit<CoinTransaction, "id" | "timestamp">,
+  ) => Promise<void>;
 
   // ── Notes ──
   loadNotes: (characterId: string) => Promise<void>;
@@ -188,7 +339,7 @@ function createCombatLogEntry(
   type: CombatLogEntry["type"],
   amount: number,
   hpAfter: number,
-  description?: string
+  description?: string,
 ): CombatLogEntry {
   return {
     id: randomUUID(),
@@ -211,7 +362,8 @@ function hitDieSides(die: string): number {
 
 function createDefaultMagicState(character: Character): InternalMagicState {
   const slotsData = getSpellSlots(character.clase, character.nivel);
-  const pactData = character.clase === "brujo" ? getPactMagicSlots(character.nivel) : null;
+  const pactData =
+    character.clase === "brujo" ? getPactMagicSlots(character.nivel) : null;
 
   const spellSlots: Record<number, SlotInfo> = {};
   if (slotsData) {
@@ -235,9 +387,13 @@ function createDefaultMagicState(character: Character): InternalMagicState {
     pactMagicSlots,
     concentration: null,
     favoriteSpellIds: [],
-    sorceryPoints: character.clase === "hechicero"
-      ? { max: Math.max(0, character.nivel), current: Math.max(0, character.nivel) }
-      : undefined,
+    sorceryPoints:
+      character.clase === "hechicero"
+        ? {
+            max: Math.max(0, character.nivel),
+            current: Math.max(0, character.nivel),
+          }
+        : undefined,
   };
 }
 
@@ -249,6 +405,7 @@ const INITIAL_STATE: CharacterState = {
   notes: [],
   customTags: [],
   magicState: null,
+  classResources: null,
   loading: false,
   error: null,
 };
@@ -283,10 +440,11 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
 
       // Load notes
       const notesKey = STORAGE_KEYS.NOTES(characterId);
-      const notes = await getItem<Note[]>(notesKey) ?? [];
+      const notes = (await getItem<Note[]>(notesKey)) ?? [];
 
       // Load custom tags
-      const customTags = await getItem<NoteTag[]>(STORAGE_KEYS.CUSTOM_TAGS) ?? [];
+      const customTags =
+        (await getItem<NoteTag[]>(STORAGE_KEYS.CUSTOM_TAGS)) ?? [];
 
       // Load magic state
       const magicKey = STORAGE_KEYS.MAGIC_STATE(characterId);
@@ -296,27 +454,40 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
         await setItem(magicKey, magicState);
       }
 
+      // Load class resources (Ki, Rage, etc.)
+      const classResKey = STORAGE_KEYS.CLASS_RESOURCES(characterId);
+      let classResources = await getItem<ClassResourcesState>(classResKey);
+      if (!classResources) {
+        classResources = createDefaultClassResources(character);
+        await setItem(classResKey, classResources);
+      }
+
       set({
         character,
         inventory,
         notes,
         customTags,
         magicState,
+        classResources,
         loading: false,
       });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Error al cargar el personaje";
+      const message =
+        err instanceof Error ? err.message : "Error al cargar el personaje";
       console.error("[CharacterStore] loadCharacter:", message);
       set({ error: message, loading: false });
     }
   },
 
   saveCharacter: async () => {
-    const { character, inventory, notes, magicState } = get();
+    const { character, inventory, notes, magicState, classResources } = get();
     if (!character) return;
 
     try {
-      const updatedChar = { ...character, actualizadoEn: new Date().toISOString() };
+      const updatedChar = {
+        ...character,
+        actualizadoEn: new Date().toISOString(),
+      };
       await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
       set({ character: updatedChar });
 
@@ -329,6 +500,12 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       if (magicState) {
         await setItem(STORAGE_KEYS.MAGIC_STATE(character.id), magicState);
       }
+      if (classResources) {
+        await setItem(
+          STORAGE_KEYS.CLASS_RESOURCES(character.id),
+          classResources,
+        );
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Error al guardar";
       console.error("[CharacterStore] saveCharacter:", message);
@@ -338,6 +515,334 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
 
   clearCharacter: () => {
     set(INITIAL_STATE);
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // EXPERIENCIA Y PROGRESIÓN
+  // ══════════════════════════════════════════════════════════════════
+
+  addExperience: async (amount: number) => {
+    const { character } = get();
+    if (!character || amount <= 0) return;
+
+    const newXP = character.experiencia + amount;
+    const updatedChar: Character = {
+      ...character,
+      experiencia: newXP,
+      actualizadoEn: new Date().toISOString(),
+    };
+    set({ character: updatedChar });
+    await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+  },
+
+  removeExperience: async (amount: number) => {
+    const { character } = get();
+    if (!character || amount <= 0) return;
+
+    const newXP = Math.max(0, character.experiencia - amount);
+    const updatedChar: Character = {
+      ...character,
+      experiencia: newXP,
+      actualizadoEn: new Date().toISOString(),
+    };
+    set({ character: updatedChar });
+    await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+  },
+
+  setExperience: async (amount: number) => {
+    const { character } = get();
+    if (!character) return;
+
+    const newXP = Math.max(0, amount);
+    const updatedChar: Character = {
+      ...character,
+      experiencia: newXP,
+      actualizadoEn: new Date().toISOString(),
+    };
+    set({ character: updatedChar });
+    await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+  },
+
+  canLevelUp: () => {
+    const { character } = get();
+    if (!character) return false;
+    return canLevelUp(character.experiencia, character.nivel);
+  },
+
+  getLevelUpPreview: () => {
+    const { character } = get();
+    if (!character || character.nivel >= MAX_LEVEL) return null;
+    return getLevelUpSummary(character.clase, character.nivel + 1);
+  },
+
+  levelUp: async (options: LevelUpOptions) => {
+    const { character, magicState } = get();
+    if (!character || character.nivel >= MAX_LEVEL) return null;
+
+    const newLevel = character.nivel + 1;
+    const classData = getClassData(character.clase);
+    const summary = getLevelUpSummary(character.clase, newLevel);
+
+    // ── Calcular PG ganados ──
+    const dieSides = hitDieSides(character.hitDice.die);
+    let hpRoll: number;
+    if (options.hpMethod === "fixed") {
+      hpRoll = Math.ceil(dieSides / 2) + 1;
+    } else {
+      hpRoll = options.hpRolled ?? rollDie(dieSides);
+    }
+    const conMod = calcModifier(character.abilityScores.con.total);
+    const hpGained = Math.max(1, hpRoll + conMod);
+
+    // ── Aplicar mejoras de característica (ASI) ──
+    const updatedAbilityScores = { ...character.abilityScores };
+    if (summary.hasASI && options.abilityImprovements) {
+      for (const [key, value] of Object.entries(options.abilityImprovements)) {
+        const abilityKey = key as AbilityKey;
+        if (updatedAbilityScores[abilityKey] && value) {
+          const currentDetail = { ...updatedAbilityScores[abilityKey] };
+          currentDetail.improvement += value;
+          currentDetail.total =
+            currentDetail.base +
+            currentDetail.racial +
+            currentDetail.improvement +
+            currentDetail.misc;
+          if (currentDetail.override !== null) {
+            currentDetail.total = currentDetail.override;
+          }
+          currentDetail.total = Math.min(20, currentDetail.total);
+          currentDetail.modifier = calcModifier(currentDetail.total);
+          updatedAbilityScores[abilityKey] = currentDetail;
+        }
+      }
+    }
+
+    // ── Recalcular CON mod después de posibles mejoras ──
+    const newConMod = calcModifier(updatedAbilityScores.con.total);
+    const conModDiff = newConMod - conMod;
+    // Si el mod. CON subió, los PG max retroactivos suben (1 por nivel anterior)
+    const retroactiveHP = conModDiff > 0 ? conModDiff * character.nivel : 0;
+
+    // ── Nuevo HP máximo ──
+    const newMaxHP = character.hp.max + hpGained + retroactiveHP;
+    const newCurrentHP = character.hp.current + hpGained + retroactiveHP;
+
+    // ── Registro de nivel ──
+    const levelRecord: LevelUpRecord = {
+      level: newLevel,
+      date: new Date().toISOString(),
+      hpGained,
+      hpMethod: options.hpMethod,
+      abilityImprovements: options.abilityImprovements,
+      subclassChosen: options.subclassChosen,
+      spellsLearned: [
+        ...(options.cantripsLearned ?? []),
+        ...(options.spellsLearned ?? []),
+        ...(options.spellbookAdded ?? []),
+      ].filter(Boolean),
+      spellsSwapped: options.spellSwapped ? [options.spellSwapped] : undefined,
+      traitsGained: summary.features.map((f) => f.nombre),
+    };
+
+    // ── Nuevos rasgos del nivel ──
+    const newTraits: Trait[] = summary.features
+      .filter(
+        (f) => !f.esSubclase || character.subclase || options.subclassChosen,
+      )
+      .map((f) => ({
+        id: `${character.clase}_${f.nombre.toLowerCase().replace(/\s+/g, "_")}_nv${newLevel}`,
+        nombre: f.nombre,
+        descripcion: f.descripcion,
+        origen: (f.esSubclase ? "subclase" : "clase") as Trait["origen"],
+        maxUses: null,
+        currentUses: null,
+        recharge: null,
+      }));
+
+    // ── Nuevo bonificador de competencia ──
+    const newProfBonus = calcProficiencyBonus(newLevel);
+
+    // ── Actualizar personaje ──
+    const updatedChar: Character = {
+      ...character,
+      nivel: newLevel,
+      abilityScores: updatedAbilityScores,
+      subclase: options.subclassChosen ?? character.subclase,
+      hp: {
+        ...character.hp,
+        max: newMaxHP,
+        current: newCurrentHP,
+      },
+      hitDice: {
+        ...character.hitDice,
+        total: newLevel,
+        remaining: character.hitDice.remaining + 1,
+      },
+      proficiencyBonus: newProfBonus,
+      traits: [...character.traits, ...newTraits],
+      levelHistory: [...character.levelHistory, levelRecord],
+      actualizadoEn: new Date().toISOString(),
+    };
+
+    set({ character: updatedChar });
+
+    // Recalculate class resources for the new level
+    const newClassResources = createDefaultClassResources(updatedChar);
+    // Preserve current usage if the resource already existed
+    const { classResources: oldClassResources } = get();
+    if (oldClassResources) {
+      for (const [id, newRes] of Object.entries(newClassResources.resources)) {
+        const oldRes = oldClassResources.resources[id];
+        if (oldRes) {
+          // Keep current uses but clamp to new max; add bonus from max increase
+          const maxIncrease = newRes.max - oldRes.max;
+          newRes.current = Math.min(
+            newRes.max,
+            oldRes.current + Math.max(0, maxIncrease),
+          );
+        }
+      }
+    }
+    set({ classResources: newClassResources });
+    await setItem(
+      STORAGE_KEYS.CLASS_RESOURCES(updatedChar.id),
+      newClassResources,
+    );
+    await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+
+    // ── Actualizar estado mágico si es necesario ──
+    if (magicState) {
+      const newMagicState = createDefaultMagicState(updatedChar);
+      // Preservar estado actual (hechizos conocidos, preparados, etc.)
+      newMagicState.knownSpellIds = [...magicState.knownSpellIds];
+      newMagicState.preparedSpellIds = [...magicState.preparedSpellIds];
+      newMagicState.spellbookIds = [...magicState.spellbookIds];
+      newMagicState.favoriteSpellIds = [...magicState.favoriteSpellIds];
+
+      // ── Aplicar hechizos aprendidos al subir de nivel ──
+      // Trucos y hechizos conocidos van a knownSpellIds
+      const newKnown = [
+        ...(options.cantripsLearned ?? []),
+        ...(options.spellsLearned ?? []),
+      ].filter(Boolean);
+      for (const spellId of newKnown) {
+        if (!newMagicState.knownSpellIds.includes(spellId)) {
+          newMagicState.knownSpellIds.push(spellId);
+        }
+      }
+
+      // Hechizos del libro de conjuros (mago)
+      const newBookSpells = (options.spellbookAdded ?? []).filter(Boolean);
+      for (const spellId of newBookSpells) {
+        if (!newMagicState.spellbookIds.includes(spellId)) {
+          newMagicState.spellbookIds.push(spellId);
+        }
+      }
+
+      // Intercambio de hechizo
+      if (options.spellSwapped) {
+        const [oldSpell, newSpell] = options.spellSwapped;
+        const idx = newMagicState.knownSpellIds.indexOf(oldSpell);
+        if (idx !== -1) {
+          newMagicState.knownSpellIds[idx] = newSpell;
+        }
+        // También quitar de preparados si estaba
+        const prepIdx = newMagicState.preparedSpellIds.indexOf(oldSpell);
+        if (prepIdx !== -1) {
+          newMagicState.preparedSpellIds.splice(prepIdx, 1);
+        }
+      }
+
+      set({ magicState: newMagicState });
+      await setItem(STORAGE_KEYS.MAGIC_STATE(character.id), newMagicState);
+    }
+
+    return summary;
+  },
+
+  resetToLevel1: async () => {
+    const { character } = get();
+    if (!character || character.nivel <= 1) return;
+
+    const classData = getClassData(character.clase);
+
+    // ── Reset ability scores: remove all improvements ──
+    const resetAbilityScores = { ...character.abilityScores };
+    const abilityKeys: AbilityKey[] = ["fue", "des", "con", "int", "sab", "car"];
+    for (const key of abilityKeys) {
+      const detail = { ...resetAbilityScores[key] };
+      detail.improvement = 0;
+      detail.total = detail.override !== null
+        ? detail.override
+        : Math.min(20, detail.base + detail.racial + detail.misc);
+      detail.modifier = calcModifier(detail.total);
+      resetAbilityScores[key] = detail;
+    }
+
+    // ── Recalculate HP at level 1 ──
+    const conMod = resetAbilityScores.con.modifier;
+    const subraceData = character.subraza
+      ? getSubraceData(character.raza, character.subraza)
+      : null;
+    const hpBonusPerLevel = subraceData?.hpBonusPerLevel ?? 0;
+    const level1HP = calcLevel1HP(character.clase, conMod) + hpBonusPerLevel;
+
+    // ── Restore only level-1 spells from original levelHistory ──
+    const level1Record = character.levelHistory.find((r) => r.level === 1);
+    const level1Spells = level1Record?.spellsLearned ?? [];
+
+    // ── Keep only race, background, and level-1 class traits ──
+    const traitsToKeep = character.traits.filter(
+      (t) => t.origen === "raza" || t.origen === "trasfondo" || t.origen === "dote" || t.origen === "manual",
+    );
+    // Also keep class traits that existed at level 1 (from original creation)
+    const level1TraitNames = new Set(
+      level1Record?.traitsGained ?? classData.level1Features.map((f) => f.nombre),
+    );
+    const level1ClassTraits = character.traits.filter(
+      (t) => t.origen === "clase" && level1TraitNames.has(t.nombre),
+    );
+    const finalTraits = [...traitsToKeep, ...level1ClassTraits];
+
+    // ── Build reset character ──
+    const now = new Date().toISOString();
+    const updatedChar: Character = {
+      ...character,
+      nivel: 1,
+      experiencia: 0,
+      subclase: null,
+      abilityScores: resetAbilityScores,
+      hp: { max: level1HP, current: level1HP, temp: 0 },
+      hitDice: { die: classData.hitDie, total: 1, remaining: 1 },
+      deathSaves: { successes: 0, failures: 0 },
+      conditions: [],
+      concentration: null,
+      combatLog: [],
+      proficiencyBonus: calcProficiencyBonus(1),
+      traits: finalTraits,
+      levelHistory: level1Record
+        ? [{ ...level1Record, hpGained: level1HP }]
+        : [{ level: 1, date: now, hpGained: level1HP, hpMethod: "fixed" as const }],
+      knownSpellIds: [...level1Spells],
+      preparedSpellIds: level1Spells.filter(
+        (id) => !level1Spells.some((s) => s === id && character.knownSpellIds.indexOf(s) === -1),
+      ),
+      spellbookIds: character.clase === "mago" ? [...level1Spells] : [],
+      actualizadoEn: now,
+    };
+
+    set({ character: updatedChar });
+    await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+
+    // ── Reset magic state ──
+    const newMagicState = createDefaultMagicState(updatedChar);
+    set({ magicState: newMagicState });
+    await setItem(STORAGE_KEYS.MAGIC_STATE(character.id), newMagicState);
+
+    // ── Reset class resources ──
+    const newClassResources = createDefaultClassResources(updatedChar);
+    set({ classResources: newClassResources });
+    await setItem(STORAGE_KEYS.CLASS_RESOURCES(character.id), newClassResources);
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -375,7 +880,7 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       "damage",
       amount,
       newCurrent,
-      description ?? `Recibe ${amount} de daño`
+      description ?? `Recibe ${amount} de daño`,
     );
 
     const updatedChar: Character = {
@@ -393,7 +898,10 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     const { character } = get();
     if (!character || amount <= 0) return;
 
-    const newCurrent = Math.min(character.hp.max, character.hp.current + amount);
+    const newCurrent = Math.min(
+      character.hp.max,
+      character.hp.current + amount,
+    );
     const actualHeal = newCurrent - character.hp.current;
 
     const newHp: HitPoints = {
@@ -405,7 +913,7 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       "healing",
       actualHeal,
       newCurrent,
-      description ?? `Cura ${actualHeal} PG`
+      description ?? `Cura ${actualHeal} PG`,
     );
 
     const updatedChar: Character = {
@@ -430,7 +938,7 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       "temp_hp",
       newTemp,
       character.hp.current,
-      `PG temporales: ${newTemp}`
+      `PG temporales: ${newTemp}`,
     );
 
     const updatedChar: Character = {
@@ -488,13 +996,16 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     const rolled = rollDie(sides);
     const conMod = character.abilityScores.con.modifier;
     const healed = Math.max(1, rolled + conMod);
-    const newCurrent = Math.min(character.hp.max, character.hp.current + healed);
+    const newCurrent = Math.min(
+      character.hp.max,
+      character.hp.current + healed,
+    );
 
     const logEntry = createCombatLogEntry(
       "hit_dice",
       healed,
       newCurrent,
-      `Usa dado de golpe (${character.hitDice.die}): ${rolled} + CON(${formatModifier(conMod)}) = ${healed} PG`
+      `Usa dado de golpe (${character.hitDice.die}): ${rolled} + CON(${formatModifier(conMod)}) = ${healed} PG`,
     );
 
     const updatedChar: Character = {
@@ -520,7 +1031,7 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
 
     const newRemaining = Math.min(
       character.hitDice.total,
-      character.hitDice.remaining + count
+      character.hitDice.remaining + count,
     );
 
     const updatedChar: Character = {
@@ -548,7 +1059,9 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       "death_save",
       1,
       character.hp.current,
-      isStable ? "¡Estabilizado! (3 éxitos)" : `Salvación de muerte: Éxito (${newSuccesses}/3)`
+      isStable
+        ? "¡Estabilizado! (3 éxitos)"
+        : `Salvación de muerte: Éxito (${newSuccesses}/3)`,
     );
 
     const updatedChar: Character = {
@@ -583,7 +1096,9 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       "death_save",
       -1,
       character.hp.current,
-      isDead ? "☠️ Muerte (3 fallos)" : `Salvación de muerte: Fallo (${newFailures}/3)`
+      isDead
+        ? "☠️ Muerte (3 fallos)"
+        : `Salvación de muerte: Fallo (${newFailures}/3)`,
     );
 
     const updatedChar: Character = {
@@ -706,7 +1221,7 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
   // ══════════════════════════════════════════════════════════════════
 
   shortRest: async (hitDiceToUse: number) => {
-    const { character, magicState } = get();
+    const { character, magicState, classResources } = get();
     if (!character) return { hpRestored: 0, diceUsed: 0 };
 
     const sides = hitDieSides(character.hitDice.die);
@@ -724,13 +1239,16 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       diceUsed++;
     }
 
-    const newCurrent = Math.min(character.hp.max, character.hp.current + totalHealed);
+    const newCurrent = Math.min(
+      character.hp.max,
+      character.hp.current + totalHealed,
+    );
 
     const logEntry = createCombatLogEntry(
       "rest",
       totalHealed,
       newCurrent,
-      `Descanso corto: usa ${diceUsed} dado(s) de golpe, recupera ${totalHealed} PG`
+      `Descanso corto: usa ${diceUsed} dado(s) de golpe, recupera ${totalHealed} PG`,
     );
 
     // Restore short rest traits
@@ -743,7 +1261,11 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
 
     // Restore warlock pact slots on short rest
     let updatedMagicState: InternalMagicState | null = magicState;
-    if (magicState && character.clase === "brujo" && magicState.pactMagicSlots) {
+    if (
+      magicState &&
+      character.clase === "brujo" &&
+      magicState.pactMagicSlots
+    ) {
       updatedMagicState = {
         ...magicState,
         pactMagicSlots: {
@@ -751,6 +1273,19 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
           used: 0,
         },
       };
+    }
+
+    // Restore short_rest class resources (Ki, Second Wind, etc.)
+    let updatedClassResources = classResources;
+    if (classResources) {
+      const restoredResources: Record<string, ClassResourceInfo> = {};
+      for (const [id, res] of Object.entries(classResources.resources)) {
+        restoredResources[id] =
+          res.recovery === "short_rest"
+            ? { ...res, current: res.max }
+            : { ...res };
+      }
+      updatedClassResources = { resources: restoredResources };
     }
 
     const updatedChar: Character = {
@@ -762,17 +1297,27 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       actualizadoEn: new Date().toISOString(),
     };
 
-    set({ character: updatedChar, magicState: updatedMagicState });
+    set({
+      character: updatedChar,
+      magicState: updatedMagicState,
+      classResources: updatedClassResources,
+    });
     await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
     if (updatedMagicState) {
       await setItem(STORAGE_KEYS.MAGIC_STATE(character.id), updatedMagicState);
+    }
+    if (updatedClassResources) {
+      await setItem(
+        STORAGE_KEYS.CLASS_RESOURCES(character.id),
+        updatedClassResources,
+      );
     }
 
     return { hpRestored: totalHealed, diceUsed };
   },
 
   longRest: async () => {
-    const { character, magicState } = get();
+    const { character, magicState, classResources } = get();
     if (!character) return;
 
     // Restore all HP
@@ -782,7 +1327,7 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     const dicesToRestore = Math.max(1, Math.floor(character.hitDice.total / 2));
     const newRemaining = Math.min(
       character.hitDice.total,
-      character.hitDice.remaining + dicesToRestore
+      character.hitDice.remaining + dicesToRestore,
     );
 
     // Reset death saves
@@ -790,7 +1335,12 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
 
     // Restore all trait uses
     const updatedTraits = character.traits.map((t) => {
-      if (t.maxUses !== null && (t.recharge === "short_rest" || t.recharge === "long_rest" || t.recharge === "dawn")) {
+      if (
+        t.maxUses !== null &&
+        (t.recharge === "short_rest" ||
+          t.recharge === "long_rest" ||
+          t.recharge === "dawn")
+      ) {
         return { ...t, currentUses: t.maxUses };
       }
       return t;
@@ -816,16 +1366,29 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
           ? { ...magicState.pactMagicSlots, used: 0 }
           : undefined,
         sorceryPoints: magicState.sorceryPoints
-          ? { ...magicState.sorceryPoints, current: magicState.sorceryPoints.max }
+          ? {
+              ...magicState.sorceryPoints,
+              current: magicState.sorceryPoints.max,
+            }
           : undefined,
       };
+    }
+
+    // Restore ALL class resources on long rest
+    let updatedClassResources = classResources;
+    if (classResources) {
+      const restoredResources: Record<string, ClassResourceInfo> = {};
+      for (const [id, res] of Object.entries(classResources.resources)) {
+        restoredResources[id] = { ...res, current: res.max };
+      }
+      updatedClassResources = { resources: restoredResources };
     }
 
     const logEntry = createCombatLogEntry(
       "rest",
       character.hp.max - character.hp.current,
       newCurrent,
-      `Descanso largo: PG al máximo, ${dicesToRestore} dado(s) de golpe restaurados`
+      `Descanso largo: PG al máximo, ${dicesToRestore} dado(s) de golpe restaurados`,
     );
 
     const updatedChar: Character = {
@@ -840,10 +1403,20 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       actualizadoEn: new Date().toISOString(),
     };
 
-    set({ character: updatedChar, magicState: updatedMagicState });
+    set({
+      character: updatedChar,
+      magicState: updatedMagicState,
+      classResources: updatedClassResources,
+    });
     await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
     if (updatedMagicState) {
       await setItem(STORAGE_KEYS.MAGIC_STATE(character.id), updatedMagicState);
+    }
+    if (updatedClassResources) {
+      await setItem(
+        STORAGE_KEYS.CLASS_RESOURCES(character.id),
+        updatedClassResources,
+      );
     }
   },
 
@@ -891,6 +1464,96 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
 
     set({ character: updatedChar });
     await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // CLASS RESOURCES (Ki, Rage, Second Wind, etc.)
+  // ══════════════════════════════════════════════════════════════════
+
+  useClassResource: async (resourceId: string) => {
+    const { character, classResources } = get();
+    if (!character || !classResources) return false;
+
+    const resource = classResources.resources[resourceId];
+    if (!resource || resource.current <= 0) return false;
+
+    const updatedResources: ClassResourcesState = {
+      resources: {
+        ...classResources.resources,
+        [resourceId]: {
+          ...resource,
+          current: resource.current - 1,
+        },
+      },
+    };
+
+    set({ classResources: updatedResources });
+    await setItem(STORAGE_KEYS.CLASS_RESOURCES(character.id), updatedResources);
+    return true;
+  },
+
+  useClassResourceAmount: async (resourceId: string, amount: number) => {
+    const { character, classResources } = get();
+    if (!character || !classResources) return false;
+
+    const resource = classResources.resources[resourceId];
+    if (!resource || resource.current < amount || amount <= 0) return false;
+
+    const updatedResources: ClassResourcesState = {
+      resources: {
+        ...classResources.resources,
+        [resourceId]: {
+          ...resource,
+          current: resource.current - amount,
+        },
+      },
+    };
+
+    set({ classResources: updatedResources });
+    await setItem(STORAGE_KEYS.CLASS_RESOURCES(character.id), updatedResources);
+    return true;
+  },
+
+  restoreClassResource: async (resourceId: string) => {
+    const { character, classResources } = get();
+    if (!character || !classResources) return;
+
+    const resource = classResources.resources[resourceId];
+    if (!resource || resource.current >= resource.max) return;
+
+    const updatedResources: ClassResourcesState = {
+      resources: {
+        ...classResources.resources,
+        [resourceId]: {
+          ...resource,
+          current: resource.max,
+        },
+      },
+    };
+
+    set({ classResources: updatedResources });
+    await setItem(STORAGE_KEYS.CLASS_RESOURCES(character.id), updatedResources);
+  },
+
+  restoreAllClassResources: async () => {
+    const { character, classResources } = get();
+    if (!character || !classResources) return;
+
+    const restoredResources: Record<string, ClassResourceInfo> = {};
+    for (const [id, res] of Object.entries(classResources.resources)) {
+      restoredResources[id] = { ...res, current: res.max };
+    }
+
+    const updatedResources: ClassResourcesState = {
+      resources: restoredResources,
+    };
+
+    set({ classResources: updatedResources });
+    await setItem(STORAGE_KEYS.CLASS_RESOURCES(character.id), updatedResources);
+  },
+
+  getClassResources: () => {
+    return get().classResources;
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -963,7 +1626,8 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     const { character, magicState } = get();
     if (!character || !magicState || !magicState.pactMagicSlots) return false;
 
-    if (magicState.pactMagicSlots.used >= magicState.pactMagicSlots.total) return false;
+    if (magicState.pactMagicSlots.used >= magicState.pactMagicSlots.total)
+      return false;
 
     const updatedMagicState: InternalMagicState = {
       ...magicState,
@@ -1033,7 +1697,7 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     if (!character || !inventory) return;
 
     const updatedItems = inventory.items.map((item) =>
-      item.id === itemId ? { ...item, ...updates } : item
+      item.id === itemId ? { ...item, ...updates } : item,
     );
 
     const updatedInventory: Inventory = {
@@ -1063,7 +1727,7 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     if (!character || !inventory) return;
 
     const updatedItems = inventory.items.map((item) =>
-      item.id === itemId ? { ...item, equipado: !item.equipado } : item
+      item.id === itemId ? { ...item, equipado: !item.equipado } : item,
     );
 
     const updatedInventory: Inventory = {
@@ -1098,7 +1762,9 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     await setItem(STORAGE_KEYS.INVENTORY(character.id), updatedInventory);
   },
 
-  addCoinTransaction: async (transaction: Omit<CoinTransaction, "id" | "timestamp">) => {
+  addCoinTransaction: async (
+    transaction: Omit<CoinTransaction, "id" | "timestamp">,
+  ) => {
     const { character, inventory } = get();
     if (!character || !inventory) return;
 
@@ -1114,9 +1780,13 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
       for (const [type, amount] of Object.entries(transaction.coins)) {
         const coinType = type as CoinType;
         if (transaction.type === "income") {
-          updatedCoins[coinType] = (updatedCoins[coinType] ?? 0) + (amount ?? 0);
+          updatedCoins[coinType] =
+            (updatedCoins[coinType] ?? 0) + (amount ?? 0);
         } else if (transaction.type === "expense") {
-          updatedCoins[coinType] = Math.max(0, (updatedCoins[coinType] ?? 0) - (amount ?? 0));
+          updatedCoins[coinType] = Math.max(
+            0,
+            (updatedCoins[coinType] ?? 0) - (amount ?? 0),
+          );
         }
       }
     }
@@ -1124,7 +1794,10 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     const updatedInventory: Inventory = {
       ...inventory,
       coins: updatedCoins,
-      coinTransactions: [newTransaction, ...inventory.coinTransactions].slice(0, 50),
+      coinTransactions: [newTransaction, ...inventory.coinTransactions].slice(
+        0,
+        50,
+      ),
     };
 
     set({ inventory: updatedInventory });
@@ -1138,8 +1811,9 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
   loadNotes: async (characterId: string) => {
     try {
       const notesKey = STORAGE_KEYS.NOTES(characterId);
-      const notes = await getItem<Note[]>(notesKey) ?? [];
-      const customTags = await getItem<NoteTag[]>(STORAGE_KEYS.CUSTOM_TAGS) ?? [];
+      const notes = (await getItem<Note[]>(notesKey)) ?? [];
+      const customTags =
+        (await getItem<NoteTag[]>(STORAGE_KEYS.CUSTOM_TAGS)) ?? [];
       set({ notes, customTags });
     } catch (err) {
       console.error("[CharacterStore] loadNotes:", err);
@@ -1282,10 +1956,10 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
 
     if (inventory) {
       const equippedArmor = inventory.items.find(
-        (i) => i.equipado && i.categoria === "armadura" && i.armorDetails
+        (i) => i.equipado && i.categoria === "armadura" && i.armorDetails,
       );
       const equippedShield = inventory.items.find(
-        (i) => i.equipado && i.categoria === "escudo" && i.armorDetails
+        (i) => i.equipado && i.categoria === "escudo" && i.armorDetails,
       );
 
       if (equippedArmor?.armorDetails) {

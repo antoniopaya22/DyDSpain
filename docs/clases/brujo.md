@@ -385,6 +385,192 @@ Cuando uses este rasgo, no podrás volver a hacerlo hasta que finalices un **des
 
 ---
 
+## Patrón Sobrenatural: El Gran Antiguo
+
+Tu patrón es una entidad insondable procedente del Vacío o más allá del tiempo: una mente colosal que susurra secretos prohibidos. Sus dones alteran los límites de la cordura.
+
+### Expansión de Conjuros
+
+A nivel 1, obtienes acceso a conjuros que trastornan la mente y alteran la percepción (como *despertar mental* y *detectar pensamientos*).
+
+### Comunicador Mental
+
+También a nivel 1, puedes comunicarte telepáticamente con cualquier criatura a **9 m** que entienda un idioma.
+
+### Presencia Entrometida
+
+A nivel 6, puedes forzar a una criatura cercana a hacer una **tirada de Sabiduría**; si falla, queda **hechizada** o **asustada** durante 1 minuto.
+
+### Defensor de los Secretos
+
+A nivel 10, tu mente se protege: ganas **resistencia al daño psíquico** y la **inmunidad** a ser hechizado o asustado.
+
+### Maestro del Caos Mental
+
+A nivel 14, puedes invocar una aura de pesadilla, haciendo que los enemigos fallen tiradas y queden **incapacitados** por el horror cósmico que proyectas.
+
+---
+
+## Patrón Sobrenatural: El Archifey
+
+Tu patrón es un señor feérico o dama de las cortes encantadas, lleno de belleza, capricho y poder arcano. Tu magia refleja la ambigüedad y el encanto del Feywild.
+
+### Expansión de Conjuros
+
+A nivel 1, obtienes conjuros de ilusión y encanto (como *hechizar persona* y *santuario*).
+
+### Presencia Feérica
+
+A nivel 1, puedes **hechizar** o **asustar** a todas las criaturas a **3 m** como acción una vez por descanso.
+
+### Camino Brumoso
+
+A nivel 6, aprendes a moverte en destellos de neblina, lanzando *paso brumoso* una vez por **descanso corto**.
+
+### Defensa Ilusoria
+
+A nivel 10, cuando recibes daño, puedes hacerte **invisible** como reacción hasta tu próximo turno.
+
+### Tentación Soberana
+
+A nivel 14, como acción, puedes forzar a criaturas cercanas a obedecerte mágicamente, como si estuvieran bajo un *encantar monstruos*, una vez por **descanso largo**.
+
+---
+
+## Patrón Sobrenatural: El Innombrable (El Celestial)
+
+Tu patrón es un ser de energía pura y bondad, tal vez un ángel, un solar o una divinidad menor. Canalizas su luz para sanar y purificar.
+
+### Expansión de Conjuros
+
+A nivel 1, accedes a conjuros de curación y luz (como *curar heridas* o *rayo guiado*).
+
+### Luz Sanadora
+
+También a nivel 1, obtienes una reserva de energía curativa que puedes usar como **acción bonus** para restaurar puntos de golpe.
+
+### Resiliencia Radiante
+
+A nivel 6, ganas **resistencia al daño radiante** y, una vez por turno, añades daño radiante adicional a tus ataques.
+
+### Llama Purificadora
+
+A nivel 10, cuando tú o un aliado reducen a 0 PG a un enemigo, uno de vosotros puede recuperar puntos de golpe igual a tu **modificador de Carisma + nivel del conjuro**.
+
+### Gloria del Amanecer
+
+A nivel 14, puedes liberar una explosión de energía divina que daña a los enemigos e inspira a los aliados con luz curativa.
+
+---
+
+## Patrón Sobrenatural: El Recolector de Sombras (Hexblade)
+
+Tu patrón es una entidad de la Sombra, un arma consciente o espíritu de guerra de los planos oscuros. Sus guerreros forjan vínculos entre alma y acero.
+
+### Expansión de Conjuros
+
+A nivel 1, consigues conjuros marciales y de maldición (como *escudo* o *maldecir*).
+
+### Maldición del Hexblade
+
+A nivel 1, una vez por descanso, puedes marcar a una criatura: infliges **daño adicional**, curas al matarla y sumas tu **modificador de Carisma** a tus ataques contra ella.
+
+### Guerrero de las Sombras
+
+A nivel 1, puedes usar **armadura media**, **escudos** y **armas marciales**. Tus ataques pueden usar **Carisma** en lugar de Fuerza o Destreza.
+
+### Espectro Vinculado
+
+A nivel 6, cuando reduces a 0 PG a un humanoide, puedes capturar su espíritu como **espectro** bajo tu mando.
+
+### Forma de Sombra
+
+A nivel 10, puedes volver **intangible** y moverte a través de obstáculos como sombra pura durante unos turnos.
+
+### Maldición Eterna
+
+A nivel 14, tu maldición puede extenderse: cuando muere el objetivo, salta automáticamente a otro enemigo cercano.
+
+---
+
+## Patrón Sobrenatural: El Árbitro del Muerto (El No Muerto)
+
+Tu patrono es un señor de la muerte, quizás un lich, vampiro ancestral o el mismísimo dios de los difuntos.
+
+### Expansión de Conjuros
+
+A nivel 1, obtienes conjuros necróticos y de control (como *falsa vida* y *rayo debilitador*).
+
+### Forma del Sepulcro
+
+A nivel 1, puedes asumir una apariencia espectral como **acción bonus**, obteniendo **resistencia al daño necrótico** y dificultando que otros te hieran.
+
+### Tumba Impasible
+
+A nivel 6, cuando deberías caer inconsciente, puedes mantenerte a **1 PG** una vez por **descanso corto**.
+
+### Realidad Espectral
+
+A nivel 10, puedes volverte **etéreo** durante breves momentos, apareciendo y desapareciendo como un espíritu.
+
+### Oscuridad Eterna
+
+A nivel 14, puedes liberar una onda de muerte, drenando la vida de todos a tu alrededor y **curándote** por parte del daño infligido.
+
+---
+
+## Patrón Sobrenatural: El Inmortal (El Profano)
+
+Tu pacto te une a un ser inmortal prohibido, como una aberración cósmica o entidad que existe fuera del tiempo. Tu poder es distorsionador.
+
+### Expansión de Conjuros
+
+A nivel 1, obtienes conjuros que manipulan cuerpo y espacio (como *arma mágica* y *desplazamiento*).
+
+### Regeneración Prohibida
+
+A nivel 1, recuperas puntos de golpe adicionales cada turno mientras estés por debajo de la mitad de tu salud máxima.
+
+### Carne Inefable
+
+A nivel 6, obtienes **resistencia a dos tipos de daño** a elección (como contundente, cortante o perforante).
+
+### Alma Corrupta
+
+A nivel 10, cualquier criatura que te ataque cuerpo a cuerpo sufre daño al contacto con tu energía profana.
+
+### Resiliencia Inmortal
+
+A nivel 14, si mueres, tu cuerpo se reconstituye automáticamente al cabo de **1 minuto**, con puntos de golpe igual a la mitad de tu total máximo.
+
+---
+
+## Patrón Sobrenatural: El Genio
+
+Tu patrono es un genio primordial, señor de los elementos y el deseo. Cada tipo (Aire, Tierra, Fuego o Agua) otorga poderes únicos.
+
+### Recipiente del Genio
+
+A nivel 1, obtienes un objeto vinculado (lámpara, anillo, urna, etc.) donde tú o tus aliados podéis refugiaros mágicamente.
+
+### Don del Elemento
+
+También a nivel 1, obtienes **resistencia** al tipo de energía de tu genio (relámpago, ácido, fuego o frío).
+
+### Protección de tu Maestro
+
+A nivel 6, puedes invocar un escudo elemental que reduce el daño infligido a ti o un aliado cercano.
+
+### Vuelo Elemental
+
+A nivel 10, puedes **volar** durante 10 minutos una vez por descanso, rodeado del elemento de tu patrono.
+
+### Deseo Limitado
+
+A nivel 14, puedes imitar cualquier conjuro de **6.º nivel o menor** sin gastar espacio de conjuro una vez cada **descanso largo**.
+
+---
+
 ## Tu Beneficio del Pacto
 
 Cada opción de Beneficio del Pacto crea una criatura especial o un objeto que refleja la naturaleza de tu patrón.

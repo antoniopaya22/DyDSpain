@@ -37,6 +37,7 @@ import {
   type CoinType,
   type InventoryItem,
 } from "@/types/item";
+import { useTheme } from "@/hooks/useTheme";
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -48,6 +49,9 @@ function showToast(message: string) {
 
 const COIN_ORDER: CoinType[] = ["mpl", "mo", "me", "mp", "mc"];
 
+// Note: COIN_COLORS are kept as static constants because they represent
+// real-world metal colors (copper, silver, electrum, gold, platinum) and
+// don't change with theme. They are used only for coin-type badges.
 const COIN_COLORS: Record<CoinType, string> = {
   mc: "#b45309",
   mp: "#9ca3af",
@@ -72,6 +76,7 @@ const CATEGORY_OPTIONS: { value: ItemCategory; label: string }[] = [
 // ─── Main Component ──────────────────────────────────────────────────
 
 export default function InventoryTab() {
+  const { isDark, colors } = useTheme();
   const {
     character,
     inventory,
@@ -86,7 +91,7 @@ export default function InventoryTab() {
   const [showAddItem, setShowAddItem] = useState(false);
   const [showCoinModal, setShowCoinModal] = useState(false);
   const [filter, setFilter] = useState<"all" | "equipped" | ItemCategory>(
-    "all"
+    "all",
   );
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
 
@@ -114,7 +119,7 @@ export default function InventoryTab() {
   if (!character || !inventory) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Text className="text-dark-300 text-base">
+        <Text className="text-dark-500 dark:text-dark-300 text-base">
           No se ha cargado el inventario
         </Text>
       </View>
@@ -179,14 +184,11 @@ export default function InventoryTab() {
         setExpandedItemId(null);
         showToast(`"${item.nombre}" eliminado`);
       },
-      { confirmText: "Eliminar", cancelText: "Cancelar" }
+      { confirmText: "Eliminar", cancelText: "Cancelar" },
     );
   };
 
-  const handleUpdateQuantity = async (
-    item: InventoryItem,
-    delta: number
-  ) => {
+  const handleUpdateQuantity = async (item: InventoryItem, delta: number) => {
     const newQty = Math.max(0, item.cantidad + delta);
     if (newQty === 0) {
       handleDeleteItem(item);
@@ -225,7 +227,7 @@ export default function InventoryTab() {
     setCoinDescription("");
     setShowCoinModal(false);
     showToast(
-      coinOperation === "add" ? "Monedas añadidas" : "Monedas gastadas"
+      coinOperation === "add" ? "Monedas añadidas" : "Monedas gastadas",
     );
   };
 
@@ -233,29 +235,26 @@ export default function InventoryTab() {
 
   const renderWeightBar = () => {
     const barColor = isOverweight
-      ? "#ef4444"
+      ? colors.accentDanger
       : encumbrancePct > 75
-        ? "#f59e0b"
-        : "#22c55e";
+        ? colors.accentAmber
+        : colors.accentGreen;
 
     return (
-      <View className="bg-surface-card rounded-card border border-surface-border p-4 mb-4">
+      <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center">
             <Ionicons name="scale-outline" size={18} color={barColor} />
-            <Text className="text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
+            <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
               Capacidad de Carga
             </Text>
           </View>
-          <Text
-            className="text-sm font-bold"
-            style={{ color: barColor }}
-          >
+          <Text className="text-sm font-bold" style={{ color: barColor }}>
             {totalWeight.toFixed(1)} / {maxCarry} lb
           </Text>
         </View>
 
-        <View className="h-2.5 bg-dark-700 rounded-full overflow-hidden">
+        <View className="h-2.5 bg-gray-200 dark:bg-dark-700 rounded-full overflow-hidden">
           <View
             className="h-full rounded-full"
             style={{
@@ -267,7 +266,7 @@ export default function InventoryTab() {
 
         {isOverweight && (
           <View className="flex-row items-center mt-2">
-            <Ionicons name="warning" size={14} color="#ef4444" />
+            <Ionicons name="warning" size={14} color={colors.accentDanger} />
             <Text className="text-red-400 text-xs ml-1">
               ¡Sobrecargado! Velocidad reducida.
             </Text>
@@ -276,7 +275,7 @@ export default function InventoryTab() {
 
         {/* Attunement info */}
         <View className="flex-row items-center mt-2">
-          <Ionicons name="link-outline" size={14} color="#a855f7" />
+          <Ionicons name="link-outline" size={14} color={colors.accentPurple} />
           <Text className="text-dark-400 text-xs ml-1">
             Sintonizaciones: {activeAttunements}/{inventory.maxAttunements}
           </Text>
@@ -286,11 +285,11 @@ export default function InventoryTab() {
   };
 
   const renderCoins = () => (
-    <View className="bg-surface-card rounded-card border border-surface-border p-4 mb-4">
+    <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center">
-          <Ionicons name="cash-outline" size={18} color="#f59e0b" />
-          <Text className="text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
+          <Ionicons name="cash-outline" size={18} color={colors.accentAmber} />
+          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
             Monedas
           </Text>
         </View>
@@ -314,23 +313,23 @@ export default function InventoryTab() {
             >
               {inventory.coins[type]}
             </Text>
-            <Text className="text-dark-500 text-[10px] uppercase">
+            <Text className="text-dark-300 dark:text-dark-500 text-[10px] uppercase">
               {COIN_ABBR[type]}
             </Text>
           </View>
         ))}
       </View>
 
-      <View className="border-t border-surface-border/50 pt-2">
+      <View className="border-t border-dark-100 dark:border-surface-border/50 pt-2">
         <View className="flex-row items-center justify-between">
           <Text className="text-dark-400 text-xs">Total en oro</Text>
-          <Text className="text-gold-400 text-sm font-bold">
+          <Text className="text-gold-700 dark:text-gold-400 text-sm font-bold">
             {totalGold.toFixed(2)} MO
           </Text>
         </View>
         <View className="flex-row items-center justify-between mt-1">
           <Text className="text-dark-400 text-xs">Peso de monedas</Text>
-          <Text className="text-dark-300 text-xs">
+          <Text className="text-dark-500 dark:text-dark-300 text-xs">
             {calcCoinWeight(inventory.coins).toFixed(1)} lb
           </Text>
         </View>
@@ -353,7 +352,7 @@ export default function InventoryTab() {
           count: inventory.items.filter((i) => i.equipado).length,
         },
         ...CATEGORY_OPTIONS.filter((c) =>
-          inventory.items.some((i) => i.categoria === c.value)
+          inventory.items.some((i) => i.categoria === c.value),
         ).map((c) => ({
           key: c.value as ItemCategory,
           label: c.label,
@@ -367,13 +366,15 @@ export default function InventoryTab() {
             className={`rounded-full px-4 py-2 mr-2 border ${
               isActive
                 ? "bg-primary-500/20 border-primary-500/50"
-                : "bg-dark-700 border-surface-border"
+                : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
             }`}
             onPress={() => setFilter(tab.key)}
           >
             <Text
               className={`text-xs font-semibold ${
-                isActive ? "text-primary-400" : "text-dark-300"
+                isActive
+                  ? "text-primary-400"
+                  : "text-dark-500 dark:text-dark-300"
               }`}
             >
               {tab.label} ({tab.count})
@@ -386,21 +387,19 @@ export default function InventoryTab() {
 
   const renderItemCard = (item: InventoryItem) => {
     const isExpanded = expandedItemId === item.id;
-    const categoryIcon =
-      ITEM_CATEGORY_ICONS[item.categoria] ?? "📦";
-    const categoryName =
-      ITEM_CATEGORY_NAMES[item.categoria] ?? "Otro";
+    const categoryIcon = ITEM_CATEGORY_ICONS[item.categoria] ?? "📦";
+    const categoryName = ITEM_CATEGORY_NAMES[item.categoria] ?? "Otro";
 
     return (
       <TouchableOpacity
         key={item.id}
-        className="bg-surface-card rounded-card border border-surface-border mb-2 overflow-hidden"
+        className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border mb-2 overflow-hidden"
         onPress={() => setExpandedItemId(isExpanded ? null : item.id)}
         activeOpacity={0.7}
       >
         <View className="flex-row items-center p-3">
           {/* Category icon */}
-          <View className="h-10 w-10 rounded-lg bg-dark-700 items-center justify-center mr-3">
+          <View className="h-10 w-10 rounded-lg bg-gray-200 dark:bg-dark-700 items-center justify-center mr-3">
             <Text className="text-base">{categoryIcon}</Text>
           </View>
 
@@ -410,26 +409,24 @@ export default function InventoryTab() {
               <Text
                 className="text-sm font-semibold flex-1"
                 style={{
-                  color: item.equipado ? "#fbbf24" : "#ffffff",
+                  color: item.equipado ? colors.accentGold : colors.textPrimary,
                 }}
                 numberOfLines={1}
               >
                 {item.nombre}
               </Text>
               {item.cantidad > 1 && (
-                <View className="bg-dark-600 rounded-full px-2 py-0.5 ml-1">
-                  <Text className="text-dark-200 text-[10px] font-bold">
+                <View className="bg-gray-300 dark:bg-dark-600 rounded-full px-2 py-0.5 ml-1">
+                  <Text className="text-dark-600 dark:text-dark-200 text-[10px] font-bold">
                     x{item.cantidad}
                   </Text>
                 </View>
               )}
             </View>
             <View className="flex-row items-center mt-0.5">
-              <Text className="text-dark-400 text-[10px]">
-                {categoryName}
-              </Text>
+              <Text className="text-dark-400 text-[10px]">{categoryName}</Text>
               {item.peso > 0 && (
-                <Text className="text-dark-500 text-[10px] ml-2">
+                <Text className="text-dark-300 dark:text-dark-500 text-[10px] ml-2">
                   {item.peso * item.cantidad} lb
                 </Text>
               )}
@@ -438,16 +435,20 @@ export default function InventoryTab() {
                   <Ionicons
                     name="checkmark-circle"
                     size={10}
-                    color="#fbbf24"
+                    color={colors.accentGold}
                   />
-                  <Text className="text-gold-400 text-[10px] ml-0.5">
+                  <Text className="text-gold-700 dark:text-gold-400 text-[10px] ml-0.5">
                     Equipado
                   </Text>
                 </View>
               )}
               {item.magicDetails && (
                 <View className="flex-row items-center ml-2">
-                  <Ionicons name="sparkles" size={10} color="#a855f7" />
+                  <Ionicons
+                    name="sparkles"
+                    size={10}
+                    color={colors.accentPurple}
+                  />
                   <Text className="text-purple-400 text-[10px] ml-0.5">
                     Mágico
                   </Text>
@@ -464,21 +465,21 @@ export default function InventoryTab() {
               className={`h-8 w-8 rounded-full items-center justify-center ml-2 border ${
                 item.equipado
                   ? "bg-gold-500/20 border-gold-500/50"
-                  : "bg-dark-700 border-surface-border"
+                  : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
               }`}
               onPress={async (e) => {
                 await toggleEquipItem(item.id);
                 showToast(
                   item.equipado
                     ? `${item.nombre} desequipado`
-                    : `${item.nombre} equipado`
+                    : `${item.nombre} equipado`,
                 );
               }}
             >
               <Ionicons
                 name={item.equipado ? "body" : "body-outline"}
                 size={16}
-                color={item.equipado ? "#f59e0b" : "#666699"}
+                color={item.equipado ? colors.accentAmber : colors.textMuted}
               />
             </TouchableOpacity>
           )}
@@ -486,47 +487,45 @@ export default function InventoryTab() {
           <Ionicons
             name={isExpanded ? "chevron-up" : "chevron-down"}
             size={16}
-            color="#666699"
+            color={colors.textMuted}
             style={{ marginLeft: 8 }}
           />
         </View>
 
         {/* Expanded details */}
         {isExpanded && (
-          <View className="px-3 pb-3 border-t border-surface-border/50 pt-2">
+          <View className="px-3 pb-3 border-t border-dark-100 dark:border-surface-border/50 pt-2">
             {item.descripcion && (
-              <Text className="text-dark-300 text-xs leading-5 mb-2">
+              <Text className="text-dark-500 dark:text-dark-300 text-xs leading-5 mb-2">
                 {item.descripcion}
               </Text>
             )}
 
             {/* Weapon details */}
             {item.weaponDetails && (
-              <View className="bg-dark-700 rounded-lg p-2.5 mb-2">
+              <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-2">
                 <Text className="text-red-400 text-[10px] font-semibold uppercase tracking-wider mb-1">
                   Datos de Arma
                 </Text>
-                <Text className="text-dark-200 text-xs">
+                <Text className="text-dark-600 dark:text-dark-200 text-xs">
                   Daño: {item.weaponDetails.damage.dice}{" "}
                   {item.weaponDetails.damage.damageType}
                 </Text>
                 {item.weaponDetails.versatileDamage && (
-                  <Text className="text-dark-200 text-xs">
-                    Versátil:{" "}
-                    {item.weaponDetails.versatileDamage.dice}{" "}
+                  <Text className="text-dark-600 dark:text-dark-200 text-xs">
+                    Versátil: {item.weaponDetails.versatileDamage.dice}{" "}
                     {item.weaponDetails.versatileDamage.damageType}
                   </Text>
                 )}
                 {item.weaponDetails.range && (
-                  <Text className="text-dark-200 text-xs">
+                  <Text className="text-dark-600 dark:text-dark-200 text-xs">
                     Alcance: {item.weaponDetails.range.normal}/
                     {item.weaponDetails.range.long} pies
                   </Text>
                 )}
                 {item.weaponDetails.properties.length > 0 && (
-                  <Text className="text-dark-300 text-xs mt-1">
-                    Propiedades:{" "}
-                    {item.weaponDetails.properties.join(", ")}
+                  <Text className="text-dark-500 dark:text-dark-300 text-xs mt-1">
+                    Propiedades: {item.weaponDetails.properties.join(", ")}
                   </Text>
                 )}
               </View>
@@ -534,15 +533,15 @@ export default function InventoryTab() {
 
             {/* Armor details */}
             {item.armorDetails && (
-              <View className="bg-dark-700 rounded-lg p-2.5 mb-2">
+              <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-2">
                 <Text className="text-blue-400 text-[10px] font-semibold uppercase tracking-wider mb-1">
                   Datos de Armadura
                 </Text>
-                <Text className="text-dark-200 text-xs">
+                <Text className="text-dark-600 dark:text-dark-200 text-xs">
                   CA base: {item.armorDetails.baseAC}
                 </Text>
                 {item.armorDetails.addDexModifier && (
-                  <Text className="text-dark-200 text-xs">
+                  <Text className="text-dark-600 dark:text-dark-200 text-xs">
                     + mod. DES
                     {item.armorDetails.maxDexBonus !== null
                       ? ` (máx. +${item.armorDetails.maxDexBonus})`
@@ -550,7 +549,7 @@ export default function InventoryTab() {
                   </Text>
                 )}
                 {item.armorDetails.strengthRequirement && (
-                  <Text className="text-dark-300 text-xs">
+                  <Text className="text-dark-500 dark:text-dark-300 text-xs">
                     Requiere FUE {item.armorDetails.strengthRequirement}
                   </Text>
                 )}
@@ -564,15 +563,15 @@ export default function InventoryTab() {
 
             {/* Magic item details */}
             {item.magicDetails && (
-              <View className="bg-dark-700 rounded-lg p-2.5 mb-2">
+              <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-2">
                 <Text className="text-purple-400 text-[10px] font-semibold uppercase tracking-wider mb-1">
                   Propiedades Mágicas
                 </Text>
-                <Text className="text-dark-200 text-xs">
+                <Text className="text-dark-600 dark:text-dark-200 text-xs">
                   Rareza: {item.magicDetails.rarity}
                 </Text>
                 {item.magicDetails.requiresAttunement && (
-                  <Text className="text-dark-200 text-xs">
+                  <Text className="text-dark-600 dark:text-dark-200 text-xs">
                     Requiere sintonización
                     {item.magicDetails.attunementRestriction
                       ? ` (${item.magicDetails.attunementRestriction})`
@@ -580,13 +579,13 @@ export default function InventoryTab() {
                   </Text>
                 )}
                 {item.magicDetails.charges && (
-                  <Text className="text-dark-200 text-xs">
+                  <Text className="text-dark-600 dark:text-dark-200 text-xs">
                     Cargas: {item.magicDetails.charges.current}/
                     {item.magicDetails.charges.max}
                   </Text>
                 )}
                 {item.magicDetails.magicDescription && (
-                  <Text className="text-dark-300 text-xs mt-1">
+                  <Text className="text-dark-500 dark:text-dark-300 text-xs mt-1">
                     {item.magicDetails.magicDescription}
                   </Text>
                 )}
@@ -595,11 +594,11 @@ export default function InventoryTab() {
 
             {/* Notes */}
             {item.notas && (
-              <View className="bg-dark-700 rounded-lg p-2.5 mb-2">
-                <Text className="text-gold-400 text-[10px] font-semibold uppercase tracking-wider mb-1">
+              <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-2">
+                <Text className="text-gold-700 dark:text-gold-400 text-[10px] font-semibold uppercase tracking-wider mb-1">
                   Notas
                 </Text>
-                <Text className="text-dark-300 text-xs">
+                <Text className="text-dark-500 dark:text-dark-300 text-xs">
                   {item.notas}
                 </Text>
               </View>
@@ -608,16 +607,24 @@ export default function InventoryTab() {
             {/* Item stats */}
             <View className="flex-row flex-wrap mb-2">
               {item.valor !== undefined && item.valor > 0 && (
-                <View className="flex-row items-center bg-dark-700 rounded-lg px-2.5 py-1.5 mr-2 mb-1">
-                  <Ionicons name="cash-outline" size={12} color="#f59e0b" />
-                  <Text className="text-dark-200 text-xs ml-1">
+                <View className="flex-row items-center bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-1.5 mr-2 mb-1">
+                  <Ionicons
+                    name="cash-outline"
+                    size={12}
+                    color={colors.accentAmber}
+                  />
+                  <Text className="text-dark-600 dark:text-dark-200 text-xs ml-1">
                     {item.valor} MO
                   </Text>
                 </View>
               )}
-              <View className="flex-row items-center bg-dark-700 rounded-lg px-2.5 py-1.5 mr-2 mb-1">
-                <Ionicons name="scale-outline" size={12} color="#666699" />
-                <Text className="text-dark-200 text-xs ml-1">
+              <View className="flex-row items-center bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-1.5 mr-2 mb-1">
+                <Ionicons
+                  name="scale-outline"
+                  size={12}
+                  color={colors.textMuted}
+                />
+                <Text className="text-dark-600 dark:text-dark-200 text-xs ml-1">
                   {item.peso} lb c/u
                 </Text>
               </View>
@@ -628,19 +635,19 @@ export default function InventoryTab() {
               {/* Quantity controls */}
               <View className="flex-row items-center">
                 <TouchableOpacity
-                  className="h-8 w-8 rounded-lg bg-dark-600 items-center justify-center active:bg-dark-500"
+                  className="h-8 w-8 rounded-lg bg-gray-300 dark:bg-dark-600 items-center justify-center active:bg-dark-500"
                   onPress={() => handleUpdateQuantity(item, -1)}
                 >
-                  <Ionicons name="remove" size={16} color="#9ca3af" />
+                  <Ionicons name="remove" size={16} color={colors.textMuted} />
                 </TouchableOpacity>
-                <Text className="text-white text-sm font-bold mx-3 min-w-[24px] text-center">
+                <Text className="text-dark-900 dark:text-white text-sm font-bold mx-3 min-w-[24px] text-center">
                   {item.cantidad}
                 </Text>
                 <TouchableOpacity
-                  className="h-8 w-8 rounded-lg bg-dark-600 items-center justify-center active:bg-dark-500"
+                  className="h-8 w-8 rounded-lg bg-gray-300 dark:bg-dark-600 items-center justify-center active:bg-dark-500"
                   onPress={() => handleUpdateQuantity(item, 1)}
                 >
-                  <Ionicons name="add" size={16} color="#9ca3af" />
+                  <Ionicons name="add" size={16} color={colors.textMuted} />
                 </TouchableOpacity>
               </View>
 
@@ -649,7 +656,11 @@ export default function InventoryTab() {
                 className="flex-row items-center bg-red-500/15 border border-red-500/30 rounded-lg px-3 py-1.5 active:bg-red-500/30"
                 onPress={() => handleDeleteItem(item)}
               >
-                <Ionicons name="trash-outline" size={14} color="#ef4444" />
+                <Ionicons
+                  name="trash-outline"
+                  size={14}
+                  color={colors.accentDanger}
+                />
                 <Text className="text-red-400 text-xs font-semibold ml-1">
                   Eliminar
                 </Text>
@@ -664,14 +675,14 @@ export default function InventoryTab() {
   const renderItemList = () => (
     <View className="mb-4">
       <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-dark-200 text-xs font-semibold uppercase tracking-wider">
+        <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider">
           Objetos ({filteredItems.length})
         </Text>
         <TouchableOpacity
           className="bg-primary-500/20 rounded-lg px-3 py-1.5 flex-row items-center active:bg-primary-500/40"
           onPress={() => setShowAddItem(true)}
         >
-          <Ionicons name="add" size={16} color="#c62828" />
+          <Ionicons name="add" size={16} color={colors.accentRed} />
           <Text className="text-primary-400 text-xs font-semibold ml-1">
             Añadir
           </Text>
@@ -681,8 +692,8 @@ export default function InventoryTab() {
       {renderFilterTabs()}
 
       {filteredItems.length === 0 ? (
-        <View className="bg-surface-card rounded-card border border-surface-border p-6 items-center">
-          <Ionicons name="bag-outline" size={32} color="#666699" />
+        <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-6 items-center">
+          <Ionicons name="bag-outline" size={32} color={colors.textMuted} />
           <Text className="text-dark-400 text-sm mt-2">
             {filter === "all"
               ? "Tu inventario está vacío"
@@ -692,7 +703,7 @@ export default function InventoryTab() {
             className="mt-3 bg-primary-500 rounded-lg px-4 py-2 active:bg-primary-600"
             onPress={() => setShowAddItem(true)}
           >
-            <Text className="text-white text-xs font-semibold">
+            <Text className="text-dark-900 dark:text-white text-xs font-semibold">
               Añadir objeto
             </Text>
           </TouchableOpacity>
@@ -714,14 +725,14 @@ export default function InventoryTab() {
         className="flex-1 justify-end"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="bg-dark-800 rounded-t-3xl border-t border-surface-border">
+        <View className="bg-gray-50 dark:bg-dark-800 rounded-t-3xl border-t border-dark-100 dark:border-surface-border">
           {/* Header */}
           <View className="flex-row items-center justify-between px-5 pt-5 pb-3">
-            <Text className="text-white text-lg font-bold">
+            <Text className="text-dark-900 dark:text-white text-lg font-bold">
               Añadir Objeto
             </Text>
             <TouchableOpacity
-              className="h-8 w-8 rounded-full bg-dark-700 items-center justify-center"
+              className="h-8 w-8 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center"
               onPress={() => setShowAddItem(false)}
             >
               <Ionicons name="close" size={18} color="white" />
@@ -734,13 +745,13 @@ export default function InventoryTab() {
             keyboardShouldPersistTaps="handled"
           >
             {/* Name */}
-            <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5 mt-2">
+            <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5 mt-2">
               Nombre <Text className="text-primary-500">*</Text>
             </Text>
             <TextInput
-              className="bg-surface rounded-xl px-4 py-3 text-white text-sm border border-surface-border mb-4"
+              className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border mb-4"
               placeholder="Ej: Espada larga"
-              placeholderTextColor="#666699"
+              placeholderTextColor={colors.textMuted}
               value={newItemName}
               onChangeText={setNewItemName}
               maxLength={100}
@@ -748,7 +759,7 @@ export default function InventoryTab() {
             />
 
             {/* Category */}
-            <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+            <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
               Categoría
             </Text>
             <ScrollView
@@ -764,13 +775,15 @@ export default function InventoryTab() {
                     className={`rounded-full px-3.5 py-2 mr-2 border ${
                       isSelected
                         ? "bg-primary-500/20 border-primary-500/50"
-                        : "bg-dark-700 border-surface-border"
+                        : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
                     }`}
                     onPress={() => setNewItemCategory(opt.value)}
                   >
                     <Text
                       className={`text-xs font-medium ${
-                        isSelected ? "text-primary-400" : "text-dark-300"
+                        isSelected
+                          ? "text-primary-400"
+                          : "text-dark-500 dark:text-dark-300"
                       }`}
                     >
                       {ITEM_CATEGORY_ICONS[opt.value]} {opt.label}
@@ -783,39 +796,39 @@ export default function InventoryTab() {
             {/* Quantity & Weight row */}
             <View className="flex-row mb-4">
               <View className="flex-1 mr-2">
-                <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+                <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Cantidad
                 </Text>
                 <TextInput
-                  className="bg-surface rounded-xl px-4 py-3 text-white text-sm border border-surface-border"
+                  className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border"
                   placeholder="1"
-                  placeholderTextColor="#666699"
+                  placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
                   value={newItemQuantity}
                   onChangeText={setNewItemQuantity}
                 />
               </View>
               <View className="flex-1 mx-1">
-                <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+                <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Peso (lb)
                 </Text>
                 <TextInput
-                  className="bg-surface rounded-xl px-4 py-3 text-white text-sm border border-surface-border"
+                  className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border"
                   placeholder="0"
-                  placeholderTextColor="#666699"
+                  placeholderTextColor={colors.textMuted}
                   keyboardType="decimal-pad"
                   value={newItemWeight}
                   onChangeText={setNewItemWeight}
                 />
               </View>
               <View className="flex-1 ml-2">
-                <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+                <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Valor (MO)
                 </Text>
                 <TextInput
-                  className="bg-surface rounded-xl px-4 py-3 text-white text-sm border border-surface-border"
+                  className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border"
                   placeholder="—"
-                  placeholderTextColor="#666699"
+                  placeholderTextColor={colors.textMuted}
                   keyboardType="decimal-pad"
                   value={newItemValue}
                   onChangeText={setNewItemValue}
@@ -824,13 +837,13 @@ export default function InventoryTab() {
             </View>
 
             {/* Description */}
-            <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+            <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
               Descripción (opcional)
             </Text>
             <TextInput
-              className="bg-surface rounded-xl px-4 py-3 text-white text-sm border border-surface-border mb-6 min-h-[80px]"
+              className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border mb-6 min-h-[80px]"
               placeholder="Añade una descripción..."
-              placeholderTextColor="#666699"
+              placeholderTextColor={colors.textMuted}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
@@ -844,21 +857,21 @@ export default function InventoryTab() {
               className={`rounded-xl py-4 items-center ${
                 newItemName.trim()
                   ? "bg-primary-500 active:bg-primary-600"
-                  : "bg-dark-600 opacity-50"
+                  : "bg-gray-300 dark:bg-dark-600 opacity-50"
               }`}
               onPress={handleAddItem}
               disabled={!newItemName.trim()}
             >
-              <Text className="text-white font-bold text-base">
+              <Text className="text-dark-900 dark:text-white font-bold text-base">
                 Añadir al Inventario
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="mt-3 rounded-xl py-3 items-center active:bg-surface-light"
+              className="mt-3 rounded-xl py-3 items-center active:bg-gray-50 dark:active:bg-surface-light"
               onPress={() => setShowAddItem(false)}
             >
-              <Text className="text-dark-300 font-semibold text-sm">
+              <Text className="text-dark-500 dark:text-dark-300 font-semibold text-sm">
                 Cancelar
               </Text>
             </TouchableOpacity>
@@ -879,14 +892,14 @@ export default function InventoryTab() {
         className="flex-1 justify-end"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="bg-dark-800 rounded-t-3xl border-t border-surface-border">
+        <View className="bg-gray-50 dark:bg-dark-800 rounded-t-3xl border-t border-dark-100 dark:border-surface-border">
           {/* Header */}
           <View className="flex-row items-center justify-between px-5 pt-5 pb-3">
-            <Text className="text-white text-lg font-bold">
+            <Text className="text-dark-900 dark:text-white text-lg font-bold">
               Gestionar Monedas
             </Text>
             <TouchableOpacity
-              className="h-8 w-8 rounded-full bg-dark-700 items-center justify-center"
+              className="h-8 w-8 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center"
               onPress={() => setShowCoinModal(false)}
             >
               <Ionicons name="close" size={18} color="white" />
@@ -899,19 +912,17 @@ export default function InventoryTab() {
             keyboardShouldPersistTaps="handled"
           >
             {/* Operation toggle */}
-            <View className="flex-row mb-4 bg-dark-700 rounded-xl p-1">
+            <View className="flex-row mb-4 bg-gray-200 dark:bg-dark-700 rounded-xl p-1">
               <TouchableOpacity
                 className={`flex-1 rounded-lg py-2.5 items-center ${
-                  coinOperation === "add"
-                    ? "bg-green-600/80"
-                    : "bg-transparent"
+                  coinOperation === "add" ? "bg-green-600/80" : "bg-transparent"
                 }`}
                 onPress={() => setCoinOperation("add")}
               >
                 <Text
                   className={`text-sm font-semibold ${
                     coinOperation === "add"
-                      ? "text-white"
+                      ? "text-dark-900 dark:text-white"
                       : "text-dark-400"
                   }`}
                 >
@@ -929,7 +940,7 @@ export default function InventoryTab() {
                 <Text
                   className={`text-sm font-semibold ${
                     coinOperation === "remove"
-                      ? "text-white"
+                      ? "text-dark-900 dark:text-white"
                       : "text-dark-400"
                   }`}
                 >
@@ -939,23 +950,21 @@ export default function InventoryTab() {
             </View>
 
             {/* Current coins display */}
-            <View className="bg-dark-700 rounded-xl p-3 mb-4 border border-surface-border">
+            <View className="bg-gray-200 dark:bg-dark-700 rounded-xl p-3 mb-4 border border-dark-100 dark:border-surface-border">
               <Text className="text-dark-400 text-[10px] uppercase tracking-wider mb-2">
                 Monedas actuales
               </Text>
               <View className="flex-row justify-between">
                 {COIN_ORDER.map((type) => (
                   <View key={type} className="items-center">
-                    <Text className="text-xs mb-0.5">
-                      {COIN_ICONS[type]}
-                    </Text>
+                    <Text className="text-xs mb-0.5">{COIN_ICONS[type]}</Text>
                     <Text
                       className="text-sm font-bold"
                       style={{ color: COIN_COLORS[type] }}
                     >
                       {inventory.coins[type]}
                     </Text>
-                    <Text className="text-dark-500 text-[9px]">
+                    <Text className="text-dark-300 dark:text-dark-500 text-[9px]">
                       {COIN_ABBR[type]}
                     </Text>
                   </View>
@@ -964,18 +973,13 @@ export default function InventoryTab() {
             </View>
 
             {/* Coin inputs */}
-            <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-2">
+            <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-2">
               Cantidades a {coinOperation === "add" ? "añadir" : "gastar"}
             </Text>
             {COIN_ORDER.map((type) => (
-              <View
-                key={type}
-                className="flex-row items-center mb-2"
-              >
+              <View key={type} className="flex-row items-center mb-2">
                 <View className="flex-row items-center w-28">
-                  <Text className="text-base mr-1.5">
-                    {COIN_ICONS[type]}
-                  </Text>
+                  <Text className="text-base mr-1.5">{COIN_ICONS[type]}</Text>
                   <Text
                     className="text-sm font-medium"
                     style={{ color: COIN_COLORS[type] }}
@@ -984,9 +988,9 @@ export default function InventoryTab() {
                   </Text>
                 </View>
                 <TextInput
-                  className="flex-1 bg-surface rounded-xl px-4 py-2.5 text-white text-sm border border-surface-border ml-3"
+                  className="flex-1 bg-gray-100 dark:bg-surface rounded-xl px-4 py-2.5 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border ml-3"
                   placeholder="0"
-                  placeholderTextColor="#666699"
+                  placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
                   value={coinAmounts[type]}
                   onChangeText={(val) =>
@@ -997,13 +1001,13 @@ export default function InventoryTab() {
             ))}
 
             {/* Description */}
-            <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5 mt-3">
+            <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5 mt-3">
               Descripción (opcional)
             </Text>
             <TextInput
-              className="bg-surface rounded-xl px-4 py-3 text-white text-sm border border-surface-border mb-6"
+              className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border mb-6"
               placeholder="Ej: Recompensa por misión"
-              placeholderTextColor="#666699"
+              placeholderTextColor={colors.textMuted}
               value={coinDescription}
               onChangeText={setCoinDescription}
               maxLength={100}
@@ -1018,18 +1022,16 @@ export default function InventoryTab() {
               }`}
               onPress={handleCoinTransaction}
             >
-              <Text className="text-white font-bold text-base">
-                {coinOperation === "add"
-                  ? "Añadir Monedas"
-                  : "Gastar Monedas"}
+              <Text className="text-dark-900 dark:text-white font-bold text-base">
+                {coinOperation === "add" ? "Añadir Monedas" : "Gastar Monedas"}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="mt-3 rounded-xl py-3 items-center active:bg-surface-light"
+              className="mt-3 rounded-xl py-3 items-center active:bg-gray-50 dark:active:bg-surface-light"
               onPress={() => setShowCoinModal(false)}
             >
-              <Text className="text-dark-300 font-semibold text-sm">
+              <Text className="text-dark-500 dark:text-dark-300 font-semibold text-sm">
                 Cancelar
               </Text>
             </TouchableOpacity>

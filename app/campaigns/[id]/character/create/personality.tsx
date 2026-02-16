@@ -9,19 +9,15 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  useCreationStore,
-  TOTAL_STEPS,
-} from "@/stores/creationStore";
-import {
-  getBackgroundData,
-  generateRandomPersonality,
-} from "@/data/srd";
+import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
+import { getBackgroundData, generateRandomPersonality } from "@/data/srd";
 import {
   ALIGNMENT_NAMES,
   type Alignment,
   type Personality,
 } from "@/types/character";
+import { useTheme } from "@/hooks/useTheme";
+import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 9;
 
@@ -50,28 +46,32 @@ const ALIGNMENT_COLORS: Record<string, string> = {
 };
 
 const ALIGNMENT_DESCRIPTIONS: Record<Alignment, string> = {
-  legal_bueno: "Actúa con compasión y honor, respetando la ley y ayudando a los demás.",
-  neutral_bueno: "Hace lo mejor que puede para ayudar a otros según sus necesidades.",
-  caotico_bueno: "Actúa según su conciencia, con poca consideración por las expectativas ajenas.",
-  legal_neutral: "Actúa de acuerdo con la ley, la tradición o códigos personales.",
+  legal_bueno:
+    "Actúa con compasión y honor, respetando la ley y ayudando a los demás.",
+  neutral_bueno:
+    "Hace lo mejor que puede para ayudar a otros según sus necesidades.",
+  caotico_bueno:
+    "Actúa según su conciencia, con poca consideración por las expectativas ajenas.",
+  legal_neutral:
+    "Actúa de acuerdo con la ley, la tradición o códigos personales.",
   neutral: "No se siente obligado hacia ningún alineamiento en particular.",
-  caotico_neutral: "Sigue sus caprichos, valorando su libertad por encima de todo.",
-  legal_malvado: "Toma metódicamente lo que quiere, dentro de un código de tradición o lealtad.",
+  caotico_neutral:
+    "Sigue sus caprichos, valorando su libertad por encima de todo.",
+  legal_malvado:
+    "Toma metódicamente lo que quiere, dentro de un código de tradición o lealtad.",
   neutral_malvado: "Hace lo que quiere sin compasión ni escrúpulos.",
-  caotico_malvado: "Actúa con violencia arbitraria, estimulado por su codicia o crueldad.",
+  caotico_malvado:
+    "Actúa con violencia arbitraria, estimulado por su codicia o crueldad.",
 };
 
 export default function PersonalityStep() {
+  const { colors, isDark } = useTheme();
+  const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
-  const {
-    draft,
-    setPersonality,
-    setAlineamiento,
-    saveDraft,
-    loadDraft,
-  } = useCreationStore();
+  const { draft, setPersonality, setAlineamiento, saveDraft, loadDraft } =
+    useCreationStore();
 
   const [traits, setTraits] = useState("");
   const [ideals, setIdeals] = useState("");
@@ -79,7 +79,8 @@ export default function PersonalityStep() {
   const [flaws, setFlaws] = useState("");
   const [backstory, setBackstory] = useState("");
   const [alignment, setAlignment] = useState<Alignment | null>(null);
-  const [showAlignmentDetails, setShowAlignmentDetails] = useState<Alignment | null>(null);
+  const [showAlignmentDetails, setShowAlignmentDetails] =
+    useState<Alignment | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -99,7 +100,7 @@ export default function PersonalityStep() {
         }
       };
       init();
-    }, [campaignId])
+    }, [campaignId]),
   );
 
   const backgroundId = draft?.trasfondo;
@@ -115,10 +116,10 @@ export default function PersonalityStep() {
   const handleRandomize = () => {
     if (!backgroundId) return;
     const random = generateRandomPersonality(backgroundId);
-    setTraits(random.traits.join("\n"));
-    setIdeals(random.ideals);
-    setBonds(random.bonds);
-    setFlaws(random.flaws);
+    setTraits(random.trait);
+    setIdeals(random.ideal);
+    setBonds(random.bond);
+    setFlaws(random.flaw);
   };
 
   const handleNext = async () => {
@@ -165,7 +166,7 @@ export default function PersonalityStep() {
   const progressPercent = (CURRENT_STEP / TOTAL_STEPS) * 100;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, themed.container]}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
@@ -174,15 +175,22 @@ export default function PersonalityStep() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Ionicons name="arrow-back" size={22} color="white" />
+            <TouchableOpacity
+              style={[styles.backButton, themed.backButton]}
+              onPress={handleBack}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={22}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
-            <Text style={styles.stepText}>
+            <Text style={[styles.stepText, themed.stepText]}>
               Paso {CURRENT_STEP} de {TOTAL_STEPS}
             </Text>
             <View style={{ height: 40, width: 40 }} />
           </View>
-          <View style={styles.progressBar}>
+          <View style={[styles.progressBar, themed.progressBar]}>
             <View
               style={[styles.progressFill, { width: `${progressPercent}%` }]}
             />
@@ -195,11 +203,13 @@ export default function PersonalityStep() {
             <Ionicons
               name="chatbubble-ellipses-outline"
               size={40}
-              color="#c62828"
+              color={colors.accentRed}
             />
           </View>
-          <Text style={styles.title}>Personalidad y Alineamiento</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, themed.title]}>
+            Personalidad y Alineamiento
+          </Text>
+          <Text style={[styles.subtitle, themed.subtitle]}>
             Define la personalidad de tu personaje: cómo actúa, qué valora y
             cuáles son sus defectos. También elige su alineamiento moral.
           </Text>
@@ -209,11 +219,15 @@ export default function PersonalityStep() {
         {backgroundData && (
           <View style={styles.section}>
             <TouchableOpacity
-              style={styles.randomButton}
+              style={[styles.randomButton, themed.randomButton]}
               onPress={handleRandomize}
             >
-              <Ionicons name="dice-outline" size={20} color="#fbbf24" />
-              <Text style={styles.randomButtonText}>
+              <Ionicons
+                name="dice-outline"
+                size={20}
+                color={colors.accentGold}
+              />
+              <Text style={[styles.randomButtonText, themed.randomButtonText]}>
                 Generar aleatoriamente (según {backgroundData.nombre})
               </Text>
             </TouchableOpacity>
@@ -222,18 +236,18 @@ export default function PersonalityStep() {
 
         {/* Personality Traits */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
+          <Text style={[styles.sectionTitle, themed.sectionTitle]}>
             Rasgos de Personalidad{" "}
-            <Text style={styles.required}>*</Text>
+            <Text style={[styles.required, themed.required]}>*</Text>
           </Text>
-          <Text style={styles.fieldHint}>
+          <Text style={[styles.fieldHint, themed.fieldHint]}>
             ¿Cómo se comporta tu personaje? Describe uno o dos rasgos
             distintivos. Separa cada rasgo en una línea diferente.
           </Text>
           <TextInput
-            style={styles.textArea}
+            style={[styles.textArea, themed.textArea]}
             placeholder="Ej: Siempre tengo una historia relevante para cada situación."
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             value={traits}
             onChangeText={setTraits}
             multiline
@@ -244,17 +258,17 @@ export default function PersonalityStep() {
 
         {/* Ideals */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Ideales <Text style={styles.required}>*</Text>
+          <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+            Ideales <Text style={[styles.required, themed.required]}>*</Text>
           </Text>
-          <Text style={styles.fieldHint}>
-            ¿Qué principios guían a tu personaje? ¿Qué es lo más importante
-            para él/ella?
+          <Text style={[styles.fieldHint, themed.fieldHint]}>
+            ¿Qué principios guían a tu personaje? ¿Qué es lo más importante para
+            él/ella?
           </Text>
           <TextInput
-            style={styles.textArea}
+            style={[styles.textArea, themed.textArea]}
             placeholder="Ej: La verdad. Siempre busco la verdad por encima de todo."
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             value={ideals}
             onChangeText={setIdeals}
             multiline
@@ -265,17 +279,17 @@ export default function PersonalityStep() {
 
         {/* Bonds */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Vínculos <Text style={styles.required}>*</Text>
+          <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+            Vínculos <Text style={[styles.required, themed.required]}>*</Text>
           </Text>
-          <Text style={styles.fieldHint}>
+          <Text style={[styles.fieldHint, themed.fieldHint]}>
             ¿Qué personas, lugares o cosas son más importantes para tu
             personaje?
           </Text>
           <TextInput
-            style={styles.textArea}
+            style={[styles.textArea, themed.textArea]}
             placeholder="Ej: Protegeré a mi pueblo natal cueste lo que cueste."
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             value={bonds}
             onChangeText={setBonds}
             multiline
@@ -286,17 +300,17 @@ export default function PersonalityStep() {
 
         {/* Flaws */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Defectos <Text style={styles.required}>*</Text>
+          <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+            Defectos <Text style={[styles.required, themed.required]}>*</Text>
           </Text>
-          <Text style={styles.fieldHint}>
+          <Text style={[styles.fieldHint, themed.fieldHint]}>
             ¿Cuál es la debilidad o vicio de tu personaje? Algo que pueda ser
             usado en su contra.
           </Text>
           <TextInput
-            style={styles.textArea}
+            style={[styles.textArea, themed.textArea]}
             placeholder="Ej: Mi orgullo me impide pedir ayuda, incluso cuando la necesito."
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             value={flaws}
             onChangeText={setFlaws}
             multiline
@@ -307,18 +321,18 @@ export default function PersonalityStep() {
 
         {/* Backstory (optional) */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
+          <Text style={[styles.sectionTitle, themed.sectionTitle]}>
             Historia de Fondo{" "}
-            <Text style={styles.optional}>(opcional)</Text>
+            <Text style={[styles.optional, themed.optional]}>(opcional)</Text>
           </Text>
-          <Text style={styles.fieldHint}>
+          <Text style={[styles.fieldHint, themed.fieldHint]}>
             Escribe brevemente la historia de tu personaje antes de convertirse
             en aventurero. Puedes ampliarla más tarde.
           </Text>
           <TextInput
-            style={[styles.textArea, styles.textAreaLarge]}
+            style={[styles.textArea, styles.textAreaLarge, themed.textArea]}
             placeholder="Cuenta la historia de tu personaje..."
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             value={backstory}
             onChangeText={setBackstory}
             multiline
@@ -326,84 +340,127 @@ export default function PersonalityStep() {
             maxLength={2000}
             textAlignVertical="top"
           />
-          <Text style={styles.charCount}>{backstory.length}/2000</Text>
+          <Text style={[styles.charCount, themed.charCount]}>
+            {backstory.length}/2000
+          </Text>
         </View>
 
         {/* Alignment */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Alineamiento <Text style={styles.required}>*</Text>
+          <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+            Alineamiento{" "}
+            <Text style={[styles.required, themed.required]}>*</Text>
           </Text>
-          <Text style={styles.fieldHint}>
+          <Text style={[styles.fieldHint, themed.fieldHint]}>
             El alineamiento describe la brújula moral de tu personaje en dos
             ejes: ley/caos y bien/mal.
           </Text>
 
           {/* Alignment Grid */}
-          <View style={styles.alignmentGrid}>
+          <View style={[styles.alignmentGrid, themed.card]}>
             {/* Column headers */}
             <View style={styles.alignmentHeaderRow}>
               <View style={styles.alignmentHeaderSpacer} />
               <View style={styles.alignmentHeaderCell}>
-                <Text style={styles.alignmentHeaderText}>Bueno</Text>
+                <Text
+                  style={[
+                    styles.alignmentHeaderText,
+                    themed.alignmentHeaderText,
+                  ]}
+                >
+                  Bueno
+                </Text>
               </View>
               <View style={styles.alignmentHeaderCell}>
-                <Text style={styles.alignmentHeaderText}>Neutral</Text>
+                <Text
+                  style={[
+                    styles.alignmentHeaderText,
+                    themed.alignmentHeaderText,
+                  ]}
+                >
+                  Neutral
+                </Text>
               </View>
               <View style={styles.alignmentHeaderCell}>
-                <Text style={styles.alignmentHeaderText}>Malvado</Text>
+                <Text
+                  style={[
+                    styles.alignmentHeaderText,
+                    themed.alignmentHeaderText,
+                  ]}
+                >
+                  Malvado
+                </Text>
               </View>
             </View>
 
             {/* Legal row */}
             <View style={styles.alignmentRow}>
               <View style={styles.alignmentRowLabel}>
-                <Text style={styles.alignmentRowText}>Legal</Text>
+                <Text
+                  style={[styles.alignmentRowText, themed.alignmentRowText]}
+                >
+                  Legal
+                </Text>
               </View>
-              {(["legal_bueno", "legal_neutral", "legal_malvado"] as Alignment[]).map(
-                (a) => renderAlignmentCell(a)
-              )}
+              {(
+                ["legal_bueno", "legal_neutral", "legal_malvado"] as Alignment[]
+              ).map((a) => renderAlignmentCell(a))}
             </View>
 
             {/* Neutral row */}
             <View style={styles.alignmentRow}>
               <View style={styles.alignmentRowLabel}>
-                <Text style={styles.alignmentRowText}>Neutral</Text>
+                <Text
+                  style={[styles.alignmentRowText, themed.alignmentRowText]}
+                >
+                  Neutral
+                </Text>
               </View>
-              {(["neutral_bueno", "neutral", "neutral_malvado"] as Alignment[]).map(
-                (a) => renderAlignmentCell(a)
-              )}
+              {(
+                ["neutral_bueno", "neutral", "neutral_malvado"] as Alignment[]
+              ).map((a) => renderAlignmentCell(a))}
             </View>
 
             {/* Chaotic row */}
             <View style={styles.alignmentRow}>
               <View style={styles.alignmentRowLabel}>
-                <Text style={styles.alignmentRowText}>Caótico</Text>
+                <Text
+                  style={[styles.alignmentRowText, themed.alignmentRowText]}
+                >
+                  Caótico
+                </Text>
               </View>
-              {(["caotico_bueno", "caotico_neutral", "caotico_malvado"] as Alignment[]).map(
-                (a) => renderAlignmentCell(a)
-              )}
+              {(
+                [
+                  "caotico_bueno",
+                  "caotico_neutral",
+                  "caotico_malvado",
+                ] as Alignment[]
+              ).map((a) => renderAlignmentCell(a))}
             </View>
           </View>
 
           {/* Selected alignment description */}
           {alignment && (
-            <View style={styles.alignmentDescBox}>
+            <View style={[styles.alignmentDescBox, themed.alignmentDescBox]}>
               <View style={styles.alignmentDescHeader}>
                 <View
                   style={[
                     styles.alignmentDot,
                     {
-                      backgroundColor:
-                        ALIGNMENT_COLORS[alignment] ?? "#9ca3af",
+                      backgroundColor: ALIGNMENT_COLORS[alignment] ?? "#9ca3af",
                     },
                   ]}
                 />
-                <Text style={styles.alignmentDescName}>
+                <Text
+                  style={[styles.alignmentDescName, themed.alignmentDescName]}
+                >
                   {ALIGNMENT_NAMES[alignment]}
                 </Text>
               </View>
-              <Text style={styles.alignmentDescText}>
+              <Text
+                style={[styles.alignmentDescText, themed.alignmentDescText]}
+              >
                 {ALIGNMENT_DESCRIPTIONS[alignment]}
               </Text>
             </View>
@@ -412,9 +469,12 @@ export default function PersonalityStep() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, themed.footer]}>
         <TouchableOpacity
-          style={[styles.nextButton, !isValid && styles.nextButtonDisabled]}
+          style={[
+            styles.nextButton,
+            !isValid && [styles.nextButtonDisabled, themed.nextButtonDisabled],
+          ]}
           onPress={handleNext}
           disabled={!isValid}
         >
@@ -434,6 +494,7 @@ export default function PersonalityStep() {
         key={a}
         style={[
           styles.alignmentCell,
+          themed.alignmentCell,
           isSelected && { borderColor: color, backgroundColor: `${color}20` },
         ]}
         onPress={() => {
@@ -445,10 +506,7 @@ export default function PersonalityStep() {
           <Ionicons name="checkmark-circle" size={22} color={color} />
         ) : (
           <View
-            style={[
-              styles.alignmentCellDot,
-              { borderColor: `${color}60` },
-            ]}
+            style={[styles.alignmentCellDot, { borderColor: `${color}60` }]}
           />
         )}
       </TouchableOpacity>

@@ -18,8 +18,9 @@ import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCampaignStore } from "@/stores/campaignStore";
-import { ConfirmDialog, Toast } from "@/components/ui";
+import { ConfirmDialog, Toast, DndBackdrop } from "@/components/ui";
 import { useDialog, useToast } from "@/hooks/useDialog";
+import { useTheme } from "@/hooks/useTheme";
 import type { Campaign } from "@/types/campaign";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -49,6 +50,7 @@ function ActionCard({
   chevron?: boolean;
   borderAccent?: boolean;
 }) {
+  const { colors } = useTheme();
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const entranceAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(16)).current;
@@ -104,6 +106,10 @@ function ActionCard({
         activeOpacity={1}
         style={[
           detailStyles.actionCard,
+          {
+            backgroundColor: colors.bgCard,
+            borderColor: colors.borderDefault,
+          },
           borderAccent && accentColor
             ? { borderColor: `${accentColor}40` }
             : {},
@@ -136,24 +142,41 @@ function ActionCard({
         </View>
 
         <View style={detailStyles.actionCardRow}>
-          <View style={[detailStyles.actionCardIcon, { backgroundColor: iconBg }]}>
+          <View
+            style={[detailStyles.actionCardIcon, { backgroundColor: iconBg }]}
+          >
             <Ionicons name={icon} size={24} color={iconColor} />
           </View>
           <View style={detailStyles.actionCardInfo}>
-            <Text style={[
-              detailStyles.actionCardTitle,
-              accentColor ? { color: accentColor } : {},
-            ]}>
+            <Text
+              style={[
+                detailStyles.actionCardTitle,
+                { color: colors.textPrimary },
+                accentColor ? { color: accentColor } : {},
+              ]}
+            >
               {title}
             </Text>
-            <Text style={detailStyles.actionCardSubtitle}>{subtitle}</Text>
+            <Text
+              style={[
+                detailStyles.actionCardSubtitle,
+                { color: colors.textSecondary },
+              ]}
+            >
+              {subtitle}
+            </Text>
           </View>
           {chevron && (
-            <View style={detailStyles.actionCardChevron}>
+            <View
+              style={[
+                detailStyles.actionCardChevron,
+                { backgroundColor: colors.bgSubtle },
+              ]}
+            >
               <Ionicons
                 name="chevron-forward"
                 size={16}
-                color={accentColor || "#4a4a6a"}
+                color={accentColor || colors.textSecondary}
               />
             </View>
           )}
@@ -182,6 +205,7 @@ function QuickActionItem({
   onPress: () => void;
   delay?: number;
 }) {
+  const { colors } = useTheme();
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const entranceAnim = useRef(new Animated.Value(0)).current;
 
@@ -219,7 +243,11 @@ function QuickActionItem({
         <Animated.View
           style={[
             detailStyles.quickActionCard,
-            { transform: [{ scale: scaleAnim }] },
+            {
+              transform: [{ scale: scaleAnim }],
+              backgroundColor: colors.bgCard,
+              borderColor: colors.borderDefault,
+            },
           ]}
         >
           {/* Top gradient accent */}
@@ -232,11 +260,30 @@ function QuickActionItem({
             />
           </View>
 
-          <View style={[detailStyles.quickActionIconBg, { backgroundColor: iconBg }]}>
+          <View
+            style={[
+              detailStyles.quickActionIconBg,
+              { backgroundColor: iconBg },
+            ]}
+          >
             <Ionicons name={icon} size={22} color={iconColor} />
           </View>
-          <Text style={detailStyles.quickActionLabel}>{label}</Text>
-          <Text style={detailStyles.quickActionSublabel}>{sublabel}</Text>
+          <Text
+            style={[
+              detailStyles.quickActionLabel,
+              { color: colors.textPrimary },
+            ]}
+          >
+            {label}
+          </Text>
+          <Text
+            style={[
+              detailStyles.quickActionSublabel,
+              { color: colors.textMuted },
+            ]}
+          >
+            {sublabel}
+          </Text>
         </Animated.View>
       </TouchableOpacity>
     </Animated.View>
@@ -247,7 +294,7 @@ function QuickActionItem({
 
 function SectionLabel({
   label,
-  color = "#fbbf24",
+  color,
   icon,
   delay = 0,
 }: {
@@ -256,6 +303,8 @@ function SectionLabel({
   icon?: keyof typeof Ionicons.glyphMap;
   delay?: number;
 }) {
+  const { colors: slColors } = useTheme();
+  const resolvedColor = color ?? slColors.accentGold;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -275,17 +324,22 @@ function SectionLabel({
           <Ionicons
             name={icon}
             size={14}
-            color={`${color}99`}
+            color={`${resolvedColor}99`}
             style={{ marginRight: 6 }}
           />
         )}
-        <Text style={[detailStyles.sectionLabelText, { color: `${color}CC` }]}>
+        <Text
+          style={[
+            detailStyles.sectionLabelText,
+            { color: `${resolvedColor}CC` },
+          ]}
+        >
           {label}
         </Text>
       </View>
       <View style={detailStyles.sectionLabelLine}>
         <LinearGradient
-          colors={[`${color}40`, "transparent"]}
+          colors={[`${resolvedColor}40`, "transparent"]}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
           style={{ flex: 1, height: 1 }}
@@ -295,13 +349,12 @@ function SectionLabel({
   );
 }
 
-
-
 // ─── Main Screen ─────────────────────────────────────────────────────
 
 export default function CampaignDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { colors, isDark } = useTheme();
   const {
     getCampaignById,
     loadCampaigns,
@@ -316,7 +369,11 @@ export default function CampaignDetailScreen() {
 
   // ── Dialog & Toast hooks ──
   const { dialogProps, showDestructive, showAlert } = useDialog();
-  const { toastProps, showSuccess: toastSuccess, showError: toastError } = useToast();
+  const {
+    toastProps,
+    showSuccess: toastSuccess,
+    showError: toastError,
+  } = useToast();
 
   // Edit campaign modal state
   const [showEditModal, setShowEditModal] = useState(false);
@@ -341,7 +398,7 @@ export default function CampaignDetailScreen() {
         setLoading(false);
       };
       load();
-    }, [id, loadCampaigns, getCampaignById, setActiveCampaign, touchCampaign])
+    }, [id, loadCampaigns, getCampaignById, setActiveCampaign, touchCampaign]),
   );
 
   const handleGoBack = () => {
@@ -386,7 +443,7 @@ export default function CampaignDetailScreen() {
         await deleteCampaign(campaign.id);
         router.replace("/");
       },
-      { confirmText: "Eliminar", cancelText: "Cancelar" }
+      { confirmText: "Eliminar", cancelText: "Cancelar" },
     );
   };
 
@@ -399,21 +456,19 @@ export default function CampaignDetailScreen() {
   };
 
   const handleOpenCombat = () => {
-    router.push(`/campaigns/${id}/character/sheet`);
-    // We navigate to the sheet; the user can tap the Combat tab.
-    // A small delay + state approach could auto-select the tab, but navigating is enough.
+    router.push(`/campaigns/${id}/character/sheet?tab=combat`);
   };
 
   const handleOpenSpells = () => {
-    router.push(`/campaigns/${id}/character/sheet`);
+    router.push(`/campaigns/${id}/character/sheet?tab=spells`);
   };
 
   const handleOpenInventory = () => {
-    router.push(`/campaigns/${id}/character/sheet`);
+    router.push(`/campaigns/${id}/character/sheet?tab=inventory`);
   };
 
   const handleOpenNotes = () => {
-    router.push(`/campaigns/${id}/character/sheet`);
+    router.push(`/campaigns/${id}/character/sheet?tab=notes`);
   };
 
   const handleOpenMasterMode = () => {
@@ -423,7 +478,7 @@ export default function CampaignDetailScreen() {
   if (loading) {
     return (
       <View className="flex-1 bg-dark-800 items-center justify-center">
-        <ActivityIndicator size="large" color="#c62828" />
+        <ActivityIndicator size="large" color={colors.accentRed} />
         <Text className="text-dark-300 text-base mt-4">
           Cargando partida...
         </Text>
@@ -433,14 +488,18 @@ export default function CampaignDetailScreen() {
 
   if (!campaign) {
     return (
-      <View className="flex-1 bg-dark-800 items-center justify-center px-8">
-        <View className="h-20 w-20 rounded-full bg-dark-700 items-center justify-center mb-6">
-          <Ionicons name="alert-circle-outline" size={44} color="#ef4444" />
+      <View className="flex-1 bg-gray-50 dark:bg-dark-800 items-center justify-center px-8">
+        <View className="h-20 w-20 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center mb-6">
+          <Ionicons
+            name="alert-circle-outline"
+            size={44}
+            color={colors.dangerText}
+          />
         </View>
-        <Text className="text-white text-xl font-bold text-center mb-2">
+        <Text className="text-dark-900 dark:text-white text-xl font-bold text-center mb-2">
           Partida no encontrada
         </Text>
-        <Text className="text-dark-300 text-base text-center mb-8">
+        <Text className="text-dark-400 dark:text-dark-300 text-base text-center mb-8">
           La partida que buscas no existe o ha sido eliminada.
         </Text>
         <TouchableOpacity
@@ -469,7 +528,7 @@ export default function CampaignDetailScreen() {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }
+    },
   );
 
   // ── Edit Campaign Modal ──
@@ -484,17 +543,17 @@ export default function CampaignDetailScreen() {
         className="flex-1 justify-end"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="bg-dark-800 rounded-t-3xl border-t border-surface-border">
+        <View className="bg-white dark:bg-dark-800 rounded-t-3xl border-t border-dark-100 dark:border-surface-border">
           {/* Header */}
           <View className="flex-row items-center justify-between px-5 pt-5 pb-3">
-            <Text className="text-white text-lg font-bold">
+            <Text className="text-dark-900 dark:text-white text-lg font-bold">
               Editar Partida
             </Text>
             <TouchableOpacity
-              className="h-8 w-8 rounded-full bg-dark-700 items-center justify-center"
+              className="h-8 w-8 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center"
               onPress={() => setShowEditModal(false)}
             >
-              <Ionicons name="close" size={18} color="white" />
+              <Ionicons name="close" size={18} color={colors.textPrimary} />
             </TouchableOpacity>
           </View>
 
@@ -504,14 +563,13 @@ export default function CampaignDetailScreen() {
             keyboardShouldPersistTaps="handled"
           >
             {/* Nombre */}
-            <Text className="text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider mt-2">
-              Nombre de la partida{" "}
-              <Text className="text-primary-500">*</Text>
+            <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider mt-2">
+              Nombre de la partida <Text className="text-primary-500">*</Text>
             </Text>
             <TextInput
-              className="bg-surface rounded-xl px-4 py-3.5 text-white text-base border border-surface-border mb-4"
+              className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3.5 text-dark-900 dark:text-white text-base border border-dark-100 dark:border-surface-border mb-4"
               placeholder="Nombre de la partida"
-              placeholderTextColor="#666699"
+              placeholderTextColor={colors.textMuted}
               value={editNombre}
               onChangeText={setEditNombre}
               maxLength={100}
@@ -523,13 +581,13 @@ export default function CampaignDetailScreen() {
             </Text>
 
             {/* Descripción */}
-            <Text className="text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider">
+            <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider">
               Descripción (opcional)
             </Text>
             <TextInput
-              className="bg-surface rounded-xl px-4 py-3.5 text-white text-base border border-surface-border min-h-[120px] mb-4"
+              className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3.5 text-dark-900 dark:text-white text-base border border-dark-100 dark:border-surface-border min-h-[120px] mb-4"
               placeholder="Descripción de la campaña..."
-              placeholderTextColor="#666699"
+              placeholderTextColor={colors.textMuted}
               value={editDescripcion}
               onChangeText={setEditDescripcion}
               multiline
@@ -546,7 +604,7 @@ export default function CampaignDetailScreen() {
               className={`rounded-xl py-4 items-center ${
                 editNombre.trim() && !editSaving
                   ? "bg-primary-500 active:bg-primary-600"
-                  : "bg-dark-600 opacity-50"
+                  : "bg-gray-300 dark:bg-dark-600 opacity-50"
               }`}
               onPress={handleSaveEdit}
               disabled={!editNombre.trim() || editSaving}
@@ -557,10 +615,10 @@ export default function CampaignDetailScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="mt-3 rounded-xl py-3.5 items-center active:bg-surface-light"
+              className="mt-3 rounded-xl py-3.5 items-center active:bg-gray-100 dark:active:bg-surface-light"
               onPress={() => setShowEditModal(false)}
             >
-              <Text className="text-dark-300 font-semibold text-base">
+              <Text className="text-dark-400 dark:text-dark-300 font-semibold text-base">
                 Cancelar
               </Text>
             </TouchableOpacity>
@@ -578,17 +636,21 @@ export default function CampaignDetailScreen() {
       transparent={false}
       onRequestClose={() => setShowMasterMode(false)}
     >
-      <View className="flex-1 bg-dark-800">
+      <View className="flex-1 bg-gray-50 dark:bg-dark-800">
         {/* Header */}
-        <View className="px-5 pt-14 pb-4 border-b border-surface-border">
+        <View className="px-5 pt-14 pb-4 border-b border-dark-100 dark:border-surface-border">
           <View className="flex-row items-center justify-between">
             <TouchableOpacity
-              className="h-10 w-10 rounded-full bg-surface items-center justify-center active:bg-surface-light"
+              className="h-10 w-10 rounded-full bg-gray-200 dark:bg-surface items-center justify-center active:bg-gray-300 dark:active:bg-surface-light"
               onPress={() => setShowMasterMode(false)}
             >
-              <Ionicons name="arrow-back" size={22} color="white" />
+              <Ionicons
+                name="arrow-back"
+                size={22}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
-            <Text className="text-gold-400 text-lg font-bold">
+            <Text className="text-gold-700 dark:text-gold-400 text-lg font-bold">
               Modo Master (DM)
             </Text>
             <View className="h-10 w-10" />
@@ -601,16 +663,16 @@ export default function CampaignDetailScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Campaign Info */}
-          <View className="bg-surface-card rounded-card border border-gold-600/30 p-4 mt-4 mb-4">
+          <View className="bg-white dark:bg-surface-card rounded-card border border-gold-600/30 p-4 mt-4 mb-4">
             <View className="flex-row items-center mb-3">
               <View className="h-12 w-12 rounded-xl bg-gold-500/20 items-center justify-center mr-3">
-                <Ionicons name="eye" size={24} color="#d4a017" />
+                <Ionicons name="eye" size={24} color={colors.accentGold} />
               </View>
               <View className="flex-1">
-                <Text className="text-gold-400 text-base font-bold">
+                <Text className="text-gold-700 dark:text-gold-400 text-base font-bold">
                   {campaign.nombre}
                 </Text>
-                <Text className="text-dark-300 text-xs">
+                <Text className="text-dark-400 dark:text-dark-300 text-xs">
                   Herramientas de Dungeon Master
                 </Text>
               </View>
@@ -618,60 +680,72 @@ export default function CampaignDetailScreen() {
           </View>
 
           {/* Initiative Tracker */}
-          <Text className="text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
+          <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
             Herramientas de Combate
           </Text>
 
           <TouchableOpacity
-            className="bg-surface-card rounded-card border border-surface-border p-4 mb-3 flex-row items-center active:bg-surface-light"
+            className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3 flex-row items-center active:bg-gray-50 dark:active:bg-surface-light"
             onPress={() => {
-              showToast("Tirada de iniciativa: " + (Math.floor(Math.random() * 20) + 1));
+              toastSuccess(
+                "Tirada de iniciativa: " + (Math.floor(Math.random() * 20) + 1),
+              );
             }}
           >
             <View className="h-12 w-12 rounded-xl bg-amber-500/20 items-center justify-center mr-4">
-              <Ionicons name="flash" size={24} color="#f59e0b" />
+              <Ionicons name="flash" size={24} color={colors.accentAmber} />
             </View>
             <View className="flex-1">
-              <Text className="text-white text-base font-semibold">
+              <Text className="text-dark-900 dark:text-white text-base font-semibold">
                 Tirada de Iniciativa
               </Text>
-              <Text className="text-dark-300 text-sm mt-0.5">
+              <Text className="text-dark-400 dark:text-dark-300 text-sm mt-0.5">
                 Pulsa para tirar 1d20 de iniciativa
               </Text>
             </View>
-            <Ionicons name="dice-outline" size={22} color="#f59e0b" />
+            <Ionicons
+              name="dice-outline"
+              size={22}
+              color={colors.accentAmber}
+            />
           </TouchableOpacity>
 
           {/* Quick Dice Roller */}
-          <Text className="text-dark-200 text-sm font-semibold mb-3 mt-4 uppercase tracking-wider">
+          <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 mt-4 uppercase tracking-wider">
             Tiradas Rápidas
           </Text>
 
           <View className="flex-row flex-wrap mb-4">
             {[
-              { die: "d4", sides: 4, color: "#22c55e" },
-              { die: "d6", sides: 6, color: "#3b82f6" },
-              { die: "d8", sides: 8, color: "#a855f7" },
+              { die: "d4", sides: 4, color: colors.accentGreen },
+              { die: "d6", sides: 6, color: colors.accentBlue },
+              { die: "d8", sides: 8, color: colors.accentPurple },
               { die: "d10", sides: 10, color: "#ec4899" },
-              { die: "d12", sides: 12, color: "#f59e0b" },
-              { die: "d20", sides: 20, color: "#ef4444" },
+              { die: "d12", sides: 12, color: colors.accentAmber },
+              { die: "d20", sides: 20, color: colors.accentDanger },
               { die: "d100", sides: 100, color: "#14b8a6" },
             ].map((dice) => (
               <TouchableOpacity
                 key={dice.die}
-                className="rounded-xl border border-surface-border p-3 mr-2 mb-2 items-center active:opacity-70"
-                style={{ backgroundColor: `${dice.color}15`, borderColor: `${dice.color}30`, minWidth: 72 }}
+                className="rounded-xl border border-dark-100 dark:border-surface-border p-3 mr-2 mb-2 items-center active:opacity-70"
+                style={{
+                  backgroundColor: `${dice.color}15`,
+                  borderColor: `${dice.color}30`,
+                  minWidth: 72,
+                }}
                 onPress={() => {
                   const result = Math.floor(Math.random() * dice.sides) + 1;
-                  showAlert(
-                    `🎲 ${dice.die}`,
-                    `Resultado: ${result}`,
-                    { type: "info", buttonText: "OK" }
-                  );
+                  showAlert(`🎲 ${dice.die}`, `Resultado: ${result}`, {
+                    type: "info",
+                    buttonText: "OK",
+                  });
                 }}
               >
                 <Ionicons name="dice-outline" size={24} color={dice.color} />
-                <Text className="text-sm font-bold mt-1" style={{ color: dice.color }}>
+                <Text
+                  className="text-sm font-bold mt-1"
+                  style={{ color: dice.color }}
+                >
                   {dice.die}
                 </Text>
               </TouchableOpacity>
@@ -679,106 +753,161 @@ export default function CampaignDetailScreen() {
           </View>
 
           {/* NPC Quick Generator */}
-          <Text className="text-dark-200 text-sm font-semibold mb-3 mt-2 uppercase tracking-wider">
+          <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 mt-2 uppercase tracking-wider">
             Generador Rápido de NPC
           </Text>
 
           <TouchableOpacity
-            className="bg-surface-card rounded-card border border-surface-border p-4 mb-3 flex-row items-center active:bg-surface-light"
+            className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3 flex-row items-center active:bg-gray-50 dark:active:bg-surface-light"
             onPress={() => {
               const nombres = [
-                "Theron", "Elara", "Brom", "Lyra", "Gareth", "Isolde",
-                "Darian", "Mira", "Aldric", "Selene", "Kael", "Nessa",
-                "Roderick", "Vala", "Magnus", "Freya", "Orion", "Zara",
+                "Theron",
+                "Elara",
+                "Brom",
+                "Lyra",
+                "Gareth",
+                "Isolde",
+                "Darian",
+                "Mira",
+                "Aldric",
+                "Selene",
+                "Kael",
+                "Nessa",
+                "Roderick",
+                "Vala",
+                "Magnus",
+                "Freya",
+                "Orion",
+                "Zara",
               ];
               const profesiones = [
-                "Tabernero/a", "Herrero/a", "Mercader", "Guardia", "Curandero/a",
-                "Bardo", "Ladrón/a", "Sacerdote/isa", "Granjero/a", "Noble",
-                "Soldado", "Mago/a errante", "Cazarrecompensas", "Marinero/a",
+                "Tabernero/a",
+                "Herrero/a",
+                "Mercader",
+                "Guardia",
+                "Curandero/a",
+                "Bardo",
+                "Ladrón/a",
+                "Sacerdote/isa",
+                "Granjero/a",
+                "Noble",
+                "Soldado",
+                "Mago/a errante",
+                "Cazarrecompensas",
+                "Marinero/a",
               ];
               const rasgos = [
-                "habla en susurros", "ríe nerviosamente", "siempre mira por encima del hombro",
-                "tiene una cicatriz notable", "es extremadamente educado/a",
-                "desconfía de los extraños", "colecciona monedas extrañas",
-                "cuenta historias increíbles", "tiene un acento extraño",
-                "siempre está comiendo algo", "parpadea excesivamente",
+                "habla en susurros",
+                "ríe nerviosamente",
+                "siempre mira por encima del hombro",
+                "tiene una cicatriz notable",
+                "es extremadamente educado/a",
+                "desconfía de los extraños",
+                "colecciona monedas extrañas",
+                "cuenta historias increíbles",
+                "tiene un acento extraño",
+                "siempre está comiendo algo",
+                "parpadea excesivamente",
               ];
-              const nombre = nombres[Math.floor(Math.random() * nombres.length)];
-              const profesion = profesiones[Math.floor(Math.random() * profesiones.length)];
+              const nombre =
+                nombres[Math.floor(Math.random() * nombres.length)];
+              const profesion =
+                profesiones[Math.floor(Math.random() * profesiones.length)];
               const rasgo = rasgos[Math.floor(Math.random() * rasgos.length)];
 
               showAlert(
                 "NPC Generado",
                 `Nombre: ${nombre}\nProfesión: ${profesion}\nRasgo: ${rasgo}`,
-                { type: "success", buttonText: "OK" }
+                { type: "success", buttonText: "OK" },
               );
             }}
           >
             <View className="h-12 w-12 rounded-xl bg-purple-500/20 items-center justify-center mr-4">
-              <Ionicons name="people" size={24} color="#a855f7" />
+              <Ionicons name="people" size={24} color={colors.accentPurple} />
             </View>
             <View className="flex-1">
-              <Text className="text-white text-base font-semibold">
+              <Text className="text-dark-900 dark:text-white text-base font-semibold">
                 Generar NPC
               </Text>
-              <Text className="text-dark-300 text-sm mt-0.5">
+              <Text className="text-dark-400 dark:text-dark-300 text-sm mt-0.5">
                 Nombre, profesión y rasgo aleatorios
               </Text>
             </View>
-            <Ionicons name="sparkles" size={22} color="#a855f7" />
+            <Ionicons name="sparkles" size={22} color={colors.accentPurple} />
           </TouchableOpacity>
 
           {/* Quick encounter difficulty reference */}
-          <Text className="text-dark-200 text-sm font-semibold mb-3 mt-4 uppercase tracking-wider">
+          <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 mt-4 uppercase tracking-wider">
             Referencia Rápida
           </Text>
 
-          <View className="bg-surface-card rounded-card border border-surface-border p-4 mb-3">
-            <Text className="text-white text-sm font-semibold mb-2">
+          <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3">
+            <Text className="text-dark-900 dark:text-white text-sm font-semibold mb-2">
               Dificultad de Encuentro (Nv. 1)
             </Text>
             <View className="flex-row justify-between">
               <View className="items-center flex-1">
-                <Text className="text-green-400 text-lg font-bold">25</Text>
-                <Text className="text-dark-400 text-[10px] uppercase">Fácil</Text>
+                <Text className="text-green-600 dark:text-green-400 text-lg font-bold">
+                  25
+                </Text>
+                <Text className="text-dark-400 text-[10px] uppercase">
+                  Fácil
+                </Text>
               </View>
               <View className="items-center flex-1">
-                <Text className="text-yellow-400 text-lg font-bold">50</Text>
-                <Text className="text-dark-400 text-[10px] uppercase">Medio</Text>
+                <Text className="text-yellow-600 dark:text-yellow-400 text-lg font-bold">
+                  50
+                </Text>
+                <Text className="text-dark-400 text-[10px] uppercase">
+                  Medio
+                </Text>
               </View>
               <View className="items-center flex-1">
-                <Text className="text-orange-400 text-lg font-bold">75</Text>
-                <Text className="text-dark-400 text-[10px] uppercase">Difícil</Text>
+                <Text className="text-orange-600 dark:text-orange-400 text-lg font-bold">
+                  75
+                </Text>
+                <Text className="text-dark-400 text-[10px] uppercase">
+                  Difícil
+                </Text>
               </View>
               <View className="items-center flex-1">
-                <Text className="text-red-400 text-lg font-bold">100</Text>
-                <Text className="text-dark-400 text-[10px] uppercase">Mortal</Text>
+                <Text className="text-red-600 dark:text-red-400 text-lg font-bold">
+                  100
+                </Text>
+                <Text className="text-dark-400 text-[10px] uppercase">
+                  Mortal
+                </Text>
               </View>
             </View>
-            <Text className="text-dark-500 text-[10px] mt-2 text-center">
+            <Text className="text-dark-300 dark:text-dark-500 text-[10px] mt-2 text-center">
               XP total del encuentro por personaje
             </Text>
           </View>
 
           {/* Common DCs */}
-          <View className="bg-surface-card rounded-card border border-surface-border p-4 mb-3">
-            <Text className="text-white text-sm font-semibold mb-2">
+          <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3">
+            <Text className="text-dark-900 dark:text-white text-sm font-semibold mb-2">
               CDs Comunes
             </Text>
             {[
-              { label: "Muy fácil", dc: "5", color: "#22c55e" },
-              { label: "Fácil", dc: "10", color: "#84cc16" },
-              { label: "Moderada", dc: "15", color: "#eab308" },
-              { label: "Difícil", dc: "20", color: "#f97316" },
-              { label: "Muy difícil", dc: "25", color: "#ef4444" },
-              { label: "Casi imposible", dc: "30", color: "#dc2626" },
+              { label: "Muy fácil", dc: "5", color: colors.accentGreen },
+              { label: "Fácil", dc: "10", color: colors.accentLime },
+              { label: "Moderada", dc: "15", color: colors.accentYellow },
+              { label: "Difícil", dc: "20", color: colors.accentOrange },
+              { label: "Muy difícil", dc: "25", color: colors.accentDanger },
+              { label: "Casi imposible", dc: "30", color: colors.accentRed },
             ].map((row) => (
               <View
                 key={row.dc}
-                className="flex-row items-center justify-between py-1.5 border-b border-surface-border/30"
+                className="flex-row items-center justify-between py-1.5 border-b border-dark-100/30 dark:border-surface-border/30"
               >
-                <Text className="text-dark-200 text-sm">{row.label}</Text>
-                <Text className="text-sm font-bold" style={{ color: row.color }}>
+                <Text className="text-dark-600 dark:text-dark-200 text-sm">
+                  {row.label}
+                </Text>
+                <Text
+                  className="text-sm font-bold"
+                  style={{ color: row.color }}
+                >
                   CD {row.dc}
                 </Text>
               </View>
@@ -786,22 +915,34 @@ export default function CampaignDetailScreen() {
           </View>
 
           {/* Conditions quick reference */}
-          <View className="bg-surface-card rounded-card border border-surface-border p-4 mb-3">
-            <Text className="text-white text-sm font-semibold mb-2">
+          <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3">
+            <Text className="text-dark-900 dark:text-white text-sm font-semibold mb-2">
               Condiciones Rápidas
             </Text>
             <View className="flex-row flex-wrap">
               {[
-                "Agarrado", "Asustado", "Aturdido", "Cegado", "Derribado",
-                "Encantado", "Ensordecido", "Envenenado", "Incapacitado",
-                "Inconsciente", "Invisible", "Paralizado", "Petrificado",
+                "Agarrado",
+                "Asustado",
+                "Aturdido",
+                "Cegado",
+                "Derribado",
+                "Encantado",
+                "Ensordecido",
+                "Envenenado",
+                "Incapacitado",
+                "Inconsciente",
+                "Invisible",
+                "Paralizado",
+                "Petrificado",
                 "Restringido",
               ].map((cond) => (
                 <View
                   key={cond}
-                  className="bg-dark-700 rounded-full px-2.5 py-1 mr-1.5 mb-1.5 border border-surface-border"
+                  className="bg-gray-100 dark:bg-dark-700 rounded-full px-2.5 py-1 mr-1.5 mb-1.5 border border-dark-100 dark:border-surface-border"
                 >
-                  <Text className="text-dark-200 text-[10px]">{cond}</Text>
+                  <Text className="text-dark-600 dark:text-dark-200 text-[10px]">
+                    {cond}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -810,24 +951,32 @@ export default function CampaignDetailScreen() {
           {/* Session notes shortcut */}
           {hasCharacter && (
             <TouchableOpacity
-              className="bg-surface-card rounded-card border border-blue-500/30 p-4 mb-4 flex-row items-center active:bg-surface-light"
+              className="bg-white dark:bg-surface-card rounded-card border border-blue-500/30 p-4 mb-4 flex-row items-center active:bg-gray-50 dark:active:bg-surface-light"
               onPress={() => {
                 setShowMasterMode(false);
                 handleOpenNotes();
               }}
             >
               <View className="h-12 w-12 rounded-xl bg-blue-500/20 items-center justify-center mr-4">
-                <Ionicons name="document-text" size={24} color="#3b82f6" />
+                <Ionicons
+                  name="document-text"
+                  size={24}
+                  color={colors.accentBlue}
+                />
               </View>
               <View className="flex-1">
-                <Text className="text-white text-base font-semibold">
+                <Text className="text-dark-900 dark:text-white text-base font-semibold">
                   Notas de la Partida
                 </Text>
-                <Text className="text-dark-300 text-sm mt-0.5">
+                <Text className="text-dark-400 dark:text-dark-300 text-sm mt-0.5">
                   Accede a las notas y diario de sesión
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={20} color="#3b82f6" />
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={colors.accentBlue}
+              />
             </TouchableOpacity>
           )}
         </ScrollView>
@@ -837,12 +986,8 @@ export default function CampaignDetailScreen() {
 
   return (
     <View style={detailStyles.container}>
-      {/* Full background gradient */}
-      <LinearGradient
-        colors={["#0d0d1a", "#141425", "#1a1a2e", "#1a1a2e"]}
-        locations={[0, 0.12, 0.3, 1]}
-        style={StyleSheet.absoluteFill}
-      />
+      {/* Themed backdrop */}
+      <DndBackdrop />
 
       <ScrollView
         style={{ flex: 1 }}
@@ -852,60 +997,140 @@ export default function CampaignDetailScreen() {
         {/* ── Hero Header ── */}
         <View style={detailStyles.heroHeader}>
           <LinearGradient
-            colors={["#0d0d1a", "#13132200"]}
+            colors={colors.gradientHeader}
             style={StyleSheet.absoluteFill}
           />
 
           {/* Top buttons row */}
           <View style={detailStyles.heroTopRow}>
             <TouchableOpacity
-              style={detailStyles.heroButton}
+              style={[
+                detailStyles.heroButton,
+                {
+                  backgroundColor: colors.headerButtonBg,
+                  borderColor: colors.headerButtonBorder,
+                },
+              ]}
               onPress={handleGoBack}
               activeOpacity={0.7}
             >
-              <Ionicons name="arrow-back" size={20} color="white" />
+              <Ionicons
+                name="arrow-back"
+                size={20}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
 
             <View style={detailStyles.heroActions}>
               <TouchableOpacity
-                style={detailStyles.heroButton}
+                style={[
+                  detailStyles.heroButton,
+                  {
+                    backgroundColor: colors.headerButtonBg,
+                    borderColor: colors.headerButtonBorder,
+                  },
+                ]}
                 onPress={handleEditCampaign}
                 activeOpacity={0.7}
               >
-                <Ionicons name="pencil" size={16} color="#fbbf24" />
+                <Ionicons name="pencil" size={16} color={colors.accentGold} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={[detailStyles.heroButton, { marginLeft: 8 }]}
+                style={[
+                  detailStyles.heroButton,
+                  {
+                    marginLeft: 8,
+                    backgroundColor: colors.headerButtonBg,
+                    borderColor: colors.headerButtonBorder,
+                  },
+                ]}
                 onPress={handleDeleteCampaign}
                 activeOpacity={0.7}
               >
-                <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                <Ionicons
+                  name="trash-outline"
+                  size={16}
+                  color={colors.dangerText}
+                />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Campaign title area */}
           <View style={detailStyles.heroTitleArea}>
-            <Text style={detailStyles.heroLabel}>Partida</Text>
-            <Text style={detailStyles.heroTitle}>{campaign.nombre}</Text>
+            <Text
+              style={[
+                detailStyles.heroLabel,
+                { color: colors.headerLabelColor },
+              ]}
+            >
+              Partida
+            </Text>
+            <Text
+              style={[
+                detailStyles.heroTitle,
+                { color: colors.headerTitleColor },
+              ]}
+            >
+              {campaign.nombre}
+            </Text>
 
             {campaign.descripcion ? (
-              <Text style={detailStyles.heroDescription}>
+              <Text
+                style={[
+                  detailStyles.heroDescription,
+                  { color: colors.sectionDescColor },
+                ]}
+              >
                 {campaign.descripcion}
               </Text>
             ) : null}
 
             {/* Date badges */}
             <View style={detailStyles.heroDateRow}>
-              <View style={detailStyles.heroBadge}>
-                <Ionicons name="calendar-outline" size={12} color="#666699" />
-                <Text style={detailStyles.heroBadgeText}>
+              <View
+                style={[
+                  detailStyles.heroBadge,
+                  {
+                    backgroundColor: colors.optionBg,
+                    borderColor: colors.optionBorder,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="calendar-outline"
+                  size={12}
+                  color={colors.textMuted}
+                />
+                <Text
+                  style={[
+                    detailStyles.heroBadgeText,
+                    { color: colors.textMuted },
+                  ]}
+                >
                   Creada: {createdDate}
                 </Text>
               </View>
-              <View style={detailStyles.heroBadge}>
-                <Ionicons name="time-outline" size={12} color="#666699" />
-                <Text style={detailStyles.heroBadgeText}>
+              <View
+                style={[
+                  detailStyles.heroBadge,
+                  {
+                    backgroundColor: colors.optionBg,
+                    borderColor: colors.optionBorder,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="time-outline"
+                  size={12}
+                  color={colors.textMuted}
+                />
+                <Text
+                  style={[
+                    detailStyles.heroBadgeText,
+                    { color: colors.textMuted },
+                  ]}
+                >
                   Acceso: {lastAccessDate}
                 </Text>
               </View>
@@ -917,9 +1142,13 @@ export default function CampaignDetailScreen() {
             <LinearGradient
               colors={[
                 "transparent",
-                hasCharacter ? "#c6282844" : "#3a3a5c66",
-                hasCharacter ? "#c62828" : "#3a3a5c",
-                hasCharacter ? "#c6282844" : "#3a3a5c66",
+                hasCharacter
+                  ? colors.accentRed + "44"
+                  : colors.borderDefault + "66",
+                hasCharacter ? colors.accentRed : colors.borderDefault,
+                hasCharacter
+                  ? colors.accentRed + "44"
+                  : colors.borderDefault + "66",
                 "transparent",
               ]}
               start={{ x: 0, y: 0.5 }}
@@ -933,24 +1162,29 @@ export default function CampaignDetailScreen() {
         {hasCharacter ? (
           <View style={detailStyles.sectionContainer}>
             {/* Character sheet main card */}
-            <SectionLabel label="Tu Personaje" icon="shield-half-sharp" color="#c62828" delay={100} />
+            <SectionLabel
+              label="Tu Personaje"
+              icon="shield-half-sharp"
+              color={colors.accentRed}
+              delay={100}
+            />
 
             <ActionCard
               icon="shield-half-sharp"
-              iconColor="#c62828"
+              iconColor={colors.accentRed}
               iconBg="rgba(198,40,40,0.15)"
               title="Ver Hoja de Personaje"
-              subtitle="Estadísticas, hechizos, inventario y más"
+              subtitle="Estadísticas, habilidades, inventario y más"
               onPress={handleOpenCharacterSheet}
               delay={150}
-              accentColor="#c62828"
+              accentColor={colors.accentRed}
             />
 
             {/* Quick action grid */}
             <View style={detailStyles.quickActionRow}>
               <QuickActionItem
                 icon="heart"
-                iconColor="#22c55e"
+                iconColor={colors.accentGreen}
                 iconBg="rgba(34,197,94,0.15)"
                 label="Combate"
                 sublabel="Vida y ataques"
@@ -959,11 +1193,11 @@ export default function CampaignDetailScreen() {
               />
               <View style={{ width: 10 }} />
               <QuickActionItem
-                icon="flame"
-                iconColor="#ef4444"
+                icon="star"
+                iconColor={colors.accentDanger}
                 iconBg="rgba(239,68,68,0.15)"
-                label="Hechizos"
-                sublabel="Magia y trucos"
+                label="Habilidades"
+                sublabel="Clase y magia"
                 onPress={handleOpenSpells}
                 delay={250}
               />
@@ -972,7 +1206,7 @@ export default function CampaignDetailScreen() {
             <View style={detailStyles.quickActionRow}>
               <QuickActionItem
                 icon="bag-handle"
-                iconColor="#d4a017"
+                iconColor={colors.accentGold}
                 iconBg="rgba(212,160,23,0.15)"
                 label="Inventario"
                 sublabel="Objetos y oro"
@@ -982,7 +1216,7 @@ export default function CampaignDetailScreen() {
               <View style={{ width: 10 }} />
               <QuickActionItem
                 icon="document-text"
-                iconColor="#3b82f6"
+                iconColor={colors.accentBlue}
                 iconBg="rgba(59,130,246,0.15)"
                 label="Notas"
                 sublabel="Diario y apuntes"
@@ -994,16 +1228,32 @@ export default function CampaignDetailScreen() {
             {/* Ornate divider */}
             <View style={detailStyles.ornateDivider}>
               <LinearGradient
-                colors={["transparent", "#fbbf2440", "transparent"]}
+                colors={[
+                  "transparent",
+                  colors.accentGold + "40",
+                  "transparent",
+                ]}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
                 style={{ height: 1, flex: 1 }}
               />
               <View style={detailStyles.ornateDiamondWrapper}>
-                <View style={detailStyles.ornateDiamond} />
+                <View
+                  style={[
+                    detailStyles.ornateDiamond,
+                    {
+                      backgroundColor: colors.accentGold + "60",
+                      shadowColor: colors.accentGold,
+                    },
+                  ]}
+                />
               </View>
               <LinearGradient
-                colors={["transparent", "#fbbf2440", "transparent"]}
+                colors={[
+                  "transparent",
+                  colors.accentGold + "40",
+                  "transparent",
+                ]}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
                 style={{ height: 1, flex: 1 }}
@@ -1011,50 +1261,95 @@ export default function CampaignDetailScreen() {
             </View>
 
             {/* Master mode */}
-            <SectionLabel label="Herramientas de Partida" icon="eye" color="#d4a017" delay={400} />
+            <SectionLabel
+              label="Herramientas de Partida"
+              icon="eye"
+              color={colors.accentGold}
+              delay={400}
+            />
 
             <ActionCard
               icon="eye"
-              iconColor="#d4a017"
+              iconColor={colors.accentGold}
               iconBg="rgba(212,160,23,0.15)"
               title="Modo Master (DM)"
               subtitle="Dados, NPC, referencia rápida y más"
               onPress={handleOpenMasterMode}
               delay={450}
-              accentColor="#d4a017"
+              accentColor={colors.accentGold}
               borderAccent
             />
           </View>
         ) : (
           /* ── No Character — Creation Prompt ── */
           <View style={detailStyles.sectionContainer}>
-            <View style={detailStyles.createCard}>
+            <View
+              style={[
+                detailStyles.createCard,
+                {
+                  backgroundColor: colors.bgCard,
+                  borderColor: colors.borderDefault,
+                },
+              ]}
+            >
               {/* Inner gradient overlay */}
               <LinearGradient
                 colors={[
-                  "rgba(255,255,255,0.02)",
-                  "rgba(255,255,255,0)",
-                  "rgba(0,0,0,0.05)",
+                  isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.01)",
+                  "transparent",
+                  isDark ? "rgba(0,0,0,0.05)" : "rgba(0,0,0,0.02)",
                 ]}
                 style={StyleSheet.absoluteFill}
               />
 
               {/* Floating icon */}
               <View style={detailStyles.createIconOuter}>
-                <View style={detailStyles.createIconRing} />
+                <View
+                  style={[
+                    detailStyles.createIconRing,
+                    { borderColor: colors.borderSubtle },
+                  ]}
+                />
                 <LinearGradient
-                  colors={["#252540", "#1e1e38"]}
-                  style={detailStyles.createIconBg}
+                  colors={
+                    isDark
+                      ? [colors.bgElevated, colors.bgSecondary]
+                      : [colors.bgSecondary, colors.bgCard]
+                  }
+                  style={[
+                    detailStyles.createIconBg,
+                    { borderColor: colors.borderSubtle },
+                  ]}
                 >
-                  <Ionicons name="person-add-outline" size={42} color="#666699" />
+                  <Ionicons
+                    name="person-add-outline"
+                    size={42}
+                    color={colors.textMuted}
+                  />
                 </LinearGradient>
                 <View style={detailStyles.createIconSparkle}>
-                  <Ionicons name="sparkles" size={14} color="#fbbf2480" />
+                  <Ionicons
+                    name="sparkles"
+                    size={14}
+                    color={colors.accentGold + "80"}
+                  />
                 </View>
               </View>
 
-              <Text style={detailStyles.createTitle}>Crea tu personaje</Text>
-              <Text style={detailStyles.createSubtitle}>
+              <Text
+                style={[
+                  detailStyles.createTitle,
+                  { color: colors.textPrimary },
+                ]}
+              >
+                Crea tu personaje
+              </Text>
+              <Text
+                style={[
+                  detailStyles.createSubtitle,
+                  { color: colors.textSecondary },
+                ]}
+              >
                 Esta partida aún no tiene personaje. Comienza el proceso de
                 creación paso a paso: elige raza, clase, estadísticas y mucho
                 más.
@@ -1062,12 +1357,18 @@ export default function CampaignDetailScreen() {
 
               {/* CTA Button with gradient */}
               <TouchableOpacity
-                style={detailStyles.createButton}
+                style={[
+                  detailStyles.createButton,
+                  {
+                    backgroundColor: colors.bgCard,
+                    borderColor: colors.borderDefault,
+                  },
+                ]}
                 onPress={handleCreateCharacter}
                 activeOpacity={0.85}
               >
                 <LinearGradient
-                  colors={["#d32f2f", "#c62828", "#a51c1c"]}
+                  colors={["#d32f2f", colors.accentRed, "#a51c1c"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={detailStyles.createButtonGradient}
@@ -1082,7 +1383,11 @@ export default function CampaignDetailScreen() {
               {/* Divider */}
               <View style={detailStyles.createDivider}>
                 <LinearGradient
-                  colors={["transparent", "#fbbf2430", "transparent"]}
+                  colors={[
+                    "transparent",
+                    colors.accentGold + "30",
+                    "transparent",
+                  ]}
                   start={{ x: 0, y: 0.5 }}
                   end={{ x: 1, y: 0.5 }}
                   style={{ height: 1, width: "100%" }}
@@ -1090,7 +1395,11 @@ export default function CampaignDetailScreen() {
               </View>
 
               {/* Steps preview */}
-              <Text style={detailStyles.stepsTitle}>Pasos del proceso</Text>
+              <Text
+                style={[detailStyles.stepsTitle, { color: colors.textMuted }]}
+              >
+                Pasos del proceso
+              </Text>
 
               {[
                 { icon: "text-outline", label: "Nombre del personaje" },
@@ -1099,22 +1408,50 @@ export default function CampaignDetailScreen() {
                 { icon: "stats-chart-outline", label: "Estadísticas" },
                 { icon: "book-outline", label: "Trasfondo" },
                 { icon: "school-outline", label: "Habilidades" },
-                { icon: "flame-outline", label: "Hechizos (si aplica)" },
+                {
+                  icon: "star-outline",
+                  label: "Conjuros y poderes (si aplica)",
+                },
                 { icon: "bag-outline", label: "Equipamiento" },
                 { icon: "chatbubble-outline", label: "Personalidad" },
                 { icon: "body-outline", label: "Apariencia (opcional)" },
-                { icon: "checkmark-circle-outline", label: "Resumen y confirmación" },
+                {
+                  icon: "checkmark-circle-outline",
+                  label: "Resumen y confirmación",
+                },
               ].map((step, index) => (
                 <View key={index} style={detailStyles.stepRow}>
-                  <View style={detailStyles.stepNumber}>
-                    <Text style={detailStyles.stepNumberText}>{index + 1}</Text>
+                  <View
+                    style={[
+                      detailStyles.stepNumber,
+                      {
+                        backgroundColor: colors.bgSubtle,
+                        borderColor: colors.borderSubtle,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        detailStyles.stepNumberText,
+                        { color: colors.textMuted },
+                      ]}
+                    >
+                      {index + 1}
+                    </Text>
                   </View>
                   <Ionicons
                     name={step.icon as any}
                     size={15}
-                    color="#555577"
+                    color={colors.textMuted}
                   />
-                  <Text style={detailStyles.stepLabel}>{step.label}</Text>
+                  <Text
+                    style={[
+                      detailStyles.stepLabel,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    {step.label}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -1140,7 +1477,7 @@ export default function CampaignDetailScreen() {
 const detailStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#1a1a2e", // overridden inline via colors.bgPrimary
   },
 
   // ── Hero Header ──
@@ -1174,7 +1511,7 @@ const detailStyles = StyleSheet.create({
     marginBottom: 16,
   },
   heroLabel: {
-    color: "#fbbf24",
+    color: "#fbbf24", // overridden inline via colors.accentGold
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 2,
@@ -1185,14 +1522,14 @@ const detailStyles = StyleSheet.create({
     textShadowRadius: 6,
   },
   heroTitle: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden inline via colors.textPrimary
     fontSize: 30,
     fontWeight: "800",
     letterSpacing: -0.5,
     marginBottom: 6,
   },
   heroDescription: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden inline via colors.textSecondary
     fontSize: 14,
     lineHeight: 21,
     marginBottom: 12,
@@ -1213,7 +1550,7 @@ const detailStyles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.05)",
   },
   heroBadgeText: {
-    color: "#555577",
+    color: "#555577", // overridden inline via colors.textMuted
     fontSize: 11,
     fontWeight: "500",
     marginLeft: 5,
@@ -1250,9 +1587,9 @@ const detailStyles = StyleSheet.create({
   // ── Action Card ──
   actionCard: {
     borderRadius: 14,
-    backgroundColor: "#23233d",
+    backgroundColor: "#23233d", // overridden inline via colors.bgCard
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#3a3a5c", // overridden inline via colors.borderDefault
     paddingHorizontal: 16,
     paddingVertical: 14,
     paddingLeft: 20,
@@ -1283,13 +1620,13 @@ const detailStyles = StyleSheet.create({
     flex: 1,
   },
   actionCardTitle: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden inline via colors.textPrimary
     fontSize: 15,
     fontWeight: "700",
     marginBottom: 2,
   },
   actionCardSubtitle: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden inline via colors.textSecondary
     fontSize: 13,
     lineHeight: 18,
   },
@@ -1310,9 +1647,9 @@ const detailStyles = StyleSheet.create({
   },
   quickActionCard: {
     borderRadius: 14,
-    backgroundColor: "#23233d",
+    backgroundColor: "#23233d", // overridden inline via colors.bgCard
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#3a3a5c", // overridden inline via colors.borderDefault
     paddingHorizontal: 14,
     paddingVertical: 14,
     alignItems: "center",
@@ -1336,12 +1673,12 @@ const detailStyles = StyleSheet.create({
     marginBottom: 8,
   },
   quickActionLabel: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden inline via colors.textPrimary
     fontSize: 13,
     fontWeight: "700",
   },
   quickActionSublabel: {
-    color: "#666699",
+    color: "#666699", // overridden inline via colors.textMuted
     fontSize: 10,
     fontWeight: "500",
     marginTop: 2,
@@ -1360,9 +1697,9 @@ const detailStyles = StyleSheet.create({
   ornateDiamond: {
     width: 7,
     height: 7,
-    backgroundColor: "#fbbf2460",
+    backgroundColor: "#fbbf2460", // overridden inline via colors.accentGold + "60"
     transform: [{ rotate: "45deg" }],
-    shadowColor: "#fbbf24",
+    shadowColor: "#fbbf24", // overridden inline via colors.accentGold
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 6,
@@ -1372,9 +1709,9 @@ const detailStyles = StyleSheet.create({
   // ── Create Character Card ──
   createCard: {
     borderRadius: 16,
-    backgroundColor: "#23233d",
+    backgroundColor: "#23233d", // overridden inline via colors.bgCard
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#3a3a5c", // overridden inline via colors.borderDefault
     padding: 24,
     alignItems: "center",
     overflow: "hidden",
@@ -1410,7 +1747,7 @@ const detailStyles = StyleSheet.create({
     right: 2,
   },
   createTitle: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden inline via colors.textPrimary
     fontSize: 20,
     fontWeight: "800",
     textAlign: "center",
@@ -1418,7 +1755,7 @@ const detailStyles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   createSubtitle: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden inline via colors.textSecondary
     fontSize: 14,
     textAlign: "center",
     lineHeight: 21,
@@ -1429,7 +1766,7 @@ const detailStyles = StyleSheet.create({
     borderRadius: 14,
     overflow: "hidden",
     width: "100%",
-    shadowColor: "#c62828",
+    shadowColor: "#c62828", // overridden inline via colors.accentRed
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -1442,7 +1779,7 @@ const detailStyles = StyleSheet.create({
     paddingVertical: 15,
   },
   createButtonText: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden inline via colors.textInverted
     fontWeight: "800",
     fontSize: 16,
     marginLeft: 8,
@@ -1452,7 +1789,7 @@ const detailStyles = StyleSheet.create({
     marginVertical: 20,
   },
   stepsTitle: {
-    color: "#555577",
+    color: "#555577", // overridden inline via colors.textMuted
     fontSize: 10,
     fontWeight: "700",
     textTransform: "uppercase",
@@ -1478,12 +1815,12 @@ const detailStyles = StyleSheet.create({
     marginRight: 10,
   },
   stepNumberText: {
-    color: "#555577",
+    color: "#555577", // overridden inline via colors.textMuted
     fontSize: 11,
     fontWeight: "700",
   },
   stepLabel: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden inline via colors.textSecondary
     fontSize: 13,
     marginLeft: 8,
     fontWeight: "500",

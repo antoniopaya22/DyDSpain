@@ -4,6 +4,8 @@
  * Slides down from the top of the screen with smooth animations.
  * Auto-dismisses after a configurable duration.
  * Supports success, error, warning, and info variants.
+ *
+ * ✅ Theme-aware: adapts to light/dark mode via useTheme()
  */
 
 import { useEffect, useRef, useCallback } from "react";
@@ -18,6 +20,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/useTheme";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -44,47 +47,35 @@ export interface ToastProps {
   position?: "top" | "bottom";
 }
 
-// ─── Theme Config ────────────────────────────────────────────────────
+// ─── Type Config (resolved from theme at render time) ────────────────
 
-const TYPE_CONFIG: Record<
-  ToastType,
-  {
-    icon: keyof typeof Ionicons.glyphMap;
-    color: string;
-    bgColor: string;
-    borderColor: string;
-    iconBg: string;
-  }
-> = {
-  success: {
-    icon: "checkmark-circle",
-    color: "#22c55e",
-    bgColor: "rgba(34,197,94,0.08)",
-    borderColor: "rgba(34,197,94,0.25)",
-    iconBg: "rgba(34,197,94,0.15)",
-  },
-  error: {
-    icon: "close-circle",
-    color: "#ef4444",
-    bgColor: "rgba(239,68,68,0.08)",
-    borderColor: "rgba(239,68,68,0.25)",
-    iconBg: "rgba(239,68,68,0.15)",
-  },
-  warning: {
-    icon: "alert-circle",
-    color: "#fbbf24",
-    bgColor: "rgba(251,191,36,0.08)",
-    borderColor: "rgba(251,191,36,0.25)",
-    iconBg: "rgba(251,191,36,0.15)",
-  },
-  info: {
-    icon: "information-circle",
-    color: "#60a5fa",
-    bgColor: "rgba(96,165,250,0.08)",
-    borderColor: "rgba(96,165,250,0.25)",
-    iconBg: "rgba(96,165,250,0.15)",
-  },
-};
+interface ToastTypeEntry {
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
+}
+
+function getTypeConfig(
+  colors: import("@/utils/theme").ThemeColors,
+): Record<ToastType, ToastTypeEntry> {
+  return {
+    success: {
+      icon: "checkmark-circle",
+      color: colors.accentGreen,
+    },
+    error: {
+      icon: "close-circle",
+      color: colors.accentDanger,
+    },
+    warning: {
+      icon: "alert-circle",
+      color: colors.accentGold,
+    },
+    info: {
+      icon: "information-circle",
+      color: colors.accentLightBlue,
+    },
+  };
+}
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const TOAST_WIDTH = Math.min(SCREEN_WIDTH - 32, 420);
@@ -104,15 +95,34 @@ export default function Toast({
   dismissOnPress = true,
   position = "top",
 }: ToastProps) {
-  const translateY = useRef(new Animated.Value(position === "top" ? -120 : 120)).current;
+  const { colors, isDark } = useTheme();
+
+  const translateY = useRef(
+    new Animated.Value(position === "top" ? -120 : 120),
+  ).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const scaleX = useRef(new Animated.Value(0.95)).current;
   const progressAnim = useRef(new Animated.Value(1)).current;
   const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isAnimatingOut = useRef(false);
 
+  const TYPE_CONFIG = getTypeConfig(colors);
   const config = TYPE_CONFIG[type] || TYPE_CONFIG.info;
   const iconName = customIcon || config.icon;
+  const accentColor = config.color;
+
+  // Derived theme-aware colors
+  const toastBg = isDark ? colors.bgCard : colors.bgElevated;
+  const toastBorder = `${accentColor}40`;
+  const toastInnerGlow = `${accentColor}${isDark ? "0D" : "08"}`;
+  const iconBg = `${accentColor}${isDark ? "26" : "1A"}`;
+  const messageColor = colors.textPrimary;
+  const subtitleColor = colors.textSecondary;
+  const dismissIconColor = colors.textMuted;
+  const dismissBtnBg = colors.bgSubtle;
+  const progressTrackBg = isDark
+    ? "rgba(255,255,255,0.04)"
+    : "rgba(0,0,0,0.04)";
 
   // ── Clear timer on unmount ──
   useEffect(() => {
@@ -237,13 +247,13 @@ export default function Toast({
         style={[
           styles.toastContainer,
           {
-            backgroundColor: "#1e1e38",
-            borderColor: config.borderColor,
+            backgroundColor: toastBg,
+            borderColor: toastBorder,
             opacity,
-            transform: [
-              { translateY },
-              { scaleX },
-            ],
+            transform: [{ translateY }, { scaleX }],
+            // Shadow adapts to theme
+            shadowColor: isDark ? colors.shadowColor : accentColor,
+            shadowOpacity: isDark ? 0.3 : 0.12,
           },
         ]}
       >
@@ -254,29 +264,27 @@ export default function Toast({
         >
           {/* Inner glow overlay */}
           <View
-            style={[
-              styles.innerGlow,
-              { backgroundColor: config.bgColor },
-            ]}
+            style={[styles.innerGlow, { backgroundColor: toastInnerGlow }]}
           />
 
           {/* Icon */}
-          <View
-            style={[
-              styles.iconContainer,
-              { backgroundColor: config.iconBg },
-            ]}
-          >
-            <Ionicons name={iconName} size={22} color={config.color} />
+          <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
+            <Ionicons name={iconName} size={22} color={accentColor} />
           </View>
 
           {/* Text content */}
           <View style={styles.textContainer}>
-            <Text style={styles.message} numberOfLines={2}>
+            <Text
+              style={[styles.message, { color: messageColor }]}
+              numberOfLines={2}
+            >
               {message}
             </Text>
             {subtitle ? (
-              <Text style={styles.subtitle} numberOfLines={1}>
+              <Text
+                style={[styles.subtitle, { color: subtitleColor }]}
+                numberOfLines={1}
+              >
                 {subtitle}
               </Text>
             ) : null}
@@ -285,23 +293,28 @@ export default function Toast({
           {/* Dismiss X button */}
           {dismissOnPress && (
             <TouchableOpacity
-              style={styles.dismissButton}
+              style={[styles.dismissButton, { backgroundColor: dismissBtnBg }]}
               onPress={handlePress}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Ionicons name="close" size={16} color="#555577" />
+              <Ionicons name="close" size={16} color={dismissIconColor} />
             </TouchableOpacity>
           )}
         </TouchableOpacity>
 
         {/* Progress bar */}
         {duration > 0 && (
-          <View style={styles.progressBarContainer}>
+          <View
+            style={[
+              styles.progressBarContainer,
+              { backgroundColor: progressTrackBg },
+            ]}
+          >
             <Animated.View
               style={[
                 styles.progressBar,
                 {
-                  backgroundColor: config.color,
+                  backgroundColor: accentColor,
                   width: progressWidth,
                 },
               ]}
@@ -329,10 +342,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     overflow: "hidden",
-    // Shadow
-    shadowColor: "#000",
+    // Shadow (base values — color/opacity set dynamically)
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
     shadowRadius: 16,
     elevation: 12,
   },
@@ -359,14 +370,12 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   message: {
-    color: "#e4e4f0",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 19,
     letterSpacing: -0.1,
   },
   subtitle: {
-    color: "#8c8cb3",
     fontSize: 12,
     fontWeight: "500",
     marginTop: 2,
@@ -376,7 +385,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.05)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -386,7 +394,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 2.5,
-    backgroundColor: "rgba(255,255,255,0.04)",
   },
   progressBar: {
     height: "100%",

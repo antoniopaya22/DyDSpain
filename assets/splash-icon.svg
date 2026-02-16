@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="splashBg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0d0d1a"/>
+    </radialGradient>
+    <linearGradient id="sFaceHL" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ef5350" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#c62828"/>
+      <stop offset="100%" stop-color="#7f0000"/>
+    </linearGradient>
+    <linearGradient id="sFaceMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d32f2f"/>
+      <stop offset="50%" stop-color="#c62828"/>
+      <stop offset="100%" stop-color="#8e0000"/>
+    </linearGradient>
+    <linearGradient id="sFaceSH" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#b71c1c" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#5d0000"/>
+    </linearGradient>
+    <radialGradient id="sCenterGrad" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#ef5350" stop-opacity="0.35"/>
+      <stop offset="45%" stop-color="#c62828"/>
+      <stop offset="100%" stop-color="#7f0000" stop-opacity="0.95"/>
+    </radialGradient>
+    <linearGradient id="sEdgeShine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.18"/>
+    </linearGradient>
+    <radialGradient id="sOuterGlow" cx="50%" cy="42%" r="40%">
+      <stop offset="0%" stop-color="#c62828" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#c62828" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sRuneGlow" cx="50%" cy="42%" r="35%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Transparent background (splash bg color is set in app.json) -->
+  <rect width="512" height="512" fill="transparent"/>
+
+  <!-- Outer glow -->
+  <circle cx="256" cy="215.04" r="179.2" fill="url(#sOuterGlow)"/>
+
+  <!-- Runic ring -->
+  <circle cx="256" cy="215.04" r="158.72" fill="url(#sRuneGlow)"/>
+  <circle cx="256" cy="215.04" r="153.6" fill="none" stroke="#fbbf24" stroke-width="1.536" stroke-opacity="0.4"/>
+  <circle cx="256" cy="215.04" r="142.33599999999998" fill="none" stroke="#fbbf24" stroke-width="1.024" stroke-opacity="0.2"/>
+
+  <!-- Rune characters -->
+  <text x="256.0" y="71.7" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚠ</text>
+  <text x="330.8" y="91.7" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚢ</text>
+  <text x="385.5" y="146.4" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚦ</text>
+  <text x="405.5" y="221.2" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚨ</text>
+  <text x="385.5" y="295.9" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚱ</text>
+  <text x="330.8" y="350.7" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚲ</text>
+  <text x="256.0" y="370.7" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚷ</text>
+  <text x="181.2" y="350.7" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚹ</text>
+  <text x="126.5" y="295.9" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚺ</text>
+  <text x="106.5" y="221.2" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚾ</text>
+  <text x="126.5" y="146.4" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᛁ</text>
+  <text x="181.2" y="91.7" text-anchor="middle" font-size="14.336" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᛃ</text>
+
+  <!-- Die border glow -->
+  <circle cx="256" cy="215.04" r="118.784" fill="none" stroke="#c62828" stroke-width="2.048" stroke-opacity="0.3"/>
+
+  <!-- Outer faces -->
+  <polygon points="256.00,102.40 363.13,180.23 293.08,164.01" fill="url(#sFaceHL)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.6" opacity="0.99"/>
+  <polygon points="363.13,180.23 322.21,306.17 315.99,234.53" fill="url(#sFaceHL)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.6" opacity="0.97"/>
+  <polygon points="322.21,306.17 189.79,306.17 256.00,278.12" fill="url(#sFaceSH)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.6" opacity="0.94"/>
+  <polygon points="189.79,306.17 148.87,180.23 196.01,234.53" fill="url(#sFaceMain)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.6" opacity="0.94"/>
+  <polygon points="148.87,180.23 256.00,102.40 218.92,164.01" fill="url(#sFaceHL)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.6" opacity="0.97"/>
+
+  <!-- Inner faces -->
+  <polygon points="293.08,164.01 315.99,234.53 363.13,180.23" fill="url(#sFaceMain)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.45" opacity="0.93"/>
+  <polygon points="315.99,234.53 256.00,278.12 322.21,306.17" fill="url(#sFaceSH)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.45" opacity="0.90"/>
+  <polygon points="256.00,278.12 196.01,234.53 189.79,306.17" fill="url(#sFaceSH)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.45" opacity="0.88"/>
+  <polygon points="196.01,234.53 218.92,164.01 148.87,180.23" fill="url(#sFaceSH)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.45" opacity="0.89"/>
+  <polygon points="218.92,164.01 293.08,164.01 256.00,102.40" fill="url(#sFaceMain)" stroke="#5d0000" stroke-width="1.536" stroke-opacity="0.45" opacity="0.92"/>
+
+  <!-- Center pentagon -->
+  <polygon points="293.08,164.01 315.99,234.53 256.00,278.12 196.01,234.53 218.92,164.01" fill="url(#sCenterGrad)" stroke="#ef5350" stroke-width="2.048" stroke-opacity="0.25"/>
+
+  <!-- Specular highlights -->
+  <polygon points="256.00,102.40 363.13,180.23 293.08,164.01" fill="url(#sEdgeShine)" opacity="0.45"/>
+  <polygon points="148.87,180.23 256.00,102.40 218.92,164.01" fill="url(#sEdgeShine)" opacity="0.3"/>
+
+  <!-- Edge lines -->
+  <line x1="256.0" y1="102.4" x2="293.1" y2="164.0" stroke="#ef5350" stroke-width="1.024" stroke-opacity="0.4"/>
+  <line x1="363.1" y1="180.2" x2="316.0" y2="234.5" stroke="#ef5350" stroke-width="1.024" stroke-opacity="0.15"/>
+  <line x1="322.2" y1="306.2" x2="256.0" y2="278.1" stroke="#ef5350" stroke-width="1.024" stroke-opacity="0.15"/>
+  <line x1="189.8" y1="306.2" x2="196.0" y2="234.5" stroke="#ef5350" stroke-width="1.024" stroke-opacity="0.15"/>
+  <line x1="148.9" y1="180.2" x2="218.9" y2="164.0" stroke="#ef5350" stroke-width="1.024" stroke-opacity="0.4"/>
+
+  <!-- "20" text -->
+  <text x="257.024" y="238.59199999999998" text-anchor="middle" font-size="61.44" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#000000" fill-opacity="0.4">20</text>
+  <text x="256" y="236.54399999999998" text-anchor="middle" font-size="61.44" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#ffffff" fill-opacity="0.95">20</text>
+
+  <!-- Top vertex sparkle -->
+  <circle cx="256.0" cy="102.4" r="3.072" fill="#ffffff" fill-opacity="0.5"/>
+
+  <!-- Brand text below -->
+  <text x="256" y="419.84" text-anchor="middle" font-size="33.28" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#fbbf24" fill-opacity="0.9" letter-spacing="5.12">D&amp;D ESPAÑOL</text>
+
+  <!-- Subtitle -->
+  <text x="256" y="442.88" text-anchor="middle" font-size="15.36" font-weight="700" font-family="Arial, Helvetica, sans-serif" fill="#fbbf24" fill-opacity="0.45" letter-spacing="7.68">5ª EDICIÓN</text>
+
+  <!-- Decorative lines around text -->
+  <line x1="143.36" y1="401.91999999999996" x2="230.4" y2="401.91999999999996" stroke="#fbbf24" stroke-width="1.024" stroke-opacity="0.25"/>
+  <line x1="281.6" y1="401.91999999999996" x2="368.64" y2="401.91999999999996" stroke="#fbbf24" stroke-width="1.024" stroke-opacity="0.25"/>
+
+  <!-- Small diamonds flanking subtitle -->
+  <polygon points="194.56,439.296 197.12,436.736 199.68,439.296 197.12,441.856" fill="#fbbf24" fill-opacity="0.4"/>
+  <polygon points="317.44,439.296 314.88,436.736 312.32,439.296 314.88,441.856" fill="#fbbf24" fill-opacity="0.4"/>
+
+  <!-- Sparkle accents -->
+  <polygon points="384,107.52 389.12,96.25599999999999 394.24,107.52 389.12,118.78399999999999" fill="#fbbf24" fill-opacity="0.65"/>
+</svg>

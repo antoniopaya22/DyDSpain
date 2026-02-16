@@ -18,9 +18,11 @@ import * as ImagePicker from "expo-image-picker";
 import { useCampaignStore } from "@/stores/campaignStore";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { useDialog, useToast } from "@/hooks/useDialog";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function NewCampaignScreen() {
   const router = useRouter();
+  const { colors, isDark } = useTheme();
   const { createCampaign } = useCampaignStore();
 
   const [nombre, setNombre] = useState("");
@@ -41,7 +43,7 @@ export default function NewCampaignScreen() {
       showAlert(
         "Permiso necesario",
         "Necesitamos acceso a tu galería para seleccionar una imagen.",
-        { type: "warning" }
+        { type: "warning" },
       );
       return;
     }
@@ -86,7 +88,7 @@ export default function NewCampaignScreen() {
         "Descartar cambios",
         "¿Estás seguro de que quieres salir? Se perderán los datos introducidos.",
         () => router.back(),
-        { confirmText: "Descartar", cancelText: "Seguir editando" }
+        { confirmText: "Descartar", cancelText: "Seguir editando" },
       );
     } else {
       router.back();
@@ -153,8 +155,8 @@ export default function NewCampaignScreen() {
     >
       {/* Full background gradient */}
       <LinearGradient
-        colors={["#0d0d1a", "#141425", "#1a1a2e", "#1a1a2e"]}
-        locations={[0, 0.12, 0.3, 1]}
+        colors={colors.gradientMain}
+        locations={colors.gradientLocations}
         style={StyleSheet.absoluteFill}
       />
 
@@ -175,25 +177,57 @@ export default function NewCampaignScreen() {
           ]}
         >
           <LinearGradient
-            colors={["#0d0d1a", "#13132200"]}
+            colors={colors.gradientHeader}
             style={StyleSheet.absoluteFill}
           />
 
           <View style={newStyles.headerRow}>
             <TouchableOpacity
-              style={newStyles.backButton}
+              style={[
+                newStyles.backButton,
+                {
+                  backgroundColor: colors.headerButtonBg,
+                  borderColor: colors.headerButtonBorder,
+                },
+              ]}
               onPress={handleGoBack}
               activeOpacity={0.7}
             >
-              <Ionicons name="arrow-back" size={20} color="white" />
+              <Ionicons
+                name="arrow-back"
+                size={20}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
             <View style={{ flex: 1 }}>
-              <Text style={newStyles.headerLabel}>Nueva campaña</Text>
-              <Text style={newStyles.headerTitle}>Nueva Partida</Text>
+              <Text
+                style={[
+                  newStyles.headerLabel,
+                  {
+                    color: colors.headerLabelColor,
+                    textShadowColor: colors.accentGoldGlow,
+                  },
+                ]}
+              >
+                Nueva campaña
+              </Text>
+              <Text
+                style={[
+                  newStyles.headerTitle,
+                  { color: colors.headerTitleColor },
+                ]}
+              >
+                Nueva Partida
+              </Text>
             </View>
           </View>
 
-          <Text style={newStyles.headerDescription}>
+          <Text
+            style={[
+              newStyles.headerDescription,
+              { color: colors.sectionDescColor },
+            ]}
+          >
             Crea una nueva campaña para empezar tu aventura. Después podrás
             crear un personaje dentro de ella.
           </Text>
@@ -201,7 +235,13 @@ export default function NewCampaignScreen() {
           {/* Bottom border gradient */}
           <View style={newStyles.headerBorder}>
             <LinearGradient
-              colors={["transparent", "#3a3a5c66", "#3a3a5c", "#3a3a5c66", "transparent"]}
+              colors={[
+                "transparent",
+                colors.borderDefault + "66",
+                colors.borderDefault,
+                colors.borderDefault + "66",
+                "transparent",
+              ]}
               start={{ x: 0, y: 0.5 }}
               end={{ x: 1, y: 0.5 }}
               style={{ height: 1, width: "100%" }}
@@ -221,18 +261,38 @@ export default function NewCampaignScreen() {
         >
           {/* Imagen de la partida */}
           <View style={newStyles.fieldGroup}>
-            <Text style={newStyles.fieldLabel}>
-              Imagen <Text style={newStyles.fieldLabelOptional}>(opcional)</Text>
+            <Text
+              style={[newStyles.fieldLabel, { color: colors.textSecondary }]}
+            >
+              Imagen{" "}
+              <Text
+                style={[
+                  newStyles.fieldLabelOptional,
+                  { color: colors.textMuted },
+                ]}
+              >
+                (opcional)
+              </Text>
             </Text>
 
             {imagen ? (
-              <View style={newStyles.imagePreview}>
+              <View
+                style={[
+                  newStyles.imagePreview,
+                  { borderColor: colors.borderDefault },
+                ]}
+              >
                 <LinearGradient
-                  colors={["#252540", "#1e1e38"]}
+                  colors={[colors.bgSecondary, colors.bgPrimary]}
                   style={newStyles.imagePreviewInner}
                 >
-                  <Ionicons name="image" size={56} color="#555577" />
-                  <Text style={newStyles.imagePreviewText}>
+                  <Ionicons name="image" size={56} color={colors.textMuted} />
+                  <Text
+                    style={[
+                      newStyles.imagePreviewText,
+                      { color: colors.textMuted },
+                    ]}
+                  >
                     Imagen seleccionada
                   </Text>
                 </LinearGradient>
@@ -246,14 +306,37 @@ export default function NewCampaignScreen() {
               </View>
             ) : (
               <TouchableOpacity
-                style={newStyles.imagePickerButton}
+                style={[
+                  newStyles.imagePickerButton,
+                  {
+                    borderColor: colors.borderDefault,
+                    backgroundColor: colors.bgSubtle,
+                  },
+                ]}
                 onPress={handlePickImage}
                 activeOpacity={0.7}
               >
-                <View style={newStyles.imagePickerIconBg}>
-                  <Ionicons name="image-outline" size={28} color="#555577" />
+                <View
+                  style={[
+                    newStyles.imagePickerIconBg,
+                    {
+                      backgroundColor: colors.optionBg,
+                      borderColor: colors.optionBorder,
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name="image-outline"
+                    size={28}
+                    color={colors.textMuted}
+                  />
                 </View>
-                <Text style={newStyles.imagePickerText}>
+                <Text
+                  style={[
+                    newStyles.imagePickerText,
+                    { color: colors.textMuted },
+                  ]}
+                >
                   Pulsa para elegir una imagen
                 </Text>
               </TouchableOpacity>
@@ -262,21 +345,38 @@ export default function NewCampaignScreen() {
 
           {/* Nombre de la partida */}
           <View style={newStyles.fieldGroup}>
-            <Text style={newStyles.fieldLabel}>
+            <Text
+              style={[newStyles.fieldLabel, { color: colors.textSecondary }]}
+            >
               Nombre de la partida{" "}
-              <Text style={newStyles.fieldLabelRequired}>*</Text>
+              <Text
+                style={[
+                  newStyles.fieldLabelRequired,
+                  { color: colors.accentRed },
+                ]}
+              >
+                *
+              </Text>
             </Text>
-            <View style={newStyles.inputContainer}>
+            <View
+              style={[
+                newStyles.inputContainer,
+                {
+                  backgroundColor: colors.bgInput,
+                  borderColor: colors.borderDefault,
+                },
+              ]}
+            >
               <Ionicons
                 name="text-outline"
                 size={18}
-                color="#555577"
+                color={colors.textMuted}
                 style={{ marginRight: 10 }}
               />
               <TextInput
-                style={newStyles.input}
+                style={[newStyles.input, { color: colors.textPrimary }]}
                 placeholder="Ej: Las Minas Perdidas de Phandelver"
-                placeholderTextColor="#444466"
+                placeholderTextColor={colors.textMuted}
                 value={nombre}
                 onChangeText={setNombre}
                 maxLength={100}
@@ -284,7 +384,12 @@ export default function NewCampaignScreen() {
                 returnKeyType="next"
               />
             </View>
-            <View style={newStyles.fieldCounter}>
+            <View
+              style={[
+                newStyles.fieldCounter,
+                { backgroundColor: colors.borderSubtle },
+              ]}
+            >
               <View
                 style={[
                   newStyles.fieldCounterBar,
@@ -292,22 +397,46 @@ export default function NewCampaignScreen() {
                 ]}
               />
             </View>
-            <Text style={newStyles.fieldCounterText}>
+            <Text
+              style={[newStyles.fieldCounterText, { color: colors.textMuted }]}
+            >
               {nombre.length}/100
             </Text>
           </View>
 
           {/* Descripción */}
           <View style={newStyles.fieldGroup}>
-            <Text style={newStyles.fieldLabel}>
+            <Text
+              style={[newStyles.fieldLabel, { color: colors.textSecondary }]}
+            >
               Descripción{" "}
-              <Text style={newStyles.fieldLabelOptional}>(opcional)</Text>
+              <Text
+                style={[
+                  newStyles.fieldLabelOptional,
+                  { color: colors.textMuted },
+                ]}
+              >
+                (opcional)
+              </Text>
             </Text>
-            <View style={[newStyles.inputContainer, newStyles.textareaContainer]}>
+            <View
+              style={[
+                newStyles.inputContainer,
+                newStyles.textareaContainer,
+                {
+                  backgroundColor: colors.bgInput,
+                  borderColor: colors.borderDefault,
+                },
+              ]}
+            >
               <TextInput
-                style={[newStyles.input, newStyles.textarea]}
+                style={[
+                  newStyles.input,
+                  newStyles.textarea,
+                  { color: colors.textPrimary },
+                ]}
                 placeholder="Añade una descripción o notas sobre la campaña..."
-                placeholderTextColor="#444466"
+                placeholderTextColor={colors.textMuted}
                 value={descripcion}
                 onChangeText={setDescripcion}
                 multiline
@@ -317,7 +446,12 @@ export default function NewCampaignScreen() {
                 returnKeyType="default"
               />
             </View>
-            <View style={newStyles.fieldCounter}>
+            <View
+              style={[
+                newStyles.fieldCounter,
+                { backgroundColor: colors.borderSubtle },
+              ]}
+            >
               <View
                 style={[
                   newStyles.fieldCounterBar,
@@ -325,13 +459,15 @@ export default function NewCampaignScreen() {
                     width: `${(descripcion.length / 500) * 100}%`,
                     backgroundColor:
                       descripcion.length > 450
-                        ? "#f97316"
+                        ? colors.accentOrange
                         : "rgba(198,40,40,0.5)",
                   },
                 ]}
               />
             </View>
-            <Text style={newStyles.fieldCounterText}>
+            <Text
+              style={[newStyles.fieldCounterText, { color: colors.textMuted }]}
+            >
               {descripcion.length}/500
             </Text>
           </View>
@@ -341,13 +477,18 @@ export default function NewCampaignScreen() {
         <Animated.View
           style={[newStyles.infoCardContainer, { opacity: infoFade }]}
         >
-          <View style={newStyles.infoCard}>
+          <View
+            style={[
+              newStyles.infoCard,
+              {
+                backgroundColor: colors.bgCard,
+                borderColor: colors.borderDefault,
+              },
+            ]}
+          >
             {/* Subtle gradient overlay */}
             <LinearGradient
-              colors={[
-                "rgba(251,191,36,0.04)",
-                "rgba(251,191,36,0)",
-              ]}
+              colors={["rgba(251,191,36,0.04)", "rgba(251,191,36,0)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={StyleSheet.absoluteFill}
@@ -356,7 +497,11 @@ export default function NewCampaignScreen() {
             {/* Left accent */}
             <View style={newStyles.infoCardAccent}>
               <LinearGradient
-                colors={["#fbbf24", "#fbbf2466", "#fbbf2422"]}
+                colors={[
+                  colors.accentGold,
+                  colors.accentGold + "66",
+                  colors.accentGold + "22",
+                ]}
                 start={{ x: 0.5, y: 0 }}
                 end={{ x: 0.5, y: 1 }}
                 style={{ flex: 1, width: "100%" }}
@@ -365,14 +510,35 @@ export default function NewCampaignScreen() {
 
             <View style={newStyles.infoCardContent}>
               <View style={newStyles.infoCardHeader}>
-                <View style={newStyles.infoCardIconBg}>
-                  <Ionicons name="sparkles" size={16} color="#fbbf24" />
+                <View
+                  style={[
+                    newStyles.infoCardIconBg,
+                    { backgroundColor: colors.accentGoldGlow },
+                  ]}
+                >
+                  <Ionicons
+                    name="sparkles"
+                    size={16}
+                    color={colors.accentGold}
+                  />
                 </View>
-                <Text style={newStyles.infoCardTitle}>Siguiente paso</Text>
+                <Text
+                  style={[
+                    newStyles.infoCardTitle,
+                    { color: colors.textPrimary },
+                  ]}
+                >
+                  Siguiente paso
+                </Text>
               </View>
-              <Text style={newStyles.infoCardText}>
+              <Text
+                style={[
+                  newStyles.infoCardText,
+                  { color: colors.textSecondary },
+                ]}
+              >
                 Una vez creada la partida, podrás crear un personaje de D&D 5e
-                paso a paso: elegir raza, clase, estadísticas, hechizos,
+                paso a paso: elegir raza, clase, estadísticas, habilidades,
                 equipamiento y más.
               </Text>
             </View>
@@ -396,8 +562,10 @@ export default function NewCampaignScreen() {
             <LinearGradient
               colors={
                 isValid && !saving
-                  ? ["#d32f2f", "#c62828", "#a51c1c"]
-                  : ["#2d2d44", "#252540", "#1e1e38"]
+                  ? ["#d32f2f", colors.accentRed, "#a51c1c"]
+                  : isDark
+                    ? [colors.bgElevated, colors.bgCard, colors.bgSecondary]
+                    : ["#c0c0d8", "#b0b0c8", "#a0a0b8"]
               }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -418,11 +586,24 @@ export default function NewCampaignScreen() {
 
           {/* Cancel button */}
           <TouchableOpacity
-            style={newStyles.cancelButton}
+            style={[
+              newStyles.cancelButton,
+              {
+                backgroundColor: colors.bgSubtle,
+                borderColor: colors.borderDefault,
+              },
+            ]}
             onPress={handleGoBack}
             activeOpacity={0.7}
           >
-            <Text style={newStyles.cancelButtonText}>Cancelar</Text>
+            <Text
+              style={[
+                newStyles.cancelButtonText,
+                { color: colors.textSecondary },
+              ]}
+            >
+              Cancelar
+            </Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
@@ -441,7 +622,6 @@ export default function NewCampaignScreen() {
 const newStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
   },
 
   // ── Header ──
@@ -460,32 +640,26 @@ const newStyles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.07)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.09)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
   },
   headerLabel: {
-    color: "#fbbf24",
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 2,
     textTransform: "uppercase",
-    textShadowColor: "rgba(251,191,36,0.2)",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 6,
     marginBottom: 2,
   },
   headerTitle: {
-    color: "#ffffff",
     fontSize: 24,
     fontWeight: "800",
     letterSpacing: -0.3,
   },
   headerDescription: {
-    color: "#8c8cb3",
     fontSize: 14,
     lineHeight: 21,
   },
@@ -506,7 +680,6 @@ const newStyles = StyleSheet.create({
     marginBottom: 22,
   },
   fieldLabel: {
-    color: "#8c8cb3",
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 1.2,
@@ -514,11 +687,10 @@ const newStyles = StyleSheet.create({
     marginBottom: 8,
   },
   fieldLabelRequired: {
-    color: "#c62828",
+    color: "#c62828", // overridden inline via colors.accentRed
     fontWeight: "800",
   },
   fieldLabelOptional: {
-    color: "#555577",
     fontWeight: "500",
     textTransform: "lowercase",
     letterSpacing: 0,
@@ -527,12 +699,10 @@ const newStyles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1e1e38",
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: Platform.OS === "ios" ? 14 : 10,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
   },
   textareaContainer: {
     alignItems: "flex-start",
@@ -541,7 +711,6 @@ const newStyles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: "#ffffff",
     fontSize: 15,
     fontWeight: "500",
     paddingVertical: 0,
@@ -563,7 +732,6 @@ const newStyles = StyleSheet.create({
     borderRadius: 1,
   },
   fieldCounterText: {
-    color: "#444466",
     fontSize: 10,
     fontWeight: "600",
     textAlign: "right",
@@ -575,7 +743,6 @@ const newStyles = StyleSheet.create({
     borderRadius: 14,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "#3a3a5c",
     position: "relative",
   },
   imagePreviewInner: {
@@ -585,7 +752,6 @@ const newStyles = StyleSheet.create({
     borderRadius: 13,
   },
   imagePreviewText: {
-    color: "#555577",
     fontSize: 13,
     fontWeight: "500",
     marginTop: 8,
@@ -607,11 +773,9 @@ const newStyles = StyleSheet.create({
     height: 120,
     borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: "#3a3a5c",
     borderStyle: "dashed",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.01)",
   },
   imagePickerIconBg: {
     width: 52,
@@ -625,7 +789,6 @@ const newStyles = StyleSheet.create({
     marginBottom: 8,
   },
   imagePickerText: {
-    color: "#555577",
     fontSize: 13,
     fontWeight: "500",
   },
@@ -637,9 +800,7 @@ const newStyles = StyleSheet.create({
   },
   infoCard: {
     borderRadius: 14,
-    backgroundColor: "#23233d",
     borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.15)",
     overflow: "hidden",
     position: "relative",
   },
@@ -670,12 +831,10 @@ const newStyles = StyleSheet.create({
     marginRight: 8,
   },
   infoCardTitle: {
-    color: "#fbbf24",
     fontSize: 13,
     fontWeight: "700",
   },
   infoCardText: {
-    color: "#8c8cb3",
     fontSize: 13,
     lineHeight: 19,
   },
@@ -687,7 +846,7 @@ const newStyles = StyleSheet.create({
   createButton: {
     borderRadius: 14,
     overflow: "hidden",
-    shadowColor: "#c62828",
+    shadowColor: "#c62828", // overridden inline via colors.accentRed
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -705,7 +864,7 @@ const newStyles = StyleSheet.create({
     paddingVertical: 16,
   },
   createButtonText: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden inline via colors.textInverted
     fontWeight: "800",
     fontSize: 16,
     marginLeft: 8,
@@ -721,7 +880,7 @@ const newStyles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.04)",
   },
   cancelButtonText: {
-    color: "#8c8cb3",
+    color: "#8c8cb3", // overridden inline via colors.textSecondary
     fontWeight: "600",
     fontSize: 15,
   },

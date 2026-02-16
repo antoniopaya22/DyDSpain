@@ -4,7 +4,6 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  TextInput,
   StyleSheet,
   Animated,
   Easing,
@@ -15,9 +14,23 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCampaignStore } from "@/stores/campaignStore";
-import { ConfirmDialog, Toast } from "@/components/ui";
+import { getClassData } from "@/data/srd/classes";
+import {
+  ConfirmDialog,
+  Toast,
+  SearchBar,
+  InlineDndLogo,
+  DragonDivider,
+  TorchGlow,
+  D20Watermark,
+  FloatingParticles,
+  MinimalD20Logo,
+} from "@/components/ui";
 import { useDialog, useToast } from "@/hooks/useDialog";
+import { useTheme } from "@/hooks/useTheme";
+import { getItem, STORAGE_KEYS } from "@/utils/storage";
 import type { Campaign } from "@/types/campaign";
+import type { Character, ClassId } from "@/types/character";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -26,14 +39,17 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 function CampaignCard({
   item,
   index,
+  classTheme,
   onPress,
   onLongPress,
 }: {
   item: Campaign;
   index: number;
+  classTheme: { iconName: string; color: string } | null;
   onPress: () => void;
   onLongPress: () => void;
 }) {
+  const { colors } = useTheme();
   const hasCharacter = !!item.personajeId;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const entranceAnim = useRef(new Animated.Value(0)).current;
@@ -77,10 +93,12 @@ function CampaignCard({
     }).start();
   };
 
-  const accentColor = hasCharacter ? "#c62828" : "#666699";
+  const classAccent = hasCharacter && classTheme ? classTheme.color : null;
+  const accentColor =
+    classAccent ?? (hasCharacter ? colors.accentRed : colors.textMuted);
   const accentColorLight = hasCharacter
-    ? "rgba(198,40,40,0.15)"
-    : "rgba(102,102,153,0.12)";
+    ? `${accentColor}26`
+    : `${colors.textMuted}1F`;
 
   return (
     <Animated.View
@@ -89,7 +107,7 @@ function CampaignCard({
         transform: [{ scale: scaleAnim }, { translateY }],
         marginBottom: 14,
         // Shadow / elevation
-        shadowColor: hasCharacter ? "#c62828" : "#000",
+        shadowColor: hasCharacter ? accentColor : colors.shadowColor,
         shadowOffset: { width: 0, height: hasCharacter ? 4 : 2 },
         shadowOpacity: hasCharacter ? 0.2 : 0.12,
         shadowRadius: hasCharacter ? 10 : 4,
@@ -102,7 +120,13 @@ function CampaignCard({
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         activeOpacity={1}
-        style={styles.card}
+        style={[
+          styles.card,
+          {
+            backgroundColor: colors.cardBg,
+            borderColor: colors.cardBorder,
+          },
+        ]}
       >
         {/* Accent left line */}
         <View style={styles.cardAccentLineContainer}>
@@ -130,27 +154,50 @@ function CampaignCard({
 
         <View style={styles.cardRow}>
           {/* Campaign icon */}
-          <View style={[styles.cardIcon, { backgroundColor: accentColorLight }]}>
+          <View
+            style={[styles.cardIcon, { backgroundColor: accentColorLight }]}
+          >
             {hasCharacter ? (
               <View style={styles.cardIconInner}>
-                <Ionicons name="shield-half-sharp" size={26} color={accentColor} />
+                <Ionicons
+                  name={classTheme?.iconName ?? "shield-half-sharp"}
+                  size={26}
+                  color={accentColor}
+                />
                 {/* Sparkle overlay for active campaigns */}
                 <View style={styles.cardIconSparkle}>
-                  <Ionicons name="sparkles" size={10} color="#fbbf24" />
+                  <Ionicons
+                    name="sparkles"
+                    size={10}
+                    color={colors.accentGold}
+                  />
                 </View>
               </View>
             ) : (
-              <Ionicons name="add-circle-outline" size={26} color={accentColor} />
+              <Ionicons
+                name="add-circle-outline"
+                size={26}
+                color={accentColor}
+              />
             )}
           </View>
 
           {/* Campaign info */}
           <View style={styles.cardInfo}>
-            <Text style={styles.cardTitle} numberOfLines={1}>
+            <Text
+              style={[styles.cardTitle, { color: colors.cardTitle }]}
+              numberOfLines={1}
+            >
               {item.nombre}
             </Text>
             {item.descripcion ? (
-              <Text style={styles.cardDescription} numberOfLines={1}>
+              <Text
+                style={[
+                  styles.cardDescription,
+                  { color: colors.cardDescription },
+                ]}
+                numberOfLines={1}
+              >
                 {item.descripcion}
               </Text>
             ) : null}
@@ -160,11 +207,11 @@ function CampaignCard({
                   styles.cardStatusBadge,
                   {
                     backgroundColor: hasCharacter
-                      ? "rgba(34,197,94,0.12)"
-                      : "rgba(251,191,36,0.12)",
+                      ? `${colors.accentGreen}1F`
+                      : `${colors.accentGold}1F`,
                     borderColor: hasCharacter
-                      ? "rgba(34,197,94,0.2)"
-                      : "rgba(251,191,36,0.2)",
+                      ? `${colors.accentGreen}33`
+                      : `${colors.accentGold}33`,
                   },
                 ]}
               >
@@ -172,7 +219,9 @@ function CampaignCard({
                   style={[
                     styles.cardStatusDot,
                     {
-                      backgroundColor: hasCharacter ? "#22c55e" : "#fbbf24",
+                      backgroundColor: hasCharacter
+                        ? colors.accentGreen
+                        : colors.accentGold,
                     },
                   ]}
                 />
@@ -180,14 +229,16 @@ function CampaignCard({
                   style={[
                     styles.cardStatusText,
                     {
-                      color: hasCharacter ? "#22c55e" : "#fbbf24",
+                      color: hasCharacter
+                        ? colors.accentGreen
+                        : colors.accentGold,
                     },
                   ]}
                 >
                   {hasCharacter ? "Personaje creado" : "Sin personaje"}
                 </Text>
               </View>
-              <Text style={styles.cardDateText}>
+              <Text style={[styles.cardDateText, { color: colors.textMuted }]}>
                 {new Date(item.actualizadoEn).toLocaleDateString("es-ES", {
                   day: "numeric",
                   month: "short",
@@ -197,8 +248,17 @@ function CampaignCard({
           </View>
 
           {/* Chevron */}
-          <View style={styles.cardChevron}>
-            <Ionicons name="chevron-forward" size={18} color="#4a4a6a" />
+          <View
+            style={[
+              styles.cardChevron,
+              { backgroundColor: colors.cardChevronBg },
+            ]}
+          >
+            <Ionicons
+              name="chevron-forward"
+              size={18}
+              color={colors.chevronColor}
+            />
           </View>
         </View>
       </TouchableOpacity>
@@ -206,193 +266,14 @@ function CampaignCard({
   );
 }
 
-// ─── Animated Search Bar ─────────────────────────────────────────────
-
-function AnimatedSearchBar({
-  value,
-  onChangeText,
-  onClear,
-}: {
-  value: string;
-  onChangeText: (text: string) => void;
-  onClear: () => void;
-}) {
-  const focusAnim = useRef(new Animated.Value(0)).current;
-  const entranceAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(entranceAnim, {
-      toValue: 1,
-      duration: 400,
-      delay: 200,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
-  }, [entranceAnim]);
-
-  const handleFocus = () => {
-    Animated.timing(focusAnim, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const handleBlur = () => {
-    Animated.timing(focusAnim, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const borderColorInterpolate = focusAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["#3a3a5c", "#c6282866"],
-  });
-
-  const bgColorInterpolate = focusAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["#1e1e38", "#1e1e3d"],
-  });
-
-  return (
-    <Animated.View
-      style={[
-        styles.searchBar,
-        {
-          opacity: entranceAnim,
-          borderColor: borderColorInterpolate,
-          backgroundColor: bgColorInterpolate,
-        },
-      ]}
-    >
-      <Ionicons name="search" size={18} color="#666699" />
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Buscar partida..."
-        placeholderTextColor="#555577"
-        value={value}
-        onChangeText={onChangeText}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        autoCorrect={false}
-      />
-      {value.length > 0 && (
-        <TouchableOpacity onPress={onClear} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <View style={styles.searchClearButton}>
-            <Ionicons name="close" size={14} color="#8c8cb3" />
-          </View>
-        </TouchableOpacity>
-      )}
-    </Animated.View>
-  );
-}
-
 // ─── Logo Component (Inline) ─────────────────────────────────────────
 
-function HeaderLogo() {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0.3)).current;
-  const entranceScale = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    // Entrance
-    Animated.spring(entranceScale, {
-      toValue: 1,
-      friction: 6,
-      tension: 80,
-      useNativeDriver: true,
-    }).start();
-
-    // Pulse loop
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.04,
-          duration: 2500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 2500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    );
-
-    const glow = Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 0.6,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0.2,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    );
-
-    pulse.start();
-    glow.start();
-
-    return () => {
-      pulse.stop();
-      glow.stop();
-    };
-  }, [pulseAnim, glowAnim, entranceScale]);
-
-  return (
-    <Animated.View
-      style={[
-        styles.logoWrapper,
-        {
-          transform: [
-            { scale: Animated.multiply(entranceScale, pulseAnim) },
-          ],
-        },
-      ]}
-    >
-      {/* Glow background */}
-      <Animated.View
-        style={[
-          styles.logoGlow,
-          { opacity: glowAnim },
-        ]}
-      />
-
-      <LinearGradient
-        colors={["#d32f2f", "#c62828", "#8e0000"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.logoBg}
-      >
-        {/* Inner border */}
-        <View style={styles.logoInnerBorder}>
-          <Text style={styles.logoText}>20</Text>
-        </View>
-      </LinearGradient>
-
-      {/* Sparkle */}
-      <Animated.View style={[styles.logoSparkle, { opacity: glowAnim }]}>
-        <Ionicons name="sparkles" size={10} color="#fbbf24" />
-      </Animated.View>
-    </Animated.View>
-  );
-}
+// HeaderLogo is now replaced by InlineDndLogo from @/components/ui
 
 // ─── Empty State ─────────────────────────────────────────────────────
 
 function EmptyState({ onCreateFirst }: { onCreateFirst: () => void }) {
+  const { colors } = useTheme();
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const floatAnim = useRef(new Animated.Value(0)).current;
@@ -429,7 +310,7 @@ function EmptyState({ onCreateFirst }: { onCreateFirst: () => void }) {
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     floatLoop.start();
 
@@ -438,62 +319,35 @@ function EmptyState({ onCreateFirst }: { onCreateFirst: () => void }) {
 
   return (
     <View style={styles.emptyContainer}>
-      {/* Floating dice icon */}
+      {/* Floating D20 icon — now using the SVG-based MinimalD20Logo */}
       <Animated.View
         style={[
           styles.emptyIconOuter,
           {
-            transform: [
-              { scale: scaleAnim },
-              { translateY: floatAnim },
-            ],
+            transform: [{ scale: scaleAnim }, { translateY: floatAnim }],
           },
         ]}
       >
-        {/* Outer ring */}
-        <View style={styles.emptyIconRing} />
-
-        {/* Main icon */}
-        <LinearGradient
-          colors={["#252540", "#1e1e38", "#1a1a30"]}
-          style={styles.emptyIconBg}
-        >
-          <Ionicons name="dice-outline" size={44} color="#666699" />
-        </LinearGradient>
-
-        {/* Decorative sparkles */}
-        <View style={[styles.emptySparkle, { top: -4, right: 0 }]}>
-          <Ionicons name="sparkles" size={14} color="#fbbf2480" />
-        </View>
-        <View style={[styles.emptySparkle, { bottom: 4, left: -4 }]}>
-          <Ionicons name="star" size={10} color="#c6282860" />
-        </View>
+        <MinimalD20Logo size={80} animated showRunicRing />
       </Animated.View>
 
       {/* Text */}
       <Animated.View style={{ opacity: fadeAnim, alignItems: "center" }}>
-        <Text style={styles.emptyTitle}>¡Bienvenido, aventurero!</Text>
-        <Text style={styles.emptySubtitle}>
+        <Text style={[styles.emptyTitle, { color: colors.emptyTitle }]}>
+          ¡Bienvenido, aventurero!
+        </Text>
+        <Text style={[styles.emptySubtitle, { color: colors.emptySubtitle }]}>
           No tienes ninguna partida todavía.{"\n"}Crea tu primera campaña para
           empezar a jugar.
         </Text>
 
-        {/* Decorative divider */}
-        <View style={styles.emptyDivider}>
-          <LinearGradient
-            colors={["transparent", "#fbbf2440", "transparent"]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={styles.emptyDividerLine}
-          />
-          <View style={styles.emptyDividerDiamond} />
-          <LinearGradient
-            colors={["transparent", "#fbbf2440", "transparent"]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={styles.emptyDividerLine}
-          />
-        </View>
+        {/* Dragon-themed decorative divider */}
+        <DragonDivider
+          color={colors.accentGold}
+          height={32}
+          spacing={16}
+          style={{ width: SCREEN_WIDTH * 0.7 }}
+        />
 
         {/* CTA Button */}
         <TouchableOpacity
@@ -502,7 +356,7 @@ function EmptyState({ onCreateFirst }: { onCreateFirst: () => void }) {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={["#d32f2f", "#c62828", "#a51c1c"]}
+            colors={["#d32f2f", colors.accentRed, "#a51c1c"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.emptyButtonGradient}
@@ -514,11 +368,15 @@ function EmptyState({ onCreateFirst }: { onCreateFirst: () => void }) {
 
         {/* Hint text */}
         <View style={styles.emptyHintRow}>
-          <Ionicons name="information-circle-outline" size={14} color="#555577" />
-          <Text style={styles.emptyHintText}>
+          <Ionicons
+            name="information-circle-outline"
+            size={14}
+            color={colors.emptyHintText}
+          />
+          <Text style={[styles.emptyHintText, { color: colors.emptyHintText }]}>
             También puedes explorar el{" "}
-            <Text style={{ color: "#fbbf2490" }}>Compendio</Text> con razas,
-            clases y trasfondos
+            <Text style={{ color: colors.accentGold + "90" }}>Compendio</Text>{" "}
+            con razas, clases y trasfondos
           </Text>
         </View>
       </Animated.View>
@@ -528,7 +386,14 @@ function EmptyState({ onCreateFirst }: { onCreateFirst: () => void }) {
 
 // ─── Stats Row (shows campaign count) ────────────────────────────────
 
-function StatsRow({ total, withCharacter }: { total: number; withCharacter: number }) {
+function StatsRow({
+  total,
+  withCharacter,
+}: {
+  total: number;
+  withCharacter: number;
+}) {
+  const { colors } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -542,26 +407,45 @@ function StatsRow({ total, withCharacter }: { total: number; withCharacter: numb
   }, [fadeAnim]);
 
   return (
-    <Animated.View style={[styles.statsRow, { opacity: fadeAnim }]}>
+    <Animated.View
+      style={[
+        styles.statsRow,
+        {
+          opacity: fadeAnim,
+          backgroundColor: colors.statsBg,
+          borderColor: colors.statsBorder,
+        },
+      ]}
+    >
       <View style={styles.statItem}>
-        <Text style={styles.statValue}>{total}</Text>
-        <Text style={styles.statLabel}>
+        <Text style={[styles.statValue, { color: colors.statsValue }]}>
+          {total}
+        </Text>
+        <Text style={[styles.statLabel, { color: colors.statsLabel }]}>
           {total === 1 ? "Partida" : "Partidas"}
         </Text>
       </View>
-      <View style={styles.statDivider} />
+      <View
+        style={[styles.statDivider, { backgroundColor: colors.statsDivider }]}
+      />
       <View style={styles.statItem}>
-        <Text style={[styles.statValue, { color: "#22c55e" }]}>
+        <Text style={[styles.statValue, { color: colors.accentGreen }]}>
           {withCharacter}
         </Text>
-        <Text style={styles.statLabel}>Con personaje</Text>
+        <Text style={[styles.statLabel, { color: colors.statsLabel }]}>
+          Con personaje
+        </Text>
       </View>
-      <View style={styles.statDivider} />
+      <View
+        style={[styles.statDivider, { backgroundColor: colors.statsDivider }]}
+      />
       <View style={styles.statItem}>
-        <Text style={[styles.statValue, { color: "#fbbf24" }]}>
+        <Text style={[styles.statValue, { color: colors.accentGold }]}>
           {total - withCharacter}
         </Text>
-        <Text style={styles.statLabel}>Pendientes</Text>
+        <Text style={[styles.statLabel, { color: colors.statsLabel }]}>
+          Pendientes
+        </Text>
       </View>
     </Animated.View>
   );
@@ -571,22 +455,60 @@ function StatsRow({ total, withCharacter }: { total: number; withCharacter: numb
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { colors, isDark } = useTheme();
   const { campaigns, loadCampaigns, deleteCampaign } = useCampaignStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const [campaignClassMap, setCampaignClassMap] = useState<
+    Record<string, ClassId | null>
+  >({});
   const { dialogProps, showDestructive } = useDialog();
   const { toastProps, showSuccess } = useToast();
 
   useFocusEffect(
     useCallback(() => {
       loadCampaigns();
-    }, [loadCampaigns])
+    }, [loadCampaigns]),
   );
+
+  useEffect(() => {
+    let active = true;
+
+    const loadCampaignClasses = async () => {
+      const entries = await Promise.all(
+        campaigns.map(async (campaign) => {
+          if (!campaign.personajeId) {
+            return [campaign.id, null] as const;
+          }
+          const character = await getItem<Character>(
+            STORAGE_KEYS.CHARACTER(campaign.personajeId),
+          );
+          return [campaign.id, character?.clase ?? null] as const;
+        }),
+      );
+
+      if (!active) return;
+
+      const nextMap: Record<string, ClassId | null> = {};
+      for (const [id, classId] of entries) {
+        nextMap[id] = classId;
+      }
+      setCampaignClassMap(nextMap);
+    };
+
+    loadCampaignClasses();
+
+    return () => {
+      active = false;
+    };
+  }, [campaigns]);
 
   const filteredCampaigns = campaigns.filter((c) =>
-    c.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+    c.nombre.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const campaignsWithCharacter = campaigns.filter((c) => !!c.personajeId).length;
+  const campaignsWithCharacter = campaigns.filter(
+    (c) => !!c.personajeId,
+  ).length;
 
   const handleDeleteCampaign = (campaign: Campaign) => {
     showDestructive(
@@ -594,9 +516,12 @@ export default function HomeScreen() {
       `¿Estás seguro de que quieres eliminar "${campaign.nombre}"? Se perderá el personaje asociado de forma permanente.`,
       () => {
         deleteCampaign(campaign.id);
-        showSuccess("Partida eliminada", `"${campaign.nombre}" ha sido eliminada`);
+        showSuccess(
+          "Partida eliminada",
+          `"${campaign.nombre}" ha sido eliminada`,
+        );
       },
-      { confirmText: "Eliminar", cancelText: "Cancelar" }
+      { confirmText: "Eliminar", cancelText: "Cancelar" },
     );
   };
 
@@ -604,14 +529,26 @@ export default function HomeScreen() {
     router.push(`/campaigns/${campaign.id}`);
   };
 
-  const renderCampaignCard = ({ item, index }: { item: Campaign; index: number }) => (
-    <CampaignCard
-      item={item}
-      index={index}
-      onPress={() => handlePressCampaign(item)}
-      onLongPress={() => handleDeleteCampaign(item)}
-    />
-  );
+  const renderCampaignCard = ({
+    item,
+    index,
+  }: {
+    item: Campaign;
+    index: number;
+  }) => {
+    const classId = campaignClassMap[item.id];
+    const classTheme = classId ? getClassData(classId) : null;
+
+    return (
+      <CampaignCard
+        item={item}
+        index={index}
+        classTheme={classTheme}
+        onPress={() => handlePressCampaign(item)}
+        onLongPress={() => handleDeleteCampaign(item)}
+      />
+    );
+  };
 
   const renderEmptyList = () => (
     <EmptyState onCreateFirst={() => router.push("/campaigns/new")} />
@@ -622,8 +559,12 @@ export default function HomeScreen() {
     if (campaigns.length === 0) return null;
     return (
       <View style={styles.longPressHintRow}>
-        <Ionicons name="finger-print-outline" size={13} color="#444466" />
-        <Text style={styles.longPressHintText}>
+        <Ionicons
+          name="finger-print-outline"
+          size={13}
+          color={colors.textMuted}
+        />
+        <Text style={[styles.longPressHintText, { color: colors.textMuted }]}>
           Mantén presionado una partida para más opciones
         </Text>
       </View>
@@ -634,9 +575,12 @@ export default function HomeScreen() {
     if (campaigns.length === 0) return null;
     return (
       <View style={styles.listHeaderContainer}>
-        <StatsRow total={campaigns.length} withCharacter={campaignsWithCharacter} />
+        <StatsRow
+          total={campaigns.length}
+          withCharacter={campaignsWithCharacter}
+        />
         {filteredCampaigns.length !== campaigns.length && (
-          <Text style={styles.filterResultText}>
+          <Text style={[styles.filterResultText, { color: colors.textMuted }]}>
             {filteredCampaigns.length}{" "}
             {filteredCampaigns.length === 1 ? "resultado" : "resultados"}
           </Text>
@@ -646,51 +590,108 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
       {/* Background gradient that covers the full screen */}
       <LinearGradient
-        colors={["#0d0d1a", "#141425", "#1a1a2e", "#1a1a2e"]}
-        locations={[0, 0.15, 0.35, 1]}
+        colors={colors.gradientMain}
+        locations={colors.gradientLocations}
         style={StyleSheet.absoluteFill}
       />
+
+      {/* Atmospheric torch glow effects */}
+      <TorchGlow
+        color={colors.accentRed}
+        position="top-right"
+        size={180}
+        intensity={isDark ? 0.06 : 0.04}
+        animated
+      />
+      <TorchGlow
+        color={colors.accentGold}
+        position="top-left"
+        size={120}
+        intensity={isDark ? 0.04 : 0.03}
+        animated
+      />
+
+      {/* Floating ember particles */}
+      {isDark && (
+        <FloatingParticles
+          count={8}
+          color={colors.accentGold}
+          width={SCREEN_WIDTH}
+          height={600}
+          maxSize={3}
+          opacity={0.3}
+          style={{ position: "absolute", top: 0, left: 0 }}
+        />
+      )}
+
+      {/* D20 watermark in background */}
+      <View
+        style={{
+          position: "absolute",
+          bottom: -40,
+          right: -40,
+          opacity: isDark ? 0.04 : 0.03,
+        }}
+      >
+        <D20Watermark size={240} variant="dark" opacity={1} />
+      </View>
 
       {/* Header */}
       <View style={styles.header}>
         <LinearGradient
-          colors={["#0d0d1a", "#13132200"]}
+          colors={colors.gradientHeader}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
 
         <View style={styles.headerTop}>
-          {/* Logo + Brand */}
+          {/* Logo + Brand — using the new SVG-based InlineDndLogo */}
           <View style={styles.headerBrand}>
-            <HeaderLogo />
-            <View style={styles.headerBrandText}>
-              <Text style={styles.headerLabel}>D&D Español</Text>
-              <Text style={styles.headerTitle}>Mis Partidas</Text>
-            </View>
+            <InlineDndLogo />
           </View>
 
           {/* Action buttons */}
           <View style={styles.headerActions}>
             {/* Compendium button */}
             <TouchableOpacity
-              style={styles.headerButton}
+              style={[
+                styles.headerButton,
+                {
+                  backgroundColor: colors.headerButtonBg,
+                  borderColor: colors.headerButtonBorder,
+                },
+              ]}
               onPress={() => router.push("/compendium")}
               activeOpacity={0.7}
             >
-              <Ionicons name="book-outline" size={20} color="#8c8cb3" />
+              <Ionicons
+                name="book-outline"
+                size={20}
+                color={colors.sectionDescColor}
+              />
             </TouchableOpacity>
 
             {/* Settings button */}
             <TouchableOpacity
-              style={styles.headerButton}
+              style={[
+                styles.headerButton,
+                {
+                  backgroundColor: colors.headerButtonBg,
+                  borderColor: colors.headerButtonBorder,
+                },
+              ]}
               onPress={() => router.push("/settings")}
               activeOpacity={0.7}
             >
-              <Ionicons name="settings-outline" size={20} color="#8c8cb3" />
+              <Ionicons
+                name="settings-outline"
+                size={20}
+                color={colors.sectionDescColor}
+              />
             </TouchableOpacity>
 
             {/* Create campaign FAB */}
@@ -701,7 +702,7 @@ export default function HomeScreen() {
                 activeOpacity={0.85}
               >
                 <LinearGradient
-                  colors={["#d32f2f", "#c62828", "#a51c1c"]}
+                  colors={["#d32f2f", colors.accentRed, "#a51c1c"]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={styles.addButtonGradient}
@@ -715,17 +716,25 @@ export default function HomeScreen() {
 
         {/* Search bar */}
         {campaigns.length > 0 && (
-          <AnimatedSearchBar
+          <SearchBar
             value={searchQuery}
             onChangeText={setSearchQuery}
             onClear={() => setSearchQuery("")}
+            placeholder="Buscar partida..."
+            style={{ marginTop: 10 }}
           />
         )}
 
         {/* Bottom border gradient */}
         <View style={styles.headerBorder}>
           <LinearGradient
-            colors={["transparent", "#3a3a5c66", "#3a3a5c", "#3a3a5c66", "transparent"]}
+            colors={[
+              "transparent",
+              colors.borderDefault + "66",
+              colors.borderDefault,
+              colors.borderDefault + "66",
+              "transparent",
+            ]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
             style={{ height: 1, width: "100%" }}
@@ -765,7 +774,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
   },
 
   // ── Header ──
@@ -788,17 +796,14 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   headerLabel: {
-    color: "#fbbf24",
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 2,
     textTransform: "uppercase",
-    textShadowColor: "rgba(251,191,36,0.2)",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 6,
   },
   headerTitle: {
-    color: "#ffffff",
     fontSize: 26,
     fontWeight: "800",
     marginTop: 1,
@@ -813,18 +818,16 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.06)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
   },
   addButton: {
     height: 46,
     width: 46,
     borderRadius: 23,
     overflow: "hidden",
-    shadowColor: "#c62828",
+    shadowColor: "#c62828", // overridden inline via colors.accentRed
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 8,
@@ -841,87 +844,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-  },
-
-  // ── Logo ──
-  logoWrapper: {
-    width: 42,
-    height: 42,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoGlow: {
-    position: "absolute",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "rgba(198,40,40,0.12)",
-    shadowColor: "#c62828",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 14,
-    elevation: 8,
-  },
-  logoBg: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#c62828",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 6,
-  },
-  logoInnerBorder: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.15)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoText: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "900",
-    letterSpacing: -0.5,
-    textShadowColor: "rgba(0,0,0,0.4)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
-  },
-  logoSparkle: {
-    position: "absolute",
-    top: -3,
-    right: -3,
-  },
-
-  // ── Search Bar ──
-  searchBar: {
-    marginTop: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    borderWidth: 1,
-  },
-  searchInput: {
-    flex: 1,
-    color: "#ffffff",
-    fontSize: 15,
-    marginLeft: 10,
-    paddingVertical: Platform.OS === "ios" ? 2 : 0,
-  },
-  searchClearButton: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    alignItems: "center",
-    justifyContent: "center",
   },
 
   // ── List Header ──
@@ -945,13 +867,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   statValue: {
-    color: "#ffffff",
     fontSize: 20,
     fontWeight: "800",
     letterSpacing: -0.5,
   },
   statLabel: {
-    color: "#666699",
     fontSize: 10,
     fontWeight: "600",
     textTransform: "uppercase",
@@ -964,7 +884,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.06)",
   },
   filterResultText: {
-    color: "#8c8cb3",
     fontSize: 12,
     fontWeight: "600",
     marginBottom: 6,
@@ -974,9 +893,7 @@ const styles = StyleSheet.create({
   // ── Campaign Card ──
   card: {
     borderRadius: 16,
-    backgroundColor: "#23233d",
     borderWidth: 1,
-    borderColor: "#3a3a5c",
     padding: 16,
     paddingLeft: 20,
     overflow: "hidden",
@@ -1022,13 +939,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    color: "#ffffff",
     fontSize: 17,
     fontWeight: "700",
     letterSpacing: -0.2,
   },
   cardDescription: {
-    color: "#8c8cb3",
     fontSize: 13,
     marginTop: 2,
     lineHeight: 18,
@@ -1060,7 +975,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   cardDateText: {
-    color: "#555577",
     fontSize: 11,
     fontWeight: "500",
   },
@@ -1068,7 +982,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.04)",
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 8,
@@ -1110,7 +1023,6 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   emptyTitle: {
-    color: "#ffffff",
     fontSize: 22,
     fontWeight: "800",
     textAlign: "center",
@@ -1118,7 +1030,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   emptySubtitle: {
-    color: "#8c8cb3",
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -1136,14 +1047,14 @@ const styles = StyleSheet.create({
   emptyDividerDiamond: {
     width: 6,
     height: 6,
-    backgroundColor: "#fbbf2450",
+    backgroundColor: "#fbbf2450", // overridden inline via colors.accentGold + "50"
     transform: [{ rotate: "45deg" }],
     marginHorizontal: 8,
   },
   emptyButton: {
     borderRadius: 14,
     overflow: "hidden",
-    shadowColor: "#c62828",
+    shadowColor: "#c62828", // overridden inline via colors.accentRed
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -1157,7 +1068,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   emptyButtonText: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden inline via colors.textInverted
     fontWeight: "800",
     fontSize: 16,
     marginLeft: 8,
@@ -1171,7 +1082,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   emptyHintText: {
-    color: "#444466",
     fontSize: 12,
     lineHeight: 17,
     flex: 1,
@@ -1188,7 +1098,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   longPressHintText: {
-    color: "#444466",
     fontSize: 12,
     fontWeight: "500",
     fontStyle: "italic",

@@ -1,9 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  darkMode: "class",
+  content: ["./app/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
@@ -57,12 +55,12 @@ module.exports = {
           950: "#3b1a08",
         },
         // Colores de características de D&D
-        str: "#dc2626",    // Fuerza - Rojo
-        dex: "#16a34a",    // Destreza - Verde
-        con: "#ea580c",    // Constitución - Naranja
-        int: "#2563eb",    // Inteligencia - Azul
-        wis: "#9333ea",    // Sabiduría - Púrpura
-        cha: "#db2777",    // Carisma - Rosa
+        str: "#dc2626", // Fuerza - Rojo
+        dex: "#16a34a", // Destreza - Verde
+        con: "#ea580c", // Constitución - Naranja
+        int: "#2563eb", // Inteligencia - Azul
+        wis: "#9333ea", // Sabiduría - Púrpura
+        cha: "#db2777", // Carisma - Rosa
         // Colores de estado de vida
         hp: {
           full: "#22c55e",

@@ -1,3 +1,5 @@
+import { useTheme } from "@/hooks/useTheme";
+
 /**
  * SectionDivider - D&D themed decorative divider with diamond center accent,
  * gradient fading lines, and optional label text.
@@ -48,7 +50,7 @@ const DIAMOND_SIZES = {
 
 export default function SectionDivider({
   label,
-  color = "#fbbf24",
+  color,
   fadeColor = "transparent",
   showDiamond = true,
   diamondSize = "md",
@@ -59,6 +61,8 @@ export default function SectionDivider({
   variant = "simple",
   lineOpacity = 1,
 }: SectionDividerProps) {
+  const { colors: themeColors } = useTheme();
+  const resolvedColor = color ?? themeColors.accentGold;
   const diamond = DIAMOND_SIZES[diamondSize];
   const hasLabel = !!label || variant === "labeled";
 
@@ -68,7 +72,7 @@ export default function SectionDivider({
       <View style={[styles.container, { marginVertical: spacing }, style]}>
         <View style={[styles.lineContainer, { opacity: lineOpacity }]}>
           <LinearGradient
-            colors={[fadeColor, `${color}40`, fadeColor]}
+            colors={[fadeColor, `${resolvedColor}40`, fadeColor]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
             style={styles.fullLine}
@@ -84,7 +88,7 @@ export default function SectionDivider({
         {/* Left line */}
         <View style={[styles.lineContainer, { opacity: lineOpacity }]}>
           <LinearGradient
-            colors={[fadeColor, `${color}50`]}
+            colors={[fadeColor, `${resolvedColor}50`]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
             style={[styles.line, dashed && styles.dashedLine]}
@@ -98,14 +102,14 @@ export default function SectionDivider({
               style={[
                 styles.ornateDot,
                 styles.ornateDotSmall,
-                { backgroundColor: `${color}30` },
+                { backgroundColor: `${resolvedColor}30` },
               ]}
             />
             <View
               style={[
                 styles.ornateDot,
                 styles.ornateDotMedium,
-                { backgroundColor: `${color}50` },
+                { backgroundColor: `${resolvedColor}50` },
               ]}
             />
           </View>
@@ -122,7 +126,7 @@ export default function SectionDivider({
                   {
                     width: diamond.outerSize,
                     height: diamond.outerSize,
-                    borderColor: `${color}40`,
+                    borderColor: `${resolvedColor}40`,
                   },
                 ]}
               />
@@ -136,14 +140,14 @@ export default function SectionDivider({
                       width: diamond.outerSize + 8,
                       height: diamond.outerSize + 8,
                       borderRadius: (diamond.outerSize + 8) / 2,
-                      backgroundColor: `${color}15`,
+                      backgroundColor: `${resolvedColor}15`,
                     },
                   ]}
                 >
                   <Ionicons
                     name={icon}
                     size={diamond.iconSize}
-                    color={color}
+                    color={resolvedColor}
                   />
                 </View>
               ) : (
@@ -153,8 +157,8 @@ export default function SectionDivider({
                     {
                       width: diamond.size,
                       height: diamond.size,
-                      backgroundColor: color,
-                      shadowColor: color,
+                      backgroundColor: resolvedColor,
+                      shadowColor: resolvedColor,
                     },
                   ]}
                 />
@@ -168,7 +172,7 @@ export default function SectionDivider({
               style={[
                 styles.label,
                 {
-                  color: `${color}CC`,
+                  color: `${resolvedColor}CC`,
                   marginLeft: showDiamond ? 8 : 0,
                 },
               ]}
@@ -186,14 +190,14 @@ export default function SectionDivider({
               style={[
                 styles.ornateDot,
                 styles.ornateDotMedium,
-                { backgroundColor: `${color}50` },
+                { backgroundColor: `${resolvedColor}50` },
               ]}
             />
             <View
               style={[
                 styles.ornateDot,
                 styles.ornateDotSmall,
-                { backgroundColor: `${color}30` },
+                { backgroundColor: `${resolvedColor}30` },
               ]}
             />
           </View>
@@ -202,7 +206,7 @@ export default function SectionDivider({
         {/* Right line */}
         <View style={[styles.lineContainer, { opacity: lineOpacity }]}>
           <LinearGradient
-            colors={[`${color}50`, fadeColor]}
+            colors={[`${resolvedColor}50`, fadeColor]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
             style={[styles.line, dashed && styles.dashedLine]}
@@ -216,11 +220,17 @@ export default function SectionDivider({
 // ─── Preset Variants ─────────────────────────────────────────────────
 
 /** A subtle, minimal divider with a thin golden line */
-export function SubtleDivider({ style, spacing = 12 }: { style?: ViewStyle; spacing?: number }) {
+export function SubtleDivider({
+  style,
+  spacing = 12,
+}: {
+  style?: ViewStyle;
+  spacing?: number;
+}) {
   return (
     <SectionDivider
       showDiamond={false}
-      color="#fbbf2440"
+      color={undefined}
       spacing={spacing}
       lineOpacity={0.5}
       style={style}
@@ -232,7 +242,7 @@ export function SubtleDivider({ style, spacing = 12 }: { style?: ViewStyle; spac
 export function OrnateDivider({
   label,
   icon,
-  color = "#fbbf24",
+  color,
   style,
 }: {
   label?: string;
@@ -257,7 +267,7 @@ export function OrnateDivider({
 export function SectionHeaderDivider({
   label,
   icon,
-  color = "#fbbf24",
+  color,
   style,
 }: {
   label: string;

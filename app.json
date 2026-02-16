@@ -11,30 +11,38 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1a1a2e"
+      "backgroundColor": "#0d0d1a"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dydespanol.app"
+      "bundleIdentifier": "com.dydespanol.app",
+      "infoPlist": {
+        "CFBundleDisplayName": "D&D Español"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1a1a2e"
+        "backgroundColor": "#0d0d1a"
       },
       "package": "com.dydespanol.app"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "name": "D&D Español — 5ª Edición",
+      "shortName": "D&D Español",
+      "description": "Gestiona tus partidas y personajes de D&D 5e en español",
+      "themeColor": "#0d0d1a",
+      "backgroundColor": "#0d0d1a"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#1a1a2e",
+          "backgroundColor": "#0d0d1a",
           "image": "./assets/splash-icon.png",
           "imageWidth": 200
         }

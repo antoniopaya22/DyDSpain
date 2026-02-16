@@ -233,6 +233,180 @@ A partir del nivel 18, puedes canalizar la presencia terrorífica de tu antepasa
 
 ---
 
+## Origen Mágico: Magia Salvaje (Wild Magic)
+
+Tu magia proviene del caos puro que impregna el multiverso. Cada hechizo que lanzas puede alterar la realidad de forma impredecible.
+
+### Oleada de Magia Salvaje
+
+A nivel 1, cada vez que lanzas un conjuro, el GM puede indicarte que tires en la tabla de efectos aleatorios — desde curarte hasta cambiar de color o explotar energía.
+
+### Oleada del Caos
+
+También a nivel 1, puedes ganar **ventaja** en una tirada. Luego, hasta que ocurra una nueva oleada, no puedes volver a usar este rasgo.
+
+### Energía Controlada
+
+A nivel 6, puedes modificar los resultados de tus oleadas mágicas, eligiendo **repetir** o ajustar el efecto levemente.
+
+### Caos Doblegado
+
+A nivel 14, puedes redirigir el flujo mágico, forzando a otro a repetir su **tirada de salvación** una vez por descanso.
+
+### Magia Ilimitada
+
+A nivel 18, cada vez que lances un conjuro de nivel 1 o superior, puedes activar voluntariamente una **ola salvaje adicional** sin riesgo.
+
+---
+
+## Origen Mágico: Linaje Sombrío (Shadow Magic)
+
+Tu poder proviene de la Sombra Eterna, un reflejo frío y distorsionado de la realidad. Tu magia absorbe vida y coraje.
+
+### Tacto Umbrío
+
+A nivel 1, obtienes **visión en la oscuridad** de **36 m**, **resistencia al daño necrótico** y el conjuro *oscuridad* siempre preparado.
+
+### Hijo de la Noche
+
+También a nivel 1, cuando tus PG bajan a 0, puedes tirar un **d20**; si obtienes **11+**, te quedas a **1 PG** en su lugar.
+
+### Caminante Sombrío
+
+A nivel 6, puedes **teletransportarte 9 m** en penumbra u oscuridad como **acción bonus**, y tu siguiente ataque tras hacerlo tiene **ventaja**.
+
+### Sombras Vivas
+
+A nivel 14, obtienes **resistencia a todo daño excepto radiante** durante 1 turno al usar tu teletransporte.
+
+### Avatar de Oscuridad
+
+A nivel 18, puedes liberar un aura de tinieblas impenetrable durante 1 minuto, haciéndote casi imposible de golpear.
+
+---
+
+## Origen Mágico: Magia de Tormenta (Storm Sorcery)
+
+El poder de una tormenta elemental fluye en tus venas. Relámpagos, nubes y vientos responden a tu voluntad como si fueras el ojo del huracán.
+
+### Heraldo de la Tormenta
+
+A nivel 1, puedes flotar unos centímetros sobre el suelo y proyectar ráfagas de viento o descargas leves.
+
+### Cólera Eléctrica
+
+A nivel 1, cuando lanzas un conjuro de trueno o relámpago, puedes golpear a una criatura cercana con **daño adicional** igual a tu Carisma.
+
+### Corazón de Huracán
+
+A nivel 6, el aire a tu alrededor te protege: ganas **resistencia al daño de trueno o relámpago**, y puedes volar brevemente hasta **3 m**.
+
+### Espíritu Aéreo
+
+A nivel 14, puedes **volar** libremente durante 10 minutos una vez por descanso.
+
+### Alma de la Tormenta
+
+A nivel 18, eres una entidad viviente de viento y rayo: tus conjuros **ignoran resistencia** a esos tipos de daño y extienden su alcance **9 m** más.
+
+---
+
+## Origen Mágico: Magia de la Divinidad (Divine Soul)
+
+Tu alma está tocada por un poder celestial o infernal. Tu magia combina lo arcano con lo divino.
+
+### Afinidad Divina
+
+A nivel 1, elige una alineación celestial o infernal; ganas acceso a **conjuros de clérigo** en tu lista de hechicero.
+
+### Favor del Cielo
+
+Cuando lances un conjuro de curación o daño, puedes añadir **1d4 adicional** al resultado.
+
+### Fortaleza del Alma
+
+A nivel 6, obtienes **resistencia al daño radiante o necrótico**, según tu afinidad elegida.
+
+### Espíritu Protector
+
+A nivel 14, si mueres, una entidad divina intercede y vuelves a **1 PG** una vez por **descanso largo**.
+
+### Conexión Celestial
+
+A nivel 18, puedes invocar un aura santificada o profana durante 1 minuto: curas aliados y dañas enemigos cada ronda.
+
+---
+
+## Origen Mágico: Magia del Alma de Mago (Aberrant Mind)
+
+Tu mente está tocada por entidades cósmicas del Abismo o del Vacío. Tu magia distorsiona la percepción y el pensamiento.
+
+### Magia Psiónica
+
+A nivel 1, obtienes una lista especial de conjuros telepáticos y puedes lanzar algunos **sin componente verbal ni material**.
+
+### Comunicación Telepática
+
+También a nivel 1, puedes comunicarte mentalmente con cualquier criatura que veas a **9 m**.
+
+### Manipulación Mental
+
+A nivel 6, puedes alterar tiradas de salvación de enemigos o mover objetos con pura fuerza psíquica.
+
+### Forma Metamórfica
+
+A nivel 14, puedes adoptar una apariencia alienígena, volviéndote **resistente al daño físico** durante un minuto.
+
+### Mente Desatada
+
+A nivel 18, tus conjuros pueden ignorar componentes y concentración durante 1 minuto, canalizando tu locura cósmica total.
+
+---
+
+## Origen Mágico: Magia Lunar (Moon Sorcery)
+
+Tu poder proviene de las fases de la luna y de la relación entre la luz y la sombra.
+
+### Fase Lunar
+
+A nivel 1, eliges una fase activa (Luna Nueva, Creciente o Llena), que otorga beneficios temporales a tus tiradas o conjuros.
+
+### Llama Lunar
+
+A nivel 6, al lanzar conjuros de luz o ilusión, infliges **daño radiante adicional** y puedes **cegar** momentáneamente a enemigos.
+
+### Cambio de Fase
+
+A nivel 14, puedes cambiar tu fase lunar como **acción bonus** en combate, alterando tus beneficios mágicos.
+
+### Unidad Lunar
+
+A nivel 18, proyectas un aura cambiante que alterna entre defensa, daño y curación cada turno bajo tu control.
+
+---
+
+## Origen Mágico: Magia de la Runa (UA / Experimental)
+
+Tu alma guarda los secretos de las runas arcanas, combinando palabra y poder en equilibrio ancestral.
+
+### Lenguaje de las Runas
+
+A nivel 1, puedes leer y escribir **runas mágicas antiguas**, y tu magia deja huellas visuales rúnicas.
+
+### Runas de Poder
+
+A nivel 6, puedes invocar una runa al lanzar un conjuro para amplificar su efecto: **daño aumentado**, **área extendida** o **duración prolongada**.
+
+### Escudo del Símbolo
+
+A nivel 14, puedes gastar un espacio de conjuro de **reacción** para borrar un hechizo lanzado hacia ti o tus aliados, sellándolo en una runa.
+
+### Runas Eternas
+
+A nivel 18, tus runas flotan a tu alrededor: **tres** pueden estar activas a la vez, dando resistencias, ventaja y daño mejorado.
+
+---
+
 ## Guía de Subida de Nivel
 
 A continuación se detalla, nivel a nivel, qué obtiene el hechicero en cada avance.

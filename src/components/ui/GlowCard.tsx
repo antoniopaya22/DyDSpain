@@ -3,6 +3,8 @@
  * gradient accent line, and smooth press animation.
  *
  * Used throughout the app to give a modern, magical feel to card elements.
+ *
+ * ✅ Theme-aware: adapts to light/dark mode via useTheme()
  */
 
 import { useRef, useCallback, useEffect } from "react";
@@ -13,8 +15,10 @@ import {
   Easing,
   StyleSheet,
   ViewStyle,
+  Text,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "@/hooks/useTheme";
 
 // ─── Props ───────────────────────────────────────────────────────────
 
@@ -26,9 +30,9 @@ interface GlowCardProps {
   onLongPress?: () => void;
   /** Whether the card is pressable (default: true if onPress is provided) */
   pressable?: boolean;
-  /** Background color of the card (default: surface card color) */
+  /** Background color of the card (default: from theme — bgCard) */
   backgroundColor?: string;
-  /** Border color (default: surface border) */
+  /** Border color (default: from theme — borderDefault) */
   borderColor?: string;
   /** Whether to show the animated glow effect (default: false) */
   glow?: boolean;
@@ -67,15 +71,15 @@ export default function GlowCard({
   onPress,
   onLongPress,
   pressable,
-  backgroundColor = "#23233d",
-  borderColor = "#3a3a5c",
+  backgroundColor,
+  borderColor,
   glow = false,
-  glowColor = "#c62828",
+  glowColor,
   glowIntensity = 12,
   animateGlow = true,
   accentLine = false,
   accentPosition = "left",
-  accentColors = ["#c62828", "#d32f2f", "#ef5350"],
+  accentColors,
   borderRadius = 14,
   padding = 16,
   pressScale = 0.98,
@@ -84,6 +88,18 @@ export default function GlowCard({
   style,
   disabled = false,
 }: GlowCardProps) {
+  const { colors, isDark } = useTheme();
+
+  // Resolve theme-aware defaults
+  const resolvedGlowColor = glowColor ?? colors.accentRed;
+  const resolvedAccentColors: [string, string, string] = accentColors ?? [
+    colors.accentRed,
+    "#d32f2f",
+    "#ef5350",
+  ];
+  const resolvedBg = backgroundColor ?? colors.bgCard;
+  const resolvedBorder = borderColor ?? colors.borderDefault;
+
   const isPressable =
     pressable !== undefined ? pressable : !!(onPress || onLongPress);
 
@@ -134,7 +150,7 @@ export default function GlowCard({
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
 
     pulse.start();
@@ -162,21 +178,26 @@ export default function GlowCard({
     }).start();
   }, [isPressable, scaleAnim]);
 
-  // Computed glow shadow style
+  // Computed glow shadow style (theme-aware)
   const glowShadowStyle: ViewStyle = glow
     ? {
-        shadowColor: glowColor,
+        shadowColor: resolvedGlowColor,
         shadowOffset: { width: 0, height: 0 },
         shadowRadius: glowIntensity,
         elevation: 8,
       }
     : {
-        shadowColor: "#000000",
+        shadowColor: colors.shadowColor,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
+        shadowOpacity: colors.shadowOpacity,
         shadowRadius: 4,
         elevation: 3,
       };
+
+  // Inner gradient overlay colors (adapt to theme)
+  const innerGlowColors: [string, string, ...string[]] = isDark
+    ? ["rgba(255,255,255,0.03)", "rgba(255,255,255,0)", "rgba(0,0,0,0.05)"]
+    : ["rgba(255,255,255,0.6)", "rgba(255,255,255,0.1)", "rgba(0,0,0,0.02)"];
 
   // Build the card content
   const cardContent = (
@@ -184,8 +205,8 @@ export default function GlowCard({
       style={[
         styles.cardInner,
         {
-          backgroundColor,
-          borderColor: glow ? `${glowColor}44` : borderColor,
+          backgroundColor: resolvedBg,
+          borderColor: glow ? `${glowColor}44` : resolvedBorder,
           borderRadius,
           overflow: "hidden",
         },
@@ -193,7 +214,15 @@ export default function GlowCard({
     >
       {/* Accent line */}
       {accentLine && accentPosition === "left" && (
-        <View style={[styles.accentLeft, { borderTopLeftRadius: borderRadius, borderBottomLeftRadius: borderRadius }]}>
+        <View
+          style={[
+            styles.accentLeft,
+            {
+              borderTopLeftRadius: borderRadius,
+              borderBottomLeftRadius: borderRadius,
+            },
+          ]}
+        >
           <LinearGradient
             colors={accentColors}
             start={{ x: 0.5, y: 0 }}
@@ -203,7 +232,15 @@ export default function GlowCard({
         </View>
       )}
       {accentLine && accentPosition === "top" && (
-        <View style={[styles.accentTop, { borderTopLeftRadius: borderRadius, borderTopRightRadius: borderRadius }]}>
+        <View
+          style={[
+            styles.accentTop,
+            {
+              borderTopLeftRadius: borderRadius,
+              borderTopRightRadius: borderRadius,
+            },
+          ]}
+        >
           <LinearGradient
             colors={accentColors}
             start={{ x: 0, y: 0.5 }}
@@ -216,11 +253,7 @@ export default function GlowCard({
       {/* Inner subtle gradient overlay for depth */}
       <View style={[styles.innerGlow, { borderRadius: borderRadius - 1 }]}>
         <LinearGradient
-          colors={[
-            "rgba(255,255,255,0.03)",
-            "rgba(255,255,255,0)",
-            "rgba(0,0,0,0.05)",
-          ]}
+          colors={innerGlowColors}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           style={StyleSheet.absoluteFill}
@@ -233,8 +266,10 @@ export default function GlowCard({
           styles.content,
           {
             padding,
-            paddingLeft: accentLine && accentPosition === "left" ? padding + 3 : padding,
-            paddingTop: accentLine && accentPosition === "top" ? padding + 3 : padding,
+            paddingLeft:
+              accentLine && accentPosition === "left" ? padding + 3 : padding,
+            paddingTop:
+              accentLine && accentPosition === "top" ? padding + 3 : padding,
           },
         ]}
       >
@@ -249,10 +284,7 @@ export default function GlowCard({
       style={[
         {
           opacity: entranceAnim,
-          transform: [
-            { scale: scaleAnim },
-            { translateY },
-          ],
+          transform: [{ scale: scaleAnim }, { translateY }],
         },
         glow && animateGlow
           ? {
@@ -260,8 +292,8 @@ export default function GlowCard({
               shadowOpacity: glowAnim as any,
             }
           : glow
-          ? { ...glowShadowStyle, shadowOpacity: 0.5 }
-          : glowShadowStyle,
+            ? { ...glowShadowStyle, shadowOpacity: 0.5 }
+            : glowShadowStyle,
         style,
       ]}
     >
@@ -296,14 +328,16 @@ interface InfoCardProps {
 export function InfoCard({
   children,
   icon,
-  color = "#fbbf24",
+  color,
   borderColor: customBorder,
   style,
 }: InfoCardProps) {
+  const { colors: infoColors } = useTheme();
+  const resolvedColor = color ?? infoColors.accentGold;
   return (
     <GlowCard
-      backgroundColor={`${color}10`}
-      borderColor={customBorder || `${color}30`}
+      backgroundColor={`${resolvedColor}10`}
+      borderColor={customBorder || `${resolvedColor}30`}
       borderRadius={12}
       padding={14}
       style={style}
@@ -330,36 +364,48 @@ interface StatCardProps {
 export function StatCard({
   label,
   value,
-  color = "#fbbf24",
+  color,
   icon,
   onPress,
   style,
 }: StatCardProps) {
+  const { colors } = useTheme();
+  const resolvedColor = color ?? colors.accentGold;
+
   return (
     <GlowCard
       onPress={onPress}
-      backgroundColor="#23233d"
       accentLine
       accentPosition="top"
-      accentColors={[color, `${color}88`, `${color}44`]}
+      accentColors={[resolvedColor, `${resolvedColor}88`, `${resolvedColor}44`]}
       borderRadius={12}
       padding={12}
       pressScale={0.95}
-      style={[styles.statCard, style as ViewStyle | undefined].filter(Boolean) as ViewStyle[]}
+      style={
+        [styles.statCard, style as ViewStyle | undefined].filter(
+          Boolean,
+        ) as ViewStyle[]
+      }
     >
       <View style={styles.statCardInner}>
         {icon && <View style={{ marginBottom: 6 }}>{icon}</View>}
-        <View style={[styles.statCardValueContainer, { backgroundColor: `${color}15` }]}>
+        <View
+          style={[
+            styles.statCardValueContainer,
+            { backgroundColor: `${resolvedColor}15` },
+          ]}
+        >
           <Animated.Text
-            style={[
-              styles.statCardValue,
-              { color },
-            ]}
+            style={[styles.statCardValue, { color: resolvedColor }]}
           >
             {value}
           </Animated.Text>
         </View>
-        <Animated.Text style={styles.statCardLabel}>{label}</Animated.Text>
+        <Animated.Text
+          style={[styles.statCardLabel, { color: colors.textSecondary }]}
+        >
+          {label}
+        </Animated.Text>
       </View>
     </GlowCard>
   );
@@ -441,7 +487,6 @@ const styles = StyleSheet.create({
   statCardLabel: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#8c8cb3",
     textTransform: "uppercase",
     letterSpacing: 0.8,
     textAlign: "center",

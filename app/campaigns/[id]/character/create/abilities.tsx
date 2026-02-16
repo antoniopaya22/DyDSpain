@@ -23,6 +23,8 @@ import {
   type AbilityScores,
   type AbilityScoreMethod,
 } from "@/types/character";
+import { useTheme } from "@/hooks/useTheme";
+import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 4;
 
@@ -51,7 +53,8 @@ const METHOD_LABELS: Record<AbilityScoreMethod, string> = {
 };
 
 const METHOD_DESCRIPTIONS: Record<AbilityScoreMethod, string> = {
-  standard_array: "Asigna los valores 15, 14, 13, 12, 10, 8 a tus características.",
+  standard_array:
+    "Asigna los valores 15, 14, 13, 12, 10, 8 a tus características.",
   point_buy: "Gasta 27 puntos para personalizar tus puntuaciones (8-15).",
   dice_roll: "Tira 4d6 y descarta el menor para cada característica.",
   manual: "Introduce manualmente cualquier valor para cada característica.",
@@ -62,12 +65,17 @@ function formatMod(mod: number): string {
 }
 
 function rollAbilityScore(): number {
-  const rolls = Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1);
+  const rolls = Array.from(
+    { length: 4 },
+    () => Math.floor(Math.random() * 6) + 1,
+  );
   rolls.sort((a, b) => a - b);
   return rolls[1] + rolls[2] + rolls[3];
 }
 
 export default function AbilitiesStep() {
+  const { colors, isDark } = useTheme();
+  const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
   const { dialogProps, showWarning } = useDialog();
@@ -91,7 +99,9 @@ export default function AbilitiesStep() {
   });
 
   // Standard array assignment state
-  const [assignedValues, setAssignedValues] = useState<Record<AbilityKey, number | null>>({
+  const [assignedValues, setAssignedValues] = useState<
+    Record<AbilityKey, number | null>
+  >({
     fue: null,
     des: null,
     con: null,
@@ -116,7 +126,12 @@ export default function AbilitiesStep() {
           // Rebuild assigned values for standard array
           if (currentDraft.abilityScoreMethod === "standard_array") {
             const assigned: Record<AbilityKey, number | null> = {
-              fue: null, des: null, con: null, int: null, sab: null, car: null,
+              fue: null,
+              des: null,
+              con: null,
+              int: null,
+              sab: null,
+              car: null,
             };
             for (const key of ABILITY_KEYS) {
               const val = currentDraft.abilityScoresBase[key];
@@ -132,7 +147,7 @@ export default function AbilitiesStep() {
         }
       };
       init();
-    }, [campaignId])
+    }, [campaignId]),
   );
 
   // Point buy: calculate used points
@@ -142,7 +157,9 @@ export default function AbilitiesStep() {
   const pointsRemaining = POINT_BUY_TOTAL - pointsUsed;
 
   // Standard array: unassigned values
-  const usedStandardValues = Object.values(assignedValues).filter((v) => v !== null) as number[];
+  const usedStandardValues = Object.values(assignedValues).filter(
+    (v) => v !== null,
+  ) as number[];
   const availableStandardValues = STANDARD_ARRAY.filter((val) => {
     const usedCount = usedStandardValues.filter((v) => v === val).length;
     const totalCount = STANDARD_ARRAY.filter((v) => v === val).length;
@@ -155,7 +172,10 @@ export default function AbilitiesStep() {
       return Object.values(assignedValues).every((v) => v !== null);
     }
     if (method === "point_buy") {
-      return pointsRemaining >= 0 && ABILITY_KEYS.every((k) => scores[k] >= 8 && scores[k] <= 15);
+      return (
+        pointsRemaining >= 0 &&
+        ABILITY_KEYS.every((k) => scores[k] >= 8 && scores[k] <= 15)
+      );
     }
     if (method === "dice_roll") {
       return hasRolled && ABILITY_KEYS.every((k) => scores[k] >= 3);
@@ -180,13 +200,27 @@ export default function AbilitiesStep() {
 
   const handleSelectMethod = (m: AbilityScoreMethod) => {
     setMethod(m);
-    const defaultScores = { fue: 10, des: 10, con: 10, int: 10, sab: 10, car: 10 };
+    const defaultScores = {
+      fue: 10,
+      des: 10,
+      con: 10,
+      int: 10,
+      sab: 10,
+      car: 10,
+    };
     if (m === "point_buy") {
       setScores({ fue: 8, des: 8, con: 8, int: 8, sab: 8, car: 8 });
     } else {
       setScores(defaultScores);
     }
-    setAssignedValues({ fue: null, des: null, con: null, int: null, sab: null, car: null });
+    setAssignedValues({
+      fue: null,
+      des: null,
+      con: null,
+      int: null,
+      sab: null,
+      car: null,
+    });
     setHasRolled(false);
   };
 
@@ -252,27 +286,43 @@ export default function AbilitiesStep() {
 
   // Preview with racial bonuses
   const currentScores = getCurrentScores();
-  const totalScores =
-    draft?.raza
-      ? calcTotalScoresPreview(currentScores, draft.raza, draft.subraza ?? null, draft.freeAbilityBonuses)
-      : currentScores;
+  const totalScores = draft?.raza
+    ? calcTotalScoresPreview(
+        currentScores,
+        draft.raza,
+        draft.subraza ?? null,
+        draft.freeAbilityBonuses,
+      )
+    : currentScores;
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+    <View style={[styles.container, themed.container]}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Ionicons name="arrow-back" size={22} color="white" />
+            <TouchableOpacity
+              style={[styles.backButton, themed.backButton]}
+              onPress={handleBack}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={22}
+                color={isDark ? "white" : "#1a1a2e"}
+              />
             </TouchableOpacity>
-            <Text style={styles.stepText}>
+            <Text style={[styles.stepText, themed.stepText]}>
               Paso {CURRENT_STEP} de {TOTAL_STEPS}
             </Text>
             <View style={{ height: 40, width: 40 }} />
           </View>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
+          <View style={[styles.progressBar, themed.progressBar]}>
+            <View
+              style={[styles.progressFill, { width: `${progressPercent}%` }]}
+            />
           </View>
         </View>
 
@@ -281,63 +331,85 @@ export default function AbilitiesStep() {
           <View style={styles.iconCircle}>
             <Ionicons name="stats-chart-outline" size={40} color="#c62828" />
           </View>
-          <Text style={styles.title}>Puntuaciones de Característica</Text>
-          <Text style={styles.subtitle}>
-            Elige un método y asigna tus puntuaciones base. Los bonificadores raciales se aplicarán automáticamente.
+          <Text style={[styles.title, themed.title]}>
+            Puntuaciones de Característica
+          </Text>
+          <Text style={[styles.subtitle, themed.subtitle]}>
+            Elige un método y asigna tus puntuaciones base. Los bonificadores
+            raciales se aplicarán automáticamente.
           </Text>
         </View>
 
         {/* Method Selection */}
         {!method ? (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Elige un Método</Text>
-            {(["standard_array", "point_buy", "dice_roll", "manual"] as AbilityScoreMethod[]).map(
-              (m) => (
-                <TouchableOpacity
-                  key={m}
-                  style={styles.methodCard}
-                  onPress={() => handleSelectMethod(m)}
-                >
-                  <View style={styles.methodIcon}>
-                    <Ionicons
-                      name={
-                        m === "standard_array"
-                          ? "list-outline"
-                          : m === "point_buy"
+            <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+              Elige un Método
+            </Text>
+            {(
+              [
+                "standard_array",
+                "point_buy",
+                "dice_roll",
+                "manual",
+              ] as AbilityScoreMethod[]
+            ).map((m) => (
+              <TouchableOpacity
+                key={m}
+                style={[styles.methodCard, themed.card]}
+                onPress={() => handleSelectMethod(m)}
+              >
+                <View style={styles.methodIcon}>
+                  <Ionicons
+                    name={
+                      m === "standard_array"
+                        ? "list-outline"
+                        : m === "point_buy"
                           ? "cart-outline"
                           : m === "dice_roll"
-                          ? "dice-outline"
-                          : "create-outline"
-                      }
-                      size={28}
-                      color="#fbbf24"
-                    />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.methodLabel}>{METHOD_LABELS[m]}</Text>
-                    <Text style={styles.methodDesc}>{METHOD_DESCRIPTIONS[m]}</Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={20} color="#666699" />
-                </TouchableOpacity>
-              )
-            )}
+                            ? "dice-outline"
+                            : "create-outline"
+                    }
+                    size={28}
+                    color={colors.accentGold}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.methodLabel, themed.textPrimary]}>
+                    {METHOD_LABELS[m]}
+                  </Text>
+                  <Text style={[styles.methodDesc, themed.textSecondary]}>
+                    {METHOD_DESCRIPTIONS[m]}
+                  </Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colors.textMuted}
+                />
+              </TouchableOpacity>
+            ))}
           </View>
         ) : (
           <View style={styles.section}>
             {/* Change method */}
             <TouchableOpacity
-              style={styles.changeMethodBtn}
+              style={[styles.changeMethodBtn, themed.card]}
               onPress={() => {
                 showWarning(
                   "Cambiar método",
                   "¿Quieres cambiar el método? Se perderán las puntuaciones actuales.",
                   () => setMethod(null),
-                  { confirmText: "Cambiar", cancelText: "Cancelar" }
+                  { confirmText: "Cambiar", cancelText: "Cancelar" },
                 );
               }}
             >
-              <Ionicons name="swap-horizontal" size={18} color="#fbbf24" />
-              <Text style={styles.changeMethodText}>
+              <Ionicons
+                name="swap-horizontal"
+                size={18}
+                color={colors.accentGold}
+              />
+              <Text style={[styles.changeMethodText, themed.textAccent]}>
                 {METHOD_LABELS[method]} — Cambiar método
               </Text>
             </TouchableOpacity>
@@ -345,15 +417,25 @@ export default function AbilitiesStep() {
             {/* Standard Array */}
             {method === "standard_array" && (
               <View>
-                <Text style={styles.infoText}>
-                  Toca una característica y asígnale uno de los valores disponibles.
+                <Text style={[styles.infoText, themed.textSecondary]}>
+                  Toca una característica y asígnale uno de los valores
+                  disponibles.
                 </Text>
                 <View style={styles.availableRow}>
-                  <Text style={styles.availableLabel}>Disponibles: </Text>
+                  <Text style={[styles.availableLabel, themed.textMuted]}>
+                    Disponibles:{" "}
+                  </Text>
                   {availableStandardValues.length > 0 ? (
                     availableStandardValues.map((v, i) => (
-                      <View key={`${v}-${i}`} style={styles.availableBadge}>
-                        <Text style={styles.availableBadgeText}>{v}</Text>
+                      <View
+                        key={`${v}-${i}`}
+                        style={[styles.availableBadge, themed.badge]}
+                      >
+                        <Text
+                          style={[styles.availableBadgeText, themed.badgeText]}
+                        >
+                          {v}
+                        </Text>
                       </View>
                     ))
                   ) : (
@@ -362,18 +444,30 @@ export default function AbilitiesStep() {
                 </View>
 
                 {ABILITY_KEYS.map((key) => (
-                  <View key={key} style={styles.abilityRow}>
+                  <View key={key} style={[styles.abilityRow, themed.card]}>
                     <View style={styles.abilityLabel}>
-                      <Text style={styles.abilityAbbr}>{ABILITY_ABBR[key]}</Text>
-                      <Text style={styles.abilityName}>{ABILITY_NAMES[key]}</Text>
+                      <Text style={[styles.abilityAbbr, themed.textAccent]}>
+                        {ABILITY_ABBR[key]}
+                      </Text>
+                      <Text style={[styles.abilityName, themed.textPrimary]}>
+                        {ABILITY_NAMES[key]}
+                      </Text>
                     </View>
                     {assignedValues[key] !== null ? (
                       <TouchableOpacity
-                        style={styles.assignedValue}
+                        style={[styles.assignedValue, themed.badge]}
                         onPress={() => handleStandardClear(key)}
                       >
-                        <Text style={styles.assignedValueText}>{assignedValues[key]}</Text>
-                        <Ionicons name="close-circle" size={16} color="#ef4444" />
+                        <Text
+                          style={[styles.assignedValueText, themed.textPrimary]}
+                        >
+                          {assignedValues[key]}
+                        </Text>
+                        <Ionicons
+                          name="close-circle"
+                          size={16}
+                          color="#ef4444"
+                        />
                       </TouchableOpacity>
                     ) : (
                       <View style={styles.valueOptions}>
@@ -383,10 +477,17 @@ export default function AbilitiesStep() {
                           .map((val) => (
                             <TouchableOpacity
                               key={val}
-                              style={styles.valueOption}
+                              style={[styles.valueOption, themed.cardAlt]}
                               onPress={() => handleStandardAssign(key, val)}
                             >
-                              <Text style={styles.valueOptionText}>{val}</Text>
+                              <Text
+                                style={[
+                                  styles.valueOptionText,
+                                  themed.textPrimary,
+                                ]}
+                              >
+                                {val}
+                              </Text>
                             </TouchableOpacity>
                           ))}
                       </View>
@@ -399,8 +500,10 @@ export default function AbilitiesStep() {
             {/* Point Buy */}
             {method === "point_buy" && (
               <View>
-                <View style={styles.pointsHeader}>
-                  <Text style={styles.pointsLabel}>Puntos restantes:</Text>
+                <View style={[styles.pointsHeader, themed.card]}>
+                  <Text style={[styles.pointsLabel, themed.textPrimary]}>
+                    Puntos restantes:
+                  </Text>
                   <Text
                     style={[
                       styles.pointsValue,
@@ -413,34 +516,58 @@ export default function AbilitiesStep() {
                 </View>
 
                 {ABILITY_KEYS.map((key) => (
-                  <View key={key} style={styles.abilityRow}>
+                  <View key={key} style={[styles.abilityRow, themed.card]}>
                     <View style={styles.abilityLabel}>
-                      <Text style={styles.abilityAbbr}>{ABILITY_ABBR[key]}</Text>
-                      <Text style={styles.abilityName}>{ABILITY_NAMES[key]}</Text>
+                      <Text style={[styles.abilityAbbr, themed.textAccent]}>
+                        {ABILITY_ABBR[key]}
+                      </Text>
+                      <Text style={[styles.abilityName, themed.textPrimary]}>
+                        {ABILITY_NAMES[key]}
+                      </Text>
                     </View>
                     <View style={styles.spinnerRow}>
                       <TouchableOpacity
                         style={[
                           styles.spinnerBtn,
+                          themed.spinnerBtn,
                           scores[key] <= 8 && styles.spinnerBtnDisabled,
                         ]}
                         onPress={() => handlePointBuyChange(key, -1)}
                         disabled={scores[key] <= 8}
                       >
-                        <Ionicons name="remove" size={20} color={scores[key] <= 8 ? "#444" : "white"} />
+                        <Ionicons
+                          name="remove"
+                          size={20}
+                          color={
+                            scores[key] <= 8
+                              ? colors.textMuted
+                              : colors.textPrimary
+                          }
+                        />
                       </TouchableOpacity>
-                      <Text style={styles.spinnerValue}>{scores[key]}</Text>
+                      <Text style={[styles.spinnerValue, themed.textPrimary]}>
+                        {scores[key]}
+                      </Text>
                       <TouchableOpacity
                         style={[
                           styles.spinnerBtn,
+                          themed.spinnerBtn,
                           scores[key] >= 15 && styles.spinnerBtnDisabled,
                         ]}
                         onPress={() => handlePointBuyChange(key, 1)}
                         disabled={scores[key] >= 15}
                       >
-                        <Ionicons name="add" size={20} color={scores[key] >= 15 ? "#444" : "white"} />
+                        <Ionicons
+                          name="add"
+                          size={20}
+                          color={
+                            scores[key] >= 15
+                              ? colors.textMuted
+                              : colors.textPrimary
+                          }
+                        />
                       </TouchableOpacity>
-                      <Text style={styles.costText}>
+                      <Text style={[styles.costText, themed.textMuted]}>
                         ({POINT_BUY_COSTS[scores[key]] ?? 0} pts)
                       </Text>
                     </View>
@@ -452,10 +579,13 @@ export default function AbilitiesStep() {
             {/* Dice Roll */}
             {method === "dice_roll" && (
               <View>
-                <Text style={styles.infoText}>
+                <Text style={[styles.infoText, themed.textSecondary]}>
                   Tira 4d6 y descarta el dado más bajo para cada característica.
                 </Text>
-                <TouchableOpacity style={styles.rollButton} onPress={handleRollAll}>
+                <TouchableOpacity
+                  style={styles.rollButton}
+                  onPress={handleRollAll}
+                >
                   <Ionicons name="dice-outline" size={22} color="white" />
                   <Text style={styles.rollButtonText}>
                     {hasRolled ? "Volver a Tirar" : "Tirar Dados"}
@@ -464,12 +594,18 @@ export default function AbilitiesStep() {
 
                 {hasRolled &&
                   ABILITY_KEYS.map((key) => (
-                    <View key={key} style={styles.abilityRow}>
+                    <View key={key} style={[styles.abilityRow, themed.card]}>
                       <View style={styles.abilityLabel}>
-                        <Text style={styles.abilityAbbr}>{ABILITY_ABBR[key]}</Text>
-                        <Text style={styles.abilityName}>{ABILITY_NAMES[key]}</Text>
+                        <Text style={[styles.abilityAbbr, themed.textAccent]}>
+                          {ABILITY_ABBR[key]}
+                        </Text>
+                        <Text style={[styles.abilityName, themed.textPrimary]}>
+                          {ABILITY_NAMES[key]}
+                        </Text>
                       </View>
-                      <Text style={styles.rolledValue}>{scores[key]}</Text>
+                      <Text style={[styles.rolledValue, themed.textPrimary]}>
+                        {scores[key]}
+                      </Text>
                     </View>
                   ))}
               </View>
@@ -478,30 +614,60 @@ export default function AbilitiesStep() {
             {/* Manual */}
             {method === "manual" && (
               <View>
-                <Text style={styles.infoText}>
+                <Text style={[styles.infoText, themed.textSecondary]}>
                   Ajusta cada puntuación manualmente con los controles.
                 </Text>
                 {ABILITY_KEYS.map((key) => (
-                  <View key={key} style={styles.abilityRow}>
+                  <View key={key} style={[styles.abilityRow, themed.card]}>
                     <View style={styles.abilityLabel}>
-                      <Text style={styles.abilityAbbr}>{ABILITY_ABBR[key]}</Text>
-                      <Text style={styles.abilityName}>{ABILITY_NAMES[key]}</Text>
+                      <Text style={[styles.abilityAbbr, themed.textAccent]}>
+                        {ABILITY_ABBR[key]}
+                      </Text>
+                      <Text style={[styles.abilityName, themed.textPrimary]}>
+                        {ABILITY_NAMES[key]}
+                      </Text>
                     </View>
                     <View style={styles.spinnerRow}>
                       <TouchableOpacity
-                        style={[styles.spinnerBtn, scores[key] <= 1 && styles.spinnerBtnDisabled]}
+                        style={[
+                          styles.spinnerBtn,
+                          themed.spinnerBtn,
+                          scores[key] <= 1 && styles.spinnerBtnDisabled,
+                        ]}
                         onPress={() => handleManualChange(key, -1)}
                         disabled={scores[key] <= 1}
                       >
-                        <Ionicons name="remove" size={20} color={scores[key] <= 1 ? "#444" : "white"} />
+                        <Ionicons
+                          name="remove"
+                          size={20}
+                          color={
+                            scores[key] <= 1
+                              ? colors.textMuted
+                              : colors.textPrimary
+                          }
+                        />
                       </TouchableOpacity>
-                      <Text style={styles.spinnerValue}>{scores[key]}</Text>
+                      <Text style={[styles.spinnerValue, themed.textPrimary]}>
+                        {scores[key]}
+                      </Text>
                       <TouchableOpacity
-                        style={[styles.spinnerBtn, scores[key] >= 30 && styles.spinnerBtnDisabled]}
+                        style={[
+                          styles.spinnerBtn,
+                          themed.spinnerBtn,
+                          scores[key] >= 30 && styles.spinnerBtnDisabled,
+                        ]}
                         onPress={() => handleManualChange(key, 1)}
                         disabled={scores[key] >= 30}
                       >
-                        <Ionicons name="add" size={20} color={scores[key] >= 30 ? "#444" : "white"} />
+                        <Ionicons
+                          name="add"
+                          size={20}
+                          color={
+                            scores[key] >= 30
+                              ? colors.textMuted
+                              : colors.textPrimary
+                          }
+                        />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -511,8 +677,8 @@ export default function AbilitiesStep() {
 
             {/* Preview with racial bonuses */}
             {method && (
-              <View style={styles.previewSection}>
-                <Text style={styles.previewTitle}>
+              <View style={[styles.previewSection, themed.card]}>
+                <Text style={[styles.previewTitle, themed.textAccent]}>
                   Puntuaciones Finales (con bonificadores raciales)
                 </Text>
                 <View style={styles.previewGrid}>
@@ -522,12 +688,23 @@ export default function AbilitiesStep() {
                     const racial = total - base;
                     const mod = calcModifier(total);
                     return (
-                      <View key={key} style={styles.previewCard}>
-                        <Text style={styles.previewAbbr}>{ABILITY_ABBR[key]}</Text>
-                        <Text style={styles.previewTotal}>{total}</Text>
-                        <Text style={styles.previewMod}>{formatMod(mod)}</Text>
+                      <View
+                        key={key}
+                        style={[styles.previewCard, themed.cardAlt]}
+                      >
+                        <Text style={[styles.previewAbbr, themed.textAccent]}>
+                          {ABILITY_ABBR[key]}
+                        </Text>
+                        <Text style={[styles.previewTotal, themed.textPrimary]}>
+                          {total}
+                        </Text>
+                        <Text style={[styles.previewMod, themed.textSecondary]}>
+                          {formatMod(mod)}
+                        </Text>
                         {racial !== 0 && (
-                          <Text style={styles.previewRacial}>
+                          <Text
+                            style={[styles.previewRacial, themed.textMuted]}
+                          >
                             {base} + {racial}
                           </Text>
                         )}
@@ -542,9 +719,15 @@ export default function AbilitiesStep() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, themed.footer]}>
         <TouchableOpacity
-          style={[styles.nextButton, !isValid() && styles.nextButtonDisabled]}
+          style={[
+            styles.nextButton,
+            !isValid() && [
+              styles.nextButtonDisabled,
+              themed.nextButtonDisabled,
+            ],
+          ]}
           onPress={handleNext}
           disabled={!isValid()}
         >

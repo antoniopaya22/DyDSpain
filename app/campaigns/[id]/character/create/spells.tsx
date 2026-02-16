@@ -8,150 +8,506 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  useCreationStore,
-  TOTAL_STEPS,
-} from "@/stores/creationStore";
-import {
-  getClassData,
-  isSpellcaster,
-  hasSpellsAtLevel1,
-} from "@/data/srd";
+import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
+import { getClassData, isSpellcaster, hasSpellsAtLevel1 } from "@/data/srd";
 import type { ClassId } from "@/types/character";
+import { useTheme } from "@/hooks/useTheme";
+import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 7;
 
 // Simplified cantrip/spell data for the SRD classes at level 1
 // In a full implementation this would come from a spells database
-const CLASS_CANTRIPS: Record<string, { id: string; nombre: string; descripcion: string }[]> = {
+const CLASS_CANTRIPS: Record<
+  string,
+  { id: string; nombre: string; descripcion: string }[]
+> = {
   bardo: [
-    { id: "amigos", nombre: "Amigos", descripcion: "Un objetivo te ve como un amigo durante 1 minuto." },
-    { id: "burla_viciosa", nombre: "Burla Viciosa", descripcion: "Insultas a una criatura, causando 1d4 daño psíquico." },
-    { id: "luz", nombre: "Luz", descripcion: "Un objeto emite luz brillante en 6m." },
-    { id: "mano_de_mago", nombre: "Mano de Mago", descripcion: "Creas una mano espectral flotante." },
-    { id: "mensaje", nombre: "Mensaje", descripcion: "Susurras un mensaje a una criatura a 36m." },
-    { id: "prestidigitacion", nombre: "Prestidigitación", descripcion: "Creas un efecto mágico menor." },
-    { id: "reparar", nombre: "Reparar", descripcion: "Reparas una rotura o desgarro en un objeto." },
-    { id: "conocer_conjuro", nombre: "Conocer Conjuro", descripcion: "Detectas la presencia de magia a 9m." },
+    {
+      id: "amigos",
+      nombre: "Amigos",
+      descripcion: "Un objetivo te ve como un amigo durante 1 minuto.",
+    },
+    {
+      id: "burla_viciosa",
+      nombre: "Burla Viciosa",
+      descripcion: "Insultas a una criatura, causando 1d4 daño psíquico.",
+    },
+    {
+      id: "luz",
+      nombre: "Luz",
+      descripcion: "Un objeto emite luz brillante en 6m.",
+    },
+    {
+      id: "mano_de_mago",
+      nombre: "Mano de Mago",
+      descripcion: "Creas una mano espectral flotante.",
+    },
+    {
+      id: "mensaje",
+      nombre: "Mensaje",
+      descripcion: "Susurras un mensaje a una criatura a 36m.",
+    },
+    {
+      id: "prestidigitacion",
+      nombre: "Prestidigitación",
+      descripcion: "Creas un efecto mágico menor.",
+    },
+    {
+      id: "reparar",
+      nombre: "Reparar",
+      descripcion: "Reparas una rotura o desgarro en un objeto.",
+    },
+    {
+      id: "conocer_conjuro",
+      nombre: "Conocer Conjuro",
+      descripcion: "Detectas la presencia de magia a 9m.",
+    },
   ],
   brujo: [
-    { id: "descarga_ocultista", nombre: "Descarga Ocultista", descripcion: "Un rayo de energía crepitante causa 1d10 daño de fuerza." },
-    { id: "toque_helado", nombre: "Toque Helado", descripcion: "Una mano esquelética causa 1d8 daño necrótico." },
-    { id: "prestidigitacion", nombre: "Prestidigitación", descripcion: "Creas un efecto mágico menor." },
-    { id: "taumaturgia", nombre: "Taumaturgia", descripcion: "Manifiestas un signo menor de poder sobrenatural." },
-    { id: "amigos", nombre: "Amigos", descripcion: "Un objetivo te ve como un amigo durante 1 minuto." },
-    { id: "hoja_verde_llama", nombre: "Hoja de Llama Verde", descripcion: "El fuego salta de un objetivo a otro." },
+    {
+      id: "descarga_ocultista",
+      nombre: "Descarga Ocultista",
+      descripcion: "Un rayo de energía crepitante causa 1d10 daño de fuerza.",
+    },
+    {
+      id: "toque_helado",
+      nombre: "Toque Helado",
+      descripcion: "Una mano esquelética causa 1d8 daño necrótico.",
+    },
+    {
+      id: "prestidigitacion",
+      nombre: "Prestidigitación",
+      descripcion: "Creas un efecto mágico menor.",
+    },
+    {
+      id: "taumaturgia",
+      nombre: "Taumaturgia",
+      descripcion: "Manifiestas un signo menor de poder sobrenatural.",
+    },
+    {
+      id: "amigos",
+      nombre: "Amigos",
+      descripcion: "Un objetivo te ve como un amigo durante 1 minuto.",
+    },
+    {
+      id: "hoja_verde_llama",
+      nombre: "Hoja de Llama Verde",
+      descripcion: "El fuego salta de un objetivo a otro.",
+    },
   ],
   clerigo: [
-    { id: "guia", nombre: "Guía", descripcion: "Otorgas 1d4 extra a una tirada de habilidad." },
-    { id: "luz", nombre: "Luz", descripcion: "Un objeto emite luz brillante en 6m." },
-    { id: "llama_sagrada", nombre: "Llama Sagrada", descripcion: "Llamas descienden sobre un objetivo causando 1d8 daño radiante." },
-    { id: "reparar", nombre: "Reparar", descripcion: "Reparas una rotura o desgarro en un objeto." },
-    { id: "resistencia", nombre: "Resistencia", descripcion: "Otorgas 1d4 extra a una tirada de salvación." },
-    { id: "taumaturgia", nombre: "Taumaturgia", descripcion: "Manifiestas un signo menor de poder sobrenatural." },
-    { id: "palabra_de_resplandor", nombre: "Palabra de Resplandor", descripcion: "Pronuncias una palabra divina que causa daño radiante." },
+    {
+      id: "guia",
+      nombre: "Guía",
+      descripcion: "Otorgas 1d4 extra a una tirada de habilidad.",
+    },
+    {
+      id: "luz",
+      nombre: "Luz",
+      descripcion: "Un objeto emite luz brillante en 6m.",
+    },
+    {
+      id: "llama_sagrada",
+      nombre: "Llama Sagrada",
+      descripcion:
+        "Llamas descienden sobre un objetivo causando 1d8 daño radiante.",
+    },
+    {
+      id: "reparar",
+      nombre: "Reparar",
+      descripcion: "Reparas una rotura o desgarro en un objeto.",
+    },
+    {
+      id: "resistencia",
+      nombre: "Resistencia",
+      descripcion: "Otorgas 1d4 extra a una tirada de salvación.",
+    },
+    {
+      id: "taumaturgia",
+      nombre: "Taumaturgia",
+      descripcion: "Manifiestas un signo menor de poder sobrenatural.",
+    },
+    {
+      id: "palabra_de_resplandor",
+      nombre: "Palabra de Resplandor",
+      descripcion: "Pronuncias una palabra divina que causa daño radiante.",
+    },
   ],
   druida: [
-    { id: "druida_artesania", nombre: "Druidismo", descripcion: "Creas un efecto natural menor." },
-    { id: "guia", nombre: "Guía", descripcion: "Otorgas 1d4 extra a una tirada de habilidad." },
-    { id: "llamarada", nombre: "Llamarada", descripcion: "Lanzas una mota de fuego que causa 1d8 daño de fuego." },
-    { id: "resistencia", nombre: "Resistencia", descripcion: "Otorgas 1d4 extra a una tirada de salvación." },
-    { id: "shillelagh", nombre: "Shillelagh", descripcion: "Imbuyes un garrote o bastón con poder natural." },
-    { id: "latigo_espinas", nombre: "Látigo de Espinas", descripcion: "Creas un largo tallo espinoso que azota a un enemigo." },
+    {
+      id: "druida_artesania",
+      nombre: "Druidismo",
+      descripcion: "Creas un efecto natural menor.",
+    },
+    {
+      id: "guia",
+      nombre: "Guía",
+      descripcion: "Otorgas 1d4 extra a una tirada de habilidad.",
+    },
+    {
+      id: "llamarada",
+      nombre: "Llamarada",
+      descripcion: "Lanzas una mota de fuego que causa 1d8 daño de fuego.",
+    },
+    {
+      id: "resistencia",
+      nombre: "Resistencia",
+      descripcion: "Otorgas 1d4 extra a una tirada de salvación.",
+    },
+    {
+      id: "shillelagh",
+      nombre: "Shillelagh",
+      descripcion: "Imbuyes un garrote o bastón con poder natural.",
+    },
+    {
+      id: "latigo_espinas",
+      nombre: "Látigo de Espinas",
+      descripcion: "Creas un largo tallo espinoso que azota a un enemigo.",
+    },
   ],
   hechicero: [
-    { id: "descarga_ocultista", nombre: "Rayo de Escarcha", descripcion: "Un rayo de luz blanco-azulada causa 1d8 daño de frío." },
-    { id: "llama_sagrada", nombre: "Rayo de Fuego", descripcion: "Lanzas una mota de fuego que causa 1d10 daño de fuego." },
-    { id: "luz", nombre: "Luz", descripcion: "Un objeto emite luz brillante en 6m." },
-    { id: "mano_de_mago", nombre: "Mano de Mago", descripcion: "Creas una mano espectral flotante." },
-    { id: "mensaje", nombre: "Mensaje", descripcion: "Susurras un mensaje a una criatura a 36m." },
-    { id: "prestidigitacion", nombre: "Prestidigitación", descripcion: "Creas un efecto mágico menor." },
-    { id: "toque_helado", nombre: "Toque Helado", descripcion: "Una mano esquelética causa 1d8 daño necrótico." },
-    { id: "descarga_electrica", nombre: "Descarga Eléctrica", descripcion: "Lanzas un arco de electricidad que causa 1d8 de daño." },
+    {
+      id: "descarga_ocultista",
+      nombre: "Rayo de Escarcha",
+      descripcion: "Un rayo de luz blanco-azulada causa 1d8 daño de frío.",
+    },
+    {
+      id: "llama_sagrada",
+      nombre: "Rayo de Fuego",
+      descripcion: "Lanzas una mota de fuego que causa 1d10 daño de fuego.",
+    },
+    {
+      id: "luz",
+      nombre: "Luz",
+      descripcion: "Un objeto emite luz brillante en 6m.",
+    },
+    {
+      id: "mano_de_mago",
+      nombre: "Mano de Mago",
+      descripcion: "Creas una mano espectral flotante.",
+    },
+    {
+      id: "mensaje",
+      nombre: "Mensaje",
+      descripcion: "Susurras un mensaje a una criatura a 36m.",
+    },
+    {
+      id: "prestidigitacion",
+      nombre: "Prestidigitación",
+      descripcion: "Creas un efecto mágico menor.",
+    },
+    {
+      id: "toque_helado",
+      nombre: "Toque Helado",
+      descripcion: "Una mano esquelética causa 1d8 daño necrótico.",
+    },
+    {
+      id: "descarga_electrica",
+      nombre: "Descarga Eléctrica",
+      descripcion: "Lanzas un arco de electricidad que causa 1d8 de daño.",
+    },
   ],
   mago: [
-    { id: "rayo_escarcha", nombre: "Rayo de Escarcha", descripcion: "Un rayo de luz blanco-azulada causa 1d8 daño de frío." },
-    { id: "rayo_fuego", nombre: "Rayo de Fuego", descripcion: "Lanzas una mota de fuego que causa 1d10 daño de fuego." },
-    { id: "luz", nombre: "Luz", descripcion: "Un objeto emite luz brillante en 6m." },
-    { id: "mano_de_mago", nombre: "Mano de Mago", descripcion: "Creas una mano espectral flotante." },
-    { id: "mensaje", nombre: "Mensaje", descripcion: "Susurras un mensaje a una criatura a 36m." },
-    { id: "prestidigitacion", nombre: "Prestidigitación", descripcion: "Creas un efecto mágico menor." },
-    { id: "toque_helado", nombre: "Toque Helado", descripcion: "Una mano esquelética causa 1d8 daño necrótico." },
-    { id: "ilusion_menor", nombre: "Ilusión Menor", descripcion: "Creas un sonido o imagen ilusoria." },
-    { id: "descarga_electrica", nombre: "Descarga Eléctrica", descripcion: "Lanzas un arco de electricidad que causa 1d8." },
-    { id: "chorro_acido", nombre: "Chorro de Ácido", descripcion: "Lanzas una burbuja de ácido que causa 1d6 daño." },
+    {
+      id: "rayo_escarcha",
+      nombre: "Rayo de Escarcha",
+      descripcion: "Un rayo de luz blanco-azulada causa 1d8 daño de frío.",
+    },
+    {
+      id: "rayo_fuego",
+      nombre: "Rayo de Fuego",
+      descripcion: "Lanzas una mota de fuego que causa 1d10 daño de fuego.",
+    },
+    {
+      id: "luz",
+      nombre: "Luz",
+      descripcion: "Un objeto emite luz brillante en 6m.",
+    },
+    {
+      id: "mano_de_mago",
+      nombre: "Mano de Mago",
+      descripcion: "Creas una mano espectral flotante.",
+    },
+    {
+      id: "mensaje",
+      nombre: "Mensaje",
+      descripcion: "Susurras un mensaje a una criatura a 36m.",
+    },
+    {
+      id: "prestidigitacion",
+      nombre: "Prestidigitación",
+      descripcion: "Creas un efecto mágico menor.",
+    },
+    {
+      id: "toque_helado",
+      nombre: "Toque Helado",
+      descripcion: "Una mano esquelética causa 1d8 daño necrótico.",
+    },
+    {
+      id: "ilusion_menor",
+      nombre: "Ilusión Menor",
+      descripcion: "Creas un sonido o imagen ilusoria.",
+    },
+    {
+      id: "descarga_electrica",
+      nombre: "Descarga Eléctrica",
+      descripcion: "Lanzas un arco de electricidad que causa 1d8.",
+    },
+    {
+      id: "chorro_acido",
+      nombre: "Chorro de Ácido",
+      descripcion: "Lanzas una burbuja de ácido que causa 1d6 daño.",
+    },
   ],
 };
 
-const CLASS_SPELLS_LV1: Record<string, { id: string; nombre: string; descripcion: string }[]> = {
+const CLASS_SPELLS_LV1: Record<
+  string,
+  { id: string; nombre: string; descripcion: string }[]
+> = {
   bardo: [
-    { id: "curar_heridas", nombre: "Curar Heridas", descripcion: "Curas 1d8 + mod. de conjuración PG a una criatura." },
-    { id: "detectar_magia", nombre: "Detectar Magia", descripcion: "Detectas la presencia de magia a 9m." },
-    { id: "palabra_curativa", nombre: "Palabra Curativa", descripcion: "Curas 1d4 + mod. PG a distancia con una acción adicional." },
-    { id: "dormir", nombre: "Dormir", descripcion: "5d8 PG de criaturas caen dormidas." },
-    { id: "encanto_persona", nombre: "Encanto de Persona", descripcion: "Un humanoide te ve como un amigo." },
-    { id: "identificar", nombre: "Identificar", descripcion: "Aprendes las propiedades de un objeto mágico." },
-    { id: "onda_atronadora", nombre: "Onda Atronadora", descripcion: "Cada criatura en un cubo de 4.5m sufre 2d8 daño de trueno." },
-    { id: "hablar_con_animales", nombre: "Hablar con Animales", descripcion: "Puedes comunicarte con bestias durante 10 minutos." },
+    {
+      id: "curar_heridas",
+      nombre: "Curar Heridas",
+      descripcion: "Curas 1d8 + mod. de conjuración PG a una criatura.",
+    },
+    {
+      id: "detectar_magia",
+      nombre: "Detectar Magia",
+      descripcion: "Detectas la presencia de magia a 9m.",
+    },
+    {
+      id: "palabra_curativa",
+      nombre: "Palabra Curativa",
+      descripcion: "Curas 1d4 + mod. PG a distancia con una acción adicional.",
+    },
+    {
+      id: "dormir",
+      nombre: "Dormir",
+      descripcion: "5d8 PG de criaturas caen dormidas.",
+    },
+    {
+      id: "encanto_persona",
+      nombre: "Encanto de Persona",
+      descripcion: "Un humanoide te ve como un amigo.",
+    },
+    {
+      id: "identificar",
+      nombre: "Identificar",
+      descripcion: "Aprendes las propiedades de un objeto mágico.",
+    },
+    {
+      id: "onda_atronadora",
+      nombre: "Onda Atronadora",
+      descripcion: "Cada criatura en un cubo de 4.5m sufre 2d8 daño de trueno.",
+    },
+    {
+      id: "hablar_con_animales",
+      nombre: "Hablar con Animales",
+      descripcion: "Puedes comunicarte con bestias durante 10 minutos.",
+    },
   ],
   brujo: [
-    { id: "encanto_persona", nombre: "Encanto de Persona", descripcion: "Un humanoide te ve como un amigo." },
-    { id: "armadura_de_agathys", nombre: "Armadura de Agathys", descripcion: "Ganas 5 PG temporales y dañas a quien te golpee." },
-    { id: "maleficio", nombre: "Maleficio", descripcion: "Maldices a un objetivo para 1d6 daño necrótico extra." },
-    { id: "texto_ilusorio", nombre: "Texto Ilusorio", descripcion: "Escribes un mensaje que solo ciertos lectores pueden ver." },
-    { id: "proteccion_bien_mal", nombre: "Protección contra el Bien y el Mal", descripcion: "Proteges a una criatura de celestiales, demonios, etc." },
+    {
+      id: "encanto_persona",
+      nombre: "Encanto de Persona",
+      descripcion: "Un humanoide te ve como un amigo.",
+    },
+    {
+      id: "armadura_de_agathys",
+      nombre: "Armadura de Agathys",
+      descripcion: "Ganas 5 PG temporales y dañas a quien te golpee.",
+    },
+    {
+      id: "maleficio",
+      nombre: "Maleficio",
+      descripcion: "Maldices a un objetivo para 1d6 daño necrótico extra.",
+    },
+    {
+      id: "texto_ilusorio",
+      nombre: "Texto Ilusorio",
+      descripcion: "Escribes un mensaje que solo ciertos lectores pueden ver.",
+    },
+    {
+      id: "proteccion_bien_mal",
+      nombre: "Protección contra el Bien y el Mal",
+      descripcion: "Proteges a una criatura de celestiales, demonios, etc.",
+    },
   ],
   clerigo: [
-    { id: "curar_heridas", nombre: "Curar Heridas", descripcion: "Curas 1d8 + mod. de conjuración PG." },
-    { id: "detectar_magia", nombre: "Detectar Magia", descripcion: "Detectas la presencia de magia a 9m." },
-    { id: "bendicion", nombre: "Bendición", descripcion: "Hasta 3 criaturas suman 1d4 a ataques y salvaciones." },
-    { id: "escudo_de_fe", nombre: "Escudo de Fe", descripcion: "+2 a CA de una criatura durante 10 minutos." },
-    { id: "palabra_curativa", nombre: "Palabra Curativa", descripcion: "Curas 1d4 + mod. PG a distancia." },
-    { id: "imponer_manos", nombre: "Santuario", descripcion: "Un objetivo es protegido: atacantes deben pasar salvación de SAB." },
-    { id: "infligir_heridas", nombre: "Infligir Heridas", descripcion: "Ataque cuerpo a cuerpo: 3d10 daño necrótico." },
-    { id: "mando", nombre: "Mando", descripcion: "Das una orden de una palabra a una criatura." },
+    {
+      id: "curar_heridas",
+      nombre: "Curar Heridas",
+      descripcion: "Curas 1d8 + mod. de conjuración PG.",
+    },
+    {
+      id: "detectar_magia",
+      nombre: "Detectar Magia",
+      descripcion: "Detectas la presencia de magia a 9m.",
+    },
+    {
+      id: "bendicion",
+      nombre: "Bendición",
+      descripcion: "Hasta 3 criaturas suman 1d4 a ataques y salvaciones.",
+    },
+    {
+      id: "escudo_de_fe",
+      nombre: "Escudo de Fe",
+      descripcion: "+2 a CA de una criatura durante 10 minutos.",
+    },
+    {
+      id: "palabra_curativa",
+      nombre: "Palabra Curativa",
+      descripcion: "Curas 1d4 + mod. PG a distancia.",
+    },
+    {
+      id: "imponer_manos",
+      nombre: "Santuario",
+      descripcion:
+        "Un objetivo es protegido: atacantes deben pasar salvación de SAB.",
+    },
+    {
+      id: "infligir_heridas",
+      nombre: "Infligir Heridas",
+      descripcion: "Ataque cuerpo a cuerpo: 3d10 daño necrótico.",
+    },
+    {
+      id: "mando",
+      nombre: "Mando",
+      descripcion: "Das una orden de una palabra a una criatura.",
+    },
   ],
   druida: [
-    { id: "curar_heridas", nombre: "Curar Heridas", descripcion: "Curas 1d8 + mod. de conjuración PG." },
-    { id: "detectar_magia", nombre: "Detectar Magia", descripcion: "Detectas la presencia de magia a 9m." },
-    { id: "hablar_con_animales", nombre: "Hablar con Animales", descripcion: "Te comunicas con bestias durante 10 min." },
-    { id: "enredar", nombre: "Enredar", descripcion: "Plantas que atrapan a criaturas en un área de 6m." },
-    { id: "nube_niebla", nombre: "Nube de Niebla", descripcion: "Creas una esfera de niebla de 6m de radio." },
-    { id: "onda_atronadora", nombre: "Onda Atronadora", descripcion: "Cada criatura en un cubo de 4.5m sufre 2d8 de trueno." },
-    { id: "buenas_bayas", nombre: "Buenas Bayas", descripcion: "Creas 10 bayas que curan 1 PG cada una." },
+    {
+      id: "curar_heridas",
+      nombre: "Curar Heridas",
+      descripcion: "Curas 1d8 + mod. de conjuración PG.",
+    },
+    {
+      id: "detectar_magia",
+      nombre: "Detectar Magia",
+      descripcion: "Detectas la presencia de magia a 9m.",
+    },
+    {
+      id: "hablar_con_animales",
+      nombre: "Hablar con Animales",
+      descripcion: "Te comunicas con bestias durante 10 min.",
+    },
+    {
+      id: "enredar",
+      nombre: "Enredar",
+      descripcion: "Plantas que atrapan a criaturas en un área de 6m.",
+    },
+    {
+      id: "nube_niebla",
+      nombre: "Nube de Niebla",
+      descripcion: "Creas una esfera de niebla de 6m de radio.",
+    },
+    {
+      id: "onda_atronadora",
+      nombre: "Onda Atronadora",
+      descripcion: "Cada criatura en un cubo de 4.5m sufre 2d8 de trueno.",
+    },
+    {
+      id: "buenas_bayas",
+      nombre: "Buenas Bayas",
+      descripcion: "Creas 10 bayas que curan 1 PG cada una.",
+    },
   ],
   hechicero: [
-    { id: "detectar_magia", nombre: "Detectar Magia", descripcion: "Detectas la presencia de magia a 9m." },
-    { id: "escudo", nombre: "Escudo", descripcion: "Reacción: +5 a CA hasta tu siguiente turno." },
-    { id: "proyectil_magico", nombre: "Proyectil Mágico", descripcion: "3 dardos de fuerza causan 1d4+1 cada uno. No fallan." },
-    { id: "dormir", nombre: "Dormir", descripcion: "5d8 PG de criaturas caen dormidas." },
-    { id: "manos_ardientes", nombre: "Manos Ardientes", descripcion: "Un cono de 4.5m causa 3d6 daño de fuego." },
-    { id: "encanto_persona", nombre: "Encanto de Persona", descripcion: "Un humanoide te ve como un amigo." },
+    {
+      id: "detectar_magia",
+      nombre: "Detectar Magia",
+      descripcion: "Detectas la presencia de magia a 9m.",
+    },
+    {
+      id: "escudo",
+      nombre: "Escudo",
+      descripcion: "Reacción: +5 a CA hasta tu siguiente turno.",
+    },
+    {
+      id: "proyectil_magico",
+      nombre: "Proyectil Mágico",
+      descripcion: "3 dardos de fuerza causan 1d4+1 cada uno. No fallan.",
+    },
+    {
+      id: "dormir",
+      nombre: "Dormir",
+      descripcion: "5d8 PG de criaturas caen dormidas.",
+    },
+    {
+      id: "manos_ardientes",
+      nombre: "Manos Ardientes",
+      descripcion: "Un cono de 4.5m causa 3d6 daño de fuego.",
+    },
+    {
+      id: "encanto_persona",
+      nombre: "Encanto de Persona",
+      descripcion: "Un humanoide te ve como un amigo.",
+    },
   ],
   mago: [
-    { id: "detectar_magia", nombre: "Detectar Magia", descripcion: "Detectas la presencia de magia a 9m." },
-    { id: "escudo", nombre: "Escudo", descripcion: "Reacción: +5 a CA hasta tu siguiente turno." },
-    { id: "proyectil_magico", nombre: "Proyectil Mágico", descripcion: "3 dardos de fuerza causan 1d4+1 cada uno." },
-    { id: "dormir", nombre: "Dormir", descripcion: "5d8 PG de criaturas caen dormidas." },
-    { id: "manos_ardientes", nombre: "Manos Ardientes", descripcion: "Un cono de 4.5m causa 3d6 daño de fuego." },
-    { id: "encanto_persona", nombre: "Encanto de Persona", descripcion: "Un humanoide te ve como un amigo." },
-    { id: "armadura_de_mago", nombre: "Armadura de Mago", descripcion: "Tu CA base es 13 + mod. DES durante 8 horas." },
-    { id: "identificar", nombre: "Identificar", descripcion: "Aprendes las propiedades de un objeto mágico." },
-    { id: "nube_niebla", nombre: "Nube de Niebla", descripcion: "Creas una esfera de niebla de 6m." },
-    { id: "caida_de_pluma", nombre: "Caída de Pluma", descripcion: "Hasta 5 criaturas caen suavemente." },
+    {
+      id: "detectar_magia",
+      nombre: "Detectar Magia",
+      descripcion: "Detectas la presencia de magia a 9m.",
+    },
+    {
+      id: "escudo",
+      nombre: "Escudo",
+      descripcion: "Reacción: +5 a CA hasta tu siguiente turno.",
+    },
+    {
+      id: "proyectil_magico",
+      nombre: "Proyectil Mágico",
+      descripcion: "3 dardos de fuerza causan 1d4+1 cada uno.",
+    },
+    {
+      id: "dormir",
+      nombre: "Dormir",
+      descripcion: "5d8 PG de criaturas caen dormidas.",
+    },
+    {
+      id: "manos_ardientes",
+      nombre: "Manos Ardientes",
+      descripcion: "Un cono de 4.5m causa 3d6 daño de fuego.",
+    },
+    {
+      id: "encanto_persona",
+      nombre: "Encanto de Persona",
+      descripcion: "Un humanoide te ve como un amigo.",
+    },
+    {
+      id: "armadura_de_mago",
+      nombre: "Armadura de Mago",
+      descripcion: "Tu CA base es 13 + mod. DES durante 8 horas.",
+    },
+    {
+      id: "identificar",
+      nombre: "Identificar",
+      descripcion: "Aprendes las propiedades de un objeto mágico.",
+    },
+    {
+      id: "nube_niebla",
+      nombre: "Nube de Niebla",
+      descripcion: "Creas una esfera de niebla de 6m.",
+    },
+    {
+      id: "caida_de_pluma",
+      nombre: "Caída de Pluma",
+      descripcion: "Hasta 5 criaturas caen suavemente.",
+    },
   ],
 };
 
 export default function SpellsStep() {
+  const { colors, isDark } = useTheme();
+  const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
-  const {
-    draft,
-    setSpellChoices,
-    saveDraft,
-    loadDraft,
-  } = useCreationStore();
+  const { draft, setSpellChoices, saveDraft, loadDraft } = useCreationStore();
 
   const [selectedCantrips, setSelectedCantrips] = useState<string[]>([]);
   const [selectedSpells, setSelectedSpells] = useState<string[]>([]);
@@ -174,7 +530,8 @@ export default function SpellsStep() {
           const classData = getClassData(currentDraft.clase);
           const shouldSkip =
             classData.casterType === "none" ||
-            (classData.cantripsAtLevel1 === 0 && classData.spellsAtLevel1 === 0);
+            (classData.cantripsAtLevel1 === 0 &&
+              classData.spellsAtLevel1 === 0);
 
           if (shouldSkip) {
             hasAutoSkipped.current = true;
@@ -189,7 +546,7 @@ export default function SpellsStep() {
         }
       };
       init();
-    }, [campaignId])
+    }, [campaignId]),
   );
 
   const classId = draft?.clase;
@@ -249,60 +606,76 @@ export default function SpellsStep() {
   // If auto-skipping, show nothing (brief flash)
   if (autoSkipped) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, themed.container]}>
         <View style={styles.skipContainer}>
-          <Ionicons name="flash-outline" size={48} color="#666699" />
-          <Text style={styles.skipText}>
+          <Ionicons name="flash-outline" size={48} color={colors.textMuted} />
+          <Text style={[styles.skipText, themed.skipText]}>
             Tu clase no lanza conjuros a nivel 1.
           </Text>
-          <Text style={styles.skipSubtext}>Continuando...</Text>
+          <Text style={[styles.skipSubtext, themed.skipSubtext]}>
+            Continuando...
+          </Text>
         </View>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+    <View style={[styles.container, themed.container]}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Ionicons name="arrow-back" size={22} color="white" />
+            <TouchableOpacity
+              style={[styles.backButton, themed.backButton]}
+              onPress={handleBack}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={22}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
-            <Text style={styles.stepText}>
+            <Text style={[styles.stepText, themed.stepText]}>
               Paso {CURRENT_STEP} de {TOTAL_STEPS}
             </Text>
             <View style={{ height: 40, width: 40 }} />
           </View>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
+          <View style={[styles.progressBar, themed.progressBar]}>
+            <View
+              style={[styles.progressFill, { width: `${progressPercent}%` }]}
+            />
           </View>
         </View>
 
         {/* Title */}
         <View style={styles.titleSection}>
           <View style={styles.iconCircle}>
-            <Ionicons name="flame-outline" size={40} color="#c62828" />
+            <Ionicons name="star-outline" size={40} color={colors.accentRed} />
           </View>
-          <Text style={styles.title}>Hechizos Iniciales</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, themed.title]}>
+            Habilidades Iniciales
+          </Text>
+          <Text style={[styles.subtitle, themed.subtitle]}>
             {classData
               ? `Como ${classData.nombre}, puedes elegir ${maxCantrips} truco${maxCantrips !== 1 ? "s" : ""}${maxSpells > 0 ? ` y ${maxSpells} conjuro${maxSpells !== 1 ? "s" : ""} de nivel 1` : ""}.`
               : "Elige tus trucos y conjuros iniciales."}
           </Text>
           {classData?.spellcastingAbility && (
-            <View style={styles.aptitudBadge}>
-              <Ionicons name="sparkles" size={14} color="#fbbf24" />
-              <Text style={styles.aptitudText}>
+            <View style={[styles.aptitudBadge, themed.aptitudBadge]}>
+              <Ionicons name="sparkles" size={14} color={colors.accentGold} />
+              <Text style={[styles.aptitudText, themed.aptitudText]}>
                 Aptitud mágica:{" "}
                 {classData.spellcastingAbility === "car"
                   ? "Carisma"
                   : classData.spellcastingAbility === "int"
-                  ? "Inteligencia"
-                  : classData.spellcastingAbility === "sab"
-                  ? "Sabiduría"
-                  : classData.spellcastingAbility.toUpperCase()}
+                    ? "Inteligencia"
+                    : classData.spellcastingAbility === "sab"
+                      ? "Sabiduría"
+                      : classData.spellcastingAbility.toUpperCase()}
               </Text>
             </View>
           )}
@@ -312,12 +685,15 @@ export default function SpellsStep() {
         {maxCantrips > 0 && (
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Trucos (Cantrips)</Text>
-              <View style={styles.counterBadge}>
+              <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+                Trucos (Cantrips)
+              </Text>
+              <View style={[styles.counterBadge, themed.card]}>
                 <Text
                   style={[
                     styles.counterText,
-                    selectedCantrips.length === maxCantrips && styles.counterTextValid,
+                    selectedCantrips.length === maxCantrips &&
+                      styles.counterTextValid,
                   ]}
                 >
                   {selectedCantrips.length} / {maxCantrips}
@@ -327,13 +703,15 @@ export default function SpellsStep() {
 
             {availableCantrips.map((cantrip) => {
               const isSelected = selectedCantrips.includes(cantrip.id);
-              const isDisabled = !isSelected && selectedCantrips.length >= maxCantrips;
+              const isDisabled =
+                !isSelected && selectedCantrips.length >= maxCantrips;
 
               return (
                 <TouchableOpacity
                   key={cantrip.id}
                   style={[
                     styles.spellCard,
+                    themed.card,
                     isSelected && styles.spellCardSelected,
                     isDisabled && styles.spellCardDisabled,
                   ]}
@@ -344,6 +722,7 @@ export default function SpellsStep() {
                     <View
                       style={[
                         styles.checkbox,
+                        themed.checkbox,
                         isSelected && styles.checkboxSelected,
                       ]}
                     >
@@ -355,17 +734,25 @@ export default function SpellsStep() {
                       <Text
                         style={[
                           styles.spellName,
-                          isSelected && styles.spellNameSelected,
+                          themed.textPrimary,
+                          isSelected && themed.spellNameSelected,
                         ]}
                       >
                         {cantrip.nombre}
                       </Text>
-                      <Text style={styles.spellDesc} numberOfLines={2}>
+                      <Text
+                        style={[styles.spellDesc, themed.textSecondary]}
+                        numberOfLines={2}
+                      >
                         {cantrip.descripcion}
                       </Text>
                     </View>
-                    <View style={styles.levelBadge}>
-                      <Text style={styles.levelBadgeText}>Truco</Text>
+                    <View style={[styles.levelBadge, themed.levelBadge]}>
+                      <Text
+                        style={[styles.levelBadgeText, themed.levelBadgeText]}
+                      >
+                        Truco
+                      </Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -378,12 +765,15 @@ export default function SpellsStep() {
         {maxSpells > 0 && (
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Conjuros de Nivel 1</Text>
-              <View style={styles.counterBadge}>
+              <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+                Conjuros de Nivel 1
+              </Text>
+              <View style={[styles.counterBadge, themed.card]}>
                 <Text
                   style={[
                     styles.counterText,
-                    selectedSpells.length === maxSpells && styles.counterTextValid,
+                    selectedSpells.length === maxSpells &&
+                      styles.counterTextValid,
                   ]}
                 >
                   {selectedSpells.length} / {maxSpells}
@@ -393,13 +783,15 @@ export default function SpellsStep() {
 
             {availableSpells.map((spell) => {
               const isSelected = selectedSpells.includes(spell.id);
-              const isDisabled = !isSelected && selectedSpells.length >= maxSpells;
+              const isDisabled =
+                !isSelected && selectedSpells.length >= maxSpells;
 
               return (
                 <TouchableOpacity
                   key={spell.id}
                   style={[
                     styles.spellCard,
+                    themed.card,
                     isSelected && styles.spellCardSelected,
                     isDisabled && styles.spellCardDisabled,
                   ]}
@@ -410,6 +802,7 @@ export default function SpellsStep() {
                     <View
                       style={[
                         styles.checkbox,
+                        themed.checkbox,
                         isSelected && styles.checkboxSelected,
                       ]}
                     >
@@ -421,17 +814,31 @@ export default function SpellsStep() {
                       <Text
                         style={[
                           styles.spellName,
-                          isSelected && styles.spellNameSelected,
+                          themed.textPrimary,
+                          isSelected && themed.spellNameSelected,
                         ]}
                       >
                         {spell.nombre}
                       </Text>
-                      <Text style={styles.spellDesc} numberOfLines={2}>
+                      <Text
+                        style={[styles.spellDesc, themed.textSecondary]}
+                        numberOfLines={2}
+                      >
                         {spell.descripcion}
                       </Text>
                     </View>
-                    <View style={[styles.levelBadge, styles.levelBadgeLv1]}>
-                      <Text style={styles.levelBadgeText}>Nv.1</Text>
+                    <View
+                      style={[
+                        styles.levelBadge,
+                        themed.levelBadge,
+                        styles.levelBadgeLv1,
+                      ]}
+                    >
+                      <Text
+                        style={[styles.levelBadgeText, themed.levelBadgeText]}
+                      >
+                        Nv.1
+                      </Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -439,9 +846,9 @@ export default function SpellsStep() {
             })}
 
             {classId === "mago" && (
-              <View style={styles.infoBox}>
-                <Ionicons name="book" size={18} color="#fbbf24" />
-                <Text style={styles.infoBoxText}>
+              <View style={[styles.infoBox, themed.infoBox]}>
+                <Ionicons name="book" size={18} color={colors.accentGold} />
+                <Text style={[styles.infoBoxText, themed.infoBoxText]}>
                   Como mago, los conjuros seleccionados se añadirán a tu libro
                   de hechizos. Podrás preparar un número limitado cada día.
                 </Text>
@@ -452,9 +859,12 @@ export default function SpellsStep() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, themed.footer]}>
         <TouchableOpacity
-          style={[styles.nextButton, !isValid && styles.nextButtonDisabled]}
+          style={[
+            styles.nextButton,
+            !isValid && [styles.nextButtonDisabled, themed.nextButtonDisabled],
+          ]}
           onPress={handleNext}
           disabled={!isValid}
         >
@@ -595,7 +1005,7 @@ const styles = StyleSheet.create({
   },
   spellCardSelected: {
     borderColor: "#c62828",
-    backgroundColor: "#2a1a2e",
+    backgroundColor: "rgba(198,40,40,0.08)",
   },
   spellCardDisabled: {
     opacity: 0.4,

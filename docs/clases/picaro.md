@@ -156,6 +156,236 @@ No puedes usar este rasgo si estás sorprendido.
 
 ---
 
+## Arquetipo de Pícaro: Asesino (Assassin)
+
+Especialistas en golpes mortales, infiltración y disfraz. Nadie ve venir su ataque… hasta que es demasiado tarde.
+
+### Competencias Adicionales
+
+A nivel 3, ganas competencia en disfraces y venenos.
+
+### Golpe Asesino
+
+También a nivel 3, infliges daño doble contra enemigos sorprendidos y tienes ventaja en todas las tiradas contra ellos.
+
+### Maestría del Engaño
+
+A nivel 9, puedes asumir identidades falsas con facilidad; ningún documento falso o disfraz puede ser detectado sin éxito crítico.
+
+### Golpe Imprevisible
+
+A nivel 13, cuando atacas primero en combate, el enemigo sufre un penalizador de -2 a su CA durante tu turno.
+
+### Muerte Silenciosa
+
+A nivel 17, cualquier ataque sorpresa tuyo es crítico automático y las criaturas sorprendidas no pueden actuar en el primer turno.
+
+---
+
+## Arquetipo de Pícaro: Embaucador Arcano (Arcane Trickster)
+
+Este pícaro mezcla su astucia con la magia, robando no solo bolsillos, sino también conjuros.
+
+### Conjuros Menores
+
+A nivel 3, aprendes trucos simples de la lista de Mago (como Mano de mago mejorada).
+
+### Magia de Engaño
+
+También a nivel 3, tu Mano de mago puede volverse invisible y manejar objetos o hurtar sigilosamente sin ser vista.
+
+### Mente Ágil
+
+A nivel 9, puedes mantener concentración mágica adicional al usar Acción Astuta el mismo turno.
+
+### Sigilo Arcano
+
+A nivel 13, puedes volverte invisible durante 1 minuto usando un espacio de conjuro.
+
+### Maestro del Espejismo
+
+A nivel 17, puedes crear ilusiones complejas como si lanzaras Imagen mayor una vez por descanso corto.
+
+---
+
+## Arquetipo de Pícaro: Espadachín (Swashbuckler)
+
+El espadachín es un duelista elegante, veloz e impulsivo, que combina carisma con una hoja mortal.
+
+### Ímpetu Audaz
+
+A nivel 3, puedes moverte sin provocar ataques de oportunidad si golpeas a tu objetivo en el turno.
+
+### Golpe Cortés
+
+También a nivel 3, añades tu bonificador de Carisma a tu tirada de iniciativa.
+
+### Aplomo del Duelista
+
+A nivel 9, cuando luchas 1 contra 1, tus ataques obtienen daño adicional igual a tu modificador de Carisma.
+
+### Paso del Pícaro
+
+A nivel 13, puedes usar Acción Astuta para reposicionarte y ganar ventaja en tu siguiente ataque.
+
+### Espada de Leyenda
+
+A nivel 17, obtienes ataque adicional gratuito en duelos individuales y ventaja permanente contra criaturas que márquese como tu rival personal.
+
+---
+
+## Arquetipo de Pícaro: Explorador Urbano (Scout)
+
+El explorador urbano no depende de la oscuridad, sino del instinto y conocimiento del terreno. Cazador rápido y letal, domina la retirada táctica.
+
+### Emboscada Rápida
+
+A nivel 3, puedes añadir tu bonificador de Destreza a las tiradas de daño durante la primera ronda de combate si actúas antes que tus enemigos.
+
+### Escaramuza
+
+También a nivel 3, puedes moverte hasta 4,5 m como reacción cuando un enemigo termina su turno cerca de ti, sin provocar ataques de oportunidad.
+
+### Movimiento Cauteloso
+
+A nivel 9, ganas competencia en Supervivencia y Naturaleza, y ventaja en tiradas de iniciativa.
+
+### Explorador Experto
+
+A nivel 13, tu velocidad aumenta 3 m y puedes ignorar terreno difícil mientras no estés incapacitado.
+
+### Cazador Supremo
+
+A nivel 17, puedes realizar un ataque adicional como parte de tu reacción cada vez que esquivas o evades un golpe.
+
+---
+
+## Arquetipo de Pícaro: Inquisitivo (Inquisitive)
+
+El inquisitivo es un detective o espía que corta el engaño con observación y astucia.
+
+### Ojo Perspicaz
+
+A nivel 3, puedes usar una acción para detectar si alguien miente y estudiar sus comportamientos.
+
+### Combate Analítico
+
+También a nivel 3, puedes añadir tu bonificador de Sabiduría al ataque furtivo contra una criatura que hayas analizado durante un turno.
+
+### Intuición Aguda
+
+A nivel 9, obtienes ventaja en Perspicacia y Percepción mientras mantengas visión directa.
+
+### Exposición de Debilidad
+
+A nivel 13, cuando tu ataque furtivo impacta, el enemigo tiene desventaja en su próximo ataque.
+
+### Instinto Previsor
+
+A nivel 17, puedes reaccionar antes de que se produzca un ataque, negándolo completamente una vez por descanso largo.
+
+---
+
+## Arquetipo de Pícaro: Fantasma (Phantom)
+
+Los pícaros del Camino Fantasma caminan entre el plano de los vivos y los muertos, robando secretos del más allá.
+
+### Esencia de las Almas
+
+A nivel 3, puedes invocar ecos espectrales para obtener ventaja en Percepción e Investigación.
+
+### Golpe Espiritual
+
+También a nivel 3, infliges daño necrótico adicional cuando usas tu ataque furtivo una vez por turno.
+
+### Voz de los Caídos
+
+A nivel 9, puedes comunicarte con los muertos brevemente sin componentes materiales.
+
+### Comunión con Sombras
+
+A nivel 13, puedes volver intangible durante 1 turno como reacción a recibir daño.
+
+### Cosechador de Almas
+
+A nivel 17, al matar a una criatura, atrapas su sombra como fragmento espiritual, que puedes gastar para obtener ventaja o curarte.
+
+---
+
+## Arquetipo de Pícaro: Espía Maestro (Mastermind)
+
+Diplomáticos, informantes y manipuladores: su dominio es la guerra social, no el acero.
+
+### Intriga Social
+
+A nivel 3, obtienes competencia con Engaño, Persuasión, Lenguaje de señas y Disfraz.
+
+### Ayuda Calculada
+
+También a nivel 3, puedes usar tu acción bonus para asistir a un aliado en un ataque a 9 m, concediéndole ventaja.
+
+### Mente Observadora
+
+A nivel 9, puedes imitar con precisión el habla y comportamiento de cualquier persona tras 1 min de observación.
+
+### Maestro de la Manipulación
+
+A nivel 13, puedes gastar una acción para disuadir o influir mágicamente en una multitud.
+
+### Tejedor de Intrigas
+
+A nivel 17, puedes realizar dos acciones en tu primer turno de combate si tienes ventaja de información previa.
+
+---
+
+## Arquetipo de Pícaro: Acechador de Almas (Soulknife)
+
+Los Soulknife canalizan el poder de la mente en armas psíquicas invisibles.
+
+### Cuchillas Psíquicas
+
+A nivel 3, puedes materializar dagas de energía mental que utilizan Destreza para ataques y daño psíquico.
+
+### Telepatía Limitada
+
+A nivel 3, puedes comunicarte mentalmente con cualquier criatura a 9 m.
+
+### Movimiento Psi
+
+A nivel 9, puedes gastar energía psíquica para propulsarte en salto o proyectar telequinesis brevemente.
+
+### Cuchilla Étérea
+
+A nivel 13, tus ataques pueden atravesar objetos sólidos y golpear desde detrás de cobertura.
+
+### Mente Inquebrantable
+
+A nivel 17, obtienes inmunidad al miedo o control mental, y tus cuchillas infligen daño doble en críticos.
+
+---
+
+## Arquetipo de Pícaro: Tramposo (UA / Experimental)
+
+Un pícaro especializado en engaños, trampas y trucos improvisados, maestro del caos controlado.
+
+### Herrero del Engaño
+
+A nivel 3, puedes crear trampas menores o mecanismos durante descansos cortos, usando piezas simples.
+
+### Trampas Vivas
+
+A nivel 9, tus trampas pueden infligir daño adicional o causar estados alterados (cegado, ralentizado).
+
+### Estratagema Rápida
+
+A nivel 13, puedes colocar o activar trampas como acción bonus.
+
+### Mente Maquinadora
+
+A nivel 17, puedes crear dos trampas activas simultáneamente y liberar una descarga explosiva mental una vez por descanso largo.
+
+---
+
 ## Guía de Subida de Nivel
 
 A continuación se detalla, nivel a nivel, qué obtiene el pícaro en cada avance.

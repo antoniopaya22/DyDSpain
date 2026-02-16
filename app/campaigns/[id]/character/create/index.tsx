@@ -12,10 +12,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import { ConfirmDialog } from "@/components/ui";
 import { useDialog } from "@/hooks/useDialog";
+import { useTheme } from "@/hooks/useTheme";
 
 const CURRENT_STEP = 1;
 
 export default function CharacterNameStep() {
+  const { colors } = useTheme();
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
@@ -92,7 +94,7 @@ export default function CharacterNameStep() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-dark-800"
+      className="flex-1 bg-gray-50 dark:bg-dark-800"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View className="flex-1">
@@ -100,13 +102,13 @@ export default function CharacterNameStep() {
         <View className="px-5 pt-16 pb-4">
           <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity
-              className="h-10 w-10 rounded-full bg-surface items-center justify-center active:bg-surface-light"
+              className="h-10 w-10 rounded-full bg-gray-100 dark:bg-surface items-center justify-center active:bg-gray-50 dark:active:bg-surface-light"
               onPress={handleCancel}
             >
-              <Ionicons name="close" size={22} color="white" />
+              <Ionicons name="close" size={22} color={colors.textPrimary} />
             </TouchableOpacity>
 
-            <Text className="text-dark-300 text-sm font-semibold">
+            <Text className="text-dark-500 dark:text-dark-300 text-sm font-semibold">
               Paso {CURRENT_STEP} de {TOTAL_STEPS}
             </Text>
 
@@ -115,7 +117,7 @@ export default function CharacterNameStep() {
           </View>
 
           {/* Barra de progreso */}
-          <View className="h-1.5 bg-surface rounded-full overflow-hidden">
+          <View className="h-1.5 bg-gray-100 dark:bg-surface rounded-full overflow-hidden">
             <View
               className="h-full bg-primary-500 rounded-full"
               style={{ width: `${progressPercent}%` }}
@@ -127,13 +129,17 @@ export default function CharacterNameStep() {
         <View className="flex-1 px-5 justify-center" style={{ marginTop: -60 }}>
           <View className="items-center mb-10">
             <View className="h-20 w-20 rounded-full bg-primary-500/15 items-center justify-center mb-5">
-              <Ionicons name="text-outline" size={40} color="#c62828" />
+              <Ionicons
+                name="text-outline"
+                size={40}
+                color={colors.accentRed}
+              />
             </View>
 
-            <Text className="text-white text-2xl font-bold text-center mb-2">
+            <Text className="text-dark-900 dark:text-white text-2xl font-bold text-center mb-2">
               ¿Cómo se llama tu personaje?
             </Text>
-            <Text className="text-dark-300 text-base text-center leading-6 px-4">
+            <Text className="text-dark-500 dark:text-dark-300 text-base text-center leading-6 px-4">
               Elige un nombre que identifique a tu héroe en la partida. Podrás
               cambiarlo más adelante.
             </Text>
@@ -142,9 +148,9 @@ export default function CharacterNameStep() {
           {/* Campo de nombre */}
           <View className="mb-6">
             <TextInput
-              className="bg-surface rounded-xl px-5 py-4 text-white text-xl text-center border border-surface-border font-semibold"
+              className="bg-gray-100 dark:bg-surface rounded-xl px-5 py-4 text-dark-900 dark:text-white text-xl text-center border border-dark-100 dark:border-surface-border font-semibold"
               placeholder="Nombre del personaje"
-              placeholderTextColor="#666699"
+              placeholderTextColor={colors.textMuted}
               value={nombre}
               onChangeText={setNombreLocal}
               maxLength={50}
@@ -176,10 +182,12 @@ export default function CharacterNameStep() {
               ].map((suggestion) => (
                 <TouchableOpacity
                   key={suggestion}
-                  className="bg-surface-card border border-surface-border rounded-full px-4 py-2 m-1 active:bg-surface-light"
+                  className="bg-white dark:bg-surface-card border border-dark-100 dark:border-surface-border rounded-full px-4 py-2 m-1 active:bg-gray-50 dark:active:bg-surface-light"
                   onPress={() => setNombreLocal(suggestion)}
                 >
-                  <Text className="text-dark-200 text-sm">{suggestion}</Text>
+                  <Text className="text-dark-600 dark:text-dark-200 text-sm">
+                    {suggestion}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -187,12 +195,12 @@ export default function CharacterNameStep() {
         </View>
 
         {/* Footer con botones de navegación */}
-        <View className="px-5 pb-10 pt-4 border-t border-surface-border">
+        <View className="px-5 pb-10 pt-4 border-t border-dark-100 dark:border-surface-border">
           <TouchableOpacity
             className={`rounded-xl py-4 items-center flex-row justify-center ${
               isValid
                 ? "bg-primary-500 active:bg-primary-600"
-                : "bg-dark-600 opacity-50"
+                : "bg-gray-300 dark:bg-dark-600 opacity-50"
             }`}
             onPress={handleNext}
             disabled={!isValid}

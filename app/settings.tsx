@@ -33,6 +33,7 @@ import {
 import { clearAll } from "@/utils/storage";
 import { ConfirmDialog, Toast, WebTransition } from "@/components/ui";
 import { useDialog, useToast, useWebTransition } from "@/hooks/useDialog";
+import { useTheme } from "@/hooks/useTheme";
 
 // ─── Theme options ───────────────────────────────────────────────────
 
@@ -51,6 +52,7 @@ const UNIT_OPTIONS: { value: UnitSystem; label: string; desc: string }[] = [
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { colors, isDark, mode } = useTheme();
   const {
     settings,
     loading,
@@ -64,12 +66,17 @@ export default function SettingsScreen() {
   } = useSettingsStore();
 
   const [expandedSection, setExpandedSection] = useState<string | null>(
-    "apariencia"
+    "apariencia",
   );
 
   // ── Dialog, Toast & Web Transition hooks ──
-  const { dialogProps, showDestructive, showConfirm, showSuccess, showError } = useDialog();
-  const { toastProps, showSuccess: toastSuccess, showError: toastError } = useToast();
+  const { dialogProps, showDestructive, showConfirm, showSuccess, showError } =
+    useDialog();
+  const {
+    toastProps,
+    showSuccess: toastSuccess,
+    showError: toastError,
+  } = useToast();
   const { webTransitionProps, openUrl } = useWebTransition();
 
   useFocusEffect(
@@ -77,7 +84,7 @@ export default function SettingsScreen() {
       if (!loaded) {
         loadSettings();
       }
-    }, [loaded, loadSettings])
+    }, [loaded, loadSettings]),
   );
 
   const toggleSection = (section: string) => {
@@ -92,9 +99,12 @@ export default function SettingsScreen() {
       "¿Volver a las reglas opcionales por defecto?",
       () => {
         resetOptionalRules();
-        toastSuccess("Reglas restablecidas", "Configuración por defecto aplicada");
+        toastSuccess(
+          "Reglas restablecidas",
+          "Configuración por defecto aplicada",
+        );
       },
-      { confirmText: "Restablecer", cancelText: "Cancelar", type: "warning" }
+      { confirmText: "Restablecer", cancelText: "Cancelar", type: "warning" },
     );
   };
 
@@ -114,26 +124,23 @@ export default function SettingsScreen() {
               showSuccess(
                 "Datos borrados",
                 "Todos los datos han sido eliminados correctamente.",
-                () => router.replace("/")
+                () => router.replace("/"),
               );
             } catch {
-              showError(
-                "Error",
-                "No se pudieron borrar todos los datos."
-              );
+              showError("Error", "No se pudieron borrar todos los datos.");
             }
           },
-          { confirmText: "CONFIRMAR BORRADO", cancelText: "Cancelar" }
+          { confirmText: "CONFIRMAR BORRADO", cancelText: "Cancelar" },
         );
       },
-      { confirmText: "Borrar todo", cancelText: "Cancelar" }
+      { confirmText: "Borrar todo", cancelText: "Cancelar" },
     );
   };
 
   const handleOpenSRDLink = () => {
     openUrl(APP_INFO.enlaceSRD, {
       label: "SRD 5.1 en Español",
-      accentColor: "#3b82f6",
+      accentColor: colors.accentBlue,
     });
   };
 
@@ -143,7 +150,7 @@ export default function SettingsScreen() {
     id: string,
     title: string,
     icon: keyof typeof Ionicons.glyphMap,
-    iconColor: string
+    iconColor: string,
   ) => {
     const isExpanded = expandedSection === id;
     return (
@@ -156,26 +163,39 @@ export default function SettingsScreen() {
           <View
             style={[
               styles.sectionIcon,
-              { backgroundColor: iconColor + "20" },
+              { backgroundColor: iconColor + colors.iconBgAlpha },
             ]}
           >
             <Ionicons name={icon} size={20} color={iconColor} />
           </View>
-          <Text style={styles.sectionTitle}>{title}</Text>
+          <Text
+            style={[styles.sectionTitle, { color: colors.sectionTitleColor }]}
+          >
+            {title}
+          </Text>
         </View>
         <Ionicons
           name={isExpanded ? "chevron-up" : "chevron-down"}
           size={20}
-          color="#666699"
+          color={colors.chevronColor}
         />
       </TouchableOpacity>
     );
   };
 
   const renderThemeSection = () => (
-    <View style={styles.sectionContent}>
-      <Text style={styles.sectionDescription}>
+    <View
+      style={[
+        styles.sectionContent,
+        { borderTopColor: colors.borderSeparator },
+      ]}
+    >
+      <Text
+        style={[styles.sectionDescription, { color: colors.sectionDescColor }]}
+      >
         Elige el tema visual de la aplicación.
+        {settings.tema === "auto" &&
+          `\nModo actual: ${mode === "oscuro" ? "Oscuro" : "Claro"} (del sistema)`}
       </Text>
       <View style={styles.optionGroup}>
         {THEME_OPTIONS.map((opt) => {
@@ -186,19 +206,27 @@ export default function SettingsScreen() {
               onPress={() => setTheme(opt.value)}
               style={[
                 styles.themeOption,
-                isSelected && styles.themeOptionSelected,
+                {
+                  backgroundColor: colors.optionBg,
+                  borderColor: colors.optionBorder,
+                },
+                isSelected && {
+                  backgroundColor: colors.optionSelectedBg,
+                  borderColor: colors.optionSelectedBorder,
+                },
               ]}
               activeOpacity={0.7}
             >
               <Ionicons
                 name={opt.icon as keyof typeof Ionicons.glyphMap}
                 size={22}
-                color={isSelected ? "#fbbf24" : "#666699"}
+                color={isSelected ? colors.accentGold : colors.chevronColor}
               />
               <Text
                 style={[
                   styles.themeOptionLabel,
-                  isSelected && styles.themeOptionLabelSelected,
+                  { color: colors.textSecondary },
+                  isSelected && { color: colors.accentGold },
                 ]}
               >
                 {opt.label}
@@ -207,7 +235,7 @@ export default function SettingsScreen() {
                 <Ionicons
                   name="checkmark-circle"
                   size={18}
-                  color="#fbbf24"
+                  color={colors.accentGold}
                   style={{ marginLeft: 4 }}
                 />
               )}
@@ -252,24 +280,49 @@ export default function SettingsScreen() {
     ];
 
     return (
-      <View style={styles.sectionContent}>
-        <Text style={styles.sectionDescription}>
+      <View
+        style={[
+          styles.sectionContent,
+          { borderTopColor: colors.borderSeparator },
+        ]}
+      >
+        <Text
+          style={[
+            styles.sectionDescription,
+            { color: colors.sectionDescColor },
+          ]}
+        >
           Activa o desactiva reglas opcionales de D&D 5e. Estos ajustes se
           aplican a todos los personajes.
         </Text>
 
         {rules.map((rule) => (
-          <View key={rule.key} style={styles.ruleRow}>
+          <View
+            key={rule.key}
+            style={[
+              styles.ruleRow,
+              { borderBottomColor: colors.borderSeparator },
+            ]}
+          >
             <View style={styles.ruleInfo}>
-              <Text style={styles.ruleLabel}>{rule.label}</Text>
-              <Text style={styles.ruleDesc}>{rule.desc}</Text>
+              <Text style={[styles.ruleLabel, { color: colors.textPrimary }]}>
+                {rule.label}
+              </Text>
+              <Text style={[styles.ruleDesc, { color: colors.textMuted }]}>
+                {rule.desc}
+              </Text>
             </View>
             <Switch
               value={settings.reglasOpcionales[rule.key]}
               onValueChange={() => toggleOptionalRule(rule.key)}
-              trackColor={{ false: "#3a3a5c", true: "#c6282860" }}
+              trackColor={{
+                false: colors.switchTrackOff,
+                true: colors.switchTrackOn,
+              }}
               thumbColor={
-                settings.reglasOpcionales[rule.key] ? "#c62828" : "#8c8cb3"
+                settings.reglasOpcionales[rule.key]
+                  ? colors.switchThumbOn
+                  : colors.switchThumbOff
               }
             />
           </View>
@@ -277,10 +330,18 @@ export default function SettingsScreen() {
 
         <TouchableOpacity
           onPress={handleResetRules}
-          style={styles.resetButton}
+          style={[
+            styles.resetButton,
+            {
+              backgroundColor: colors.optionBg,
+              borderColor: colors.optionBorder,
+            },
+          ]}
         >
-          <Ionicons name="refresh" size={16} color="#8c8cb3" />
-          <Text style={styles.resetButtonText}>
+          <Ionicons name="refresh" size={16} color={colors.sectionDescColor} />
+          <Text
+            style={[styles.resetButtonText, { color: colors.sectionDescColor }]}
+          >
             Restablecer reglas por defecto
           </Text>
         </TouchableOpacity>
@@ -289,8 +350,15 @@ export default function SettingsScreen() {
   };
 
   const renderUnitsSection = () => (
-    <View style={styles.sectionContent}>
-      <Text style={styles.sectionDescription}>
+    <View
+      style={[
+        styles.sectionContent,
+        { borderTopColor: colors.borderSeparator },
+      ]}
+    >
+      <Text
+        style={[styles.sectionDescription, { color: colors.sectionDescColor }]}
+      >
         Los datos se almacenan en imperial (estándar de D&D). La conversión es
         solo visual.
       </Text>
@@ -303,7 +371,14 @@ export default function SettingsScreen() {
               onPress={() => setUnits(opt.value)}
               style={[
                 styles.unitOption,
-                isSelected && styles.unitOptionSelected,
+                {
+                  backgroundColor: colors.optionBg,
+                  borderColor: colors.optionBorder,
+                },
+                isSelected && {
+                  borderColor: `${colors.accentGreen}66`,
+                  backgroundColor: `${colors.accentGreen}14`,
+                },
               ]}
               activeOpacity={0.7}
             >
@@ -311,15 +386,22 @@ export default function SettingsScreen() {
                 <Text
                   style={[
                     styles.unitLabel,
-                    isSelected && styles.unitLabelSelected,
+                    { color: colors.sectionDescColor },
+                    isSelected && { color: colors.accentGreen },
                   ]}
                 >
                   {opt.label}
                 </Text>
-                <Text style={styles.unitDesc}>{opt.desc}</Text>
+                <Text style={[styles.unitDesc, { color: colors.textMuted }]}>
+                  {opt.desc}
+                </Text>
               </View>
               {isSelected && (
-                <Ionicons name="checkmark-circle" size={22} color="#22c55e" />
+                <Ionicons
+                  name="checkmark-circle"
+                  size={22}
+                  color={colors.accentGreen}
+                />
               )}
             </TouchableOpacity>
           );
@@ -329,56 +411,118 @@ export default function SettingsScreen() {
   );
 
   const renderDataSection = () => (
-    <View style={styles.sectionContent}>
-      <Text style={styles.sectionDescription}>
+    <View
+      style={[
+        styles.sectionContent,
+        { borderTopColor: colors.borderSeparator },
+      ]}
+    >
+      <Text
+        style={[styles.sectionDescription, { color: colors.sectionDescColor }]}
+      >
         Gestiona los datos almacenados en la aplicación.
       </Text>
 
       <TouchableOpacity
         onPress={handleDeleteAllData}
-        style={styles.dangerButton}
+        style={[
+          styles.dangerButton,
+          {
+            backgroundColor: colors.dangerBg,
+            borderColor: colors.dangerBorder,
+          },
+        ]}
         activeOpacity={0.7}
       >
-        <Ionicons name="trash" size={20} color="#ef4444" />
+        <Ionicons name="trash" size={20} color={colors.dangerText} />
         <View style={{ marginLeft: 12, flex: 1 }}>
-          <Text style={styles.dangerButtonTitle}>
+          <Text
+            style={[styles.dangerButtonTitle, { color: colors.dangerText }]}
+          >
             Borrar todos los datos
           </Text>
-          <Text style={styles.dangerButtonDesc}>
+          <Text
+            style={[styles.dangerButtonDesc, { color: colors.dangerTextMuted }]}
+          >
             Elimina personajes, partidas, notas y configuración
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color="#ef4444" />
+        <Ionicons name="chevron-forward" size={18} color={colors.dangerText} />
       </TouchableOpacity>
     </View>
   );
 
   const renderAboutSection = () => (
-    <View style={styles.sectionContent}>
+    <View
+      style={[
+        styles.sectionContent,
+        { borderTopColor: colors.borderSeparator },
+      ]}
+    >
       {/* App info */}
-      <View style={styles.aboutBlock}>
-        <Text style={styles.aboutAppName}>{APP_INFO.nombre}</Text>
-        <Text style={styles.aboutVersion}>Versión {APP_INFO.version}</Text>
-        <Text style={styles.aboutDesc}>{APP_INFO.descripcion}</Text>
+      <View
+        style={[
+          styles.aboutBlock,
+          { borderBottomColor: colors.borderSeparator },
+        ]}
+      >
+        <Text style={[styles.aboutAppName, { color: colors.accentGold }]}>
+          {APP_INFO.nombre}
+        </Text>
+        <Text style={[styles.aboutVersion, { color: colors.sectionDescColor }]}>
+          Versión {APP_INFO.version}
+        </Text>
+        <Text style={[styles.aboutDesc, { color: colors.textSecondary }]}>
+          {APP_INFO.descripcion}
+        </Text>
       </View>
 
       {/* License */}
-      <View style={styles.aboutBlock}>
-        <Text style={styles.aboutSubtitle}>📜 Licencia SRD</Text>
-        <Text style={styles.aboutText}>{APP_INFO.licenciaSRD}</Text>
+      <View
+        style={[
+          styles.aboutBlock,
+          { borderBottomColor: colors.borderSeparator },
+        ]}
+      >
+        <Text style={[styles.aboutSubtitle, { color: colors.textPrimary }]}>
+          📜 Licencia SRD
+        </Text>
+        <Text style={[styles.aboutText, { color: colors.sectionDescColor }]}>
+          {APP_INFO.licenciaSRD}
+        </Text>
         <TouchableOpacity onPress={handleOpenSRDLink} style={styles.link}>
-          <Ionicons name="open-outline" size={14} color="#3b82f6" />
-          <Text style={styles.linkText}>SRD 5.1 en Español</Text>
+          <Ionicons name="open-outline" size={14} color={colors.accentBlue} />
+          <Text style={[styles.linkText, { color: colors.accentBlue }]}>
+            SRD 5.1 en Español
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Tech */}
-      <View style={styles.aboutBlock}>
-        <Text style={styles.aboutSubtitle}>🛠️ Tecnologías</Text>
+      <View
+        style={[
+          styles.aboutBlock,
+          { borderBottomColor: colors.borderSeparator },
+        ]}
+      >
+        <Text style={[styles.aboutSubtitle, { color: colors.textPrimary }]}>
+          🛠️ Tecnologías
+        </Text>
         <View style={styles.techGrid}>
           {APP_INFO.tecnologias.map((tech) => (
-            <View key={tech} style={styles.techBadge}>
-              <Text style={styles.techBadgeText}>{tech}</Text>
+            <View
+              key={tech}
+              style={[
+                styles.techBadge,
+                {
+                  backgroundColor: colors.chipBg,
+                  borderColor: colors.chipBorder,
+                },
+              ]}
+            >
+              <Text style={[styles.techBadgeText, { color: colors.chipText }]}>
+                {tech}
+              </Text>
             </View>
           ))}
         </View>
@@ -386,8 +530,10 @@ export default function SettingsScreen() {
 
       {/* Credits */}
       <View style={[styles.aboutBlock, { borderBottomWidth: 0 }]}>
-        <Text style={styles.aboutSubtitle}>👤 Créditos</Text>
-        <Text style={styles.aboutText}>
+        <Text style={[styles.aboutSubtitle, { color: colors.textPrimary }]}>
+          👤 Créditos
+        </Text>
+        <Text style={[styles.aboutText, { color: colors.sectionDescColor }]}>
           Desarrollado por {APP_INFO.desarrollador}
         </Text>
       </View>
@@ -425,11 +571,11 @@ export default function SettingsScreen() {
   }, [headerFade, headerSlide, contentFade]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
       {/* Full background gradient */}
       <LinearGradient
-        colors={["#0d0d1a", "#141425", "#1a1a2e", "#1a1a2e"]}
-        locations={[0, 0.12, 0.3, 1]}
+        colors={colors.gradientMain}
+        locations={colors.gradientLocations}
         style={StyleSheet.absoluteFill}
       />
 
@@ -444,27 +590,53 @@ export default function SettingsScreen() {
         ]}
       >
         <LinearGradient
-          colors={["#0d0d1a", "#13132200"]}
+          colors={colors.gradientHeader}
           style={StyleSheet.absoluteFill}
         />
         <View style={styles.headerRow}>
           <TouchableOpacity
             onPress={() => router.back()}
-            style={styles.backButton}
+            style={[
+              styles.backButton,
+              {
+                backgroundColor: colors.headerButtonBg,
+                borderColor: colors.headerButtonBorder,
+              },
+            ]}
             activeOpacity={0.7}
           >
-            <Ionicons name="arrow-back" size={20} color="white" />
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
-            <Text style={styles.headerLabel}>D&D Español</Text>
-            <Text style={styles.headerTitle}>Ajustes</Text>
+            <Text
+              style={[
+                styles.headerLabel,
+                {
+                  color: colors.headerLabelColor,
+                  textShadowColor: colors.accentGoldGlow,
+                },
+              ]}
+            >
+              D&D Español
+            </Text>
+            <Text
+              style={[styles.headerTitle, { color: colors.headerTitleColor }]}
+            >
+              Ajustes
+            </Text>
           </View>
         </View>
 
         {/* Bottom border gradient */}
         <View style={styles.headerBorder}>
           <LinearGradient
-            colors={["transparent", "#3a3a5c66", "#3a3a5c", "#3a3a5c66", "transparent"]}
+            colors={[
+              "transparent",
+              colors.borderDefault + "66",
+              colors.borderDefault,
+              colors.borderDefault + "66",
+              "transparent",
+            ]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
             style={{ height: 1, width: "100%" }}
@@ -474,41 +646,101 @@ export default function SettingsScreen() {
 
       {/* Content */}
       <Animated.View style={{ flex: 1, opacity: contentFade }}>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Apariencia */}
-        <View style={styles.section}>
-          {renderSectionHeader("apariencia", "Apariencia", "color-palette", "#a855f7")}
-          {expandedSection === "apariencia" && renderThemeSection()}
-        </View>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Apariencia */}
+          <View
+            style={[
+              styles.section,
+              {
+                backgroundColor: colors.bgCard,
+                borderColor: colors.borderDefault,
+              },
+            ]}
+          >
+            {renderSectionHeader(
+              "apariencia",
+              "Apariencia",
+              "color-palette",
+              colors.accentPurple,
+            )}
+            {expandedSection === "apariencia" && renderThemeSection()}
+          </View>
 
-        {/* Reglas opcionales */}
-        <View style={styles.section}>
-          {renderSectionHeader("reglas", "Reglas de Juego", "game-controller", "#f59e0b")}
-          {expandedSection === "reglas" && renderRulesSection()}
-        </View>
+          {/* Reglas opcionales */}
+          <View
+            style={[
+              styles.section,
+              {
+                backgroundColor: colors.bgCard,
+                borderColor: colors.borderDefault,
+              },
+            ]}
+          >
+            {renderSectionHeader(
+              "reglas",
+              "Reglas de Juego",
+              "game-controller",
+              colors.accentAmber,
+            )}
+            {expandedSection === "reglas" && renderRulesSection()}
+          </View>
 
-        {/* Unidades */}
-        <View style={styles.section}>
-          {renderSectionHeader("unidades", "Unidades de Medida", "resize", "#22c55e")}
-          {expandedSection === "unidades" && renderUnitsSection()}
-        </View>
+          {/* Unidades */}
+          <View
+            style={[
+              styles.section,
+              {
+                backgroundColor: colors.bgCard,
+                borderColor: colors.borderDefault,
+              },
+            ]}
+          >
+            {renderSectionHeader(
+              "unidades",
+              "Unidades de Medida",
+              "resize",
+              colors.accentGreen,
+            )}
+            {expandedSection === "unidades" && renderUnitsSection()}
+          </View>
 
-        {/* Datos */}
-        <View style={styles.section}>
-          {renderSectionHeader("datos", "Datos", "server", "#3b82f6")}
-          {expandedSection === "datos" && renderDataSection()}
-        </View>
+          {/* Datos */}
+          <View
+            style={[
+              styles.section,
+              {
+                backgroundColor: colors.bgCard,
+                borderColor: colors.borderDefault,
+              },
+            ]}
+          >
+            {renderSectionHeader("datos", "Datos", "server", colors.accentBlue)}
+            {expandedSection === "datos" && renderDataSection()}
+          </View>
 
-        {/* Acerca de */}
-        <View style={styles.section}>
-          {renderSectionHeader("acerca", "Acerca de", "information-circle", "#8c8cb3")}
-          {expandedSection === "acerca" && renderAboutSection()}
-        </View>
-      </ScrollView>
+          {/* Acerca de */}
+          <View
+            style={[
+              styles.section,
+              {
+                backgroundColor: colors.bgCard,
+                borderColor: colors.borderDefault,
+              },
+            ]}
+          >
+            {renderSectionHeader(
+              "acerca",
+              "Acerca de",
+              "information-circle",
+              colors.textSecondary,
+            )}
+            {expandedSection === "acerca" && renderAboutSection()}
+          </View>
+        </ScrollView>
       </Animated.View>
       {/* Custom dialog (replaces Alert.alert) */}
       <ConfirmDialog {...dialogProps} />
@@ -530,7 +762,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
   },
   header: {
     paddingHorizontal: 20,
@@ -553,25 +784,20 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.07)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.09)",
   },
   headerLabel: {
-    color: "#fbbf24",
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 2,
     textTransform: "uppercase",
-    textShadowColor: "rgba(251,191,36,0.2)",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 6,
   },
   headerTitle: {
-    color: "#ffffff",
     fontSize: 26,
     fontWeight: "800",
     marginTop: 2,
@@ -583,11 +809,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 12,
     borderRadius: 14,
-    backgroundColor: "#23233d",
     borderWidth: 1,
-    borderColor: "#3a3a5c",
     overflow: "hidden",
-    shadowColor: "#000",
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 4,
@@ -613,7 +837,6 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   sectionTitle: {
-    color: "#ffffff",
     fontSize: 15,
     fontWeight: "700",
     letterSpacing: -0.2,
@@ -622,10 +845,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 16,
     borderTopWidth: 1,
-    borderTopColor: "rgba(58,58,92,0.6)",
   },
   sectionDescription: {
-    color: "#8c8cb3",
     fontSize: 13,
     lineHeight: 19,
     marginTop: 8,
@@ -651,15 +872,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(251,191,36,0.08)",
   },
   themeOptionLabel: {
-    color: "#b3b3cc",
     fontSize: 14,
     fontWeight: "600",
     marginLeft: 12,
     flex: 1,
   },
-  themeOptionLabelSelected: {
-    color: "#fbbf24",
-  },
+  themeOptionLabelSelected: {},
 
   // ── Rules ──
   ruleRow: {
@@ -674,12 +892,10 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   ruleLabel: {
-    color: "#ffffff",
     fontSize: 15,
     fontWeight: "600",
   },
   ruleDesc: {
-    color: "#666699",
     fontSize: 12,
     marginTop: 2,
     lineHeight: 17,
@@ -696,7 +912,6 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.06)",
   },
   resetButtonText: {
-    color: "#8c8cb3",
     fontSize: 13,
     fontWeight: "600",
     marginLeft: 6,
@@ -718,15 +933,11 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(34,197,94,0.08)",
   },
   unitLabel: {
-    color: "#8c8cb3",
     fontSize: 15,
     fontWeight: "600",
   },
-  unitLabelSelected: {
-    color: "#22c55e",
-  },
+  unitLabelSelected: {},
   unitDesc: {
-    color: "#666699",
     fontSize: 12,
     marginTop: 2,
   },
@@ -743,12 +954,10 @@ const styles = StyleSheet.create({
     borderColor: "rgba(239,68,68,0.18)",
   },
   dangerButtonTitle: {
-    color: "#ef4444",
     fontSize: 15,
     fontWeight: "bold",
   },
   dangerButtonDesc: {
-    color: "#ef444480",
     fontSize: 12,
     marginTop: 2,
   },
@@ -760,30 +969,25 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(58,58,92,0.35)",
   },
   aboutAppName: {
-    color: "#fbbf24",
     fontSize: 18,
     fontWeight: "800",
     letterSpacing: -0.2,
   },
   aboutVersion: {
-    color: "#8c8cb3",
     fontSize: 13,
     marginTop: 2,
   },
   aboutDesc: {
-    color: "#b3b3cc",
     fontSize: 14,
     lineHeight: 20,
     marginTop: 8,
   },
   aboutSubtitle: {
-    color: "#ffffff",
     fontSize: 15,
     fontWeight: "bold",
     marginBottom: 8,
   },
   aboutText: {
-    color: "#8c8cb3",
     fontSize: 13,
     lineHeight: 19,
   },
@@ -793,7 +997,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   linkText: {
-    color: "#3b82f6",
     fontSize: 13,
     fontWeight: "600",
     marginLeft: 6,
@@ -813,7 +1016,6 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.06)",
   },
   techBadgeText: {
-    color: "#8c8cb3",
     fontSize: 12,
     fontWeight: "600",
   },

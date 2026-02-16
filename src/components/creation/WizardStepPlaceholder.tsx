@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/useTheme";
 
 const TOTAL_STEPS = 11;
 
@@ -35,11 +36,13 @@ export default function WizardStepPlaceholder({
   title,
   description,
   iconName,
-  iconColor = "#c62828",
+  iconColor,
   nextRoute,
   nextLabel,
   canGoBack = true,
 }: WizardStepPlaceholderProps) {
+  const { colors } = useTheme();
+  const resolvedIconColor = iconColor ?? colors.accentRed;
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
@@ -63,27 +66,27 @@ export default function WizardStepPlaceholder({
   };
 
   return (
-    <View className="flex-1 bg-dark-800">
+    <View className="flex-1 bg-gray-50 dark:bg-dark-800">
       {/* Header con progreso */}
       <View className="px-5 pt-16 pb-4">
         <View className="flex-row items-center justify-between mb-4">
           {canGoBack ? (
             <TouchableOpacity
-              className="h-10 w-10 rounded-full bg-surface items-center justify-center active:bg-surface-light"
+              className="h-10 w-10 rounded-full bg-gray-100 dark:bg-surface items-center justify-center active:bg-gray-50 dark:active:bg-surface-light"
               onPress={handleBack}
             >
               <Ionicons name="arrow-back" size={22} color="white" />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              className="h-10 w-10 rounded-full bg-surface items-center justify-center active:bg-surface-light"
+              className="h-10 w-10 rounded-full bg-gray-100 dark:bg-surface items-center justify-center active:bg-gray-50 dark:active:bg-surface-light"
               onPress={handleCancel}
             >
               <Ionicons name="close" size={22} color="white" />
             </TouchableOpacity>
           )}
 
-          <Text className="text-dark-300 text-sm font-semibold">
+          <Text className="text-dark-500 dark:text-dark-300 text-sm font-semibold">
             Paso {stepNumber} de {TOTAL_STEPS}
           </Text>
 
@@ -92,7 +95,7 @@ export default function WizardStepPlaceholder({
         </View>
 
         {/* Barra de progreso */}
-        <View className="h-1.5 bg-surface rounded-full overflow-hidden">
+        <View className="h-1.5 bg-gray-100 dark:bg-surface rounded-full overflow-hidden">
           <View
             className="h-full bg-primary-500 rounded-full"
             style={{ width: `${progressPercent}%` }}
@@ -104,13 +107,13 @@ export default function WizardStepPlaceholder({
       <View className="flex-1 px-5 justify-center" style={{ marginTop: -40 }}>
         <View className="items-center mb-10">
           <View className="h-20 w-20 rounded-full bg-primary-500/15 items-center justify-center mb-5">
-            <Ionicons name={iconName} size={40} color={iconColor} />
+            <Ionicons name={iconName} size={40} color={resolvedIconColor} />
           </View>
 
-          <Text className="text-white text-2xl font-bold text-center mb-2">
+          <Text className="text-dark-900 dark:text-white text-2xl font-bold text-center mb-2">
             {title}
           </Text>
-          <Text className="text-dark-300 text-base text-center leading-6 px-4">
+          <Text className="text-dark-500 dark:text-dark-300 text-base text-center leading-6 px-4">
             {description}
           </Text>
         </View>
@@ -118,26 +121,30 @@ export default function WizardStepPlaceholder({
         {/* Badge "En desarrollo" */}
         <View className="items-center mb-8">
           <View className="bg-gold-500/15 border border-gold-500/30 rounded-full px-5 py-2.5 flex-row items-center">
-            <Ionicons name="construct-outline" size={18} color="#d4a017" />
-            <Text className="text-gold-400 text-sm font-semibold ml-2">
+            <Ionicons
+              name="construct-outline"
+              size={18}
+              color={colors.accentGold}
+            />
+            <Text className="text-gold-700 dark:text-gold-400 text-sm font-semibold ml-2">
               En desarrollo
             </Text>
           </View>
           <Text className="text-dark-400 text-xs mt-3 text-center px-8">
-            Este paso del wizard será implementado próximamente. Por ahora puedes
-            navegar entre los pasos para ver la estructura.
+            Este paso del wizard será implementado próximamente. Por ahora
+            puedes navegar entre los pasos para ver la estructura.
           </Text>
         </View>
       </View>
 
       {/* Footer con botones de navegación */}
-      <View className="px-5 pb-10 pt-4 border-t border-surface-border">
+      <View className="px-5 pb-10 pt-4 border-t border-dark-100 dark:border-surface-border">
         {nextRoute ? (
           <TouchableOpacity
             className="rounded-xl py-4 items-center flex-row justify-center bg-primary-500 active:bg-primary-600 mb-3"
             onPress={handleNext}
           >
-            <Text className="text-white font-bold text-base mr-2">
+            <Text className="text-dark-900 dark:text-white font-bold text-base mr-2">
               {nextLabel ?? "Siguiente"}
             </Text>
             <Ionicons name="arrow-forward" size={20} color="white" />
@@ -148,7 +155,7 @@ export default function WizardStepPlaceholder({
             onPress={handleCancel}
           >
             <Ionicons name="checkmark-circle" size={22} color="white" />
-            <Text className="text-white font-bold text-base ml-2">
+            <Text className="text-dark-900 dark:text-white font-bold text-base ml-2">
               Confirmar y crear personaje
             </Text>
           </TouchableOpacity>
@@ -156,10 +163,10 @@ export default function WizardStepPlaceholder({
 
         {canGoBack && (
           <TouchableOpacity
-            className="rounded-xl py-3.5 items-center active:bg-surface-light"
+            className="rounded-xl py-3.5 items-center active:bg-gray-50 dark:active:bg-surface-light"
             onPress={handleBack}
           >
-            <Text className="text-dark-300 font-semibold text-base">
+            <Text className="text-dark-500 dark:text-dark-300 font-semibold text-base">
               Atrás
             </Text>
           </TouchableOpacity>

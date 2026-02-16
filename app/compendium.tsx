@@ -14,12 +14,12 @@
  */
 
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useTheme } from "@/hooks/useTheme";
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
-  TextInput,
   StyleSheet,
   Dimensions,
   Animated,
@@ -29,6 +29,7 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { SearchBar } from "@/components/ui";
 import {
   getRaceList,
   getRaceData,
@@ -42,7 +43,12 @@ import {
   getBackgroundData,
   BACKGROUND_ICONS,
 } from "@/data/srd";
-import type { RaceData, SubraceData, ClassData, BackgroundData } from "@/data/srd";
+import type {
+  RaceData,
+  SubraceData,
+  ClassData,
+  BackgroundData,
+} from "@/data/srd";
 import { SKILLS } from "@/types/character";
 import { ABILITY_NAMES, type AbilityKey } from "@/types/character";
 
@@ -58,33 +64,37 @@ interface TabDef {
   color: string;
 }
 
-const TABS: TabDef[] = [
-  {
-    id: "razas",
-    label: "Razas",
-    icon: "people-outline",
-    iconActive: "people",
-    color: "#f59e0b",
-  },
-  {
-    id: "clases",
-    label: "Clases",
-    icon: "shield-outline",
-    iconActive: "shield",
-    color: "#ef4444",
-  },
-  {
-    id: "trasfondos",
-    label: "Trasfondos",
-    icon: "book-outline",
-    iconActive: "book",
-    color: "#3b82f6",
-  },
-];
+function getTabs(colors: import("@/utils/theme").ThemeColors): TabDef[] {
+  return [
+    {
+      id: "razas",
+      label: "Razas",
+      icon: "people-outline",
+      iconActive: "people",
+      color: colors.accentAmber,
+    },
+    {
+      id: "clases",
+      label: "Clases",
+      icon: "shield-outline",
+      iconActive: "shield",
+      color: colors.accentDanger,
+    },
+    {
+      id: "trasfondos",
+      label: "Trasfondos",
+      icon: "book-outline",
+      iconActive: "book",
+      color: colors.accentBlue,
+    },
+  ];
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
-function formatAbilityBonuses(bonuses: Partial<Record<AbilityKey, number>>): string {
+function formatAbilityBonuses(
+  bonuses: Partial<Record<AbilityKey, number>>,
+): string {
   return Object.entries(bonuses)
     .filter(([, v]) => v && v !== 0)
     .map(([key, val]) => {
@@ -102,6 +112,8 @@ function formatModifier(mod: number): string {
 
 export default function CompendiumScreen() {
   const router = useRouter();
+  const { colors, isDark } = useTheme();
+  const TABS = getTabs(colors);
   const [activeTab, setActiveTab] = useState<TabId>("razas");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -111,12 +123,9 @@ export default function CompendiumScreen() {
   const classes = useMemo(() => getClassList(), []);
   const backgrounds = useMemo(() => getBackgroundList(), []);
 
-  const toggleExpand = useCallback(
-    (id: string) => {
-      setExpandedId((prev) => (prev === id ? null : id));
-    },
-    []
-  );
+  const toggleExpand = useCallback((id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  }, []);
 
   // ── Filtered data ──
   const query = searchQuery.toLowerCase().trim();
@@ -126,7 +135,7 @@ export default function CompendiumScreen() {
     return races.filter(
       (r) =>
         r.nombre.toLowerCase().includes(query) ||
-        r.id.toLowerCase().includes(query)
+        r.id.toLowerCase().includes(query),
     );
   }, [races, query]);
 
@@ -135,7 +144,7 @@ export default function CompendiumScreen() {
     return classes.filter(
       (c) =>
         c.nombre.toLowerCase().includes(query) ||
-        c.id.toLowerCase().includes(query)
+        c.id.toLowerCase().includes(query),
     );
   }, [classes, query]);
 
@@ -144,30 +153,20 @@ export default function CompendiumScreen() {
     return backgrounds.filter(
       (b) =>
         b.nombre.toLowerCase().includes(query) ||
-        b.id.toLowerCase().includes(query)
+        b.id.toLowerCase().includes(query),
     );
   }, [backgrounds, query]);
 
   // ── Render: Search Bar ──
   const renderSearchBar = () => (
     <View style={styles.searchContainer}>
-      <View style={styles.searchBar}>
-        <Ionicons name="search" size={18} color="#666699" />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar en el compendio..."
-          placeholderTextColor="#666699"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          autoCorrect={false}
-          autoCapitalize="none"
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchQuery("")}>
-            <Ionicons name="close-circle" size={18} color="#666699" />
-          </TouchableOpacity>
-        )}
-      </View>
+      <SearchBar
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        onClear={() => setSearchQuery("")}
+        placeholder="Buscar en el compendio..."
+        animated={false}
+      />
     </View>
   );
 
@@ -189,8 +188,12 @@ export default function CompendiumScreen() {
             }}
             style={[
               styles.tabButton,
+              {
+                backgroundColor: colors.tabBg,
+                borderColor: colors.tabBorder,
+              },
               isActive && {
-                backgroundColor: tab.color + "20",
+                backgroundColor: colors.tabActiveBg,
                 borderColor: tab.color,
               },
             ]}
@@ -199,11 +202,12 @@ export default function CompendiumScreen() {
             <Ionicons
               name={isActive ? tab.iconActive : tab.icon}
               size={18}
-              color={isActive ? tab.color : "#666699"}
+              color={isActive ? tab.color : colors.tabText}
             />
             <Text
               style={[
                 styles.tabLabel,
+                { color: colors.tabText },
                 isActive && { color: tab.color, fontWeight: "700" },
               ]}
             >
@@ -225,18 +229,34 @@ export default function CompendiumScreen() {
     const traits = getAllRaceTraits(data.id as any);
 
     return (
-      <View key={data.id} style={styles.card}>
+      <View
+        key={data.id}
+        style={[
+          styles.card,
+          { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+        ]}
+      >
         <TouchableOpacity
           onPress={() => toggleExpand(`race_${data.id}`)}
           style={styles.cardHeader}
           activeOpacity={0.7}
         >
-          <View style={[styles.cardIconBg, { backgroundColor: "#f59e0b20" }]}>
+          <View
+            style={[
+              styles.cardIconBg,
+              { backgroundColor: `#f59e0b${colors.iconBgAlpha}` },
+            ]}
+          >
             <Text style={{ fontSize: 22 }}>{icon}</Text>
           </View>
           <View style={styles.cardInfo}>
-            <Text style={styles.cardTitle}>{data.nombre}</Text>
-            <Text style={styles.cardSubtitle} numberOfLines={1}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {data.nombre}
+            </Text>
+            <Text
+              style={[styles.cardSubtitle, { color: colors.textSecondary }]}
+              numberOfLines={1}
+            >
               {bonusStr || "Sin bonificadores fijos"}
               {" · "}
               Vel. {data.speed} pies
@@ -245,45 +265,99 @@ export default function CompendiumScreen() {
           <Ionicons
             name={isExpanded ? "chevron-up" : "chevron-down"}
             size={20}
-            color="#666699"
+            color={colors.chevronColor}
           />
         </TouchableOpacity>
 
         {isExpanded && (
-          <View style={styles.cardDetail}>
+          <View
+            style={[
+              styles.cardDetail,
+              { borderTopColor: colors.borderSeparator },
+            ]}
+          >
             {/* Size & Speed */}
             <View style={styles.detailRow}>
-              <DetailBadge label="Tamaño" value={data.size === "mediano" ? "Mediano" : data.size === "pequeno" ? "Pequeño" : "Grande"} color="#a855f7" />
-              <DetailBadge label="Velocidad" value={`${data.speed} pies`} color="#22c55e" />
+              <DetailBadge
+                label="Tamaño"
+                value={
+                  data.size === "mediano"
+                    ? "Mediano"
+                    : data.size === "pequeno"
+                      ? "Pequeño"
+                      : "Grande"
+                }
+                color={colors.accentPurple}
+              />
+              <DetailBadge
+                label="Velocidad"
+                value={`${data.speed} pies`}
+                color={colors.accentGreen}
+              />
               {data.darkvision && (
-                <DetailBadge label="Visión oscura" value={`${data.darkvisionRange || 60} pies`} color="#6366f1" />
+                <DetailBadge
+                  label="Visión oscura"
+                  value={`${data.darkvisionRange || 60} pies`}
+                  color={colors.accentDeepPurple}
+                />
               )}
             </View>
 
             {/* Ability Bonuses */}
             {bonusStr && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Bonificadores de característica</Text>
-                <Text style={styles.detailText}>{bonusStr}</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Bonificadores de característica
+                </Text>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
+                  {bonusStr}
+                </Text>
               </View>
             )}
 
             {/* Languages */}
             {data.languages && data.languages.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Idiomas</Text>
-                <Text style={styles.detailText}>{data.languages.join(", ")}</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Idiomas
+                </Text>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
+                  {data.languages.join(", ")}
+                </Text>
               </View>
             )}
 
             {/* Racial traits */}
             {traits && traits.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Rasgos raciales</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Rasgos raciales
+                </Text>
                 {traits.map((trait, i) => (
                   <View key={i} style={styles.traitItem}>
-                    <Text style={styles.traitName}>{trait.nombre}</Text>
-                    <Text style={styles.traitDesc}>{trait.descripcion}</Text>
+                    <Text
+                      style={[styles.traitName, { color: colors.textPrimary }]}
+                    >
+                      {trait.nombre}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.traitDesc,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
+                      {trait.descripcion}
+                    </Text>
                   </View>
                 ))}
               </View>
@@ -292,26 +366,63 @@ export default function CompendiumScreen() {
             {/* Subraces */}
             {data.subraces && data.subraces.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Subrazas</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Subrazas
+                </Text>
                 {data.subraces.map((sr) => {
                   const srData = getSubraceData(sr.id as any);
                   const srBonuses = srData?.abilityBonuses
                     ? formatAbilityBonuses(srData.abilityBonuses)
                     : "";
                   return (
-                    <View key={sr.id} style={styles.subraceBlock}>
-                      <Text style={styles.subraceName}>{sr.nombre}</Text>
+                    <View
+                      key={sr.id}
+                      style={[
+                        styles.subraceBlock,
+                        {
+                          backgroundColor: colors.bgSubtle,
+                          borderColor: colors.borderSubtle,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.subraceName,
+                          { color: colors.accentGold },
+                        ]}
+                      >
+                        {sr.nombre}
+                      </Text>
                       {srBonuses ? (
-                        <Text style={styles.subraceDetail}>{srBonuses}</Text>
+                        <Text
+                          style={[
+                            styles.subraceDetail,
+                            { color: colors.textSecondary },
+                          ]}
+                        >
+                          {srBonuses}
+                        </Text>
                       ) : null}
                       {srData?.traits && srData.traits.length > 0 && (
                         <>
                           {srData.traits.map((srt, si) => (
                             <View key={si} style={styles.traitItem}>
-                              <Text style={[styles.traitName, { fontSize: 12 }]}>
+                              <Text
+                                style={[
+                                  styles.traitName,
+                                  { fontSize: 12, color: colors.textPrimary },
+                                ]}
+                              >
                                 {srt.nombre}
                               </Text>
-                              <Text style={[styles.traitDesc, { fontSize: 11 }]}>
+                              <Text
+                                style={[
+                                  styles.traitDesc,
+                                  { fontSize: 11, color: colors.textSecondary },
+                                ]}
+                              >
                                 {srt.descripcion}
                               </Text>
                             </View>
@@ -343,18 +454,34 @@ export default function CompendiumScreen() {
     const icon = CLASS_ICONS[data.id as keyof typeof CLASS_ICONS] || "⚔️";
 
     return (
-      <View key={data.id} style={styles.card}>
+      <View
+        key={data.id}
+        style={[
+          styles.card,
+          { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+        ]}
+      >
         <TouchableOpacity
           onPress={() => toggleExpand(`class_${data.id}`)}
           style={styles.cardHeader}
           activeOpacity={0.7}
         >
-          <View style={[styles.cardIconBg, { backgroundColor: "#ef444420" }]}>
+          <View
+            style={[
+              styles.cardIconBg,
+              { backgroundColor: `#ef4444${colors.iconBgAlpha}` },
+            ]}
+          >
             <Text style={{ fontSize: 22 }}>{icon}</Text>
           </View>
           <View style={styles.cardInfo}>
-            <Text style={styles.cardTitle}>{data.nombre}</Text>
-            <Text style={styles.cardSubtitle} numberOfLines={1}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {data.nombre}
+            </Text>
+            <Text
+              style={[styles.cardSubtitle, { color: colors.textSecondary }]}
+              numberOfLines={1}
+            >
               Dado de golpe: {data.hitDie} · Salv:{" "}
               {data.savingThrows
                 .map((s) => ABILITY_NAMES[s as AbilityKey]?.slice(0, 3) || s)
@@ -364,26 +491,39 @@ export default function CompendiumScreen() {
           <Ionicons
             name={isExpanded ? "chevron-up" : "chevron-down"}
             size={20}
-            color="#666699"
+            color={colors.chevronColor}
           />
         </TouchableOpacity>
 
         {isExpanded && (
-          <View style={styles.cardDetail}>
+          <View
+            style={[
+              styles.cardDetail,
+              { borderTopColor: colors.borderSeparator },
+            ]}
+          >
             {/* Hit Die & Saving Throws */}
             <View style={styles.detailRow}>
-              <DetailBadge label="Dado de golpe" value={data.hitDie} color="#ef4444" />
+              <DetailBadge
+                label="Dado de golpe"
+                value={data.hitDie}
+                color={colors.accentDanger}
+              />
               <DetailBadge
                 label="PG nivel 1"
                 value={`${data.hitDieMax} + CON`}
-                color="#22c55e"
+                color={colors.accentGreen}
               />
             </View>
 
             {/* Saving Throws */}
             <View style={styles.detailSection}>
-              <Text style={styles.detailLabel}>Salvaciones competentes</Text>
-              <Text style={styles.detailText}>
+              <Text style={[styles.detailLabel, { color: colors.accentGold }]}>
+                Salvaciones competentes
+              </Text>
+              <Text
+                style={[styles.detailText, { color: colors.textSecondary }]}
+              >
                 {data.savingThrows
                   .map((s) => ABILITY_NAMES[s as AbilityKey] || s)
                   .join(", ")}
@@ -393,28 +533,47 @@ export default function CompendiumScreen() {
             {/* Armor Proficiencies */}
             {data.armorProficiencies && data.armorProficiencies.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Armaduras</Text>
-                <Text style={styles.detailText}>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Armaduras
+                </Text>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
                   {data.armorProficiencies.join(", ")}
                 </Text>
               </View>
             )}
 
             {/* Weapon Proficiencies */}
-            {data.weaponProficiencies && data.weaponProficiencies.length > 0 && (
-              <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Armas</Text>
-                <Text style={styles.detailText}>
-                  {data.weaponProficiencies.join(", ")}
-                </Text>
-              </View>
-            )}
+            {data.weaponProficiencies &&
+              data.weaponProficiencies.length > 0 && (
+                <View style={styles.detailSection}>
+                  <Text
+                    style={[styles.detailLabel, { color: colors.accentGold }]}
+                  >
+                    Armas
+                  </Text>
+                  <Text
+                    style={[styles.detailText, { color: colors.textSecondary }]}
+                  >
+                    {data.weaponProficiencies.join(", ")}
+                  </Text>
+                </View>
+              )}
 
             {/* Tool Proficiencies */}
             {data.toolProficiencies && data.toolProficiencies.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Herramientas</Text>
-                <Text style={styles.detailText}>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Herramientas
+                </Text>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
                   {data.toolProficiencies.join(", ")}
                 </Text>
               </View>
@@ -423,13 +582,29 @@ export default function CompendiumScreen() {
             {/* Skills */}
             {data.skillChoicePool && data.skillChoicePool.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
                   Habilidades (elige {data.skillChoiceCount || 2})
                 </Text>
                 <View style={styles.skillTagsRow}>
                   {data.skillChoicePool.map((skill) => (
-                    <View key={skill} style={styles.skillTag}>
-                      <Text style={styles.skillTagText}>
+                    <View
+                      key={skill}
+                      style={[
+                        styles.skillTag,
+                        {
+                          backgroundColor: colors.tabBg,
+                          borderColor: colors.tabBorder,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.skillTagText,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
                         {formatSkillName(skill)}
                       </Text>
                     </View>
@@ -441,18 +616,48 @@ export default function CompendiumScreen() {
             {/* Class Features (level 1) */}
             {data.level1Features && data.level1Features.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Rasgos de clase (nivel 1)</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Rasgos de clase (nivel 1)
+                </Text>
                 {data.level1Features.map((feature, i) => (
                   <View key={i} style={styles.traitItem}>
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
-                      <View style={styles.levelBadge}>
-                        <Text style={styles.levelBadgeText}>Nv.{feature.nivel}</Text>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <View
+                        style={[
+                          styles.levelBadge,
+                          { backgroundColor: `${colors.accentRed}30` },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.levelBadgeText,
+                            { color: colors.accentRed },
+                          ]}
+                        >
+                          Nv.{feature.nivel}
+                        </Text>
                       </View>
-                      <Text style={[styles.traitName, { marginLeft: 8 }]}>
+                      <Text
+                        style={[
+                          styles.traitName,
+                          { marginLeft: 8, color: colors.textPrimary },
+                        ]}
+                      >
                         {feature.nombre}
                       </Text>
                     </View>
-                    <Text style={styles.traitDesc}>{feature.descripcion}</Text>
+                    <Text
+                      style={[
+                        styles.traitDesc,
+                        { color: colors.textSecondary },
+                      ]}
+                    >
+                      {feature.descripcion}
+                    </Text>
                   </View>
                 ))}
               </View>
@@ -461,10 +666,14 @@ export default function CompendiumScreen() {
             {/* Subclass info */}
             {data.subclassLevel > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
                   Subclase ({data.subclassLabel}) — Nv. {data.subclassLevel}
                 </Text>
-                <Text style={styles.detailText}>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
                   Se elige al alcanzar el nivel {data.subclassLevel}.
                 </Text>
               </View>
@@ -473,29 +682,50 @@ export default function CompendiumScreen() {
             {/* Spellcasting */}
             {data.casterType !== "none" && data.spellcastingAbility && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>🔮 Lanzamiento de conjuros</Text>
-                <Text style={styles.detailText}>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  🔮 Lanzamiento de conjuros
+                </Text>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
                   Característica:{" "}
                   {ABILITY_NAMES[data.spellcastingAbility as AbilityKey] ||
                     data.spellcastingAbility}
                 </Text>
-                <Text style={[styles.detailText, { marginTop: 2 }]}>
+                <Text
+                  style={[
+                    styles.detailText,
+                    { color: colors.textSecondary, marginTop: 2 },
+                  ]}
+                >
                   Tipo:{" "}
                   {data.casterType === "full"
                     ? "Lanzador completo"
                     : data.casterType === "half"
-                    ? "Medio lanzador"
-                    : data.casterType === "pact"
-                    ? "Magia de pacto"
-                    : data.casterType}
+                      ? "Medio lanzador"
+                      : data.casterType === "pact"
+                        ? "Magia de pacto"
+                        : data.casterType}
                 </Text>
                 {data.preparesSpells && (
-                  <Text style={[styles.detailText, { marginTop: 2 }]}>
+                  <Text
+                    style={[
+                      styles.detailText,
+                      { color: colors.textSecondary, marginTop: 2 },
+                    ]}
+                  >
                     Prepara conjuros diariamente.
                   </Text>
                 )}
                 {data.cantripsAtLevel1 > 0 && (
-                  <Text style={[styles.detailText, { marginTop: 2 }]}>
+                  <Text
+                    style={[
+                      styles.detailText,
+                      { color: colors.textSecondary, marginTop: 2 },
+                    ]}
+                  >
                     Trucos a nivel 1: {data.cantripsAtLevel1}
                   </Text>
                 )}
@@ -512,52 +742,94 @@ export default function CompendiumScreen() {
     const data = bgInfo;
 
     const isExpanded = expandedId === `bg_${data.id}`;
-    const icon = BACKGROUND_ICONS[data.id as keyof typeof BACKGROUND_ICONS] || "📜";
+    const icon =
+      BACKGROUND_ICONS[data.id as keyof typeof BACKGROUND_ICONS] || "📜";
 
     return (
-      <View key={data.id} style={styles.card}>
+      <View
+        key={data.id}
+        style={[
+          styles.card,
+          { backgroundColor: colors.cardBg, borderColor: colors.cardBorder },
+        ]}
+      >
         <TouchableOpacity
-          onPress={() => toggleExpand(`bg_${bgInfo.id}`)}
+          onPress={() => toggleExpand(`bg_${data.id}`)}
           style={styles.cardHeader}
           activeOpacity={0.7}
         >
-          <View style={[styles.cardIconBg, { backgroundColor: "#3b82f620" }]}>
+          <View
+            style={[
+              styles.cardIconBg,
+              { backgroundColor: `#22c55e${colors.iconBgAlpha}` },
+            ]}
+          >
             <Text style={{ fontSize: 22 }}>{icon}</Text>
           </View>
           <View style={styles.cardInfo}>
-            <Text style={styles.cardTitle}>{data.nombre}</Text>
-            <Text style={styles.cardSubtitle} numberOfLines={1}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {data.nombre}
+            </Text>
+            <Text
+              style={[styles.cardSubtitle, { color: colors.textSecondary }]}
+              numberOfLines={1}
+            >
               {data.skills
-                ? data.skills
-                    .map((s) => formatSkillName(s))
-                    .join(", ")
+                ? data.skills.map((s) => formatSkillName(s)).join(", ")
                 : "Sin habilidades específicas"}
             </Text>
           </View>
           <Ionicons
             name={isExpanded ? "chevron-up" : "chevron-down"}
             size={20}
-            color="#666699"
+            color={colors.chevronColor}
           />
         </TouchableOpacity>
 
         {isExpanded && (
-          <View style={styles.cardDetail}>
+          <View
+            style={[
+              styles.cardDetail,
+              { borderTopColor: colors.borderSeparator },
+            ]}
+          >
             {/* Description */}
             {data.descripcion && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailText}>{data.descripcion}</Text>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
+                  {data.descripcion}
+                </Text>
               </View>
             )}
 
             {/* Skills */}
             {data.skills && data.skills.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Competencias en habilidades</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Competencias en habilidades
+                </Text>
                 <View style={styles.skillTagsRow}>
                   {data.skills.map((skill) => (
-                    <View key={skill} style={styles.skillTag}>
-                      <Text style={styles.skillTagText}>
+                    <View
+                      key={skill}
+                      style={[
+                        styles.skillTag,
+                        {
+                          backgroundColor: colors.tabBg,
+                          borderColor: colors.tabBorder,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.skillTagText,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
                         {formatSkillName(skill)}
                       </Text>
                     </View>
@@ -569,20 +841,34 @@ export default function CompendiumScreen() {
             {/* Tools & Languages */}
             {data.tools && data.tools.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Herramientas</Text>
-                <Text style={styles.detailText}>{data.tools.join(", ")}</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Herramientas
+                </Text>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
+                  {data.tools.join(", ")}
+                </Text>
               </View>
             )}
 
             {data.languages !== undefined && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Idiomas</Text>
-                <Text style={styles.detailText}>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Idiomas
+                </Text>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
                   {typeof data.languages === "number"
                     ? `${data.languages} idioma(s) a elegir`
                     : Array.isArray(data.languages)
-                    ? data.languages.join(", ")
-                    : String(data.languages)}
+                      ? data.languages.join(", ")
+                      : String(data.languages)}
                 </Text>
               </View>
             )}
@@ -590,9 +876,16 @@ export default function CompendiumScreen() {
             {/* Equipment */}
             {data.equipment && data.equipment.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Equipamiento</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Equipamiento
+                </Text>
                 {data.equipment.map((eq, i) => (
-                  <Text key={i} style={styles.equipItem}>
+                  <Text
+                    key={i}
+                    style={[styles.equipItem, { color: colors.textSecondary }]}
+                  >
                     • {eq}
                   </Text>
                 ))}
@@ -602,18 +895,38 @@ export default function CompendiumScreen() {
             {/* Gold */}
             {data.gold !== undefined && data.gold > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Oro inicial</Text>
-                <Text style={styles.detailText}>{data.gold} po</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Oro inicial
+                </Text>
+                <Text
+                  style={[styles.detailText, { color: colors.textSecondary }]}
+                >
+                  {data.gold} po
+                </Text>
               </View>
             )}
 
             {/* Feature */}
             {data.feature && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>Rasgo especial</Text>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
+                  Rasgo especial
+                </Text>
                 <View style={styles.traitItem}>
-                  <Text style={styles.traitName}>{data.feature.nombre}</Text>
-                  <Text style={styles.traitDesc}>{data.feature.descripcion}</Text>
+                  <Text
+                    style={[styles.traitName, { color: colors.textPrimary }]}
+                  >
+                    {data.feature.nombre}
+                  </Text>
+                  <Text
+                    style={[styles.traitDesc, { color: colors.textSecondary }]}
+                  >
+                    {data.feature.descripcion}
+                  </Text>
                 </View>
               </View>
             )}
@@ -621,16 +934,23 @@ export default function CompendiumScreen() {
             {/* Personality tables */}
             {data.personalityTraits && data.personalityTraits.length > 0 && (
               <View style={styles.detailSection}>
-                <Text style={styles.detailLabel}>
+                <Text
+                  style={[styles.detailLabel, { color: colors.accentGold }]}
+                >
                   Rasgos de personalidad ({data.personalityTraits.length})
                 </Text>
                 {data.personalityTraits.slice(0, 3).map((trait, i) => (
-                  <Text key={i} style={styles.personalityItem}>
+                  <Text
+                    style={[
+                      styles.personalityItem,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
                     {i + 1}. {trait}
                   </Text>
                 ))}
                 {data.personalityTraits.length > 3 && (
-                  <Text style={styles.moreText}>
+                  <Text style={[styles.moreText, { color: colors.textMuted }]}>
                     + {data.personalityTraits.length - 3} más...
                   </Text>
                 )}
@@ -648,41 +968,36 @@ export default function CompendiumScreen() {
       case "razas":
         return (
           <>
-            <Text style={styles.countText}>
+            <Text style={[styles.countText, { color: colors.textMuted }]}>
               {filteredRaces.length} raza{filteredRaces.length !== 1 ? "s" : ""}
             </Text>
-            {filteredRaces.length === 0 ? (
-              renderEmpty("razas")
-            ) : (
-              filteredRaces.map(renderRaceCard)
-            )}
+            {filteredRaces.length === 0
+              ? renderEmpty("razas")
+              : filteredRaces.map(renderRaceCard)}
           </>
         );
       case "clases":
         return (
           <>
-            <Text style={styles.countText}>
-              {filteredClasses.length} clase{filteredClasses.length !== 1 ? "s" : ""}
+            <Text style={[styles.countText, { color: colors.textMuted }]}>
+              {filteredClasses.length} clase
+              {filteredClasses.length !== 1 ? "s" : ""}
             </Text>
-            {filteredClasses.length === 0 ? (
-              renderEmpty("clases")
-            ) : (
-              filteredClasses.map(renderClassCard)
-            )}
+            {filteredClasses.length === 0
+              ? renderEmpty("clases")
+              : filteredClasses.map(renderClassCard)}
           </>
         );
       case "trasfondos":
         return (
           <>
-            <Text style={styles.countText}>
+            <Text style={[styles.countText, { color: colors.textMuted }]}>
               {filteredBackgrounds.length} trasfondo
               {filteredBackgrounds.length !== 1 ? "s" : ""}
             </Text>
-            {filteredBackgrounds.length === 0 ? (
-              renderEmpty("trasfondos")
-            ) : (
-              filteredBackgrounds.map(renderBackgroundCard)
-            )}
+            {filteredBackgrounds.length === 0
+              ? renderEmpty("trasfondos")
+              : filteredBackgrounds.map(renderBackgroundCard)}
           </>
         );
     }
@@ -690,8 +1005,8 @@ export default function CompendiumScreen() {
 
   const renderEmpty = (category: string) => (
     <View style={styles.emptyContainer}>
-      <Ionicons name="search" size={40} color="#666699" />
-      <Text style={styles.emptyText}>
+      <Ionicons name="search" size={40} color={colors.textMuted} />
+      <Text style={[styles.emptyText, { color: colors.textMuted }]}>
         No se encontraron {category} con "{searchQuery}"
       </Text>
     </View>
@@ -729,11 +1044,11 @@ export default function CompendiumScreen() {
 
   // ── Main Render ──
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
       {/* Full background gradient */}
       <LinearGradient
-        colors={["#0d0d1a", "#141425", "#1a1a2e", "#1a1a2e"]}
-        locations={[0, 0.12, 0.3, 1]}
+        colors={colors.gradientMain}
+        locations={colors.gradientLocations}
         style={StyleSheet.absoluteFill}
       />
 
@@ -748,31 +1063,65 @@ export default function CompendiumScreen() {
         ]}
       >
         <LinearGradient
-          colors={["#0d0d1a", "#13132200"]}
+          colors={colors.gradientHeader}
           style={StyleSheet.absoluteFill}
         />
         <View style={styles.headerRow}>
           <TouchableOpacity
             onPress={() => router.back()}
-            style={styles.backButton}
+            style={[
+              styles.backButton,
+              {
+                backgroundColor: colors.headerButtonBg,
+                borderColor: colors.headerButtonBorder,
+              },
+            ]}
             activeOpacity={0.7}
           >
-            <Ionicons name="arrow-back" size={20} color="white" />
+            <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
-            <Text style={styles.headerLabel}>D&D Español</Text>
-            <Text style={styles.headerTitle}>Compendio SRD</Text>
+            <Text
+              style={[
+                styles.headerLabel,
+                {
+                  color: colors.headerLabelColor,
+                  textShadowColor: colors.accentGoldGlow,
+                },
+              ]}
+            >
+              D&amp;D Español
+            </Text>
+            <Text
+              style={[styles.headerTitle, { color: colors.headerTitleColor }]}
+            >
+              Compendio
+            </Text>
           </View>
           {/* Decorative book icon */}
-          <View style={styles.headerIconBadge}>
-            <Ionicons name="book" size={18} color="#fbbf24" />
+          <View
+            style={[
+              styles.headerIconBadge,
+              {
+                backgroundColor: colors.headerButtonBg,
+                borderColor: colors.headerButtonBorder,
+              },
+            ]}
+          >
+            <Ionicons name="book" size={18} color={colors.accentGold} />
           </View>
         </View>
 
         {/* Bottom border gradient */}
         <View style={styles.headerBorder}>
           <LinearGradient
-            colors={["transparent", "#3a3a5c66", "#3a3a5c", "#3a3a5c66", "transparent"]}
+            colors={[
+              "transparent",
+              colors.borderDefault + "66",
+              colors.borderDefault,
+              colors.borderDefault + "66",
+              "transparent",
+            ]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
             style={{ height: 1, width: "100%" }}
@@ -854,7 +1203,6 @@ const detailBadgeStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
   },
   header: {
     paddingHorizontal: 20,
@@ -877,9 +1225,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: "rgba(251,191,36,0.08)",
-    borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.15)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -887,25 +1232,20 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.07)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.09)",
   },
   headerLabel: {
-    color: "#fbbf24",
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 2,
     textTransform: "uppercase",
-    textShadowColor: "rgba(251,191,36,0.2)",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 6,
   },
   headerTitle: {
-    color: "#ffffff",
     fontSize: 26,
     fontWeight: "800",
     marginTop: 2,
@@ -918,42 +1258,21 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     paddingTop: 4,
   },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#1e1e38",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    borderWidth: 1,
-    borderColor: "#3a3a5c",
-  },
-  searchInput: {
-    flex: 1,
-    color: "#ffffff",
-    fontSize: 15,
-    marginLeft: 10,
-    paddingVertical: Platform.OS === "ios" ? 2 : 0,
-  },
-
   // ── Tabs ──
   tabBarContent: {
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 6,
     gap: 8,
   },
   tabButton: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 6,
     borderRadius: 12,
-    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
   },
   tabLabel: {
-    color: "#8c8cb3",
     fontSize: 13,
     fontWeight: "600",
     marginLeft: 8,
@@ -965,7 +1284,6 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   countText: {
-    color: "#666699",
     fontSize: 13,
     marginBottom: 10,
     marginLeft: 4,
@@ -975,11 +1293,9 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 12,
     borderRadius: 14,
-    backgroundColor: "#23233d",
     borderWidth: 1,
-    borderColor: "#3a3a5c",
     overflow: "hidden",
-    shadowColor: "#000",
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 4,
@@ -1003,12 +1319,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    color: "#ffffff",
     fontSize: 17,
     fontWeight: "bold",
   },
   cardSubtitle: {
-    color: "#8c8cb3",
     fontSize: 13,
     marginTop: 2,
   },
@@ -1018,7 +1332,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 16,
     borderTopWidth: 1,
-    borderTopColor: "rgba(58,58,92,0.4)",
   },
   detailRow: {
     flexDirection: "row",
@@ -1031,7 +1344,6 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   detailLabel: {
-    color: "#fbbf24",
     fontSize: 12,
     fontWeight: "700",
     textTransform: "uppercase",
@@ -1039,7 +1351,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   detailText: {
-    color: "#b3b3cc",
     fontSize: 14,
     lineHeight: 20,
   },
@@ -1050,13 +1361,11 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
   },
   traitName: {
-    color: "#ffffff",
     fontSize: 14,
     fontWeight: "700",
     marginBottom: 2,
   },
   traitDesc: {
-    color: "#8c8cb3",
     fontSize: 13,
     lineHeight: 18,
   },
@@ -1066,31 +1375,25 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     padding: 12,
     borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
   },
   subraceName: {
-    color: "#f59e0b",
     fontSize: 14,
     fontWeight: "bold",
     marginBottom: 4,
   },
   subraceDetail: {
-    color: "#8c8cb3",
     fontSize: 12,
     marginBottom: 4,
   },
 
   // ── Class extras ──
   levelBadge: {
-    backgroundColor: "#ef444430",
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 6,
   },
   levelBadgeText: {
-    color: "#ef4444",
     fontSize: 11,
     fontWeight: "bold",
   },
@@ -1103,12 +1406,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
-    backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.07)",
   },
   skillTagText: {
-    color: "#b3b3cc",
     fontSize: 12,
     fontWeight: "500",
   },
@@ -1121,17 +1421,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: "#ef444420",
     borderWidth: 1,
-    borderColor: "#ef444440",
   },
   subclassBadgeText: {
-    color: "#fca5a5",
     fontSize: 13,
     fontWeight: "600",
   },
   moreText: {
-    color: "#666699",
     fontSize: 12,
     fontStyle: "italic",
     marginTop: 4,
@@ -1139,13 +1435,11 @@ const styles = StyleSheet.create({
 
   // ── Background extras ──
   equipItem: {
-    color: "#8c8cb3",
     fontSize: 13,
     lineHeight: 20,
     marginLeft: 4,
   },
   personalityItem: {
-    color: "#8c8cb3",
     fontSize: 13,
     lineHeight: 19,
     marginBottom: 4,
@@ -1157,7 +1451,6 @@ const styles = StyleSheet.create({
     paddingVertical: 48,
   },
   emptyText: {
-    color: "#666699",
     fontSize: 15,
     marginTop: 12,
     textAlign: "center",

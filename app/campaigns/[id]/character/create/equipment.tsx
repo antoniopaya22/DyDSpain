@@ -8,25 +8,22 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  useCreationStore,
-  TOTAL_STEPS,
-} from "@/stores/creationStore";
+import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import { getClassData, getBackgroundData } from "@/data/srd";
 import type { EquipmentChoice } from "@/data/srd";
+import { useTheme } from "@/hooks/useTheme";
+import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 8;
 
 export default function EquipmentStep() {
+  const { colors, isDark } = useTheme();
+  const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
-  const {
-    draft,
-    setEquipmentChoices,
-    saveDraft,
-    loadDraft,
-  } = useCreationStore();
+  const { draft, setEquipmentChoices, saveDraft, loadDraft } =
+    useCreationStore();
 
   const [choices, setChoices] = useState<Record<string, string>>({});
 
@@ -41,7 +38,7 @@ export default function EquipmentStep() {
         }
       };
       init();
-    }, [campaignId])
+    }, [campaignId]),
   );
 
   const classId = draft?.clase;
@@ -80,31 +77,43 @@ export default function EquipmentStep() {
   const progressPercent = (CURRENT_STEP / TOTAL_STEPS) * 100;
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingBottom: 40 }}>
+    <View style={[styles.container, themed.container]}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Ionicons name="arrow-back" size={22} color="white" />
+            <TouchableOpacity
+              style={[styles.backButton, themed.backButton]}
+              onPress={handleBack}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={22}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
-            <Text style={styles.stepText}>
+            <Text style={[styles.stepText, themed.stepText]}>
               Paso {CURRENT_STEP} de {TOTAL_STEPS}
             </Text>
             <View style={{ height: 40, width: 40 }} />
           </View>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
+          <View style={[styles.progressBar, themed.progressBar]}>
+            <View
+              style={[styles.progressFill, { width: `${progressPercent}%` }]}
+            />
           </View>
         </View>
 
         {/* Title */}
         <View style={styles.titleSection}>
           <View style={styles.iconCircle}>
-            <Ionicons name="bag-outline" size={40} color="#c62828" />
+            <Ionicons name="bag-outline" size={40} color={colors.accentRed} />
           </View>
-          <Text style={styles.title}>Equipamiento Inicial</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, themed.title]}>Equipamiento Inicial</Text>
+          <Text style={[styles.subtitle, themed.subtitle]}>
             Elige tu equipamiento de partida según las opciones de tu clase.
             También recibirás equipo de tu trasfondo.
           </Text>
@@ -113,14 +122,18 @@ export default function EquipmentStep() {
         {/* Equipment Choices */}
         {equipmentChoices.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Opciones de Clase</Text>
+            <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+              Opciones de Clase
+            </Text>
 
             {equipmentChoices.map((ec) => {
               const selectedOption = choices[ec.id];
 
               return (
                 <View key={ec.id} style={styles.choiceGroup}>
-                  <Text style={styles.choiceLabel}>{ec.label}</Text>
+                  <Text style={[styles.choiceLabel, themed.choiceLabel]}>
+                    {ec.label}
+                  </Text>
                   {ec.options.map((option) => {
                     const isSelected = selectedOption === option.id;
 
@@ -129,6 +142,7 @@ export default function EquipmentStep() {
                         key={option.id}
                         style={[
                           styles.optionCard,
+                          themed.card,
                           isSelected && styles.optionCardSelected,
                         ]}
                         onPress={() => handleSelect(ec.id, option.id)}
@@ -137,6 +151,7 @@ export default function EquipmentStep() {
                           <View
                             style={[
                               styles.radio,
+                              themed.radio,
                               isSelected && styles.radioSelected,
                             ]}
                           >
@@ -146,12 +161,16 @@ export default function EquipmentStep() {
                             <Text
                               style={[
                                 styles.optionLabel,
-                                isSelected && styles.optionLabelSelected,
+                                themed.textPrimary,
+                                isSelected && themed.optionLabelSelected,
                               ]}
                             >
                               {option.label}
                             </Text>
-                            <Text style={styles.optionItems} numberOfLines={2}>
+                            <Text
+                              style={[styles.optionItems, themed.textSecondary]}
+                              numberOfLines={2}
+                            >
                               {option.items.join(", ")}
                             </Text>
                           </View>
@@ -168,12 +187,20 @@ export default function EquipmentStep() {
         {/* Default class equipment */}
         {defaultEquipment.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Equipo Incluido (Clase)</Text>
-            <View style={styles.includedCard}>
+            <Text style={[styles.sectionTitle, themed.sectionTitle]}>
+              Equipo Incluido (Clase)
+            </Text>
+            <View style={[styles.includedCard, themed.card]}>
               {defaultEquipment.map((item, index) => (
                 <View key={index} style={styles.includedRow}>
-                  <Ionicons name="checkmark-circle" size={18} color="#22c55e" />
-                  <Text style={styles.includedText}>{item}</Text>
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={18}
+                    color={colors.accentGreen}
+                  />
+                  <Text style={[styles.includedText, themed.textPrimary]}>
+                    {item}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -183,20 +210,30 @@ export default function EquipmentStep() {
         {/* Background equipment */}
         {(backgroundEquipment.length > 0 || backgroundGold > 0) && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>
+            <Text style={[styles.sectionTitle, themed.sectionTitle]}>
               Equipo de Trasfondo ({backgroundData?.nombre ?? "Trasfondo"})
             </Text>
-            <View style={styles.includedCard}>
+            <View style={[styles.includedCard, themed.card]}>
               {backgroundEquipment.map((item, index) => (
                 <View key={index} style={styles.includedRow}>
-                  <Ionicons name="checkmark-circle" size={18} color="#fbbf24" />
-                  <Text style={styles.includedText}>{item}</Text>
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={18}
+                    color={colors.accentGold}
+                  />
+                  <Text style={[styles.includedText, themed.textPrimary]}>
+                    {item}
+                  </Text>
                 </View>
               ))}
               {backgroundGold > 0 && (
                 <View style={styles.includedRow}>
-                  <Ionicons name="cash-outline" size={18} color="#fbbf24" />
-                  <Text style={styles.includedText}>
+                  <Ionicons
+                    name="cash-outline"
+                    size={18}
+                    color={colors.accentGold}
+                  />
+                  <Text style={[styles.includedText, themed.textPrimary]}>
                     {backgroundGold} po (piezas de oro)
                   </Text>
                 </View>
@@ -207,9 +244,13 @@ export default function EquipmentStep() {
 
         {/* Summary hint */}
         <View style={styles.section}>
-          <View style={styles.hintBox}>
-            <Ionicons name="information-circle" size={20} color="#fbbf24" />
-            <Text style={styles.hintText}>
+          <View style={[styles.hintBox, themed.hintBox]}>
+            <Ionicons
+              name="information-circle"
+              size={20}
+              color={colors.accentGold}
+            />
+            <Text style={[styles.hintText, themed.hintText]}>
               Podrás gestionar tu inventario completo desde la hoja de personaje
               una vez finalizada la creación.
             </Text>
@@ -218,9 +259,12 @@ export default function EquipmentStep() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, themed.footer]}>
         <TouchableOpacity
-          style={[styles.nextButton, !isValid && styles.nextButtonDisabled]}
+          style={[
+            styles.nextButton,
+            !isValid && [styles.nextButtonDisabled, themed.nextButtonDisabled],
+          ]}
           onPress={handleNext}
           disabled={!isValid}
         >
@@ -334,7 +378,7 @@ const styles = StyleSheet.create({
   },
   optionCardSelected: {
     borderColor: "#c62828",
-    backgroundColor: "#2a1a2e",
+    backgroundColor: "rgba(198,40,40,0.08)",
   },
   optionRow: {
     flexDirection: "row",
@@ -369,7 +413,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   optionLabelSelected: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden by themed.optionLabelSelected
   },
   optionItems: {
     color: "#8c8cb3",

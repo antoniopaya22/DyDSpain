@@ -4,6 +4,8 @@
  *
  * Provides a consistent, modern header across all screens with
  * animated entrance and subtle depth effects.
+ *
+ * ✅ Theme-aware: adapts to light/dark mode via useTheme()
  */
 
 import { useEffect, useRef } from "react";
@@ -20,6 +22,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { IconButton } from "./AnimatedPressable";
+import { useTheme } from "@/hooks/useTheme";
 
 // ─── Props ───────────────────────────────────────────────────────────
 
@@ -28,7 +31,7 @@ interface GradientHeaderProps {
   title: string;
   /** Optional subtitle / breadcrumb label above the title */
   subtitle?: string;
-  /** Color of the subtitle text (default: gold) */
+  /** Color of the subtitle text (default: from theme — accentGold) */
   subtitleColor?: string;
   /** Whether to show the back button (default: true) */
   showBack?: boolean;
@@ -36,11 +39,11 @@ interface GradientHeaderProps {
   onBack?: () => void;
   /** Action buttons to show on the right side of the header */
   actions?: HeaderAction[];
-  /** Gradient colors from top to bottom (default: dark gradient) */
+  /** Gradient colors from top to bottom (default: from theme) */
   gradientColors?: [string, string, ...string[]];
   /** Whether the header has a bottom border (default: true) */
   showBorder?: boolean;
-  /** Border color (default: surface border) */
+  /** Border color (default: from theme — borderDefault) */
   borderColor?: string;
   /** Whether to animate the entrance (default: true) */
   animated?: boolean;
@@ -63,11 +66,11 @@ interface HeaderAction {
   icon: keyof typeof Ionicons.glyphMap;
   /** Handler when the action is pressed */
   onPress: () => void;
-  /** Icon color (default: #8c8cb3) */
+  /** Icon color (default: from theme — textSecondary) */
   color?: string;
-  /** Background color (default: surface) */
+  /** Background color (default: from theme — headerButtonBg) */
   backgroundColor?: string;
-  /** Border color (default: surface border) */
+  /** Border color (default: from theme — headerButtonBorder) */
   borderColor?: string;
   /** Whether to show a glow effect */
   glow?: boolean;
@@ -87,7 +90,8 @@ interface HeaderAction {
 
 const SIZE_PRESETS = {
   compact: {
-    paddingTop: Platform.OS === "ios" ? 50 : (StatusBar.currentHeight || 32) + 8,
+    paddingTop:
+      Platform.OS === "ios" ? 50 : (StatusBar.currentHeight || 32) + 8,
     paddingBottom: 10,
     titleSize: 20,
     subtitleSize: 11,
@@ -95,7 +99,8 @@ const SIZE_PRESETS = {
     iconSize: 18,
   },
   standard: {
-    paddingTop: Platform.OS === "ios" ? 56 : (StatusBar.currentHeight || 32) + 14,
+    paddingTop:
+      Platform.OS === "ios" ? 56 : (StatusBar.currentHeight || 32) + 14,
     paddingBottom: 14,
     titleSize: 26,
     subtitleSize: 12,
@@ -103,7 +108,8 @@ const SIZE_PRESETS = {
     iconSize: 20,
   },
   large: {
-    paddingTop: Platform.OS === "ios" ? 60 : (StatusBar.currentHeight || 32) + 18,
+    paddingTop:
+      Platform.OS === "ios" ? 60 : (StatusBar.currentHeight || 32) + 18,
     paddingBottom: 20,
     titleSize: 32,
     subtitleSize: 13,
@@ -112,26 +118,18 @@ const SIZE_PRESETS = {
   },
 };
 
-// ─── Default Gradient ────────────────────────────────────────────────
-
-const DEFAULT_GRADIENT: [string, string, ...string[]] = [
-  "#141425",
-  "#1a1a2e",
-  "#1a1a2e",
-];
-
 // ─── Component ───────────────────────────────────────────────────────
 
 export default function GradientHeader({
   title,
   subtitle,
-  subtitleColor = "#fbbf24",
+  subtitleColor,
   showBack = true,
   onBack,
   actions = [],
-  gradientColors = DEFAULT_GRADIENT,
+  gradientColors,
   showBorder = true,
-  borderColor = "#3a3a5c",
+  borderColor,
   animated = true,
   children,
   style,
@@ -140,7 +138,19 @@ export default function GradientHeader({
   leftElement,
   centerElement,
 }: GradientHeaderProps) {
+  const { colors, isDark } = useTheme();
   const preset = SIZE_PRESETS[size];
+
+  // Resolve theme-aware defaults
+  const resolvedSubtitleColor = subtitleColor ?? colors.accentGold;
+  const resolvedGradientColors: [string, string, ...string[]] =
+    gradientColors ??
+    (isDark
+      ? [colors.bgSecondary, colors.bgPrimary, colors.bgPrimary]
+      : [colors.bgSecondary, colors.bgPrimary, colors.bgPrimary]);
+  const resolvedBorderColor = borderColor ?? colors.borderDefault;
+  const titleColor = colors.textPrimary;
+  const textureOpacity = isDark ? 0.02 : 0.01;
 
   // Entrance animations
   const titleOpacity = useRef(new Animated.Value(animated ? 0 : 1)).current;
@@ -196,12 +206,19 @@ export default function GradientHeader({
     return () => {
       animations.stop();
     };
-  }, [animated, titleOpacity, titleTranslateY, subtitleOpacity, actionsOpacity, childrenOpacity]);
+  }, [
+    animated,
+    titleOpacity,
+    titleTranslateY,
+    subtitleOpacity,
+    actionsOpacity,
+    childrenOpacity,
+  ]);
 
   return (
     <View style={[styles.outerContainer, style]}>
       <LinearGradient
-        colors={gradientColors}
+        colors={resolvedGradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={[
@@ -213,7 +230,7 @@ export default function GradientHeader({
         ]}
       >
         {/* Subtle noise / texture overlay for depth */}
-        <View style={styles.textureOverlay} />
+        <View style={[styles.textureOverlay, { opacity: textureOpacity }]} />
 
         {/* Top Row: Back button / Left element, Center, Actions */}
         <View style={styles.topRow}>
@@ -227,9 +244,9 @@ export default function GradientHeader({
                     icon="arrow-back"
                     size={preset.buttonSize}
                     iconSize={preset.iconSize}
-                    color="#ffffff"
-                    backgroundColor="rgba(255,255,255,0.08)"
-                    borderColor="rgba(255,255,255,0.1)"
+                    color={colors.textPrimary}
+                    backgroundColor={colors.headerButtonBg}
+                    borderColor={colors.headerButtonBorder}
                     onPress={onBack}
                     accessibilityLabel="Volver atrás"
                   />
@@ -247,7 +264,7 @@ export default function GradientHeader({
                     style={[
                       styles.subtitle,
                       {
-                        color: subtitleColor,
+                        color: resolvedSubtitleColor,
                         fontSize: preset.subtitleSize,
                         opacity: subtitleOpacity,
                       },
@@ -261,6 +278,7 @@ export default function GradientHeader({
                   style={[
                     styles.title,
                     {
+                      color: titleColor,
                       fontSize: preset.titleSize,
                       opacity: titleOpacity,
                       transform: [{ translateY: titleTranslateY }],
@@ -285,18 +303,12 @@ export default function GradientHeader({
                 <IconButton
                   icon={action.icon}
                   size={action.size || preset.buttonSize}
-                  iconSize={
-                    action.size
-                      ? action.size * 0.45
-                      : preset.iconSize
-                  }
-                  color={action.color || "#8c8cb3"}
+                  iconSize={action.size ? action.size * 0.45 : preset.iconSize}
+                  color={action.color || colors.sectionDescColor}
                   backgroundColor={
-                    action.backgroundColor || "rgba(255,255,255,0.06)"
+                    action.backgroundColor || colors.headerButtonBg
                   }
-                  borderColor={
-                    action.borderColor || "rgba(255,255,255,0.08)"
-                  }
+                  borderColor={action.borderColor || colors.headerButtonBorder}
                   glow={action.glow}
                   glowColor={action.glowColor}
                   onPress={action.onPress}
@@ -305,7 +317,9 @@ export default function GradientHeader({
                 />
                 {/* Badge */}
                 {action.badge !== undefined && action.badge > 0 && (
-                  <View style={styles.badge}>
+                  <View
+                    style={[styles.badge, { borderColor: colors.bgPrimary }]}
+                  >
                     <Text style={styles.badgeText}>
                       {action.badge > 99 ? "99+" : action.badge}
                     </Text>
@@ -332,9 +346,9 @@ export default function GradientHeader({
           <LinearGradient
             colors={[
               "transparent",
-              `${borderColor}88`,
-              borderColor,
-              `${borderColor}88`,
+              `${resolvedBorderColor}88`,
+              resolvedBorderColor,
+              `${resolvedBorderColor}88`,
               "transparent",
             ]}
             start={{ x: 0, y: 0.5 }}
@@ -377,7 +391,6 @@ export function CompactHeader({
       showBorder={showBorder}
       animated={animated}
       style={style}
-      gradientColors={["#141425", "#1a1a2e", "#1a1a2e"]}
     />
   );
 }
@@ -405,12 +418,19 @@ export function HeroHeader({
   description,
   onBack,
   actions = [],
-  accentColor = "#c62828",
+  accentColor,
   children,
   animated = true,
   style,
 }: HeroHeaderProps) {
+  const { colors, isDark } = useTheme();
+  const resolvedAccentColor = accentColor ?? colors.accentRed;
   const descOpacity = useRef(new Animated.Value(animated ? 0 : 1)).current;
+
+  // Resolve hero-specific gradient
+  const heroGradient: [string, string, ...string[]] = isDark
+    ? [colors.gradientMain[0], colors.bgSecondary, colors.bgPrimary]
+    : [colors.bgSecondary, colors.bgPrimary, colors.bgPrimary];
 
   useEffect(() => {
     if (!animated) return;
@@ -427,23 +447,22 @@ export function HeroHeader({
     <GradientHeader
       title={title}
       subtitle={subtitle}
-      subtitleColor={subtitleColor || "#fbbf24"}
+      subtitleColor={subtitleColor}
       showBack={!!onBack}
       onBack={onBack}
       actions={actions}
       size="large"
       animated={animated}
-      gradientColors={[
-        "#0d0d1a",
-        "#141425",
-        "#1a1a2e",
-      ]}
+      gradientColors={heroGradient}
       style={style}
     >
       {/* Description text */}
       {description && (
         <Animated.Text
-          style={[styles.heroDescription, { opacity: descOpacity }]}
+          style={[
+            styles.heroDescription,
+            { opacity: descOpacity, color: colors.textSecondary },
+          ]}
           numberOfLines={3}
         >
           {description}
@@ -453,7 +472,7 @@ export function HeroHeader({
       {/* Decorative accent line */}
       <View style={styles.heroAccentContainer}>
         <LinearGradient
-          colors={["transparent", `${accentColor}60`, "transparent"]}
+          colors={["transparent", `${resolvedAccentColor}60`, "transparent"]}
           start={{ x: 0, y: 0.5 }}
           end={{ x: 1, y: 0.5 }}
           style={styles.heroAccentLine}
@@ -479,8 +498,7 @@ const styles = StyleSheet.create({
   },
   textureOverlay: {
     ...StyleSheet.absoluteFillObject,
-    opacity: 0.02,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255,255,255,0.01)",
   },
   topRow: {
     flexDirection: "row",
@@ -506,7 +524,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   title: {
-    color: "#ffffff",
     fontWeight: "800",
     letterSpacing: -0.3,
   },
@@ -522,7 +539,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -4,
     right: -4,
-    backgroundColor: "#c62828",
+    backgroundColor: "#c62828", // badge bg — overridden inline via colors.accentRed
     borderRadius: 10,
     minWidth: 18,
     height: 18,
@@ -530,10 +547,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 4,
     borderWidth: 1.5,
-    borderColor: "#1a1a2e",
   },
   badgeText: {
-    color: "#ffffff",
+    color: "#ffffff", // badge text — overridden inline via colors.textInverted
     fontSize: 9,
     fontWeight: "800",
   },
@@ -550,7 +566,6 @@ const styles = StyleSheet.create({
 
   // Hero variant styles
   heroDescription: {
-    color: "#8c8cb3",
     fontSize: 14,
     lineHeight: 20,
     marginTop: 4,

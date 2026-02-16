@@ -3,6 +3,7 @@
  * Tab-based view showing: Overview, Combat, Spells, Inventory, Notes
  *
  * Enhanced with gradient header, animated HP bar, and polished tab bar.
+ * Fully theme-aware — uses `colors` tokens from `useTheme()` throughout.
  */
 
 import { useCallback, useState, useRef, useEffect } from "react";
@@ -26,10 +27,12 @@ import { useCampaignStore } from "@/stores/campaignStore";
 
 import OverviewTab from "@/components/character/OverviewTab";
 import CombatTab from "@/components/character/CombatTab";
-import SpellsTab from "@/components/character/SpellsTab";
+import AbilitiesTab from "@/components/character/AbilitiesTab";
 import InventoryTab from "@/components/character/InventoryTab";
 import NotesTab from "@/components/character/NotesTab";
 import DiceFAB from "@/components/dice/DiceFAB";
+import { useTheme } from "@/hooks/useTheme";
+import type { ThemeColors } from "@/utils/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -45,64 +48,86 @@ interface TabDef {
   color: string;
 }
 
-const TABS: TabDef[] = [
-  {
-    id: "overview",
-    label: "General",
-    icon: "person-outline",
-    iconActive: "person",
-    color: "#fbbf24",
-  },
-  {
-    id: "combat",
-    label: "Combate",
-    icon: "heart-outline",
-    iconActive: "heart",
-    color: "#22c55e",
-  },
-  {
-    id: "spells",
-    label: "Hechizos",
-    icon: "flame-outline",
-    iconActive: "flame",
-    color: "#ef4444",
-  },
-  {
-    id: "inventory",
-    label: "Inventario",
-    icon: "bag-outline",
-    iconActive: "bag",
-    color: "#d4a017",
-  },
-  {
-    id: "notes",
-    label: "Notas",
-    icon: "document-text-outline",
-    iconActive: "document-text",
-    color: "#3b82f6",
-  },
-];
+function getTabs(colors: import("@/utils/theme").ThemeColors): TabDef[] {
+  return [
+    {
+      id: "overview",
+      label: "General",
+      icon: "person-outline",
+      iconActive: "person",
+      color: colors.accentGold,
+    },
+    {
+      id: "combat",
+      label: "Combate",
+      icon: "heart-outline",
+      iconActive: "heart",
+      color: colors.accentGreen,
+    },
+    {
+      id: "spells",
+      label: "Habilidades",
+      icon: "star-outline",
+      iconActive: "star",
+      color: colors.accentDanger,
+    },
+    {
+      id: "inventory",
+      label: "Inventario",
+      icon: "bag-outline",
+      iconActive: "bag",
+      color: colors.accentGold,
+    },
+    {
+      id: "notes",
+      label: "Notas",
+      icon: "document-text-outline",
+      iconActive: "document-text",
+      color: colors.accentBlue,
+    },
+  ];
+}
 
 // ─── HP Color Helper ─────────────────────────────────────────────────
 
-function getHpBarColor(current: number, max: number): string {
-  if (max <= 0) return "#ef4444";
+function getHpBarColor(
+  current: number,
+  max: number,
+  colors: {
+    accentDanger: string;
+    accentGreen: string;
+    accentLime: string;
+    accentYellow: string;
+    accentOrange: string;
+  },
+): string {
+  if (max <= 0) return colors.accentDanger;
   const pct = current / max;
-  if (pct >= 0.75) return "#22c55e";
-  if (pct >= 0.5) return "#84cc16";
-  if (pct >= 0.25) return "#eab308";
-  if (pct > 0) return "#f97316";
-  return "#ef4444";
+  if (pct >= 0.75) return colors.accentGreen;
+  if (pct >= 0.5) return colors.accentLime;
+  if (pct >= 0.25) return colors.accentYellow;
+  if (pct > 0) return colors.accentOrange;
+  return colors.accentDanger;
 }
 
-function getHpBarGradient(current: number, max: number): [string, string, ...string[]] {
-  if (max <= 0) return ["#ef4444", "#dc2626"];
+function getHpBarGradient(
+  current: number,
+  max: number,
+  colors: {
+    accentDanger: string;
+    accentGreen: string;
+    accentLime: string;
+    accentYellow: string;
+    accentOrange: string;
+  },
+): [string, string, ...string[]] {
+  if (max <= 0) return [colors.accentDanger, "#dc2626"];
   const pct = current / max;
-  if (pct >= 0.75) return ["#22c55e", "#16a34a", "#15803d"];
-  if (pct >= 0.5) return ["#84cc16", "#65a30d"];
-  if (pct >= 0.25) return ["#eab308", "#ca8a04"];
-  if (pct > 0) return ["#f97316", "#ea580c"];
-  return ["#ef4444", "#dc2626"];
+  if (pct >= 0.75) return [colors.accentGreen, "#16a34a"];
+  if (pct >= 0.5) return [colors.accentLime, "#65a30d"];
+  if (pct >= 0.25) return [colors.accentYellow, "#ca8a04"];
+  if (pct > 0) return [colors.accentOrange, "#ea580c"];
+  return [colors.accentDanger, "#dc2626"];
 }
 
 // ─── Animated Tab Button ─────────────────────────────────────────────
@@ -111,10 +136,12 @@ function TabButton({
   tab,
   isActive,
   onPress,
+  inactiveColor,
 }: {
   tab: TabDef;
   isActive: boolean;
   onPress: () => void;
+  inactiveColor: string;
 }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const bgAnim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
@@ -159,41 +186,39 @@ function TabButton({
       activeOpacity={1}
       style={sheetStyles.tabTouchable}
     >
-      <Animated.View
-        style={[
-          sheetStyles.tabButton,
-          {
-            backgroundColor: bgColor,
-            borderColor: borderColor,
-            transform: [{ scale: scaleAnim }],
-          },
-        ]}
-      >
-        {/* Active indicator dot */}
-        {isActive && (
-          <View
-            style={[
-              sheetStyles.tabActiveDot,
-              { backgroundColor: tab.color },
-            ]}
-          />
-        )}
-        <Ionicons
-          name={isActive ? tab.iconActive : tab.icon}
-          size={19}
-          color={isActive ? tab.color : "#555577"}
-        />
-        <Text
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        <Animated.View
           style={[
-            sheetStyles.tabLabel,
+            sheetStyles.tabButton,
             {
-              color: isActive ? tab.color : "#555577",
-              fontWeight: isActive ? "700" : "500",
+              backgroundColor: bgColor,
+              borderColor: borderColor,
             },
           ]}
         >
-          {tab.label}
-        </Text>
+          {/* Active indicator dot */}
+          {isActive && (
+            <View
+              style={[sheetStyles.tabActiveDot, { backgroundColor: tab.color }]}
+            />
+          )}
+          <Ionicons
+            name={isActive ? tab.iconActive : tab.icon}
+            size={19}
+            color={isActive ? tab.color : inactiveColor}
+          />
+          <Text
+            style={[
+              sheetStyles.tabLabel,
+              {
+                color: isActive ? tab.color : inactiveColor,
+                fontWeight: isActive ? "700" : "500",
+              },
+            ]}
+          >
+            {tab.label}
+          </Text>
+        </Animated.View>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -204,14 +229,18 @@ function TabButton({
 function StatBadge({
   label,
   value,
-  color = "#8c8cb3",
+  color,
   delay = 0,
+  labelColor,
 }: {
   label: string;
   value: string | number;
   color?: string;
   delay?: number;
+  labelColor: string;
 }) {
+  const { colors: sbColors } = useTheme();
+  const resolvedColor = color ?? sbColors.textSecondary;
   const entranceAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -230,13 +259,17 @@ function StatBadge({
         sheetStyles.statBadge,
         {
           opacity: entranceAnim,
-          borderColor: `${color}25`,
-          backgroundColor: `${color}08`,
+          borderColor: `${resolvedColor}25`,
+          backgroundColor: `${resolvedColor}08`,
         },
       ]}
     >
-      <Text style={[sheetStyles.statBadgeValue, { color }]}>{value}</Text>
-      <Text style={sheetStyles.statBadgeLabel}>{label}</Text>
+      <Text style={[sheetStyles.statBadgeValue, { color: resolvedColor }]}>
+        {value}
+      </Text>
+      <Text style={[sheetStyles.statBadgeLabel, { color: labelColor }]}>
+        {label}
+      </Text>
     </Animated.View>
   );
 }
@@ -244,8 +277,13 @@ function StatBadge({
 // ─── Main Component ──────────────────────────────────────────────────
 
 export default function CharacterSheetScreen() {
+  const { colors, isDark } = useTheme();
+  const TABS = getTabs(colors);
   const router = useRouter();
-  const { id: campaignId } = useLocalSearchParams<{ id: string }>();
+  const { id: campaignId, tab } = useLocalSearchParams<{
+    id: string;
+    tab?: TabId;
+  }>();
   const {
     character,
     loading,
@@ -256,8 +294,22 @@ export default function CharacterSheetScreen() {
   } = useCharacterStore();
   const { getCampaignById } = useCampaignStore();
 
-  const [activeTab, setActiveTab] = useState<TabId>("overview");
-  const [initialTab, setInitialTab] = useState<TabId | null>(null);
+  const validTabs: TabId[] = [
+    "overview",
+    "combat",
+    "spells",
+    "inventory",
+    "notes",
+  ];
+  const resolvedTab = tab && validTabs.includes(tab) ? tab : "overview";
+  const [activeTab, setActiveTab] = useState<TabId>(resolvedTab);
+
+  // Sync activeTab when the `tab` query parameter changes (e.g. navigating back with a different tab)
+  useEffect(() => {
+    if (tab && validTabs.includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [tab]);
 
   // HP bar animation
   const hpBarWidth = useRef(new Animated.Value(0)).current;
@@ -274,7 +326,7 @@ export default function CharacterSheetScreen() {
       return () => {
         // Optionally clear on blur - keeping data for performance
       };
-    }, [campaignId, getCampaignById, loadCharacter])
+    }, [campaignId, getCampaignById, loadCharacter]),
   );
 
   // Animate header and HP bar when character loads
@@ -285,43 +337,73 @@ export default function CharacterSheetScreen() {
           ? Math.min(100, (character.hp.current / character.hp.max) * 100)
           : 0;
 
-      Animated.parallel([
-        Animated.timing(headerEntrance, {
-          toValue: 1,
-          duration: 400,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        Animated.timing(hpBarWidth, {
-          toValue: pct,
-          duration: 800,
-          delay: 200,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: false,
-        }),
-      ]).start();
+      Animated.timing(headerEntrance, {
+        toValue: 1,
+        duration: 400,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
+
+      Animated.timing(hpBarWidth, {
+        toValue: pct,
+        duration: 800,
+        delay: 200,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: false,
+      }).start();
     }
   }, [character, hpBarWidth, headerEntrance]);
 
-  // Allow navigating to a specific tab via the initial tab prop
-  // (set from the campaign detail screen when tapping specific quick actions)
   const handleGoBack = () => {
     clearCharacter();
     router.back();
   };
 
+  // Compute themed gradient colors
+  const mainGradient = colors.gradientMain;
+  // Header overlay gradient: from a slightly darker shade to transparent
+  const headerGradient: [string, string, ...string[]] = isDark
+    ? [colors.gradientMain[0], colors.gradientMain[1], colors.bgPrimary + "00"]
+    : [colors.bgSecondary, colors.bgSecondary, `${colors.bgPrimary}00`];
+
+  const headerBorderGradient: [string, string, ...string[]] = [
+    "transparent",
+    `${colors.borderDefault}66`,
+    colors.borderDefault,
+    `${colors.borderDefault}66`,
+    "transparent",
+  ];
+
   // ── Loading state ──
   if (loading && !character) {
     return (
-      <View style={sheetStyles.loadingContainer}>
+      <View
+        style={[
+          sheetStyles.loadingContainer,
+          { backgroundColor: colors.bgPrimary },
+        ]}
+      >
         <LinearGradient
-          colors={["#0d0d1a", "#141425", "#1a1a2e"]}
+          colors={mainGradient}
+          locations={colors.gradientLocations}
           style={StyleSheet.absoluteFill}
         />
-        <View style={sheetStyles.loadingIconBg}>
-          <ActivityIndicator size="large" color="#c62828" />
+        <View
+          style={[
+            sheetStyles.loadingIconBg,
+            {
+              backgroundColor: colors.bgSubtle,
+              borderColor: colors.borderSubtle,
+            },
+          ]}
+        >
+          <ActivityIndicator size="large" color={colors.accentRed} />
         </View>
-        <Text style={sheetStyles.loadingText}>Cargando personaje...</Text>
+        <Text
+          style={[sheetStyles.loadingText, { color: colors.textSecondary }]}
+        >
+          Cargando personaje...
+        </Text>
       </View>
     );
   }
@@ -329,23 +411,47 @@ export default function CharacterSheetScreen() {
   // ── Error state ──
   if (error && !character) {
     return (
-      <View style={sheetStyles.errorContainer}>
+      <View
+        style={[
+          sheetStyles.errorContainer,
+          { backgroundColor: colors.bgPrimary },
+        ]}
+      >
         <LinearGradient
-          colors={["#0d0d1a", "#141425", "#1a1a2e"]}
+          colors={mainGradient}
+          locations={colors.gradientLocations}
           style={StyleSheet.absoluteFill}
         />
-        <View style={sheetStyles.errorIconBg}>
-          <Ionicons name="alert-circle-outline" size={44} color="#ef4444" />
+        <View
+          style={[
+            sheetStyles.errorIconBg,
+            {
+              backgroundColor: colors.dangerBg,
+              borderColor: colors.dangerBorder,
+            },
+          ]}
+        >
+          <Ionicons
+            name="alert-circle-outline"
+            size={44}
+            color={colors.dangerText}
+          />
         </View>
-        <Text style={sheetStyles.errorTitle}>Error al cargar</Text>
-        <Text style={sheetStyles.errorMessage}>{error}</Text>
+        <Text style={[sheetStyles.errorTitle, { color: colors.textPrimary }]}>
+          Error al cargar
+        </Text>
+        <Text
+          style={[sheetStyles.errorMessage, { color: colors.textSecondary }]}
+        >
+          {error}
+        </Text>
         <TouchableOpacity
           style={sheetStyles.errorButton}
           onPress={handleGoBack}
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={["#d32f2f", "#c62828"]}
+            colors={["#d32f2f", colors.accentRed]}
             style={sheetStyles.errorButtonGradient}
           >
             <Text style={sheetStyles.errorButtonText}>Volver</Text>
@@ -358,16 +464,34 @@ export default function CharacterSheetScreen() {
   // ── No character state ──
   if (!character) {
     return (
-      <View style={sheetStyles.errorContainer}>
+      <View
+        style={[
+          sheetStyles.errorContainer,
+          { backgroundColor: colors.bgPrimary },
+        ]}
+      >
         <LinearGradient
-          colors={["#0d0d1a", "#141425", "#1a1a2e"]}
+          colors={mainGradient}
+          locations={colors.gradientLocations}
           style={StyleSheet.absoluteFill}
         />
-        <View style={[sheetStyles.errorIconBg, { borderColor: "rgba(102,102,153,0.15)" }]}>
-          <Ionicons name="person-outline" size={44} color="#666699" />
+        <View
+          style={[
+            sheetStyles.errorIconBg,
+            {
+              backgroundColor: colors.bgSubtle,
+              borderColor: colors.borderSubtle,
+            },
+          ]}
+        >
+          <Ionicons name="person-outline" size={44} color={colors.textMuted} />
         </View>
-        <Text style={sheetStyles.errorTitle}>Personaje no encontrado</Text>
-        <Text style={sheetStyles.errorMessage}>
+        <Text style={[sheetStyles.errorTitle, { color: colors.textPrimary }]}>
+          Personaje no encontrado
+        </Text>
+        <Text
+          style={[sheetStyles.errorMessage, { color: colors.textSecondary }]}
+        >
           No se encontró el personaje asociado a esta partida.
         </Text>
         <TouchableOpacity
@@ -376,7 +500,7 @@ export default function CharacterSheetScreen() {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={["#d32f2f", "#c62828"]}
+            colors={["#d32f2f", colors.accentRed]}
             style={sheetStyles.errorButtonGradient}
           >
             <Text style={sheetStyles.errorButtonText}>Volver</Text>
@@ -387,8 +511,12 @@ export default function CharacterSheetScreen() {
   }
 
   const ac = getArmorClass();
-  const hpColor = getHpBarColor(character.hp.current, character.hp.max);
-  const hpGradient = getHpBarGradient(character.hp.current, character.hp.max);
+  const hpColor = getHpBarColor(character.hp.current, character.hp.max, colors);
+  const hpGradient = getHpBarGradient(
+    character.hp.current,
+    character.hp.max,
+    colors,
+  );
   const hpPct =
     character.hp.max > 0
       ? Math.min(100, (character.hp.current / character.hp.max) * 100)
@@ -402,7 +530,7 @@ export default function CharacterSheetScreen() {
       case "combat":
         return <CombatTab />;
       case "spells":
-        return <SpellsTab />;
+        return <AbilitiesTab />;
       case "inventory":
         return <InventoryTab />;
       case "notes":
@@ -413,18 +541,20 @@ export default function CharacterSheetScreen() {
   };
 
   return (
-    <View style={sheetStyles.container}>
+    <View
+      style={[sheetStyles.container, { backgroundColor: colors.bgPrimary }]}
+    >
       {/* Full background */}
       <LinearGradient
-        colors={["#0d0d1a", "#141425", "#1a1a2e", "#1a1a2e"]}
-        locations={[0, 0.1, 0.25, 1]}
+        colors={mainGradient}
+        locations={colors.gradientLocations}
         style={StyleSheet.absoluteFill}
       />
 
       {/* ── Header ── */}
       <View style={sheetStyles.header}>
         <LinearGradient
-          colors={["#0a0a18", "#0d0d1a", "#14142500"]}
+          colors={headerGradient}
           style={StyleSheet.absoluteFill}
         />
 
@@ -448,22 +578,53 @@ export default function CharacterSheetScreen() {
           <View style={sheetStyles.headerTopRow}>
             {/* Back button */}
             <TouchableOpacity
-              style={sheetStyles.headerBackButton}
+              style={[
+                sheetStyles.headerBackButton,
+                {
+                  backgroundColor: colors.headerButtonBg,
+                  borderColor: colors.headerButtonBorder,
+                },
+              ]}
               onPress={handleGoBack}
               activeOpacity={0.7}
             >
-              <Ionicons name="arrow-back" size={20} color="white" />
+              <Ionicons
+                name="arrow-back"
+                size={20}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
 
             {/* Character name and level */}
             <View style={sheetStyles.headerCenter}>
-              <Text style={sheetStyles.headerName} numberOfLines={1}>
+              <Text
+                style={[sheetStyles.headerName, { color: colors.textPrimary }]}
+                numberOfLines={1}
+              >
                 {character.nombre}
               </Text>
               <View style={sheetStyles.headerStatsRow}>
-                <StatBadge label="NV" value={character.nivel} color="#fbbf24" delay={100} />
-                <StatBadge label="CA" value={ac} color="#3b82f6" delay={150} />
-                <StatBadge label="VEL" value={`${character.speed.walk}`} color="#22c55e" delay={200} />
+                <StatBadge
+                  label="NV"
+                  value={character.nivel}
+                  color={colors.accentGold}
+                  delay={100}
+                  labelColor={colors.statsLabel}
+                />
+                <StatBadge
+                  label="CA"
+                  value={ac}
+                  color={colors.accentBlue}
+                  delay={150}
+                  labelColor={colors.statsLabel}
+                />
+                <StatBadge
+                  label="VEL"
+                  value={`${character.speed.walk}`}
+                  color={colors.accentGreen}
+                  delay={200}
+                  labelColor={colors.statsLabel}
+                />
               </View>
             </View>
 
@@ -473,23 +634,42 @@ export default function CharacterSheetScreen() {
                 <Text style={[sheetStyles.headerHpCurrent, { color: hpColor }]}>
                   {character.hp.current}
                 </Text>
-                <Text style={sheetStyles.headerHpMax}>/{character.hp.max}</Text>
+                <Text
+                  style={[
+                    sheetStyles.headerHpMax,
+                    { color: colors.statsLabel },
+                  ]}
+                >
+                  /{character.hp.max}
+                </Text>
               </View>
               {character.hp.temp > 0 && (
                 <View style={sheetStyles.headerHpTempBadge}>
-                  <Ionicons name="shield" size={8} color="#3b82f6" />
+                  <Ionicons name="shield" size={8} color={colors.accentBlue} />
                   <Text style={sheetStyles.headerHpTempText}>
                     +{character.hp.temp}
                   </Text>
                 </View>
               )}
-              <Text style={sheetStyles.headerHpLabel}>PG</Text>
+              <Text
+                style={[
+                  sheetStyles.headerHpLabel,
+                  { color: colors.statsLabel },
+                ]}
+              >
+                PG
+              </Text>
             </View>
           </View>
 
           {/* HP Bar */}
           <View style={sheetStyles.hpBarContainer}>
-            <View style={sheetStyles.hpBarBg}>
+            <View
+              style={[
+                sheetStyles.hpBarBg,
+                { backgroundColor: colors.borderSubtle },
+              ]}
+            >
               <Animated.View
                 style={[
                   sheetStyles.hpBarFill,
@@ -538,6 +718,7 @@ export default function CharacterSheetScreen() {
                 tab={tab}
                 isActive={activeTab === tab.id}
                 onPress={() => setActiveTab(tab.id)}
+                inactiveColor={colors.statsLabel}
               />
             ))}
           </ScrollView>
@@ -546,13 +727,7 @@ export default function CharacterSheetScreen() {
         {/* Bottom border gradient */}
         <View style={sheetStyles.headerBorder}>
           <LinearGradient
-            colors={[
-              "transparent",
-              "#3a3a5c66",
-              "#3a3a5c",
-              "#3a3a5c66",
-              "transparent",
-            ]}
+            colors={headerBorderGradient}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
             style={{ height: 1, width: "100%" }}
@@ -566,27 +741,24 @@ export default function CharacterSheetScreen() {
       </View>
 
       {/* ── Dice FAB (HU-11.1) ── */}
-      <DiceFAB
-        characterName={character.nombre}
-        bottom={24}
-        right={20}
-      />
+      <DiceFAB characterName={character.nombre} bottom={24} right={20} />
     </View>
   );
 }
 
 // ─── Styles ──────────────────────────────────────────────────────────
+// Only layout / sizing values live here. All color values are applied
+// via inline style overrides using the `colors` theme tokens so that
+// both light and dark themes are supported.
 
 const sheetStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
   },
 
   // ── Loading / Error ──
   loadingContainer: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -594,21 +766,17 @@ const sheetStyles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.05)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
   },
   loadingText: {
-    color: "#8c8cb3",
     fontSize: 15,
     fontWeight: "500",
   },
   errorContainer: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 32,
@@ -617,22 +785,18 @@ const sheetStyles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(239,68,68,0.08)",
     borderWidth: 1,
-    borderColor: "rgba(239,68,68,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
   },
   errorTitle: {
-    color: "#ffffff",
     fontSize: 20,
     fontWeight: "800",
     textAlign: "center",
     marginBottom: 8,
   },
   errorMessage: {
-    color: "#8c8cb3",
     fontSize: 14,
     textAlign: "center",
     lineHeight: 20,
@@ -641,7 +805,7 @@ const sheetStyles = StyleSheet.create({
   errorButton: {
     borderRadius: 12,
     overflow: "hidden",
-    shadowColor: "#c62828",
+    shadowColor: "#c62828", // overridden inline via colors.accentRed
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -653,7 +817,7 @@ const sheetStyles = StyleSheet.create({
     alignItems: "center",
   },
   errorButtonText: {
-    color: "#ffffff",
+    color: "#ffffff", // overridden inline via colors.textPrimary
     fontWeight: "700",
     fontSize: 15,
   },
@@ -676,9 +840,7 @@ const sheetStyles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: "rgba(255,255,255,0.07)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.09)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -687,7 +849,6 @@ const sheetStyles = StyleSheet.create({
     marginHorizontal: 12,
   },
   headerName: {
-    color: "#ffffff",
     fontSize: 17,
     fontWeight: "800",
     letterSpacing: -0.3,
@@ -715,7 +876,6 @@ const sheetStyles = StyleSheet.create({
   statBadgeLabel: {
     fontSize: 9,
     fontWeight: "600",
-    color: "#555577",
     textTransform: "uppercase",
     letterSpacing: 0.3,
   },
@@ -737,7 +897,6 @@ const sheetStyles = StyleSheet.create({
   headerHpMax: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#555577",
   },
   headerHpTempBadge: {
     flexDirection: "row",
@@ -750,12 +909,11 @@ const sheetStyles = StyleSheet.create({
     gap: 2,
   },
   headerHpTempText: {
-    color: "#3b82f6",
+    color: "#3b82f6", // overridden inline via colors.accentBlue
     fontSize: 9,
     fontWeight: "700",
   },
   headerHpLabel: {
-    color: "#555577",
     fontSize: 8,
     fontWeight: "700",
     letterSpacing: 1,
@@ -771,7 +929,6 @@ const sheetStyles = StyleSheet.create({
   },
   hpBarBg: {
     height: 4,
-    backgroundColor: "rgba(255,255,255,0.06)",
     borderRadius: 2,
     overflow: "hidden",
   },

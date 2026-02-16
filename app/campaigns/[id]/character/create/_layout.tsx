@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { useTheme } from "@/hooks/useTheme";
 
 /**
  * Layout del wizard de creación de personaje.
@@ -10,18 +11,20 @@ import { Stack } from "expo-router";
  *   4. abilities → Asignación de puntuaciones de característica
  *   5. background → Selección de trasfondo
  *   6. skills   → Competencias en habilidades
- *   7. spells   → Hechizos iniciales (si aplica)
+ *   7. spells   → Habilidades iniciales (si aplica)
  *   8. equipment → Equipamiento inicial
  *   9. personality → Personalidad y alineamiento
  *  10. appearance → Apariencia (opcional)
  *  11. summary  → Resumen y confirmación
  */
 export default function CharacterCreationLayout() {
+  const { colors } = useTheme();
+
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: "#1a1a2e" },
+        contentStyle: { backgroundColor: colors.bgPrimary },
         animation: "slide_from_right",
         gestureEnabled: true,
       }}

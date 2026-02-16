@@ -1,6 +1,8 @@
 /**
  * AnimatedPressable - A reusable button/pressable with smooth scale animation
  * and optional glow effect for a modern, polished feel.
+ *
+ * ✅ Theme-aware: adapts to light/dark mode via useTheme()
  */
 
 import { useRef, useCallback } from "react";
@@ -14,6 +16,7 @@ import {
   Text,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/useTheme";
 
 interface AnimatedPressableProps {
   onPress?: () => void;
@@ -48,12 +51,14 @@ export default function AnimatedPressable({
   pressScale = 0.96,
   pressDuration = 100,
   glow = false,
-  glowColor = "#c62828",
+  glowColor,
   glowRadius = 12,
   disabled = false,
   activeOpacity = 1,
   accessibilityLabel,
 }: AnimatedPressableProps) {
+  const { colors: pressColors } = useTheme();
+  const resolvedGlowColor = glowColor ?? pressColors.accentRed;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = useCallback(() => {
@@ -75,7 +80,7 @@ export default function AnimatedPressable({
 
   const glowStyle: ViewStyle | Record<string, never> = glow
     ? {
-        shadowColor: glowColor,
+        shadowColor: resolvedGlowColor,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.4,
         shadowRadius: glowRadius,
@@ -122,49 +127,69 @@ interface ButtonPresetProps {
   style?: ViewStyle | ViewStyle[];
 }
 
-const VARIANT_STYLES: Record<
+/** Resolve button variant styles from the active theme */
+function getVariantStyles(
+  colors: import("@/utils/theme").ThemeColors,
+): Record<
   string,
-  { bg: string; border: string; text: string; glow: string }
-> = {
-  primary: {
-    bg: "#c62828",
-    border: "#c62828",
-    text: "#ffffff",
-    glow: "#c62828",
-  },
-  secondary: {
-    bg: "#23233d",
-    border: "#3a3a5c",
-    text: "#ffffff",
-    glow: "transparent",
-  },
-  ghost: {
-    bg: "transparent",
-    border: "transparent",
-    text: "#8c8cb3",
-    glow: "transparent",
-  },
-  danger: {
-    bg: "rgba(239,68,68,0.15)",
-    border: "rgba(239,68,68,0.3)",
-    text: "#ef4444",
-    glow: "#ef4444",
-  },
-  gold: {
-    bg: "rgba(212,160,23,0.15)",
-    border: "rgba(212,160,23,0.3)",
-    text: "#fbbf24",
-    glow: "#d4a017",
-  },
-};
+  { bg: string; border: string; text: string; glow: string } | null
+> {
+  return {
+    primary: {
+      bg: colors.accentRed,
+      border: colors.accentRed,
+      text: colors.textInverted,
+      glow: colors.accentRed,
+    },
+    danger: {
+      bg: "rgba(239,68,68,0.15)",
+      border: "rgba(239,68,68,0.3)",
+      text: colors.accentDanger,
+      glow: colors.accentDanger,
+    },
+    gold: {
+      bg: "rgba(212,160,23,0.15)",
+      border: "rgba(212,160,23,0.3)",
+      text: colors.accentGold,
+      glow: colors.accentGold,
+    },
+    // secondary and ghost are theme-dependent → handled in component
+    secondary: null,
+    ghost: null,
+  };
+}
 
 const SIZE_STYLES: Record<
   string,
-  { paddingH: number; paddingV: number; fontSize: number; iconSize: number; borderRadius: number }
+  {
+    paddingH: number;
+    paddingV: number;
+    fontSize: number;
+    iconSize: number;
+    borderRadius: number;
+  }
 > = {
-  sm: { paddingH: 14, paddingV: 8, fontSize: 13, iconSize: 16, borderRadius: 8 },
-  md: { paddingH: 20, paddingV: 13, fontSize: 15, iconSize: 20, borderRadius: 12 },
-  lg: { paddingH: 28, paddingV: 16, fontSize: 17, iconSize: 22, borderRadius: 14 },
+  sm: {
+    paddingH: 14,
+    paddingV: 8,
+    fontSize: 13,
+    iconSize: 16,
+    borderRadius: 8,
+  },
+  md: {
+    paddingH: 20,
+    paddingV: 13,
+    fontSize: 15,
+    iconSize: 20,
+    borderRadius: 12,
+  },
+  lg: {
+    paddingH: 28,
+    paddingV: 16,
+    fontSize: 17,
+    iconSize: 22,
+    borderRadius: 14,
+  },
 };
 
 export function DndButton({
@@ -179,9 +204,33 @@ export function DndButton({
   fullWidth = false,
   style: customStyle,
 }: ButtonPresetProps) {
-  const v = VARIANT_STYLES[variant] || VARIANT_STYLES.primary;
+  const { colors, isDark } = useTheme();
   const s = SIZE_STYLES[size] || SIZE_STYLES.md;
   const showGlow = variant === "primary" && !disabled;
+
+  // Resolve theme-aware variant styles
+  const VARIANT_STYLES = getVariantStyles(colors);
+  const v = (() => {
+    const staticV = VARIANT_STYLES[variant];
+    if (staticV) return staticV;
+
+    if (variant === "secondary") {
+      return {
+        bg: colors.bgCard,
+        border: colors.borderDefault,
+        text: colors.textPrimary,
+        glow: "transparent",
+      };
+    }
+
+    // ghost
+    return {
+      bg: "transparent",
+      border: "transparent",
+      text: colors.textSecondary,
+      glow: "transparent",
+    };
+  })();
 
   return (
     <AnimatedPressable
@@ -191,25 +240,29 @@ export function DndButton({
       glowColor={v.glow}
       glowRadius={10}
       pressScale={0.97}
-      style={[
-        {
-          flexDirection: "row" as const,
-          alignItems: "center" as const,
-          justifyContent: "center" as const,
-          backgroundColor: v.bg,
-          borderColor: v.border,
-          borderWidth: variant === "ghost" ? 0 : 1,
-          borderRadius: s.borderRadius,
-          paddingHorizontal: s.paddingH,
-          paddingVertical: s.paddingV,
-          opacity: disabled ? 0.5 : 1,
-        },
-        fullWidth ? { width: "100%" as any } : undefined,
-        customStyle as ViewStyle | undefined,
-      ].filter(Boolean) as ViewStyle[]}
+      style={
+        [
+          {
+            flexDirection: "row" as const,
+            alignItems: "center" as const,
+            justifyContent: "center" as const,
+            backgroundColor: v.bg,
+            borderColor: v.border,
+            borderWidth: variant === "ghost" ? 0 : 1,
+            borderRadius: s.borderRadius,
+            paddingHorizontal: s.paddingH,
+            paddingVertical: s.paddingV,
+            opacity: disabled ? 0.5 : 1,
+          },
+          fullWidth ? ({ width: "100%" } as any) : undefined,
+          customStyle as ViewStyle | undefined,
+        ].filter(Boolean) as ViewStyle[]
+      }
     >
       {loading ? (
-        <Text style={{ color: v.text, fontSize: s.fontSize, fontWeight: "600" }}>
+        <Text
+          style={{ color: v.text, fontSize: s.fontSize, fontWeight: "600" }}
+        >
           Cargando...
         </Text>
       ) : (
@@ -259,38 +312,51 @@ export function IconButton({
   icon,
   size = 44,
   iconSize,
-  color = "#ffffff",
-  backgroundColor = "#1e1e38",
-  borderColor = "#3a3a5c",
+  color,
+  backgroundColor,
+  borderColor,
   glow = false,
   glowColor,
   disabled = false,
   style: customStyle,
   accessibilityLabel,
 }: IconButtonProps) {
+  const { colors } = useTheme();
+
+  // Resolve theme-aware defaults
+  const resolvedColor = color ?? colors.textPrimary;
+  const resolvedBg = backgroundColor ?? colors.bgCard;
+  const resolvedBorder = borderColor ?? colors.borderDefault;
+
   return (
     <AnimatedPressable
       onPress={onPress}
       disabled={disabled}
       glow={glow}
-      glowColor={glowColor || color}
+      glowColor={glowColor || resolvedColor}
       pressScale={0.9}
       accessibilityLabel={accessibilityLabel}
-      style={[
-        {
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          backgroundColor,
-          borderWidth: 1,
-          borderColor,
-          alignItems: "center" as const,
-          justifyContent: "center" as const,
-        },
-        customStyle as ViewStyle | undefined,
-      ].filter(Boolean) as ViewStyle[]}
+      style={
+        [
+          {
+            width: size,
+            height: size,
+            borderRadius: size / 2,
+            backgroundColor: resolvedBg,
+            borderWidth: 1,
+            borderColor: resolvedBorder,
+            alignItems: "center" as const,
+            justifyContent: "center" as const,
+          },
+          customStyle as ViewStyle | undefined,
+        ].filter(Boolean) as ViewStyle[]
+      }
     >
-      <Ionicons name={icon} size={iconSize || size * 0.45} color={color} />
+      <Ionicons
+        name={icon}
+        size={iconSize || size * 0.45}
+        color={resolvedColor}
+      />
     </AnimatedPressable>
   );
 }

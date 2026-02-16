@@ -506,3 +506,233 @@ A nivel 8, obtienes la capacidad de insuflar energía divina a los golpes de tu 
 ### Sanación Suprema
 
 A partir del nivel 17, en vez de tirar uno o más dados para hacer recuperar puntos de golpe con un conjuro, utilizarás el **número más alto de cada dado**. Por ejemplo, en lugar de hacer recuperar 2d6 puntos de golpe a una criatura, le haces recuperar 12.
+
+---
+
+## Dominio Divino: Dominio de la Guerra
+
+Estos clérigos son comandantes natos, campeones de su fe en los campos de batalla. Predican la victoria y el valor.
+
+### Competencias Adicionales
+
+A nivel 1, ganas competencia con **armas marciales** y **armaduras pesadas**.
+
+### Bendición Marcial
+
+También a nivel 1, puedes usar tu **reacción** para permitir que un aliado realice un ataque cuerpo a cuerpo con **ventaja**.
+
+### Canalizar Divinidad: Golpe Guiado
+
+A nivel 2, cuando realizas una tirada de ataque, puedes sumar **+10** al resultado.
+
+### Impacto Divino
+
+A nivel 8, tus ataques cuerpo a cuerpo infligen **daño radiante adicional** igual a tu modificador de Sabiduría (una vez por turno).
+
+### Avatar de Batalla
+
+A nivel 17, obtienes **resistencia al daño no mágico** y puedes realizar **dos ataques** al usar la acción de ataque.
+
+---
+
+## Dominio Divino: Dominio de la Luz
+
+Los clérigos de la Luz portan el resplandor de dioses solares, del fuego o la verdad. Su misión es dispersar las tinieblas, tanto físicas como morales.
+
+### Competencias Adicionales
+
+A nivel 1, obtienes el conjuro *luz* y competencia con **armaduras ligeras**.
+
+### Resplandor de la Aurora
+
+A nivel 1, puedes hacer estallar una ola de luz radiante que daña a enemigos cercanos e ilumina el área.
+
+### Canalizar Divinidad: Cegadora Radiante
+
+A nivel 2, puedes hacer que enemigos cercanos fallen sus ataques al quedar **cegados** por tu luz divina.
+
+### Llama del Alma
+
+A nivel 6, añades tu **modificador de Sabiduría** al daño radiante o de fuego de tus conjuros.
+
+### Corona de Luz
+
+A nivel 17, puedes liberar un aura solar que emana luz intensa y quema a los enemigos en cada turno.
+
+---
+
+## Dominio Divino: Dominio del Conocimiento
+
+Los clérigos del Conocimiento buscan la comprensión de los misterios divinos y del universo. Su palabra es sabiduría, y su fe es descubrimiento.
+
+### Competencias Adicionales
+
+A nivel 1, eliges **dos habilidades de Inteligencia** (como Arcanos o Historia); tus tiradas con ellas **duplican su bonificador de competencia**.
+
+### Bendición del Saber
+
+A nivel 1, puedes añadir **+2d4** a una prueba de característica de un aliado como acción.
+
+### Canalizar Divinidad: Saber de los Siglos
+
+A nivel 2, puedes obtener **competencia temporal** en cualquier habilidad o herramienta durante 10 minutos.
+
+### Visión de lo Oculto
+
+A nivel 6, puedes leer cualquier idioma y percibir **criaturas invisibles** como si fueran visibles.
+
+### Revelación Divina
+
+A nivel 17, tu conocimiento se expande: ignoras tiradas de concentración falladas una vez por descanso y obtienes **ventaja** en todas las pruebas de Inteligencia y Sabiduría.
+
+---
+
+## Dominio Divino: Dominio de la Tempestad
+
+Estos clérigos sirven a dioses del océano, el trueno y la furia del cielo. Su poder llega con el estruendo de la tormenta.
+
+### Competencias Adicionales
+
+A nivel 1, obtienes competencia con **armas marciales** y **armaduras pesadas**.
+
+### Cólera de la Tormenta
+
+A nivel 1, cuando una criatura te golpea, puedes usar tu **reacción** para infligirle **daño de trueno o relámpago**.
+
+### Canalizar Divinidad: Desatar Tormenta
+
+A nivel 2, puedes **maximizar el daño** de un conjuro de trueno o relámpago.
+
+### Espíritu del Mar
+
+A nivel 6, ganas **resistencia al daño de trueno** y puedes volar brevemente si estás al aire libre durante una tormenta.
+
+### Tempestad Divina
+
+A nivel 17, puedes volverte un avatar de tormenta, con **vuelo** y ataques cargados de daño eléctrico en un radio a tu alrededor.
+
+---
+
+## Dominio Divino: Dominio de la Tumba
+
+Los seguidores de este dominio guardan el delicado límite entre la vida y la muerte. No persiguen el fin de la vida, sino su equilibrio natural.
+
+### Ojos del Sepulcro
+
+A nivel 1, puedes detectar **no muertos** visibles en un radio de **18 m**.
+
+### Canalizar Divinidad: Camino de la Muerte
+
+A nivel 2, puedes hacer que la próxima fuente de daño de tu aliado cause **máximo daño** a un enemigo herido o no muerto.
+
+### Protector de Muertos
+
+A nivel 6, puedes usar tu **reacción** para prevenir que una criatura aliada caiga a **0 PG**.
+
+### Toque de la Muerte
+
+A nivel 8, añades **daño necrótico adicional** a tus ataques cuerpo a cuerpo igual a tu modificador de Sabiduría.
+
+### Lamento del Reposo
+
+A nivel 17, puedes liberar una onda de energía necrótica que **debilita** y **ralentiza** a todos los enemigos cercanos.
+
+---
+
+## Dominio Divino: Dominio del Engaño (Trickery)
+
+Los clérigos de este dominio veneran a dioses del engaño, suerte, astucia o ladrón divino. Actúan con humor y discreción, engañando incluso al destino.
+
+### Bendición del Embaucador
+
+A nivel 1, puedes conceder **ventaja** en pruebas de Destreza (Furtividad) a un aliado por 1 hora.
+
+### Canalizar Divinidad: Duplicidad
+
+A nivel 2, puedes crear una **ilusión de ti mismo** que te permite lanzar conjuros desde su posición.
+
+### Reflejo Sombrío
+
+A nivel 6, obtienes desplazamiento parcial (ataques tienen **desventaja** contra ti) durante un turno tras recibir daño.
+
+### Engaño Divino
+
+A nivel 17, puedes crear **cuatro duplicados ilusorios** de ti mismo y cambiar posiciones con ellos como **acción bonus**.
+
+---
+
+## Dominio Divino: Dominio de la Forja
+
+El dios de la forja enseña la creación, la artesanía y el fuego sagrado. Sus clérigos son artífices divinos, herreros bendecidos con la chispa de la invención.
+
+### Competencias Adicionales
+
+A nivel 1, obtienes competencia con **armaduras pesadas** y **herramientas de herrero**.
+
+### Bendición del Herrero
+
+A nivel 1, puedes imbuir un arma o armadura con un bonificador de **+1** hasta el siguiente **descanso largo**.
+
+### Canalizar Divinidad: Bendecir Forja
+
+A nivel 2, puedes mejorar el poder defensivo u ofensivo de objetos metálicos que empuñen tus aliados.
+
+### Alma de Acero
+
+A nivel 6, ganas **resistencia al daño de fuego** y tu armadura te otorga **+1 CA adicional**.
+
+### Maestro del Yunque
+
+A nivel 17, puedes crear o reparar instantáneamente cualquier arma o armadura no mágica con un gesto divino.
+
+---
+
+## Dominio Divino: Dominio del Crepúsculo
+
+Estos clérigos custodian el umbral entre la luz y la oscuridad, protegiendo a quienes vagan en las sombras.
+
+### Competencias Adicionales
+
+A nivel 1, obtienes competencia con **armaduras medianas**, **armas marciales** y **visión en la oscuridad** mejorada (hasta **36 m**).
+
+### Ojos del Crepúsculo
+
+Puedes compartir tu visión en la oscuridad con varias criaturas a **9 m** durante 1 hora.
+
+### Canalizar Divinidad: Bendición del Crepúsculo
+
+A nivel 2, puedes otorgar temporalmente **CA adicional** y **PG temporales** a todos los aliados en un radio a tu alrededor.
+
+### Círculo Protector
+
+A nivel 6, tu aura de **9 m** concede **ventaja** contra efectos de miedo y encantamiento.
+
+### Santuario del Anochecer
+
+A nivel 17, puedes envolver a tus aliados en un domo de penumbra protectora, bloqueando ataques y curando heridos dentro de su luz.
+
+---
+
+## Dominio Divino: Dominio del Orden
+
+Los clérigos del Orden veneran la ley, disciplina y estructura divina. Son jueces y guardianes del orden cósmico.
+
+### Competencias Adicionales
+
+A nivel 1, ganas competencia con **armaduras pesadas**.
+
+### Voz de la Autoridad
+
+A nivel 1, cuando lanzas un conjuro sobre un aliado, este puede usar su **reacción** para realizar inmediatamente un ataque.
+
+### Canalizar Divinidad: Decreto de la Ley
+
+A nivel 2, puedes detener o calmar mágicamente una multitud o grupo hostil durante un minuto.
+
+### Ataque Imbuido
+
+A nivel 8, tus armas cuerpo a cuerpo infligen **daño psíquico adicional** una vez por turno.
+
+### Orden Suprema
+
+A nivel 17, tus aliados bajo tus bendiciones pueden reaccionar automáticamente a tu palabra, realizando **acciones inmediatas adicionales**.

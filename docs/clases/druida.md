@@ -252,6 +252,252 @@ La criatura es consciente de este efecto antes de decidir si atacarte.
 
 ---
 
+## Círculo Druídico: Círculo de la Luna
+
+Los druidas del Círculo de la Luna son los maestros de la transformación. Para ellos, la Forma Salvaje no es una simple herramienta: es su verdadero rostro. Estos druidas patrullan los rincones más salvajes del mundo, asumiendo la forma de las bestias más temibles para proteger la naturaleza de quienes buscan domarla. Donde otros druidas meditan entre raíces, los de la Luna corren con las manadas.
+
+### Forma Salvaje de Combate
+
+Cuando eliges este círculo a nivel 2, ganas la capacidad de usar tu **Forma Salvaje** como **acción adicional** en tu turno, en lugar de como acción. Además, mientras estés transformado, puedes usar tu **acción adicional** para gastar un espacio de conjuro y recuperar **1d8 puntos de golpe por nivel** del espacio gastado.
+
+### Formas del Círculo
+
+Los ritos mágicos de tu círculo te otorgan la capacidad de transformarte en bestias más peligrosas de lo habitual:
+
+- A nivel 2, puedes transformarte en bestias de hasta **nivel de desafío 1** (sin limitación de tipo de movimiento).
+- A nivel 6, puedes transformarte en bestias de hasta **nivel de desafío igual a tu nivel de druida ÷ 3** (redondeado hacia abajo).
+
+Tus ataques en Forma Salvaje se consideran **mágicos** a efectos de superar resistencias e inmunidades al daño no mágico a partir de nivel 6.
+
+### Forma Elemental
+
+A nivel 10, puedes gastar **dos usos de Forma Salvaje** al mismo tiempo para transformarte en un **elemental de aire, agua, fuego o tierra**. Mientras estés en forma elemental, obtienes todas las estadísticas y habilidades del elemental elegido.
+
+### Mil Formas
+
+A nivel 14, has aprendido a usar la magia de formas tan variadas que puedes alterar tu apariencia física a voluntad. Puedes lanzar el conjuro **Alterar tu aspecto** (*Alter Self*) a voluntad **sin gastar un espacio de conjuro**. Además, tus transformaciones bestiales ya no están limitadas por haber visto la criatura previamente, siempre que esta exista en el mundo natural y su nivel de desafío sea apropiado.
+
+---
+
+## Círculo Druídico: Círculo de los Sueños
+
+Estos druidas están vinculados al Reino Feérico y al poder restaurador de los sueños. Sus artes mezclan la calma del descanso con la protección cargada de magia feérica. Sanadores natos, los druidas de los Sueños canalizan la energía luminosa y reconfortante de las hadas para curar heridas, proteger a los durmientes y caminar entre los mundos oníricos.
+
+### Bálsamo de la Corte Estival
+
+A nivel 2, obtienes un reservorio de **energía curativa feérica** representado por un número de **d6** igual a tu nivel de druida. Como **acción adicional**, puedes gastar uno o más de estos dados (hasta un máximo igual a la mitad de tu nivel de druida, redondeado hacia arriba) para curar a una criatura que puedas ver a **36 m o menos** de ti. La criatura recupera un número de puntos de golpe igual a la suma de los dados gastados + tu **modificador por Sabiduría** (mínimo 1 PG). Además, la criatura gana **1 punto de golpe temporal** por dado gastado.
+
+Recuperas todos los dados gastados tras un **descanso largo**.
+
+### Santuario de los Sueños
+
+A nivel 6, al comienzo de un **descanso corto o largo**, puedes invocar un aura protectora de **9 m de radio** que dura hasta que el descanso termine. Tú y tus aliados dentro del aura obtienen un bonificador de **+5 a las pruebas de Sabiduría (Percepción)** y a las pruebas de Destreza (Sigilo). Además, cualquier luz dentro del santuario (incluida la de una hoguera) es **invisible** desde fuera de la barrera.
+
+Si una criatura que puedas ver se mueve hacia el interior del santuario o realiza una acción hostil dentro, puedes usar tu **reacción** para forzarla a realizar una **tirada de salvación de Sabiduría** contra tu CD de salvación de conjuros. Si falla, la criatura sufre **2d10 de daño psíquico**. Si la supera, sufre la mitad del daño.
+
+### Caminante Onírico
+
+A nivel 10, puedes lanzar el conjuro **Viaje onírico** (*Dream*) como ritual sin gastar un espacio de conjuro. Cuando lo haces, puedes elegir a un número de criaturas voluntarias igual a tu **modificador por Sabiduría** (mínimo 1). Al final del descanso, cada criatura elegida se **teletransporta** mágicamente del sueño a un punto que hayas visitado anteriormente, siempre que esté en el mismo plano de existencia. Las criaturas aparecen a **1,5 m** del punto elegido.
+
+### Bondad de los Antiguos
+
+A nivel 14, cuando usas un conjuro que restaure puntos de golpe, cada criatura que recupere PG también puede poner fin de inmediato a **uno** de los siguientes efectos que la afecten: **cegado**, **hechizado**, **ensordecido**, **asustado**, **paralizado** o **envenenado**. Además, ganas **resistencia al daño contundente, cortante y perforante** de ataques no mágicos.
+
+---
+
+## Círculo Druídico: Círculo de los Pastores
+
+Los druidas de este círculo actúan como guardianes de las bestias y espíritus, protegiendo la vida en todas sus formas. Se comunican con los animales y las criaturas feéricas, y consideran su deber sagrado velar por todas las criaturas vivientes, desde el insecto más diminuto hasta el elemental más antiguo.
+
+### Lengua del Bosque
+
+Cuando eliges este círculo a nivel 2, ganas la capacidad de **hablar con bestias** a voluntad, como si siempre estuvieras bajo el efecto del conjuro *Hablar con los animales*. Además, las bestias pueden entender tu habla y tú puedes descifrar sus respuestas básicas (emociones, intenciones, recuerdos recientes).
+
+### Espíritu Guardián
+
+También a nivel 2, puedes usar tu **acción adicional** para invocar un **espíritu incorpóreo** en un punto que puedas ver a **18 m o menos** de ti. El espíritu crea un **aura de 9 m de radio** que dura **1 minuto** o hasta que quedes incapacitado. Elige uno de los siguientes espíritus cada vez que lo invoques:
+
+- **Espíritu del Oso:** Tú y tus aliados dentro del aura ganáis **puntos de golpe temporales** iguales a **5 + tu nivel de druida** al invocar al espíritu, y tienen **ventaja** en las pruebas de Fuerza y las tiradas de salvación de Fuerza mientras permanezcan en el aura.
+- **Espíritu del Halcón:** Tú y tus aliados dentro del aura tenéis **ventaja** en las tiradas de ataque contra criaturas que estén dentro del aura.
+- **Espíritu del Unicornio:** Tú y tus aliados dentro del aura tenéis **ventaja** en las pruebas para detectar criaturas en el aura. Además, cuando lanzas un conjuro que restaure puntos de golpe a una criatura dentro del aura, cada criatura que elijas dentro de la misma también recupera un número de PG igual a **1d6 + tu modificador por Sabiduría**.
+
+Puedes invocar al espíritu un número de veces igual a tu **modificador por Sabiduría** (mínimo 1) por **descanso largo**.
+
+### Escudo Espiritual
+
+A nivel 6, los espíritus que invocas se vuelven más protectores. Cuando una criatura dentro del aura de tu **Espíritu Guardián** recibe daño, puedes usar tu **reacción** para reducir ese daño en **2d8**. El dado aumenta a **3d8** a nivel 10 y a **4d8** a nivel 14.
+
+### Invocador Supremo
+
+A nivel 10, las bestias y criaturas feéricas que invoques mediante conjuros de invocación se vuelven más resistentes. Cada criatura invocada gana los siguientes beneficios:
+
+- Sus puntos de golpe aumentan en **2 por cada nivel de druida** que tengas.
+- El daño de sus ataques con arma natural se considera **mágico** a efectos de superar resistencias e inmunidades.
+
+### Espíritu Eterno
+
+A nivel 14, los espíritus que invocas te protegen de la muerte. Si tú o una criatura aliada caéis a **0 puntos de golpe** mientras estéis dentro del aura de tu Espíritu Guardián, esa criatura gana inmediatamente el beneficio de **1d6 + tu nivel de druida** puntos de golpe. Una criatura no puede beneficiarse de este rasgo más de **una vez** por invocación del Espíritu Guardián.
+
+---
+
+## Círculo Druídico: Círculo del Fuego Salvaje
+
+Los druidas del Círculo del Fuego Salvaje entienden que la destrucción es parte fundamental del ciclo natural: la ceniza alimenta el renacimiento, el incendio forestal despeja el camino para nuevos brotes. Estos druidas no temen al fuego; lo abrazan como un agente de transformación y renovación.
+
+### Conjuros de Círculo del Fuego Salvaje
+
+Cuando eliges este círculo a nivel 2, añades los siguientes conjuros a tu lista de conjuros preparados. Están siempre preparados y no cuentan para tu límite:
+
+| Nivel de druida | Conjuros |
+|---|---|
+| 2 | Manos ardientes, Curar heridas |
+| 3 | Esfera flamígera, Restauración menor |
+| 5 | Revivificar, Muro de fuego reducido (*Plant Growth*) |
+| 7 | Aura de vida, Escudo de fuego |
+| 9 | Plaga de insectos, Muro de fuego |
+
+### Espíritu de Fuego Salvaje
+
+También a nivel 2, puedes gastar un uso de **Forma Salvaje** para invocar un **Espíritu de Fuego Salvaje** en lugar de transformarte. El espíritu aparece en un espacio desocupado a **9 m o menos** de ti. Cada criatura a **3 m o menos** del espíritu (excepto tú) debe superar una **tirada de salvación de Destreza** contra tu CD de salvación de conjuros o sufrir **2d6 de daño de fuego**.
+
+El espíritu es aliado tuyo y de tus compañeros. En combate, comparte tu turno de iniciativa pero actúa inmediatamente después de ti. Obedece tus órdenes verbales (no requiere acción). Si no le das una orden, usa su turno para esquivar. Permanece durante **1 hora**, hasta que lo descartes (sin acción), o hasta que quedes incapacitado.
+
+### Renovación Ígnea
+
+A nivel 6, cuando tú o tu Espíritu de Fuego Salvaje infligís **daño de fuego** a una criatura o restauráis **puntos de golpe** a una criatura, puedes elegir a una criatura que puedas ver a **9 m o menos** del espíritu. Esa criatura recupera **1d8 + tu modificador por Sabiduría** de puntos de golpe. Puedes usar este rasgo un número de veces igual a tu **modificador por Sabiduría** (mínimo 1) por **descanso largo**.
+
+### Llamas Potenciadas
+
+A nivel 10, cuando invoques a tu Espíritu de Fuego Salvaje, puedes hacer que cada criatura que elijas a **3 m o menos** del espíritu se **teletransporte** hasta **4,5 m** a un espacio desocupado que puedas ver. Además, una vez por turno, cuando el espíritu inflija daño de fuego, puedes sumar **1d8 adicional** al daño.
+
+### Renacer de la Llama
+
+A nivel 14, la chispa de la vida arde con fuerza dentro de ti. Si caes a **0 puntos de golpe** mientras tu Espíritu de Fuego Salvaje esté invocado y no mueres directamente, puedes hacer que el espíritu se extinga. Cuando lo hagas, tu cuerpo se envuelve en llamas y reapareces con **puntos de golpe iguales a la mitad de tu máximo**. Cada criatura a **3 m o menos** de donde reapareces debe superar una **tirada de salvación de Destreza** contra tu CD o sufrir **2d10 + tu nivel de druida** de daño de fuego.
+
+Puedes usar este rasgo una vez por **descanso largo**.
+
+---
+
+## Círculo Druídico: Círculo de las Esporas
+
+El equilibrio entre vida y muerte define a estos druidas. Donde otros ven descomposición, ellos ven la semilla de nueva vida. Los druidas de las Esporas canalizan el poder de los hongos, el moho y la putrefacción, creando un ciclo de destrucción y renacimiento que refleja el orden más profundo de la naturaleza.
+
+### Conjuros de Círculo de las Esporas
+
+Cuando eliges este círculo a nivel 2, añades los siguientes conjuros a tu lista de conjuros preparados. Están siempre preparados y no cuentan para tu límite:
+
+| Nivel de druida | Conjuros |
+|---|---|
+| 2 | Chill Touch *(truco)* |
+| 3 | Cecear (*Blindness/Deafness*), Rayo debilitante |
+| 5 | Animar muertos, Forma gaseosa |
+| 7 | Plaga (*Blight*), Confusión |
+| 9 | Nube letal, Contagio |
+
+### Halo de Esporas
+
+También a nivel 2, estás rodeado de un aura de **esporas invisibles e inofensivas** en un radio de **3 m**. Como **reacción**, cuando una criatura que puedas ver se mueva a un espacio a 3 m de ti o empiece su turno allí, puedes infligirle **1d4 de daño necrótico**. El daño aumenta a **1d6** a nivel 6, **1d8** a nivel 10 y **1d10** a nivel 14.
+
+### Forma Simbiótica
+
+A nivel 2, puedes gastar un uso de **Forma Salvaje** para potenciar tu cuerpo con energía fúngica en lugar de transformarte en bestia. Ganas **4 puntos de golpe temporales por cada nivel de druida** que tengas. Mientras tengas estos PG temporales, obtienes los siguientes beneficios:
+
+- Tus ataques cuerpo a cuerpo con arma infligen **1d6 de daño necrótico** adicional al impactar.
+- Tu CA no puede ser inferior a **16**, independientemente de la armadura que lleves.
+
+Estos beneficios duran **10 minutos**, hasta que pierdas todos los PG temporales o hasta que vuelvas a usar Forma Salvaje.
+
+### Hongo Defensor
+
+A nivel 6, tus esporas obtienen poder defensivo. Cuando una criatura aliada que puedas ver a **3 m o menos** de ti recibe daño, puedes usar tu **reacción** para que las esporas absorban parte del impacto, reduciendo el daño en **1d4 + tu modificador por Sabiduría** (mínimo 1). Esta reducción aumenta con el nivel de tu Halo de Esporas.
+
+### Cuerpo Micótico
+
+A nivel 10, las esporas han impregnado por completo tu organismo. Ganas los siguientes beneficios permanentes:
+
+- **Inmunidad** a los estados de **cegado**, **ensordecido** y **envenenado**.
+- **Inmunidad** al daño de **veneno**.
+- Las criaturas que te impacten con un ataque cuerpo a cuerpo mientras estés a **1,5 m o menos** de ellas sufren tu daño de **Halo de Esporas**.
+
+### Retoño de la Descomposición
+
+A nivel 14, cuando una criatura **Pequeña** o **Mediana** muere a **3 m o menos** de ti, puedes usar tu **reacción** para animarla. La criatura se levanta con **1 punto de golpe** al comienzo de tu siguiente turno, funcionando como un **zombi de esporas** bajo tu control. El zombi actúa inmediatamente después de tu turno, puede realizar ataques y dura **1 hora** o hasta que sea destruido. Cuando el zombi es destruido, expulsa esporas que infligen tu daño de Halo de Esporas a cada criatura a **3 m o menos** de él.
+
+Puedes tener activos un número máximo de zombis de esporas igual a tu **modificador por Sabiduría** (mínimo 1) a la vez.
+
+---
+
+## Círculo Druídico: Círculo de la Estrella
+
+Los druidas del Círculo de la Estrella estudian los patrones celestiales, trazando constelaciones que canalizan el flujo de la magia del cosmos. Estos druidas han cartografiado las estrellas durante generaciones, descifrando en sus movimientos profecías, ciclos de poder y secretos arcanos que los conectan con las fuerzas más allá del mundo material.
+
+### Mapa Estelar
+
+Cuando eliges este círculo a nivel 2, creas un **mapa estelar** que funciona como tu **canalizador mágico** para conjuros de druida. Mientras lo tengas en la mano, obtienes los siguientes beneficios:
+
+- Conoces el truco **Guía** (*Guidance*). Si ya lo conoces, aprendes un truco de druida adicional a tu elección.
+- Tienes preparado el conjuro **Misil mágico** (*Guiding Bolt*). Cuenta como conjuro de druida para ti, no cuenta para tu límite de conjuros preparados y puedes lanzarlo sin gastar un espacio de conjuro un número de veces igual a tu **modificador por Sabiduría** (mínimo 1) por **descanso largo**.
+
+Si pierdes tu mapa estelar, puedes crear uno nuevo realizando un ritual de **1 hora** durante un descanso corto o largo. Este ritual destruye el mapa anterior.
+
+### Forma Estelar
+
+También a nivel 2, puedes gastar un uso de **Forma Salvaje** para adoptar una forma de constelación en lugar de transformarte en bestia. Mientras estés en Forma Estelar (que dura **10 minutos**), tu cuerpo se ilumina con puntos de luz semejantes a estrellas. Elige una de las siguientes constelaciones:
+
+- **Arquero:** Cuando actives esta forma y como **acción adicional** en turnos posteriores, puedes realizar un ataque a distancia mágico que impacta a una criatura a **18 m o menos**. Si impactas, infliges **1d8 + tu modificador por Sabiduría** de daño radiante.
+- **Cáliz:** Cuando lanzas un conjuro que restaure puntos de golpe usando un espacio de conjuro, tú u otra criatura a **9 m o menos** de ti recupera **1d8 + tu modificador por Sabiduría** de puntos de golpe adicionales.
+- **Dragón:** Cuando realizas una prueba de Inteligencia o Sabiduría, o una prueba de concentración, obtienes un resultado **mínimo de 10** en el d20.
+
+### Claridad Cósmica
+
+A nivel 6, la Forma Estelar te otorga los siguientes beneficios adicionales según la constelación elegida:
+
+- **Arquero:** Cuando impactas con el ataque radiante del Arquero, puedes forzar al objetivo a realizar una **tirada de salvación de Destreza** contra tu CD. Si falla, su velocidad se reduce a **0** hasta el comienzo de tu siguiente turno.
+- **Cáliz:** Cuando la curación del Cáliz se aplique a una criatura con **0 PG**, esa criatura gana **ventaja** en su primera tirada de ataque tras ser curada.
+- **Dragón:** Ganas **velocidad de vuelo de 6 m** y puedes flotar. Si ya estás flotando al final de tu turno, no caes.
+
+### Guía de los Astros
+
+A nivel 10, las estrellas te conceden clarividencia para guiar a los demás. Cuando tú o una criatura que puedas ver a **9 m o menos** de ti falle una tirada de salvación, puedes usar tu **reacción** para permitir que esa criatura repita la tirada con un bonificador de **1d6**. Puedes usar este rasgo un número de veces igual a tu **modificador por Sabiduría** (mínimo 1) por **descanso largo**.
+
+### Corona del Firmamento
+
+A nivel 14, tu conexión con las estrellas se vuelve permanente. Ganas los siguientes beneficios:
+
+- **Resistencia** al daño **radiante** y al daño **necrótico**.
+- Mientras estés en **Forma Estelar**, puedes lanzar el conjuro **Muro de fuerza** (*Wall of Force*) o **Teletransporte** (*Teleportation*) **sin gastar un espacio de conjuro** ni componente material. Puedes usar este beneficio una vez por **descanso largo**.
+- Tu Forma Estelar emite **luz brillante** a 9 m y **luz tenue** 9 m más. Cualquier criatura que tú elijas dentro de la luz brillante tiene **desventaja** en las tiradas de ataque contra ti.
+
+---
+
+## Círculo Druídico: Círculo de las Tierras Salvajes *(Unearthed Arcana)*
+
+> **Nota:** Este círculo procede de *Unearthed Arcana* y no es contenido oficial publicado. Muchos DM lo permiten en sus mesas para campañas con una conexión más cruda y elemental con la naturaleza primigenia.
+
+Algunos druidas canalizan la magia primigenia sin forma, conectados al reino crudo y elemental que existía antes de toda civilización. Donde otros druidas ven armonía, estos ven caos, potencia y un poder salvaje que puede desatarse sin límites.
+
+### Furia Primordial
+
+A nivel 2, ganas la capacidad de canalizar la energía elemental en bruto. Cuando estés en **Forma Salvaje**, puedes usar tu **acción adicional** para realizar un ataque elemental: elige **fuego, ácido, frío o trueno**. El ataque alcanza a una criatura a **9 m o menos** que puedas ver, y la fuerza a superar una **tirada de salvación de Constitución** contra tu CD de salvación de conjuros. Si falla, sufre **1d8 + tu modificador por Sabiduría** del tipo de daño elegido. Si la supera, sufre la mitad.
+
+El daño aumenta a **2d8** a nivel 6, **3d8** a nivel 10 y **4d8** a nivel 14.
+
+### Lenguaje Elemental
+
+A nivel 6, comprendes y hablas los idiomas **Primordial** (incluidas las variantes: Aquan, Auran, Ignan y Terran). Además, puedes comunicarte telepáticamente con **elementales** y criaturas del tipo **hada** a **18 m o menos** de ti, siempre que compartan un idioma contigo. Ganas **ventaja** en las pruebas de Carisma (Persuasión) con este tipo de criaturas.
+
+### Forma Primigenia
+
+A nivel 10, cuando adoptas una **Forma Salvaje**, puedes combinar rasgos de hasta **dos criaturas diferentes** para crear tu propio diseño híbrido. Elige dos bestias cuyos niveles de desafío sean válidos según tu tabla: usas las estadísticas de la criatura con el nivel de desafío más alto, pero puedes reemplazar un tipo de movimiento, un sentido o un ataque por el de la segunda criatura. Estos cambios duran mientras dure tu Forma Salvaje.
+
+### Raíz del Mundo Antiguo
+
+A nivel 14, puedes canalizar durante **1 minuto** el poder de la vida primordial. Como **acción**, desencadenas una onda de energía natural en un radio de **18 m** centrado en ti. Cada criatura hostil en el área debe superar una **tirada de salvación de Constitución** contra tu CD de salvación de conjuros o sufrir **4d10 de daño de trueno** y quedar **derribada**. Si supera la tirada, sufre la mitad del daño y no queda derribada.
+
+Durante el minuto que dura este efecto, el terreno a **18 m** de ti se convierte en **terreno difícil** para los enemigos a medida que enredaderas, raíces y flora explotan a tu alrededor. Puedes usar este rasgo una vez por **descanso largo**.
+
+---
+
 ## Guía de Subida de Nivel
 
 A continuación se detalla, nivel a nivel, qué obtiene el druida en cada avance.

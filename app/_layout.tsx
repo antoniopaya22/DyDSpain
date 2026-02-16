@@ -1,11 +1,19 @@
 import "../global.css";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import * as SplashScreen from "expo-splash-screen";
 import { View, Text, StyleSheet, Animated, Easing } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { useColorScheme } from "nativewind";
+import { useSettingsStore } from "@/stores/settingsStore";
+import { useTheme } from "@/hooks/useTheme";
+import { DARK_THEME } from "@/utils/theme";
+
+const MIN_SPLASH_MS = 1000;
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 // ─── Error Boundary ──────────────────────────────────────────────────
 
@@ -57,10 +65,14 @@ function ErrorScreen({ error }: { error: Error | null }) {
     ]).start();
   }, [fadeAnim, scaleAnim]);
 
+  // ErrorScreen renders outside of theme context (inside ErrorBoundary),
+  // so we use DARK_THEME tokens directly instead of the useTheme() hook.
+  const c = DARK_THEME;
+
   return (
-    <View style={styles.errorContainer}>
+    <View style={[styles.errorContainer, { backgroundColor: c.bgPrimary }]}>
       <LinearGradient
-        colors={["#0d0d1a", "#141425", "#1a1a2e"]}
+        colors={[c.gradientMain[0], c.gradientMain[1], c.gradientMain[2]]}
         style={StyleSheet.absoluteFill}
       />
 
@@ -76,24 +88,46 @@ function ErrorScreen({ error }: { error: Error | null }) {
         {/* Error icon with glow ring */}
         <View style={styles.errorIconOuter}>
           <View style={styles.errorIconRing} />
-          <View style={styles.errorIconBg}>
-            <Ionicons name="warning-outline" size={36} color="#fbbf24" />
+          <View
+            style={[
+              styles.errorIconBg,
+              {
+                backgroundColor: c.accentGoldGlow,
+                borderColor: `${c.accentGold}1F`,
+              },
+            ]}
+          >
+            <Ionicons name="warning-outline" size={36} color={c.accentGold} />
           </View>
         </View>
 
-        <Text style={styles.errorTitle}>Error en la aplicación</Text>
+        <Text style={[styles.errorTitle, { color: c.accentGold }]}>
+          Error en la aplicación
+        </Text>
 
-        <View style={styles.errorMessageContainer}>
-          <Text style={styles.errorMessage}>
+        <View
+          style={[
+            styles.errorMessageContainer,
+            { backgroundColor: c.dangerBg, borderColor: c.dangerBorder },
+          ]}
+        >
+          <Text style={[styles.errorMessage, { color: c.dangerText }]}>
             {error?.message || "Error desconocido"}
           </Text>
         </View>
 
         {error?.stack ? (
           <View style={styles.errorStackContainer}>
-            <Text style={styles.errorStackLabel}>Detalles técnicos</Text>
-            <View style={styles.errorStackBox}>
-              <Text style={styles.errorStack}>
+            <Text style={[styles.errorStackLabel, { color: c.textMuted }]}>
+              Detalles técnicos
+            </Text>
+            <View
+              style={[
+                styles.errorStackBox,
+                { backgroundColor: c.bgSubtle, borderColor: c.borderSubtle },
+              ]}
+            >
+              <Text style={[styles.errorStack, { color: c.textMuted }]}>
                 {error.stack.slice(0, 400)}
                 {error.stack.length > 400 ? "..." : ""}
               </Text>
@@ -106,9 +140,9 @@ function ErrorScreen({ error }: { error: Error | null }) {
           <Ionicons
             name="information-circle-outline"
             size={14}
-            color="#555577"
+            color={c.textMuted}
           />
-          <Text style={styles.errorHintText}>
+          <Text style={[styles.errorHintText, { color: c.textMuted }]}>
             Intenta reiniciar la aplicación. Si el problema persiste, contacta
             con soporte.
           </Text>
@@ -118,43 +152,96 @@ function ErrorScreen({ error }: { error: Error | null }) {
   );
 }
 
+// ─── Inner Layout (needs to be inside ErrorBoundary, uses hooks) ─────
+
+function InnerLayout() {
+  const { colors, isDark } = useTheme();
+  const { loaded, loadSettings } = useSettingsStore();
+  const { setColorScheme } = useColorScheme();
+  const [appReady, setAppReady] = useState(false);
+
+  // Load settings on mount so the theme is available immediately
+  useEffect(() => {
+    let isMounted = true;
+    const start = Date.now();
+
+    const prepare = async () => {
+      if (!loaded) {
+        await loadSettings();
+      }
+
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(0, MIN_SPLASH_MS - elapsed);
+      if (remaining > 0) {
+        await new Promise((resolve) => setTimeout(resolve, remaining));
+      }
+
+      if (isMounted) {
+        setAppReady(true);
+      }
+    };
+
+    prepare();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [loaded, loadSettings]);
+
+  // Sync the custom theme store with NativeWind's color scheme
+  // so that dark: variants in className work correctly
+  useEffect(() => {
+    setColorScheme(isDark ? "dark" : "light");
+  }, [isDark, setColorScheme]);
+
+  useEffect(() => {
+    if (appReady) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [appReady]);
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
+      <LinearGradient
+        colors={[colors.gradientMain[0], colors.gradientMain[3]]}
+        style={StyleSheet.absoluteFill}
+      />
+      <StatusBar style={colors.statusBarStyle} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "transparent" },
+          animation: "slide_from_right",
+          animationDuration: 250,
+        }}
+      >
+        <Stack.Screen name="index" />
+        <Stack.Screen name="campaigns" />
+        <Stack.Screen
+          name="settings"
+          options={{
+            animation: "slide_from_bottom",
+            animationDuration: 300,
+          }}
+        />
+        <Stack.Screen
+          name="compendium"
+          options={{
+            animation: "slide_from_right",
+            animationDuration: 250,
+          }}
+        />
+      </Stack>
+    </View>
+  );
+}
+
 // ─── Root Layout ─────────────────────────────────────────────────────
 
 export default function RootLayout() {
   return (
     <ErrorBoundary>
-      <View style={styles.container}>
-        <LinearGradient
-          colors={["#0d0d1a", "#1a1a2e"]}
-          style={StyleSheet.absoluteFill}
-        />
-        <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: "transparent" },
-            animation: "slide_from_right",
-            animationDuration: 250,
-          }}
-        >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="campaigns" />
-          <Stack.Screen
-            name="settings"
-            options={{
-              animation: "slide_from_bottom",
-              animationDuration: 300,
-            }}
-          />
-          <Stack.Screen
-            name="compendium"
-            options={{
-              animation: "slide_from_right",
-              animationDuration: 250,
-            }}
-          />
-        </Stack>
-      </View>
+      <InnerLayout />
     </ErrorBoundary>
   );
 }
@@ -164,13 +251,11 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0d0d1a",
   },
 
   // ── Error Screen ──
   errorContainer: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
@@ -199,14 +284,11 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: "rgba(251,191,36,0.08)",
     borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.12)",
     alignItems: "center",
     justifyContent: "center",
   },
   errorTitle: {
-    color: "#fbbf24",
     fontSize: 20,
     fontWeight: "800",
     marginBottom: 12,
@@ -214,9 +296,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   errorMessageContainer: {
-    backgroundColor: "rgba(239,68,68,0.08)",
     borderWidth: 1,
-    borderColor: "rgba(239,68,68,0.15)",
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -224,7 +304,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   errorMessage: {
-    color: "#ef4444",
     fontSize: 14,
     textAlign: "center",
     lineHeight: 20,
@@ -235,7 +314,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorStackLabel: {
-    color: "#555577",
     fontSize: 10,
     fontWeight: "700",
     letterSpacing: 1.2,
@@ -243,14 +321,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   errorStackBox: {
-    backgroundColor: "rgba(255,255,255,0.03)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.05)",
     borderRadius: 10,
     padding: 12,
   },
   errorStack: {
-    color: "#666699",
     fontSize: 11,
     fontFamily: "monospace",
     lineHeight: 16,
@@ -263,7 +338,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   errorHintText: {
-    color: "#555577",
     fontSize: 12,
     lineHeight: 17,
     flex: 1,

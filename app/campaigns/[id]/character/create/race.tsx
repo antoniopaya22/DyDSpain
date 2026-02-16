@@ -1,11 +1,5 @@
 import { useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
@@ -18,20 +12,22 @@ import {
 import type { RaceData, SubraceData } from "@/data/srd/races";
 import type { RaceId, SubraceId, AbilityKey } from "@/types/character";
 import { ABILITY_NAMES } from "@/types/character";
+import { useTheme } from "@/hooks/useTheme";
 
 const CURRENT_STEP = 2;
 
 export default function RaceSelectionStep() {
+  const { colors } = useTheme();
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
   const { draft, setRaza, saveDraft, loadDraft } = useCreationStore();
 
   const [selectedRace, setSelectedRace] = useState<RaceId | null>(
-    draft?.raza ?? null
+    draft?.raza ?? null,
   );
   const [selectedSubrace, setSelectedSubrace] = useState<SubraceId>(
-    draft?.subraza ?? null
+    draft?.subraza ?? null,
   );
   const [showDetails, setShowDetails] = useState(false);
 
@@ -51,7 +47,7 @@ export default function RaceSelectionStep() {
         }
       };
       init();
-    }, [campaignId])
+    }, [campaignId]),
   );
 
   const currentRaceData = selectedRace ? getRaceData(selectedRace) : null;
@@ -110,18 +106,18 @@ export default function RaceSelectionStep() {
   const formatBonus = (value: number) => (value > 0 ? `+${value}` : `${value}`);
 
   return (
-    <View className="flex-1 bg-dark-800">
+    <View className="flex-1 bg-gray-50 dark:bg-dark-800">
       {/* Header with progress */}
       <View className="px-5 pt-16 pb-4">
         <View className="flex-row items-center justify-between mb-4">
           <TouchableOpacity
-            className="h-10 w-10 rounded-full bg-surface items-center justify-center active:bg-surface-light"
+            className="h-10 w-10 rounded-full bg-gray-100 dark:bg-surface items-center justify-center active:bg-gray-50 dark:active:bg-surface-light"
             onPress={handleBack}
           >
-            <Ionicons name="arrow-back" size={22} color="white" />
+            <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
           </TouchableOpacity>
 
-          <Text className="text-dark-300 text-sm font-semibold">
+          <Text className="text-dark-500 dark:text-dark-300 text-sm font-semibold">
             Paso {CURRENT_STEP} de {TOTAL_STEPS}
           </Text>
 
@@ -129,7 +125,7 @@ export default function RaceSelectionStep() {
         </View>
 
         {/* Progress bar */}
-        <View className="h-1.5 bg-surface rounded-full overflow-hidden">
+        <View className="h-1.5 bg-gray-100 dark:bg-surface rounded-full overflow-hidden">
           <View
             className="h-full bg-primary-500 rounded-full"
             style={{ width: `${progressPercent}%` }}
@@ -139,15 +135,15 @@ export default function RaceSelectionStep() {
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingBottom: 120 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Title */}
         <View className="px-5 mb-6">
-          <Text className="text-white text-2xl font-bold mb-2">
+          <Text className="text-dark-900 dark:text-white text-2xl font-bold mb-2">
             Elige tu raza
           </Text>
-          <Text className="text-dark-300 text-base leading-6">
+          <Text className="text-dark-500 dark:text-dark-300 text-base leading-6">
             La raza de tu personaje determina sus rasgos innatos, bonificadores
             de característica y habilidades especiales.
           </Text>
@@ -162,7 +158,7 @@ export default function RaceSelectionStep() {
                 className={`mb-3 rounded-card border p-4 active:opacity-80 ${
                   selectedRace === race.id
                     ? "bg-primary-500/15 border-primary-500/50"
-                    : "bg-surface-card border-surface-border"
+                    : "bg-white dark:bg-surface-card border-dark-100 dark:border-surface-border"
                 }`}
                 onPress={() => handleSelectRace(race.id)}
               >
@@ -171,20 +167,18 @@ export default function RaceSelectionStep() {
                     className={`h-14 w-14 rounded-xl items-center justify-center mr-4 ${
                       selectedRace === race.id
                         ? "bg-primary-500/20"
-                        : "bg-dark-700"
+                        : "bg-gray-200 dark:bg-dark-700"
                     }`}
                   >
-                    <Text className="text-2xl">
-                      {RACE_ICONS[race.id]}
-                    </Text>
+                    <Text className="text-2xl">{RACE_ICONS[race.id]}</Text>
                   </View>
 
                   <View className="flex-1">
-                    <Text className="text-white text-lg font-bold">
+                    <Text className="text-dark-900 dark:text-white text-lg font-bold">
                       {race.nombre}
                     </Text>
                     <Text
-                      className="text-dark-300 text-sm mt-0.5"
+                      className="text-dark-500 dark:text-dark-300 text-sm mt-0.5"
                       numberOfLines={2}
                     >
                       {race.descripcion}
@@ -195,18 +189,18 @@ export default function RaceSelectionStep() {
                         ([key, value]) => (
                           <View
                             key={key}
-                            className="bg-dark-700 rounded-full px-2.5 py-0.5 mr-1.5 mb-1"
+                            className="bg-gray-200 dark:bg-dark-700 rounded-full px-2.5 py-0.5 mr-1.5 mb-1"
                           >
-                            <Text className="text-gold-400 text-xs font-semibold">
+                            <Text className="text-gold-700 dark:text-gold-400 text-xs font-semibold">
                               {ABILITY_NAMES[key as AbilityKey]}{" "}
                               {formatBonus(value as number)}
                             </Text>
                           </View>
-                        )
+                        ),
                       )}
                       {race.darkvision && (
-                        <View className="bg-dark-700 rounded-full px-2.5 py-0.5 mr-1.5 mb-1">
-                          <Text className="text-dark-200 text-xs">
+                        <View className="bg-gray-200 dark:bg-dark-700 rounded-full px-2.5 py-0.5 mr-1.5 mb-1">
+                          <Text className="text-dark-600 dark:text-dark-200 text-xs">
                             👁️ Visión osc.
                           </Text>
                         </View>
@@ -218,7 +212,9 @@ export default function RaceSelectionStep() {
                     name="chevron-forward"
                     size={20}
                     color={
-                      selectedRace === race.id ? "#c62828" : "#666699"
+                      selectedRace === race.id
+                        ? colors.accentRed
+                        : colors.textMuted
                     }
                   />
                 </View>
@@ -235,14 +231,14 @@ export default function RaceSelectionStep() {
               className="flex-row items-center mb-4 active:opacity-70"
               onPress={() => setShowDetails(false)}
             >
-              <Ionicons name="arrow-back" size={16} color="#666699" />
+              <Ionicons name="arrow-back" size={16} color={colors.textMuted} />
               <Text className="text-dark-400 text-sm ml-1">
                 Ver todas las razas
               </Text>
             </TouchableOpacity>
 
             {/* Selected Race Header */}
-            <View className="rounded-card bg-surface-card border border-primary-500/30 p-5 mb-5">
+            <View className="rounded-card bg-white dark:bg-surface-card border border-primary-500/30 p-5 mb-5">
               <View className="flex-row items-center mb-4">
                 <View className="h-16 w-16 rounded-xl bg-primary-500/20 items-center justify-center mr-4">
                   <Text className="text-3xl">
@@ -250,36 +246,37 @@ export default function RaceSelectionStep() {
                   </Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-white text-2xl font-bold">
+                  <Text className="text-dark-900 dark:text-white text-2xl font-bold">
                     {currentRaceData.nombre}
                   </Text>
-                  <Text className="text-dark-300 text-sm mt-1">
-                    Tamaño: {currentRaceData.size === "mediano" ? "Mediano" : "Pequeño"}{" "}
+                  <Text className="text-dark-500 dark:text-dark-300 text-sm mt-1">
+                    Tamaño:{" "}
+                    {currentRaceData.size === "mediano" ? "Mediano" : "Pequeño"}{" "}
                     · Velocidad: {currentRaceData.speed} pies
                   </Text>
                 </View>
               </View>
 
-              <Text className="text-dark-200 text-sm leading-5">
+              <Text className="text-dark-600 dark:text-dark-200 text-sm leading-5">
                 {currentRaceData.descripcion}
               </Text>
             </View>
 
             {/* Ability Bonuses */}
             <View className="mb-5">
-              <Text className="text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
+              <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
                 Bonificadores de Característica
               </Text>
               <View className="flex-row flex-wrap">
                 {Object.entries(racialBonuses).map(([key, value]) => (
                   <View
                     key={key}
-                    className="bg-surface-card border border-surface-border rounded-xl px-4 py-3 mr-2 mb-2 items-center min-w-[80px]"
+                    className="bg-white dark:bg-surface-card border border-dark-100 dark:border-surface-border rounded-xl px-4 py-3 mr-2 mb-2 items-center min-w-[80px]"
                   >
-                    <Text className="text-gold-400 text-lg font-bold">
+                    <Text className="text-gold-700 dark:text-gold-400 text-lg font-bold">
                       {formatBonus(value as number)}
                     </Text>
-                    <Text className="text-dark-300 text-xs mt-0.5">
+                    <Text className="text-dark-500 dark:text-dark-300 text-xs mt-0.5">
                       {ABILITY_NAMES[key as AbilityKey]}
                     </Text>
                   </View>
@@ -290,9 +287,8 @@ export default function RaceSelectionStep() {
             {/* Subrace Selection */}
             {hasSubraces && (
               <View className="mb-5">
-                <Text className="text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
-                  Subraza{" "}
-                  <Text className="text-primary-500">*</Text>
+                <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
+                  Subraza <Text className="text-primary-500">*</Text>
                 </Text>
 
                 {currentRaceData.subraces.map((subrace) => (
@@ -301,12 +297,12 @@ export default function RaceSelectionStep() {
                     className={`mb-2 rounded-card border p-4 active:opacity-80 ${
                       selectedSubrace === subrace.id
                         ? "bg-primary-500/10 border-primary-500/40"
-                        : "bg-surface-card border-surface-border"
+                        : "bg-white dark:bg-surface-card border-dark-100 dark:border-surface-border"
                     }`}
                     onPress={() => handleSelectSubrace(subrace.id)}
                   >
                     <View className="flex-row items-center justify-between mb-2">
-                      <Text className="text-white text-base font-bold flex-1">
+                      <Text className="text-dark-900 dark:text-white text-base font-bold flex-1">
                         {subrace.nombre}
                       </Text>
                       <View
@@ -317,16 +313,12 @@ export default function RaceSelectionStep() {
                         }`}
                       >
                         {selectedSubrace === subrace.id && (
-                          <Ionicons
-                            name="checkmark"
-                            size={14}
-                            color="white"
-                          />
+                          <Ionicons name="checkmark" size={14} color="white" />
                         )}
                       </View>
                     </View>
 
-                    <Text className="text-dark-300 text-sm leading-5 mb-2">
+                    <Text className="text-dark-500 dark:text-dark-300 text-sm leading-5 mb-2">
                       {subrace.descripcion}
                     </Text>
 
@@ -336,14 +328,14 @@ export default function RaceSelectionStep() {
                         ([key, value]) => (
                           <View
                             key={key}
-                            className="bg-dark-700 rounded-full px-2.5 py-0.5 mr-1.5"
+                            className="bg-gray-200 dark:bg-dark-700 rounded-full px-2.5 py-0.5 mr-1.5"
                           >
-                            <Text className="text-gold-400 text-xs font-semibold">
+                            <Text className="text-gold-700 dark:text-gold-400 text-xs font-semibold">
                               {ABILITY_NAMES[key as AbilityKey]}{" "}
                               {formatBonus(value as number)}
                             </Text>
                           </View>
-                        )
+                        ),
                       )}
                     </View>
 
@@ -355,8 +347,8 @@ export default function RaceSelectionStep() {
                             <Text className="text-dark-400 text-xs mr-1">
                               •
                             </Text>
-                            <Text className="text-dark-300 text-xs flex-1">
-                              <Text className="font-semibold text-dark-200">
+                            <Text className="text-dark-500 dark:text-dark-300 text-xs flex-1">
+                              <Text className="font-semibold text-dark-600 dark:text-dark-200">
                                 {trait.nombre}:
                               </Text>{" "}
                               {trait.descripcion}
@@ -373,19 +365,19 @@ export default function RaceSelectionStep() {
             {/* Race Traits */}
             {currentRaceData.traits.length > 0 && (
               <View className="mb-5">
-                <Text className="text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
+                <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
                   Rasgos Raciales
                 </Text>
 
                 {currentRaceData.traits.map((trait, index) => (
                   <View
                     key={index}
-                    className="bg-surface-card border border-surface-border rounded-card p-4 mb-2"
+                    className="bg-white dark:bg-surface-card border border-dark-100 dark:border-surface-border rounded-card p-4 mb-2"
                   >
-                    <Text className="text-white text-sm font-bold mb-1">
+                    <Text className="text-dark-900 dark:text-white text-sm font-bold mb-1">
                       {trait.nombre}
                     </Text>
-                    <Text className="text-dark-300 text-sm leading-5">
+                    <Text className="text-dark-500 dark:text-dark-300 text-sm leading-5">
                       {trait.descripcion}
                     </Text>
                   </View>
@@ -395,16 +387,18 @@ export default function RaceSelectionStep() {
 
             {/* Languages */}
             <View className="mb-5">
-              <Text className="text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
+              <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
                 Idiomas
               </Text>
               <View className="flex-row flex-wrap">
                 {currentRaceData.languages.map((lang, idx) => (
                   <View
                     key={idx}
-                    className="bg-surface-card border border-surface-border rounded-full px-3 py-1.5 mr-2 mb-2"
+                    className="bg-white dark:bg-surface-card border border-dark-100 dark:border-surface-border rounded-full px-3 py-1.5 mr-2 mb-2"
                   >
-                    <Text className="text-dark-200 text-sm">{lang}</Text>
+                    <Text className="text-dark-600 dark:text-dark-200 text-sm">
+                      {lang}
+                    </Text>
                   </View>
                 ))}
                 {currentRaceData.extraLanguages
@@ -415,11 +409,11 @@ export default function RaceSelectionStep() {
                           key={`extra_${i}`}
                           className="bg-gold-500/10 border border-gold-500/30 rounded-full px-3 py-1.5 mr-2 mb-2"
                         >
-                          <Text className="text-gold-400 text-sm">
+                          <Text className="text-gold-700 dark:text-gold-400 text-sm">
                             +1 a elegir
                           </Text>
                         </View>
-                      )
+                      ),
                     )
                   : null}
               </View>
@@ -427,17 +421,17 @@ export default function RaceSelectionStep() {
 
             {/* Other Proficiencies */}
             {currentRaceData.darkvision && (
-              <View className="bg-surface-card border border-surface-border rounded-card p-4 mb-5">
+              <View className="bg-white dark:bg-surface-card border border-dark-100 dark:border-surface-border rounded-card p-4 mb-5">
                 <View className="flex-row items-center">
                   <Text className="text-lg mr-2">👁️</Text>
                   <View className="flex-1">
-                    <Text className="text-white text-sm font-bold">
+                    <Text className="text-dark-900 dark:text-white text-sm font-bold">
                       Visión en la Oscuridad
                     </Text>
-                    <Text className="text-dark-300 text-xs mt-0.5">
+                    <Text className="text-dark-500 dark:text-dark-300 text-xs mt-0.5">
                       Alcance: {currentRaceData.darkvisionRange ?? 60} pies (
                       {((currentRaceData.darkvisionRange ?? 60) * 0.3).toFixed(
-                        0
+                        0,
                       )}{" "}
                       m)
                     </Text>
@@ -450,16 +444,16 @@ export default function RaceSelectionStep() {
             {currentRaceData.weaponProficiencies &&
               currentRaceData.weaponProficiencies.length > 0 && (
                 <View className="mb-5">
-                  <Text className="text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
+                  <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
                     Competencias con Armas
                   </Text>
                   <View className="flex-row flex-wrap">
                     {currentRaceData.weaponProficiencies.map((weapon, idx) => (
                       <View
                         key={idx}
-                        className="bg-surface-card border border-surface-border rounded-full px-3 py-1.5 mr-2 mb-2"
+                        className="bg-white dark:bg-surface-card border border-dark-100 dark:border-surface-border rounded-full px-3 py-1.5 mr-2 mb-2"
                       >
-                        <Text className="text-dark-200 text-sm">
+                        <Text className="text-dark-600 dark:text-dark-200 text-sm">
                           {weapon}
                         </Text>
                       </View>
@@ -472,7 +466,7 @@ export default function RaceSelectionStep() {
             {currentRaceData.toolChoices &&
               currentRaceData.toolChoices.length > 0 && (
                 <View className="mb-5">
-                  <Text className="text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider">
+                  <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider">
                     Herramientas (elige {currentRaceData.toolChoiceCount ?? 1})
                   </Text>
                   <Text className="text-dark-400 text-xs mb-2">
@@ -482,9 +476,11 @@ export default function RaceSelectionStep() {
                     {currentRaceData.toolChoices.map((tool, idx) => (
                       <View
                         key={idx}
-                        className="bg-surface-card border border-surface-border rounded-full px-3 py-1.5 mr-2 mb-2"
+                        className="bg-white dark:bg-surface-card border border-dark-100 dark:border-surface-border rounded-full px-3 py-1.5 mr-2 mb-2"
                       >
-                        <Text className="text-dark-300 text-xs">{tool}</Text>
+                        <Text className="text-dark-500 dark:text-dark-300 text-xs">
+                          {tool}
+                        </Text>
                       </View>
                     ))}
                   </View>
@@ -495,7 +491,7 @@ export default function RaceSelectionStep() {
             {currentRaceData.skillProficiencies &&
               currentRaceData.skillProficiencies.length > 0 && (
                 <View className="mb-5">
-                  <Text className="text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider">
+                  <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider">
                     Competencias en Habilidades
                   </Text>
                   <View className="flex-row flex-wrap">
@@ -521,12 +517,12 @@ export default function RaceSelectionStep() {
       </ScrollView>
 
       {/* Footer with navigation buttons */}
-      <View className="absolute bottom-0 left-0 right-0 px-5 pb-10 pt-4 bg-dark-800 border-t border-surface-border">
+      <View className="px-5 pb-10 pt-4 border-t border-dark-100 dark:border-surface-border">
         <TouchableOpacity
           className={`rounded-xl py-4 items-center flex-row justify-center mb-3 ${
             isValid()
               ? "bg-primary-500 active:bg-primary-600"
-              : "bg-dark-600 opacity-50"
+              : "bg-gray-300 dark:bg-dark-600 opacity-50"
           }`}
           onPress={handleNext}
           disabled={!isValid()}
@@ -538,10 +534,12 @@ export default function RaceSelectionStep() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="rounded-xl py-3.5 items-center active:bg-surface-light"
+          className="rounded-xl py-3.5 items-center active:bg-gray-50 dark:active:bg-surface-light"
           onPress={handleBack}
         >
-          <Text className="text-dark-300 font-semibold text-base">Atrás</Text>
+          <Text className="text-dark-500 dark:text-dark-300 font-semibold text-base">
+            Atrás
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

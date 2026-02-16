@@ -14,6 +14,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/useTheme";
 import DiceRoller from "./DiceRoller";
 
 // ─── Props ───────────────────────────────────────────────────────────
@@ -49,6 +50,7 @@ export default function DiceFAB({
   size = 56,
   hidden = false,
 }: DiceFABProps) {
+  const { colors } = useTheme();
   const [showRoller, setShowRoller] = useState(false);
 
   // Entrance animation
@@ -88,7 +90,7 @@ export default function DiceFAB({
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     pulseLoop.start();
 
@@ -132,10 +134,8 @@ export default function DiceFAB({
             width: size,
             height: size,
             borderRadius: size / 2,
-            transform: [
-              { scale: scaleAnim },
-              { rotate: rotateInterpolate },
-            ],
+            shadowColor: colors.accentRed,
+            transform: [{ scale: scaleAnim }, { rotate: rotateInterpolate }],
           },
         ]}
       >
@@ -148,10 +148,15 @@ export default function DiceFAB({
               width: size,
               height: size,
               borderRadius: size / 2,
+              backgroundColor: colors.accentRed,
             },
           ]}
         >
-          <Ionicons name="dice" size={size * 0.46} color="#ffffff" />
+          <Ionicons
+            name="dice"
+            size={size * 0.46}
+            color={colors.textInverted}
+          />
         </TouchableOpacity>
       </Animated.View>
 
@@ -174,14 +179,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 999,
     elevation: 8,
-    // Shadow for iOS
-    shadowColor: "#c62828",
+    // Shadow for iOS — shadowColor overridden inline via colors.accentRed
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 8,
   },
   button: {
-    backgroundColor: "#c62828",
     alignItems: "center",
     justifyContent: "center",
     // Extra shadow for Android

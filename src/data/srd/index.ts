@@ -30,11 +30,7 @@ export {
   calcLevel1HP,
 } from "./classes";
 
-export type {
-  ClassData,
-  ClassFeature,
-  EquipmentChoice,
-} from "./classes";
+export type { ClassData, ClassFeature, EquipmentChoice } from "./classes";
 
 // ─── Trasfondos ──────────────────────────────────────────────────────
 export {
@@ -51,3 +47,54 @@ export {
 } from "./backgrounds";
 
 export type { BackgroundData, BackgroundPersonality } from "./backgrounds";
+
+// ─── Progresión de nivel ─────────────────────────────────────────────
+export {
+  XP_THRESHOLDS,
+  MAX_LEVEL,
+  MAX_XP,
+  ASI_LEVELS,
+  MAX_ABILITY_SCORE,
+  ASI_POINTS,
+  CLASS_LEVEL_FEATURES,
+  SNEAK_ATTACK_DICE,
+  RAGE_USES,
+  RAGE_DAMAGE,
+  MARTIAL_ARTS_DIE,
+  WARLOCK_INVOCATIONS,
+  getLevelForXP,
+  getXPForNextLevel,
+  getXPProgress,
+  canLevelUp,
+  getFeaturesForLevel,
+  isASILevel,
+  isSubclassLevel,
+  getLevelUpSummary,
+  formatXP,
+  proficiencyBonusChanges,
+  getRemainingASILevels,
+  getSpellLearningInfo,
+  getMaxSpellLevelForClass,
+} from "./leveling";
+
+export type { LevelFeature, LevelUpSummary, SpellLearningInfo } from "./leveling";
+
+// ─── Subclases ───────────────────────────────────────────────────────
+export {
+  SUBCLASS_OPTIONS,
+  getSubclassOptions,
+  getSubclassById,
+} from "./subclasses";
+
+export type { SubclassOption } from "./subclasses";
+
+// ─── Hechizos (base de datos SRD) ───────────────────────────────────
+export {
+  SRD_SPELLS,
+  getSpellById,
+  getSpellsForClass,
+  getSpellsForClassUpToLevel,
+  getCantripsForClass,
+} from "./spells";
+
+export type { SrdSpell } from "./spells";

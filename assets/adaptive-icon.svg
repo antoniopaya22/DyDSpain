@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="aFaceHL" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ef5350" stop-opacity="0.95"/>
+      <stop offset="55%" stop-color="#c62828"/>
+      <stop offset="100%" stop-color="#7f0000"/>
+    </linearGradient>
+    <linearGradient id="aFaceMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d32f2f"/>
+      <stop offset="50%" stop-color="#c62828"/>
+      <stop offset="100%" stop-color="#8e0000"/>
+    </linearGradient>
+    <linearGradient id="aFaceSH" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#b71c1c" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#5d0000"/>
+    </linearGradient>
+    <radialGradient id="aCenterGrad" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#ef5350" stop-opacity="0.35"/>
+      <stop offset="45%" stop-color="#c62828"/>
+      <stop offset="100%" stop-color="#7f0000" stop-opacity="0.95"/>
+    </radialGradient>
+    <linearGradient id="aEdgeShine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.18"/>
+    </linearGradient>
+    <radialGradient id="aOuterGlow" cx="50%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#c62828" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#c62828" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="aRuneGlow" cx="50%" cy="50%" r="35%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Transparent background (adaptive icon bg is set separately) -->
+  <rect width="1024" height="1024" fill="transparent"/>
+
+  <!-- Glow -->
+  <circle cx="512" cy="512" r="337.92" fill="url(#aOuterGlow)"/>
+  <circle cx="512" cy="512" r="296.96000000000004" fill="url(#aRuneGlow)"/>
+
+  <!-- Runic ring -->
+  <circle cx="512" cy="512" r="286.72" fill="none" stroke="#fbbf24" stroke-width="3.072" stroke-opacity="0.4"/>
+  <circle cx="512" cy="512" r="266.24" fill="none" stroke="#fbbf24" stroke-width="1.536" stroke-opacity="0.2"/>
+
+  <!-- Rune chars -->
+  <text x="512.0" y="245.8" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚠ</text>
+  <text x="651.3" y="283.1" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚢ</text>
+  <text x="753.2" y="385.0" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚦ</text>
+  <text x="790.5" y="524.3" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚨ</text>
+  <text x="753.2" y="663.6" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚱ</text>
+  <text x="651.3" y="765.5" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚲ</text>
+  <text x="512.0" y="802.8" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚷ</text>
+  <text x="372.7" y="765.5" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚹ</text>
+  <text x="270.8" y="663.6" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚺ</text>
+  <text x="233.5" y="524.3" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᚾ</text>
+  <text x="270.8" y="385.0" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᛁ</text>
+  <text x="372.7" y="283.1" text-anchor="middle" font-size="25.6" font-family="serif" fill="#fbbf24" fill-opacity="0.5">ᛃ</text>
+
+  <!-- Die border glow -->
+  <circle cx="512" cy="512" r="217.08800000000002" fill="none" stroke="#c62828" stroke-width="4.096" stroke-opacity="0.3"/>
+
+  <!-- Outer faces -->
+  <polygon points="512.00,307.20 706.78,448.71 579.41,419.22" fill="url(#aFaceHL)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.6" opacity="0.99"/>
+  <polygon points="706.78,448.71 632.38,677.69 621.07,547.44" fill="url(#aFaceHL)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.6" opacity="0.97"/>
+  <polygon points="632.38,677.69 391.62,677.69 512.00,626.69" fill="url(#aFaceSH)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.6" opacity="0.94"/>
+  <polygon points="391.62,677.69 317.22,448.71 402.93,547.44" fill="url(#aFaceMain)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.6" opacity="0.94"/>
+  <polygon points="317.22,448.71 512.00,307.20 444.59,419.22" fill="url(#aFaceHL)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.6" opacity="0.97"/>
+
+  <!-- Inner faces -->
+  <polygon points="579.41,419.22 621.07,547.44 706.78,448.71" fill="url(#aFaceMain)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.45" opacity="0.93"/>
+  <polygon points="621.07,547.44 512.00,626.69 632.38,677.69" fill="url(#aFaceSH)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.45" opacity="0.90"/>
+  <polygon points="512.00,626.69 402.93,547.44 391.62,677.69" fill="url(#aFaceSH)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.45" opacity="0.88"/>
+  <polygon points="402.93,547.44 444.59,419.22 317.22,448.71" fill="url(#aFaceSH)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.45" opacity="0.89"/>
+  <polygon points="444.59,419.22 579.41,419.22 512.00,307.20" fill="url(#aFaceMain)" stroke="#5d0000" stroke-width="3.072" stroke-opacity="0.45" opacity="0.92"/>
+
+  <!-- Center face -->
+  <polygon points="579.41,419.22 621.07,547.44 512.00,626.69 402.93,547.44 444.59,419.22" fill="url(#aCenterGrad)" stroke="#ef5350" stroke-width="4.096" stroke-opacity="0.25"/>
+
+  <!-- Highlights -->
+  <polygon points="512.00,307.20 706.78,448.71 579.41,419.22" fill="url(#aEdgeShine)" opacity="0.45"/>
+  <polygon points="317.22,448.71 512.00,307.20 444.59,419.22" fill="url(#aEdgeShine)" opacity="0.3"/>
+
+  <!-- Edge lines -->
+  <line x1="512.0" y1="307.2" x2="579.4" y2="419.2" stroke="#ef5350" stroke-width="2.048" stroke-opacity="0.4"/>
+  <line x1="706.8" y1="448.7" x2="621.1" y2="547.4" stroke="#ef5350" stroke-width="2.048" stroke-opacity="0.15"/>
+  <line x1="632.4" y1="677.7" x2="512.0" y2="626.7" stroke="#ef5350" stroke-width="2.048" stroke-opacity="0.15"/>
+  <line x1="391.6" y1="677.7" x2="402.9" y2="547.4" stroke="#ef5350" stroke-width="2.048" stroke-opacity="0.15"/>
+  <line x1="317.2" y1="448.7" x2="444.6" y2="419.2" stroke="#ef5350" stroke-width="2.048" stroke-opacity="0.4"/>
+
+  <!-- "20" text -->
+  <text x="514.048" y="555.52" text-anchor="middle" font-size="112.64" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#000000" fill-opacity="0.4">20</text>
+  <text x="512" y="551.424" text-anchor="middle" font-size="112.64" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#ffffff" fill-opacity="0.95">20</text>
+
+  <!-- Top sparkle -->
+  <circle cx="512.0" cy="307.2" r="6.144" fill="#ffffff" fill-opacity="0.5"/>
+
+  <!-- Sparkle accents -->
+  <polygon points="747.52,315.392 755.712,296.96 763.904,315.392 755.712,333.824" fill="#fbbf24" fill-opacity="0.65"/>
+</svg>

@@ -26,6 +26,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { useDialog, useToast } from "@/hooks/useDialog";
+import { useTheme } from "@/hooks/useTheme";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -54,14 +55,15 @@ interface RollHistoryEntry {
 
 // ─── Constants ───────────────────────────────────────────────────────
 
-const DIE_PRESETS: { die: DieType; sides: number; color: string }[] = [
-  { die: "d4", sides: 4, color: "#22c55e" },
-  { die: "d6", sides: 6, color: "#3b82f6" },
-  { die: "d8", sides: 8, color: "#a855f7" },
-  { die: "d10", sides: 10, color: "#f59e0b" },
-  { die: "d12", sides: 12, color: "#ef4444" },
-  { die: "d20", sides: 20, color: "#ec4899" },
-  { die: "d100", sides: 100, color: "#6366f1" },
+// Die preset base config (colors are resolved at render-time via getDiePresets)
+const DIE_PRESET_SIDES: { die: DieType; sides: number }[] = [
+  { die: "d4", sides: 4 },
+  { die: "d6", sides: 6 },
+  { die: "d8", sides: 8 },
+  { die: "d10", sides: 10 },
+  { die: "d12", sides: 12 },
+  { die: "d20", sides: 20 },
+  { die: "d100", sides: 100 },
 ];
 
 const MAX_HISTORY = 50;
@@ -72,11 +74,32 @@ const ADVANTAGE_LABELS: Record<AdvantageMode, string> = {
   desventaja: "Desventaja",
 };
 
-const ADVANTAGE_COLORS: Record<AdvantageMode, string> = {
-  normal: "#6b7280",
-  ventaja: "#22c55e",
-  desventaja: "#ef4444",
-};
+/** Resolve die-preset colors from the active theme */
+function getDiePresets(
+  colors: import("@/utils/theme").ThemeColors,
+): { die: DieType; sides: number; color: string }[] {
+  const palette = [
+    colors.accentGreen, // d4
+    colors.accentBlue, // d6
+    colors.accentPurple, // d8
+    colors.accentAmber, // d10
+    colors.accentDanger, // d12
+    "#ec4899", // d20  (pink — no theme token yet)
+    "#6366f1", // d100 (indigo — no theme token yet)
+  ];
+  return DIE_PRESET_SIDES.map((p, i) => ({ ...p, color: palette[i] }));
+}
+
+/** Resolve advantage-mode colors from the active theme */
+function getAdvantageColors(
+  colors: import("@/utils/theme").ThemeColors,
+): Record<AdvantageMode, string> {
+  return {
+    normal: colors.textMuted,
+    ventaja: colors.accentGreen,
+    desventaja: colors.accentDanger,
+  };
+}
 
 // ─── Dice Logic ──────────────────────────────────────────────────────
 
@@ -102,7 +125,12 @@ function parseDieType(sides: number): DieType {
 }
 
 interface ParsedFormula {
-  groups: { count: number; sides: number; keepHighest?: number; keepLowest?: number }[];
+  groups: {
+    count: number;
+    sides: number;
+    keepHighest?: number;
+    keepLowest?: number;
+  }[];
   modifier: number;
 }
 
@@ -155,7 +183,7 @@ function parseFormula(formula: string): ParsedFormula | null {
 function executeFormula(
   parsed: ParsedFormula,
   advantageMode: AdvantageMode,
-  extraModifier: number
+  extraModifier: number,
 ): {
   rolls: DieRollResult[];
   subtotal: number;
@@ -216,7 +244,9 @@ function executeFormula(
         if (group.keepHighest) {
           kept = new Set(sorted.slice(0, keepCount).map((r) => r.index));
         } else {
-          kept = new Set(sorted.slice(sorted.length - keepCount).map((r) => r.index));
+          kept = new Set(
+            sorted.slice(sorted.length - keepCount).map((r) => r.index),
+          );
         }
 
         for (const rv of rolledValues) {
@@ -275,6 +305,12 @@ export default function DiceRoller({
   presetFormula,
   presetModifier,
 }: DiceRollerProps) {
+  const { colors, isDark } = useTheme();
+
+  // Resolve theme-aware constants
+  const DIE_PRESETS = getDiePresets(colors);
+  const ADVANTAGE_COLORS = getAdvantageColors(colors);
+
   // ── State ──
   const [formula, setFormula] = useState(presetFormula || "");
   const [modifier, setModifier] = useState(presetModifier || 0);
@@ -336,7 +372,7 @@ export default function DiceRoller({
           useNativeDriver: false,
         }),
       ]),
-      { iterations: 3 }
+      { iterations: 3 },
     ).start();
   }, [criticalGlow]);
 
@@ -346,7 +382,10 @@ export default function DiceRoller({
     (formulaStr: string, label?: string) => {
       const parsed = parseFormula(formulaStr);
       if (!parsed) {
-        toastError("Fórmula inválida", `No se pudo interpretar: "${formulaStr}"`);
+        toastError(
+          "Fórmula inválida",
+          `No se pudo interpretar: "${formulaStr}"`,
+        );
         return;
       }
 
@@ -378,7 +417,7 @@ export default function DiceRoller({
       // Reset advantage after rolling
       setAdvantageMode("normal");
     },
-    [advantageMode, modifier, presetLabel, animateRoll, animateCritical]
+    [advantageMode, modifier, presetLabel, animateRoll, animateCritical],
   );
 
   const handlePresetRoll = useCallback(
@@ -386,7 +425,7 @@ export default function DiceRoller({
       const formulaStr = diceCount > 1 ? `${diceCount}${die}` : `1${die}`;
       doRoll(formulaStr);
     },
-    [diceCount, doRoll]
+    [diceCount, doRoll],
   );
 
   const handleFormulaRoll = useCallback(() => {
@@ -408,7 +447,7 @@ export default function DiceRoller({
         setHistory([]);
         setLastResult(null);
       },
-      { confirmText: "Limpiar", cancelText: "Cancelar" }
+      { confirmText: "Limpiar", cancelText: "Cancelar" },
     );
   }, [showDestructive]);
 
@@ -446,12 +485,14 @@ export default function DiceRoller({
                 ? ADVANTAGE_COLORS[mode] + "30"
                 : "transparent",
               borderWidth: 1,
-              borderColor: isActive ? ADVANTAGE_COLORS[mode] : "#3a3a5c",
+              borderColor: isActive
+                ? ADVANTAGE_COLORS[mode]
+                : colors.borderDefault,
             }}
           >
             <Text
               style={{
-                color: isActive ? ADVANTAGE_COLORS[mode] : "#8c8cb3",
+                color: isActive ? ADVANTAGE_COLORS[mode] : colors.textSecondary,
                 fontSize: 13,
                 fontWeight: isActive ? "700" : "500",
               }}
@@ -481,18 +522,18 @@ export default function DiceRoller({
             width: 36,
             height: 36,
             borderRadius: 18,
-            backgroundColor: "#1e1e38",
+            backgroundColor: colors.bgSecondary,
             borderWidth: 1,
-            borderColor: "#3a3a5c",
+            borderColor: colors.borderDefault,
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Ionicons name="remove" size={18} color="#8c8cb3" />
+          <Ionicons name="remove" size={18} color={colors.textSecondary} />
         </TouchableOpacity>
         <Text
           style={{
-            color: "#ffffff",
+            color: colors.textPrimary,
             fontSize: 18,
             fontWeight: "bold",
             marginHorizontal: 16,
@@ -508,14 +549,14 @@ export default function DiceRoller({
             width: 36,
             height: 36,
             borderRadius: 18,
-            backgroundColor: "#1e1e38",
+            backgroundColor: colors.bgSecondary,
             borderWidth: 1,
-            borderColor: "#3a3a5c",
+            borderColor: colors.borderDefault,
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Ionicons name="add" size={18} color="#8c8cb3" />
+          <Ionicons name="add" size={18} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
@@ -575,25 +616,25 @@ export default function DiceRoller({
           flex: 1,
           flexDirection: "row",
           alignItems: "center",
-          backgroundColor: "#1e1e38",
+          backgroundColor: colors.bgSecondary,
           borderRadius: 12,
           borderWidth: 1,
-          borderColor: "#3a3a5c",
+          borderColor: colors.borderDefault,
           paddingHorizontal: 14,
           paddingVertical: 4,
         }}
       >
-        <Ionicons name="create-outline" size={18} color="#666699" />
+        <Ionicons name="create-outline" size={18} color={colors.textMuted} />
         <TextInput
           style={{
             flex: 1,
-            color: "#ffffff",
+            color: colors.textPrimary,
             fontSize: 16,
             marginLeft: 10,
             paddingVertical: 10,
           }}
           placeholder="Fórmula: 2d6+3, 4d6kh3..."
-          placeholderTextColor="#666699"
+          placeholderTextColor={colors.textMuted}
           value={formula}
           onChangeText={setFormula}
           autoCapitalize="none"
@@ -608,14 +649,14 @@ export default function DiceRoller({
           width: 48,
           height: 48,
           borderRadius: 12,
-          backgroundColor: "#c62828",
+          backgroundColor: colors.accentRed,
           alignItems: "center",
           justifyContent: "center",
           marginLeft: 8,
         }}
         activeOpacity={0.7}
       >
-        <Ionicons name="dice" size={24} color="#ffffff" />
+        <Ionicons name="dice" size={24} color={colors.textInverted} />
       </TouchableOpacity>
     </View>
   );
@@ -629,7 +670,9 @@ export default function DiceRoller({
         marginBottom: 16,
       }}
     >
-      <Text style={{ color: "#8c8cb3", fontSize: 14, marginRight: 10 }}>
+      <Text
+        style={{ color: colors.textSecondary, fontSize: 14, marginRight: 10 }}
+      >
         Modificador:
       </Text>
       <TouchableOpacity
@@ -638,18 +681,23 @@ export default function DiceRoller({
           width: 32,
           height: 32,
           borderRadius: 16,
-          backgroundColor: "#1e1e38",
+          backgroundColor: colors.bgSecondary,
           borderWidth: 1,
-          borderColor: "#3a3a5c",
+          borderColor: colors.borderDefault,
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Ionicons name="remove" size={16} color="#8c8cb3" />
+        <Ionicons name="remove" size={16} color={colors.textSecondary} />
       </TouchableOpacity>
       <Text
         style={{
-          color: modifier > 0 ? "#22c55e" : modifier < 0 ? "#ef4444" : "#ffffff",
+          color:
+            modifier > 0
+              ? colors.accentGreen
+              : modifier < 0
+                ? colors.dangerText
+                : colors.textPrimary,
           fontSize: 18,
           fontWeight: "bold",
           marginHorizontal: 12,
@@ -665,21 +713,21 @@ export default function DiceRoller({
           width: 32,
           height: 32,
           borderRadius: 16,
-          backgroundColor: "#1e1e38",
+          backgroundColor: colors.bgSecondary,
           borderWidth: 1,
-          borderColor: "#3a3a5c",
+          borderColor: colors.borderDefault,
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Ionicons name="add" size={16} color="#8c8cb3" />
+        <Ionicons name="add" size={16} color={colors.textSecondary} />
       </TouchableOpacity>
       {modifier !== 0 && (
         <TouchableOpacity
           onPress={() => setModifier(0)}
           style={{ marginLeft: 8 }}
         >
-          <Ionicons name="close-circle" size={20} color="#666699" />
+          <Ionicons name="close-circle" size={20} color={colors.textMuted} />
         </TouchableOpacity>
       )}
     </View>
@@ -699,39 +747,49 @@ export default function DiceRoller({
               width: 80,
               height: 80,
               borderRadius: 40,
-              backgroundColor: "#252540",
+              backgroundColor: colors.bgElevated,
               alignItems: "center",
               justifyContent: "center",
               marginBottom: 12,
             }}
           >
-            <Ionicons name="dice-outline" size={40} color="#666699" />
+            <Ionicons name="dice-outline" size={40} color={colors.textMuted} />
           </View>
-          <Text style={{ color: "#666699", fontSize: 16 }}>
+          <Text style={{ color: colors.textMuted, fontSize: 16 }}>
             ¡Tira los dados!
           </Text>
         </View>
       );
     }
 
-    const { isCritical, isFumble, total, rolls, modifier: totalMod, formula: rollFormula, nombre } =
-      lastResult;
+    const {
+      isCritical,
+      isFumble,
+      total,
+      rolls,
+      modifier: totalMod,
+      formula: rollFormula,
+      nombre,
+    } = lastResult;
 
     const bgColor = isCritical
-      ? "#fbbf2420"
+      ? `${colors.accentGold}20`
       : isFumble
-      ? "#ef444420"
-      : "#1e1e38";
+        ? `${colors.dangerText}20`
+        : colors.bgSecondary;
 
     const borderColor = isCritical
-      ? "#fbbf24"
+      ? colors.accentGold
       : isFumble
-      ? "#ef4444"
-      : "#3a3a5c";
+        ? colors.dangerText
+        : colors.borderDefault;
 
     const critGlowColor = criticalGlow.interpolate({
       inputRange: [0, 1],
-      outputRange: [borderColor, isCritical ? "#fbbf24" : "#ef4444"],
+      outputRange: [
+        borderColor,
+        isCritical ? colors.accentGold : colors.dangerText,
+      ],
     });
 
     const shakeTranslate = shakeAnim.interpolate({
@@ -742,10 +800,7 @@ export default function DiceRoller({
     return (
       <Animated.View
         style={{
-          transform: [
-            { translateX: shakeTranslate },
-            { scale: scaleAnim },
-          ],
+          transform: [{ translateX: shakeTranslate }, { scale: scaleAnim }],
         }}
       >
         <View
@@ -763,7 +818,7 @@ export default function DiceRoller({
           {isCritical && (
             <Text
               style={{
-                color: "#fbbf24",
+                color: colors.accentGold,
                 fontSize: 18,
                 fontWeight: "900",
                 letterSpacing: 2,
@@ -776,7 +831,7 @@ export default function DiceRoller({
           {isFumble && (
             <Text
               style={{
-                color: "#ef4444",
+                color: colors.dangerText,
                 fontSize: 18,
                 fontWeight: "900",
                 letterSpacing: 2,
@@ -791,7 +846,7 @@ export default function DiceRoller({
           {nombre && (
             <Text
               style={{
-                color: "#8c8cb3",
+                color: colors.textSecondary,
                 fontSize: 13,
                 marginBottom: 4,
               }}
@@ -804,10 +859,10 @@ export default function DiceRoller({
           <Text
             style={{
               color: isCritical
-                ? "#fbbf24"
+                ? colors.accentGold
                 : isFumble
-                ? "#ef4444"
-                : "#ffffff",
+                  ? colors.accentDanger
+                  : colors.textPrimary,
               fontSize: 56,
               fontWeight: "900",
               lineHeight: 64,
@@ -817,9 +872,15 @@ export default function DiceRoller({
           </Text>
 
           {/* Formula */}
-          <Text style={{ color: "#8c8cb3", fontSize: 14, marginTop: 4 }}>
+          <Text
+            style={{ color: colors.textSecondary, fontSize: 14, marginTop: 4 }}
+          >
             {rollFormula}
-            {totalMod > 0 ? ` (+${totalMod})` : totalMod < 0 ? ` (${totalMod})` : ""}
+            {totalMod > 0
+              ? ` (+${totalMod})`
+              : totalMod < 0
+                ? ` (${totalMod})`
+                : ""}
           </Text>
 
           {/* Individual dice */}
@@ -840,29 +901,33 @@ export default function DiceRoller({
                   paddingVertical: 4,
                   borderRadius: 8,
                   backgroundColor: roll.discarded
-                    ? "#1a1a2e"
+                    ? colors.bgPrimary
                     : roll.value === 20 && roll.die === "d20"
-                    ? "#fbbf2430"
-                    : roll.value === 1 && roll.die === "d20"
-                    ? "#ef444430"
-                    : "#252540",
+                      ? `${colors.accentGold}30`
+                      : roll.value === 1 && roll.die === "d20"
+                        ? `${colors.accentDanger}30`
+                        : colors.bgElevated,
                   borderWidth: 1,
-                  borderColor: roll.discarded ? "#2d2d44" : "#3a3a5c",
+                  borderColor: roll.discarded
+                    ? colors.bgSecondary
+                    : colors.borderDefault,
                   opacity: roll.discarded ? 0.5 : 1,
                 }}
               >
                 <Text
                   style={{
                     color: roll.discarded
-                      ? "#666699"
+                      ? colors.textMuted
                       : roll.value === 20 && roll.die === "d20"
-                      ? "#fbbf24"
-                      : roll.value === 1 && roll.die === "d20"
-                      ? "#ef4444"
-                      : "#ffffff",
+                        ? colors.accentGold
+                        : roll.value === 1 && roll.die === "d20"
+                          ? colors.accentDanger
+                          : colors.textPrimary,
                     fontSize: 14,
                     fontWeight: "600",
-                    textDecorationLine: roll.discarded ? "line-through" : "none",
+                    textDecorationLine: roll.discarded
+                      ? "line-through"
+                      : "none",
                   }}
                 >
                   {roll.die}:{roll.value}
@@ -879,7 +944,8 @@ export default function DiceRoller({
                 paddingHorizontal: 10,
                 paddingVertical: 3,
                 borderRadius: 10,
-                backgroundColor: ADVANTAGE_COLORS[lastResult.advantageMode] + "20",
+                backgroundColor:
+                  ADVANTAGE_COLORS[lastResult.advantageMode] + "20",
               }}
             >
               <Text
@@ -910,14 +976,19 @@ export default function DiceRoller({
                 paddingHorizontal: 16,
                 paddingVertical: 8,
                 borderRadius: 20,
-                backgroundColor: "#252540",
+                backgroundColor: colors.bgElevated,
                 borderWidth: 1,
-                borderColor: "#3a3a5c",
+                borderColor: colors.borderDefault,
               }}
             >
-              <Ionicons name="refresh" size={16} color="#8c8cb3" />
+              <Ionicons name="refresh" size={16} color={colors.textSecondary} />
               <Text
-                style={{ color: "#8c8cb3", fontSize: 13, marginLeft: 6, fontWeight: "600" }}
+                style={{
+                  color: colors.textSecondary,
+                  fontSize: 13,
+                  marginLeft: 6,
+                  fontWeight: "600",
+                }}
               >
                 Repetir
               </Text>
@@ -944,7 +1015,7 @@ export default function DiceRoller({
           paddingVertical: 8,
           paddingHorizontal: 12,
           borderBottomWidth: 1,
-          borderBottomColor: "#1e1e38",
+          borderBottomColor: colors.bgSecondary,
         }}
       >
         {/* Icon */}
@@ -954,10 +1025,10 @@ export default function DiceRoller({
             height: 32,
             borderRadius: 16,
             backgroundColor: entry.isCritical
-              ? "#fbbf2420"
+              ? `${colors.accentGold}20`
               : entry.isFumble
-              ? "#ef444420"
-              : "#252540",
+                ? `${colors.accentDanger}20`
+                : colors.bgElevated,
             alignItems: "center",
             justifyContent: "center",
             marginRight: 10,
@@ -968,16 +1039,16 @@ export default function DiceRoller({
               entry.isCritical
                 ? "star"
                 : entry.isFumble
-                ? "skull"
-                : "dice-outline"
+                  ? "skull"
+                  : "dice-outline"
             }
             size={16}
             color={
               entry.isCritical
-                ? "#fbbf24"
+                ? colors.accentGold
                 : entry.isFumble
-                ? "#ef4444"
-                : "#666699"
+                  ? colors.accentDanger
+                  : colors.textMuted
             }
           />
         </View>
@@ -988,7 +1059,7 @@ export default function DiceRoller({
             {entry.nombre && (
               <Text
                 style={{
-                  color: "#8c8cb3",
+                  color: colors.textSecondary,
                   fontSize: 12,
                   marginRight: 6,
                 }}
@@ -999,10 +1070,10 @@ export default function DiceRoller({
             <Text
               style={{
                 color: entry.isCritical
-                  ? "#fbbf24"
+                  ? colors.accentGold
                   : entry.isFumble
-                  ? "#ef4444"
-                  : "#ffffff",
+                    ? colors.accentDanger
+                    : colors.textPrimary,
                 fontSize: 16,
                 fontWeight: "bold",
               }}
@@ -1010,18 +1081,19 @@ export default function DiceRoller({
               {entry.total}
             </Text>
           </View>
-          <Text style={{ color: "#666699", fontSize: 11 }}>
+          <Text style={{ color: colors.textMuted, fontSize: 11 }}>
             {entry.formula}
             {entry.modifier !== 0
               ? entry.modifier > 0
                 ? ` +${entry.modifier}`
                 : ` ${entry.modifier}`
               : ""}
-            {" · "}
-            [{entry.rolls
+            {" · "}[
+            {entry.rolls
               .filter((r) => !r.discarded)
               .map((r) => r.value)
-              .join(", ")}]
+              .join(", ")}
+            ]
             {entry.advantageMode !== "normal"
               ? ` · ${ADVANTAGE_LABELS[entry.advantageMode]}`
               : ""}
@@ -1029,7 +1101,7 @@ export default function DiceRoller({
         </View>
 
         {/* Time */}
-        <Text style={{ color: "#666699", fontSize: 11 }}>{timeStr}</Text>
+        <Text style={{ color: colors.textMuted, fontSize: 11 }}>{timeStr}</Text>
       </View>
     );
   };
@@ -1044,17 +1116,17 @@ export default function DiceRoller({
           paddingHorizontal: 16,
           paddingVertical: 12,
           borderBottomWidth: 1,
-          borderBottomColor: "#3a3a5c",
+          borderBottomColor: colors.borderDefault,
         }}
       >
         <TouchableOpacity
           onPress={() => setShowHistory(false)}
           style={{ flexDirection: "row", alignItems: "center" }}
         >
-          <Ionicons name="arrow-back" size={20} color="#8c8cb3" />
+          <Ionicons name="arrow-back" size={20} color={colors.textSecondary} />
           <Text
             style={{
-              color: "#ffffff",
+              color: colors.textPrimary,
               fontSize: 18,
               fontWeight: "bold",
               marginLeft: 10,
@@ -1065,17 +1137,19 @@ export default function DiceRoller({
         </TouchableOpacity>
         {history.length > 0 && (
           <TouchableOpacity onPress={handleClearHistory}>
-            <Ionicons name="trash-outline" size={20} color="#ef4444" />
+            <Ionicons
+              name="trash-outline"
+              size={20}
+              color={colors.accentDanger}
+            />
           </TouchableOpacity>
         )}
       </View>
 
       <ScrollView style={{ flex: 1 }}>
         {history.length === 0 ? (
-          <View
-            style={{ alignItems: "center", paddingVertical: 40 }}
-          >
-            <Text style={{ color: "#666699", fontSize: 15 }}>
+          <View style={{ alignItems: "center", paddingVertical: 40 }}>
+            <Text style={{ color: colors.textMuted, fontSize: 15 }}>
               No hay tiradas recientes
             </Text>
           </View>
@@ -1112,12 +1186,12 @@ export default function DiceRoller({
         {/* Bottom sheet */}
         <View
           style={{
-            backgroundColor: "#1a1a2e",
+            backgroundColor: colors.bgCard,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
             maxHeight: Dimensions.get("window").height * 0.88,
             borderTopWidth: 1,
-            borderColor: "#3a3a5c",
+            borderColor: colors.borderDefault,
           }}
         >
           {/* Handle */}
@@ -1133,7 +1207,7 @@ export default function DiceRoller({
                 width: 40,
                 height: 4,
                 borderRadius: 2,
-                backgroundColor: "#3a3a5c",
+                backgroundColor: colors.borderDefault,
               }}
             />
           </View>
@@ -1160,7 +1234,7 @@ export default function DiceRoller({
                   <Text style={{ fontSize: 22, marginRight: 8 }}>🎲</Text>
                   <Text
                     style={{
-                      color: "#ffffff",
+                      color: colors.textPrimary,
                       fontSize: 20,
                       fontWeight: "bold",
                     }}
@@ -1175,12 +1249,16 @@ export default function DiceRoller({
                       width: 36,
                       height: 36,
                       borderRadius: 18,
-                      backgroundColor: "#252540",
+                      backgroundColor: colors.bgSecondary,
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    <Ionicons name="time-outline" size={20} color="#8c8cb3" />
+                    <Ionicons
+                      name="time-outline"
+                      size={20}
+                      color={colors.textSecondary}
+                    />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={onClose}
@@ -1188,12 +1266,16 @@ export default function DiceRoller({
                       width: 36,
                       height: 36,
                       borderRadius: 18,
-                      backgroundColor: "#252540",
+                      backgroundColor: colors.bgSecondary,
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    <Ionicons name="close" size={20} color="#8c8cb3" />
+                    <Ionicons
+                      name="close"
+                      size={20}
+                      color={colors.textSecondary}
+                    />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1202,7 +1284,7 @@ export default function DiceRoller({
               {characterName && (
                 <Text
                   style={{
-                    color: "#fbbf24",
+                    color: colors.accentGold,
                     fontSize: 13,
                     fontWeight: "600",
                     textAlign: "center",
@@ -1231,11 +1313,15 @@ export default function DiceRoller({
                   }}
                 >
                   <View
-                    style={{ flex: 1, height: 1, backgroundColor: "#3a3a5c" }}
+                    style={{
+                      flex: 1,
+                      height: 1,
+                      backgroundColor: colors.borderDefault,
+                    }}
                   />
                   <Text
                     style={{
-                      color: "#666699",
+                      color: colors.textMuted,
                       fontSize: 12,
                       marginHorizontal: 12,
                     }}
@@ -1243,7 +1329,11 @@ export default function DiceRoller({
                     o escribe una fórmula
                   </Text>
                   <View
-                    style={{ flex: 1, height: 1, backgroundColor: "#3a3a5c" }}
+                    style={{
+                      flex: 1,
+                      height: 1,
+                      backgroundColor: colors.borderDefault,
+                    }}
                   />
                 </View>
 

@@ -37,6 +37,7 @@ import {
   type NoteSortOptions,
   type NoteTag,
 } from "@/types/notes";
+import { useTheme } from "@/hooks/useTheme";
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -72,6 +73,7 @@ function formatDate(dateStr: string): string {
 // ─── Main Component ──────────────────────────────────────────────────
 
 export default function NotesTab() {
+  const { isDark, colors } = useTheme();
   const { dialogProps, showDestructive } = useDialog();
   const {
     character,
@@ -115,7 +117,7 @@ export default function NotesTab() {
   if (!character) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Text className="text-dark-300 text-base">
+        <Text className="text-dark-500 dark:text-dark-300 text-base">
           No se ha cargado ningún personaje
         </Text>
       </View>
@@ -155,7 +157,7 @@ export default function NotesTab() {
     setEditorType(note.tipo);
     setEditorTags([...note.etiquetas]);
     setEditorSessionNumber(
-      note.numeroSesion !== null ? String(note.numeroSesion) : ""
+      note.numeroSesion !== null ? String(note.numeroSesion) : "",
     );
     setEditorSessionDate(note.fechaSesion ?? "");
     setShowEditor(true);
@@ -222,7 +224,7 @@ export default function NotesTab() {
         }
         showToast("Nota eliminada");
       },
-      { confirmText: "Eliminar", cancelText: "Cancelar" }
+      { confirmText: "Eliminar", cancelText: "Cancelar" },
     );
   };
 
@@ -271,12 +273,12 @@ export default function NotesTab() {
   // ── Render Sections ──
 
   const renderSearchBar = () => (
-    <View className="flex-row items-center bg-surface rounded-xl px-3 py-2 border border-surface-border mb-3">
-      <Ionicons name="search" size={18} color="#666699" />
+    <View className="flex-row items-center bg-gray-100 dark:bg-surface rounded-xl px-3 py-2 border border-dark-100 dark:border-surface-border mb-3">
+      <Ionicons name="search" size={18} color={colors.textMuted} />
       <TextInput
-        className="flex-1 text-white text-sm ml-2.5"
+        className="flex-1 text-dark-900 dark:text-white text-sm ml-2.5"
         placeholder="Buscar notas..."
-        placeholderTextColor="#666699"
+        placeholderTextColor={colors.textMuted}
         value={searchQuery}
         onChangeText={setSearchQuery}
         autoCorrect={false}
@@ -284,7 +286,7 @@ export default function NotesTab() {
       />
       {searchQuery.length > 0 && (
         <TouchableOpacity onPress={() => setSearchQuery("")}>
-          <Ionicons name="close-circle" size={18} color="#666699" />
+          <Ionicons name="close-circle" size={18} color={colors.textMuted} />
         </TouchableOpacity>
       )}
     </View>
@@ -317,17 +319,19 @@ export default function NotesTab() {
         </View>
 
         <TouchableOpacity
-          className="flex-row items-center bg-dark-700 rounded-lg px-2.5 py-1.5 border border-surface-border active:bg-dark-600"
+          className="flex-row items-center bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-1.5 border border-dark-100 dark:border-surface-border active:bg-gray-300 dark:active:bg-dark-600"
           onPress={() => setShowSortOptions(!showSortOptions)}
         >
-          <Ionicons name="swap-vertical" size={14} color="#666699" />
-          <Text className="text-dark-300 text-[10px] ml-1">Ordenar</Text>
+          <Ionicons name="swap-vertical" size={14} color={colors.textMuted} />
+          <Text className="text-dark-500 dark:text-dark-300 text-[10px] ml-1">
+            Ordenar
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Sort options dropdown */}
       {showSortOptions && (
-        <View className="bg-surface-card rounded-lg border border-surface-border p-2 mb-2">
+        <View className="bg-white dark:bg-surface-card rounded-lg border border-dark-100 dark:border-surface-border p-2 mb-2">
           {(
             [
               {
@@ -345,9 +349,7 @@ export default function NotesTab() {
             <TouchableOpacity
               key={option.field}
               className={`flex-row items-center justify-between py-2 px-2 rounded-lg ${
-                sortOptions.field === option.field
-                  ? "bg-primary-500/10"
-                  : ""
+                sortOptions.field === option.field ? "bg-primary-500/10" : ""
               }`}
               onPress={() => {
                 if (sortOptions.field === option.field) {
@@ -365,7 +367,7 @@ export default function NotesTab() {
                 className={`text-xs ${
                   sortOptions.field === option.field
                     ? "text-primary-400 font-semibold"
-                    : "text-dark-300"
+                    : "text-dark-500 dark:text-dark-300"
                 }`}
               >
                 {option.label}
@@ -373,12 +375,10 @@ export default function NotesTab() {
               {sortOptions.field === option.field && (
                 <Ionicons
                   name={
-                    sortOptions.order === "desc"
-                      ? "arrow-down"
-                      : "arrow-up"
+                    sortOptions.order === "desc" ? "arrow-down" : "arrow-up"
                   }
                   size={12}
-                  color="#c62828"
+                  color={colors.accentRed}
                 />
               )}
             </TouchableOpacity>
@@ -400,7 +400,7 @@ export default function NotesTab() {
               className={`flex-row items-center rounded-full px-3 py-1.5 mr-2 border ${
                 isActive
                   ? "border-opacity-50"
-                  : "bg-dark-700 border-surface-border"
+                  : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
               }`}
               style={
                 isActive
@@ -410,14 +410,12 @@ export default function NotesTab() {
                     }
                   : undefined
               }
-              onPress={() =>
-                setActiveTagFilter(isActive ? null : tag.id)
-              }
+              onPress={() => setActiveTagFilter(isActive ? null : tag.id)}
             >
               <Text className="text-xs mr-1">{tag.icon}</Text>
               <Text
                 className="text-[10px] font-semibold"
-                style={{ color: isActive ? tag.color : "#8c8cb3" }}
+                style={{ color: isActive ? tag.color : colors.textSecondary }}
               >
                 {tag.nombre}
               </Text>
@@ -429,26 +427,26 @@ export default function NotesTab() {
   );
 
   const renderQuickNoteBar = () => (
-    <View className="bg-surface-card rounded-card border border-surface-border p-3 mb-4">
+    <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-3 mb-4">
       {!showQuickNote ? (
         <TouchableOpacity
           className="flex-row items-center"
           onPress={() => setShowQuickNote(true)}
         >
           <View className="h-9 w-9 rounded-full bg-primary-500/20 items-center justify-center mr-3">
-            <Ionicons name="flash" size={18} color="#c62828" />
+            <Ionicons name="flash" size={18} color={colors.accentRed} />
           </View>
-          <Text className="text-dark-300 text-sm flex-1">
+          <Text className="text-dark-500 dark:text-dark-300 text-sm flex-1">
             Nota rápida...
           </Text>
-          <Ionicons name="create-outline" size={18} color="#666699" />
+          <Ionicons name="create-outline" size={18} color={colors.textMuted} />
         </TouchableOpacity>
       ) : (
         <View>
           <TextInput
-            className="bg-dark-700 rounded-xl px-4 py-3 text-white text-sm border border-surface-border mb-2 min-h-[70px]"
+            className="bg-gray-200 dark:bg-dark-700 rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border mb-2 min-h-[70px]"
             placeholder="Escribe tu nota rápida aquí..."
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
@@ -459,13 +457,13 @@ export default function NotesTab() {
           />
           <View className="flex-row justify-end">
             <TouchableOpacity
-              className="mr-2 px-4 py-2 rounded-lg active:bg-dark-600"
+              className="mr-2 px-4 py-2 rounded-lg active:bg-gray-300 dark:active:bg-dark-600"
               onPress={() => {
                 setShowQuickNote(false);
                 setQuickNoteContent("");
               }}
             >
-              <Text className="text-dark-300 text-xs font-semibold">
+              <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold">
                 Cancelar
               </Text>
             </TouchableOpacity>
@@ -473,12 +471,12 @@ export default function NotesTab() {
               className={`px-4 py-2 rounded-lg ${
                 quickNoteContent.trim()
                   ? "bg-primary-500 active:bg-primary-600"
-                  : "bg-dark-600 opacity-50"
+                  : "bg-gray-300 dark:bg-dark-600 opacity-50"
               }`}
               onPress={handleQuickNote}
               disabled={!quickNoteContent.trim()}
             >
-              <Text className="text-white text-xs font-semibold">
+              <Text className="text-dark-900 dark:text-white text-xs font-semibold">
                 Guardar
               </Text>
             </TouchableOpacity>
@@ -497,7 +495,7 @@ export default function NotesTab() {
     return (
       <TouchableOpacity
         key={note.id}
-        className="bg-surface-card rounded-card border border-surface-border mb-2 overflow-hidden"
+        className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border mb-2 overflow-hidden"
         onPress={() => setExpandedNoteId(isExpanded ? null : note.id)}
         onLongPress={() => handleEditNote(note)}
         activeOpacity={0.7}
@@ -508,7 +506,7 @@ export default function NotesTab() {
             {/* Pin indicator */}
             {note.fijada && (
               <View className="mr-2 mt-0.5">
-                <Ionicons name="pin" size={14} color="#f59e0b" />
+                <Ionicons name="pin" size={14} color={colors.accentAmber} />
               </View>
             )}
 
@@ -517,7 +515,9 @@ export default function NotesTab() {
               className="h-8 w-8 rounded-lg items-center justify-center mr-3"
               style={{
                 backgroundColor:
-                  note.tipo === "diario" ? "#3b82f620" : "#9ca3af20",
+                  note.tipo === "diario"
+                    ? `${colors.accentBlue}20`
+                    : `${colors.textMuted}20`,
               }}
             >
               <Ionicons
@@ -527,14 +527,16 @@ export default function NotesTab() {
                     : "document-text-outline"
                 }
                 size={16}
-                color={note.tipo === "diario" ? "#3b82f6" : "#9ca3af"}
+                color={
+                  note.tipo === "diario" ? colors.accentBlue : colors.textMuted
+                }
               />
             </View>
 
             {/* Note info */}
             <View className="flex-1">
               <Text
-                className="text-white text-sm font-semibold"
+                className="text-dark-900 dark:text-white text-sm font-semibold"
                 numberOfLines={isExpanded ? undefined : 1}
               >
                 {note.titulo}
@@ -580,7 +582,7 @@ export default function NotesTab() {
               )}
 
               {/* Date */}
-              <Text className="text-dark-500 text-[10px] mt-1">
+              <Text className="text-dark-300 dark:text-dark-500 text-[10px] mt-1">
                 {formatDate(note.fechaModificacion)}
               </Text>
             </View>
@@ -589,7 +591,7 @@ export default function NotesTab() {
             <Ionicons
               name={isExpanded ? "chevron-up" : "chevron-down"}
               size={16}
-              color="#666699"
+              color={colors.textMuted}
               style={{ marginTop: 2 }}
             />
           </View>
@@ -597,14 +599,14 @@ export default function NotesTab() {
 
         {/* Expanded content */}
         {isExpanded && (
-          <View className="px-3 pb-3 border-t border-surface-border/50">
+          <View className="px-3 pb-3 border-t border-dark-100 dark:border-surface-border/50">
             {/* Full content */}
             {note.contenido.trim().length > 0 ? (
-              <Text className="text-dark-200 text-sm leading-6 mt-3 mb-3">
+              <Text className="text-dark-600 dark:text-dark-200 text-sm leading-6 mt-3 mb-3">
                 {note.contenido}
               </Text>
             ) : (
-              <Text className="text-dark-500 text-sm italic mt-3 mb-3">
+              <Text className="text-dark-300 dark:text-dark-500 text-sm italic mt-3 mb-3">
                 Sin contenido
               </Text>
             )}
@@ -612,8 +614,12 @@ export default function NotesTab() {
             {/* Master visibility badge */}
             {note.visibleParaMaster && (
               <View className="flex-row items-center mb-3">
-                <Ionicons name="eye-outline" size={12} color="#f59e0b" />
-                <Text className="text-gold-400 text-[10px] ml-1">
+                <Ionicons
+                  name="eye-outline"
+                  size={12}
+                  color={colors.accentAmber}
+                />
+                <Text className="text-gold-700 dark:text-gold-400 text-[10px] ml-1">
                   Visible para el Master
                 </Text>
               </View>
@@ -622,7 +628,11 @@ export default function NotesTab() {
             {/* Sent by master badge */}
             {note.enviadaPorMaster && (
               <View className="flex-row items-center mb-3">
-                <Ionicons name="person-circle-outline" size={12} color="#a855f7" />
+                <Ionicons
+                  name="person-circle-outline"
+                  size={12}
+                  color={colors.accentPurple}
+                />
                 <Text className="text-purple-400 text-[10px] ml-1">
                   Enviada por el Master
                 </Text>
@@ -630,15 +640,19 @@ export default function NotesTab() {
             )}
 
             {/* Metadata */}
-            <View className="bg-dark-700 rounded-lg p-2.5 mb-3">
+            <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-3">
               <View className="flex-row items-center justify-between mb-1">
-                <Text className="text-dark-500 text-[10px]">Creada</Text>
+                <Text className="text-dark-300 dark:text-dark-500 text-[10px]">
+                  Creada
+                </Text>
                 <Text className="text-dark-400 text-[10px]">
                   {formatDate(note.fechaCreacion)}
                 </Text>
               </View>
               <View className="flex-row items-center justify-between">
-                <Text className="text-dark-500 text-[10px]">Modificada</Text>
+                <Text className="text-dark-300 dark:text-dark-500 text-[10px]">
+                  Modificada
+                </Text>
                 <Text className="text-dark-400 text-[10px]">
                   {formatDate(note.fechaModificacion)}
                 </Text>
@@ -652,19 +666,21 @@ export default function NotesTab() {
                   className={`flex-row items-center rounded-lg px-3 py-2 mr-2 border ${
                     note.fijada
                       ? "bg-amber-500/15 border-amber-500/30"
-                      : "bg-dark-700 border-surface-border"
+                      : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
                   } active:opacity-70`}
                   onPress={() => handleTogglePin(note.id)}
                 >
                   <Ionicons
                     name={note.fijada ? "pin" : "pin-outline"}
                     size={14}
-                    color={note.fijada ? "#f59e0b" : "#666699"}
+                    color={note.fijada ? colors.accentAmber : colors.textMuted}
                   />
                   <Text
                     className="text-xs font-semibold ml-1"
                     style={{
-                      color: note.fijada ? "#f59e0b" : "#8c8cb3",
+                      color: note.fijada
+                        ? colors.accentAmber
+                        : colors.textSecondary,
                     }}
                   >
                     {note.fijada ? "Desanclar" : "Fijar"}
@@ -672,10 +688,14 @@ export default function NotesTab() {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="flex-row items-center bg-dark-700 border border-surface-border rounded-lg px-3 py-2 mr-2 active:bg-dark-600"
+                  className="flex-row items-center bg-gray-200 dark:bg-dark-700 border border-dark-100 dark:border-surface-border rounded-lg px-3 py-2 mr-2 active:bg-gray-300 dark:active:bg-dark-600"
                   onPress={() => handleEditNote(note)}
                 >
-                  <Ionicons name="create-outline" size={14} color="#3b82f6" />
+                  <Ionicons
+                    name="create-outline"
+                    size={14}
+                    color={colors.accentBlue}
+                  />
                   <Text className="text-blue-400 text-xs font-semibold ml-1">
                     Editar
                   </Text>
@@ -686,7 +706,11 @@ export default function NotesTab() {
                 className="flex-row items-center bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 active:bg-red-500/25"
                 onPress={() => handleDeleteNote(note)}
               >
-                <Ionicons name="trash-outline" size={14} color="#ef4444" />
+                <Ionicons
+                  name="trash-outline"
+                  size={14}
+                  color={colors.accentDanger}
+                />
                 <Text className="text-red-400 text-xs font-semibold ml-1">
                   Eliminar
                 </Text>
@@ -706,32 +730,32 @@ export default function NotesTab() {
         typeFilter !== null;
 
       return (
-        <View className="bg-surface-card rounded-card border border-surface-border p-6 items-center mb-4">
-          <View className="h-16 w-16 rounded-full bg-dark-700 items-center justify-center mb-4">
+        <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-6 items-center mb-4">
+          <View className="h-16 w-16 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center mb-4">
             <Ionicons
               name={hasFilters ? "search-outline" : "document-text-outline"}
               size={32}
-              color="#666699"
+              color={colors.textMuted}
             />
           </View>
-          <Text className="text-white text-base font-semibold text-center mb-1">
+          <Text className="text-dark-900 dark:text-white text-base font-semibold text-center mb-1">
             {hasFilters ? "Sin resultados" : "Sin notas"}
           </Text>
-          <Text className="text-dark-300 text-sm text-center leading-5 mb-4">
+          <Text className="text-dark-500 dark:text-dark-300 text-sm text-center leading-5 mb-4">
             {hasFilters
               ? "No se encontraron notas con los filtros actuales."
               : "Crea tu primera nota para empezar a registrar tu aventura."}
           </Text>
           {hasFilters ? (
             <TouchableOpacity
-              className="bg-dark-700 rounded-lg px-4 py-2.5 active:bg-dark-600"
+              className="bg-gray-200 dark:bg-dark-700 rounded-lg px-4 py-2.5 active:bg-gray-300 dark:active:bg-dark-600"
               onPress={() => {
                 setSearchQuery("");
                 setActiveTagFilter(null);
                 setTypeFilter(null);
               }}
             >
-              <Text className="text-dark-200 text-sm font-semibold">
+              <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold">
                 Limpiar filtros
               </Text>
             </TouchableOpacity>
@@ -740,7 +764,7 @@ export default function NotesTab() {
               className="bg-primary-500 rounded-lg px-6 py-2.5 active:bg-primary-600"
               onPress={handleCreateNote}
             >
-              <Text className="text-white text-sm font-semibold">
+              <Text className="text-dark-900 dark:text-white text-sm font-semibold">
                 Crear nota
               </Text>
             </TouchableOpacity>
@@ -752,7 +776,7 @@ export default function NotesTab() {
     return (
       <View className="mb-4">
         <View className="flex-row items-center justify-between mb-3">
-          <Text className="text-dark-200 text-xs font-semibold uppercase tracking-wider">
+          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider">
             {processedNotes.length} nota(s)
           </Text>
         </View>
@@ -767,7 +791,11 @@ export default function NotesTab() {
         className="flex-1 bg-primary-500/15 border border-primary-500/30 rounded-card p-3 mr-2 flex-row items-center justify-center active:bg-primary-500/25"
         onPress={handleCreateNote}
       >
-        <Ionicons name="add-circle-outline" size={18} color="#c62828" />
+        <Ionicons
+          name="add-circle-outline"
+          size={18}
+          color={colors.accentRed}
+        />
         <Text className="text-primary-400 text-sm font-semibold ml-2">
           Nueva Nota
         </Text>
@@ -777,7 +805,7 @@ export default function NotesTab() {
         className="flex-1 bg-blue-500/15 border border-blue-500/30 rounded-card p-3 ml-2 flex-row items-center justify-center active:bg-blue-500/25"
         onPress={handleCreateDiaryEntry}
       >
-        <Ionicons name="journal-outline" size={18} color="#3b82f6" />
+        <Ionicons name="journal-outline" size={18} color={colors.accentBlue} />
         <Text className="text-blue-400 text-sm font-semibold ml-2">
           Diario de Sesión
         </Text>
@@ -793,20 +821,20 @@ export default function NotesTab() {
       onRequestClose={() => setShowEditor(false)}
     >
       <KeyboardAvoidingView
-        className="flex-1 bg-dark-800"
+        className="flex-1 bg-gray-50 dark:bg-dark-800"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         {/* Editor Header */}
-        <View className="flex-row items-center justify-between px-5 pt-14 pb-3 border-b border-surface-border">
+        <View className="flex-row items-center justify-between px-5 pt-14 pb-3 border-b border-dark-100 dark:border-surface-border">
           <TouchableOpacity
-            className="h-10 w-10 rounded-full bg-surface items-center justify-center active:bg-surface-light"
+            className="h-10 w-10 rounded-full bg-gray-100 dark:bg-surface items-center justify-center active:bg-gray-50 dark:active:bg-surface-light"
             onPress={() => {
               if (editorTitle.trim() || editorContent.trim()) {
                 showDestructive(
                   "Descartar cambios",
                   "¿Estás seguro de que quieres salir? Se perderán los cambios.",
                   () => setShowEditor(false),
-                  { confirmText: "Descartar", cancelText: "Seguir editando" }
+                  { confirmText: "Descartar", cancelText: "Seguir editando" },
                 );
               } else {
                 setShowEditor(false);
@@ -816,7 +844,7 @@ export default function NotesTab() {
             <Ionicons name="close" size={22} color="white" />
           </TouchableOpacity>
 
-          <Text className="text-white text-base font-semibold">
+          <Text className="text-dark-900 dark:text-white text-base font-semibold">
             {editingNote ? "Editar Nota" : "Nueva Nota"}
           </Text>
 
@@ -824,12 +852,12 @@ export default function NotesTab() {
             className={`rounded-lg px-4 py-2 ${
               editorTitle.trim()
                 ? "bg-primary-500 active:bg-primary-600"
-                : "bg-dark-600 opacity-50"
+                : "bg-gray-300 dark:bg-dark-600 opacity-50"
             }`}
             onPress={handleSaveNote}
             disabled={!editorTitle.trim()}
           >
-            <Text className="text-white text-sm font-semibold">
+            <Text className="text-dark-900 dark:text-white text-sm font-semibold">
               Guardar
             </Text>
           </TouchableOpacity>
@@ -841,11 +869,11 @@ export default function NotesTab() {
           keyboardShouldPersistTaps="handled"
         >
           {/* Note type toggle */}
-          <View className="flex-row mt-4 mb-4 bg-dark-700 rounded-xl p-1">
+          <View className="flex-row mt-4 mb-4 bg-gray-200 dark:bg-dark-700 rounded-xl p-1">
             <TouchableOpacity
               className={`flex-1 rounded-lg py-2.5 items-center flex-row justify-center ${
                 editorType === "general"
-                  ? "bg-surface-light"
+                  ? "bg-gray-50 dark:bg-surface-light"
                   : "bg-transparent"
               }`}
               onPress={() => setEditorType("general")}
@@ -853,12 +881,16 @@ export default function NotesTab() {
               <Ionicons
                 name="document-text-outline"
                 size={16}
-                color={editorType === "general" ? "#ffffff" : "#666699"}
+                color={
+                  editorType === "general"
+                    ? colors.textPrimary
+                    : colors.textMuted
+                }
               />
               <Text
                 className={`text-sm font-medium ml-1.5 ${
                   editorType === "general"
-                    ? "text-white"
+                    ? "text-dark-900 dark:text-white"
                     : "text-dark-400"
                 }`}
               >
@@ -868,7 +900,7 @@ export default function NotesTab() {
             <TouchableOpacity
               className={`flex-1 rounded-lg py-2.5 items-center flex-row justify-center ${
                 editorType === "diario"
-                  ? "bg-surface-light"
+                  ? "bg-gray-50 dark:bg-surface-light"
                   : "bg-transparent"
               }`}
               onPress={() => setEditorType("diario")}
@@ -876,13 +908,13 @@ export default function NotesTab() {
               <Ionicons
                 name="journal-outline"
                 size={16}
-                color={editorType === "diario" ? "#3b82f6" : "#666699"}
+                color={
+                  editorType === "diario" ? colors.accentBlue : colors.textMuted
+                }
               />
               <Text
                 className={`text-sm font-medium ml-1.5 ${
-                  editorType === "diario"
-                    ? "text-blue-400"
-                    : "text-dark-400"
+                  editorType === "diario" ? "text-blue-400" : "text-dark-400"
                 }`}
               >
                 Diario
@@ -894,26 +926,26 @@ export default function NotesTab() {
           {editorType === "diario" && (
             <View className="flex-row mb-4">
               <View className="flex-1 mr-2">
-                <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+                <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Nº Sesión
                 </Text>
                 <TextInput
-                  className="bg-surface rounded-xl px-4 py-3 text-white text-sm border border-surface-border"
+                  className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border"
                   placeholder={String(getNextSessionNumber(notes))}
-                  placeholderTextColor="#666699"
+                  placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
                   value={editorSessionNumber}
                   onChangeText={setEditorSessionNumber}
                 />
               </View>
               <View className="flex-1 ml-2">
-                <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+                <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
                   Fecha de sesión
                 </Text>
                 <TextInput
-                  className="bg-surface rounded-xl px-4 py-3 text-white text-sm border border-surface-border"
+                  className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border"
                   placeholder="YYYY-MM-DD"
-                  placeholderTextColor="#666699"
+                  placeholderTextColor={colors.textMuted}
                   value={editorSessionDate}
                   onChangeText={setEditorSessionDate}
                 />
@@ -922,13 +954,13 @@ export default function NotesTab() {
           )}
 
           {/* Title */}
-          <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+          <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
             Título <Text className="text-primary-500">*</Text>
           </Text>
           <TextInput
-            className="bg-surface rounded-xl px-4 py-3 text-white text-base border border-surface-border mb-4"
+            className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-base border border-dark-100 dark:border-surface-border mb-4"
             placeholder="Título de la nota"
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             value={editorTitle}
             onChangeText={setEditorTitle}
             maxLength={200}
@@ -936,13 +968,13 @@ export default function NotesTab() {
           />
 
           {/* Content */}
-          <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+          <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
             Contenido
           </Text>
           <TextInput
-            className="bg-surface rounded-xl px-4 py-3 text-white text-sm border border-surface-border mb-4 min-h-[200px]"
+            className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border mb-4 min-h-[200px]"
             placeholder="Escribe el contenido de tu nota aquí..."
-            placeholderTextColor="#666699"
+            placeholderTextColor={colors.textMuted}
             multiline
             numberOfLines={10}
             textAlignVertical="top"
@@ -952,7 +984,7 @@ export default function NotesTab() {
           />
 
           {/* Tags */}
-          <Text className="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-2">
+          <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-2">
             Etiquetas
           </Text>
           <View className="flex-row flex-wrap mb-4">
@@ -962,7 +994,9 @@ export default function NotesTab() {
                 <TouchableOpacity
                   key={tag.id}
                   className={`flex-row items-center rounded-full px-3 py-2 mr-2 mb-2 border ${
-                    isSelected ? "border-opacity-50" : "border-surface-border"
+                    isSelected
+                      ? "border-opacity-50"
+                      : "border-dark-100 dark:border-surface-border"
                   }`}
                   style={
                     isSelected
@@ -970,7 +1004,7 @@ export default function NotesTab() {
                           backgroundColor: `${tag.color}20`,
                           borderColor: `${tag.color}50`,
                         }
-                      : { backgroundColor: "#1e1e38" }
+                      : { backgroundColor: colors.bgSecondary }
                   }
                   onPress={() => handleToggleEditorTag(tag.id)}
                 >
@@ -978,7 +1012,7 @@ export default function NotesTab() {
                   <Text
                     className="text-xs font-medium"
                     style={{
-                      color: isSelected ? tag.color : "#8c8cb3",
+                      color: isSelected ? tag.color : colors.textSecondary,
                     }}
                   >
                     {tag.nombre}
@@ -998,7 +1032,7 @@ export default function NotesTab() {
 
           {/* Character count */}
           <View className="flex-row justify-end mb-4">
-            <Text className="text-dark-500 text-[10px]">
+            <Text className="text-dark-300 dark:text-dark-500 text-[10px]">
               {editorContent.length}/5000 caracteres
             </Text>
           </View>
@@ -1009,25 +1043,25 @@ export default function NotesTab() {
 
   // Stats section showing total notes count
   const renderStatsBar = () => (
-    <View className="bg-surface-card rounded-card border border-surface-border p-4 mb-4">
+    <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
       <View className="flex-row justify-between">
         <StatBadge
           icon="document-text"
           label="Total"
           value={String(notes.length)}
-          color="#9ca3af"
+          color={colors.textMuted}
         />
         <StatBadge
           icon="journal"
           label="Diario"
           value={String(notes.filter((n) => n.tipo === "diario").length)}
-          color="#3b82f6"
+          color={colors.accentBlue}
         />
         <StatBadge
           icon="pin"
           label="Fijadas"
           value={String(notes.filter((n) => n.fijada).length)}
-          color="#f59e0b"
+          color={colors.accentAmber}
         />
         <StatBadge
           icon="today"
@@ -1036,10 +1070,10 @@ export default function NotesTab() {
             new Set(
               notes
                 .filter((n) => n.tipo === "diario" && n.numeroSesion !== null)
-                .map((n) => n.numeroSesion)
-            ).size
+                .map((n) => n.numeroSesion),
+            ).size,
           )}
-          color="#22c55e"
+          color={colors.accentGreen}
         />
       </View>
     </View>
@@ -1085,13 +1119,13 @@ function FilterChip({
       className={`rounded-full px-3 py-1.5 mr-2 border ${
         isActive
           ? "bg-primary-500/20 border-primary-500/50"
-          : "bg-dark-700 border-surface-border"
+          : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
       }`}
       onPress={onPress}
     >
       <Text
         className={`text-[10px] font-semibold ${
-          isActive ? "text-primary-400" : "text-dark-300"
+          isActive ? "text-primary-400" : "text-dark-500 dark:text-dark-300"
         }`}
       >
         {label}
@@ -1114,7 +1148,9 @@ function StatBadge({
   return (
     <View className="items-center flex-1">
       <Ionicons name={icon} size={18} color={color} />
-      <Text className="text-white text-lg font-bold mt-0.5">{value}</Text>
+      <Text className="text-dark-900 dark:text-white text-lg font-bold mt-0.5">
+        {value}
+      </Text>
       <Text className="text-dark-400 text-[10px] uppercase tracking-wider">
         {label}
       </Text>

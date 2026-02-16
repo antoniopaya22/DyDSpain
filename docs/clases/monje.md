@@ -237,6 +237,186 @@ Solo puedes tener a una criatura bajo el efecto de este rasgo al mismo tiempo. P
 
 ---
 
+## Tradición Monástica: Camino de la Sombra
+
+Estos monjes abrazan la oscuridad y el sigilo, convirtiéndose en asesinos y espías invisibles.
+
+### Artes de la Sombra
+
+A nivel 3, obtienes los conjuros *oscuridad*, *silencio*, *pasar sin rastro* y *oscurecerse* (puedes lanzarlos gastando ki).
+
+### Paso Sombrío
+
+A nivel 6, puedes **teletransportarte** hasta **18 m** en penumbra o oscuridad como **acción bonus**; obtienes **ventaja** en tu siguiente ataque.
+
+### Capa de Sombras
+
+A nivel 11, puedes volverte **invisible** mientras permanezcas en penumbra o oscuridad.
+
+### Amo de la Noche
+
+A nivel 17, puedes moverte libremente entre sombras, cruzando superficies oscuras y apareciendo hasta **18 m** más allá.
+
+---
+
+## Tradición Monástica: Camino de los Cuatro Elementos
+
+Los monjes de este camino canalizan las fuerzas elementales de la naturaleza a través de su cuerpo.
+
+### Disciplinas Elementales
+
+A nivel 3, aprendes a gastar ki para emular conjuros elementales (como *puño ardiente*, *muro de piedra* o *salto aéreo*).
+
+### Flujo Elemental
+
+A nivel 6, reduces el coste en ki de tus técnicas más débiles y puedes afectar **áreas mayores** con tus conjuros de ki.
+
+### Unidad Natural
+
+A nivel 11, obtienes **resistencia** a un tipo de daño elemental según tu afinidad (fuego, agua, aire o tierra).
+
+### Avatar de los Elementos
+
+A nivel 17, puedes fusionarte con tu elemento elegido, obteniendo **vuelo**, **inmunidades** o ataques devastadores durante 1 minuto.
+
+---
+
+## Tradición Monástica: Camino del Alma Solar (Sun Soul)
+
+Los monjes del Alma Solar canalizan su energía vital como fuego o luz radiante, convirtiendo su ki en pura incandescencia.
+
+### Ráfaga Radiante
+
+A nivel 3, puedes proyectar ondas de **energía radiante** a distancia (como ataques de ki de **9 m**).
+
+### Brillo Solar
+
+A nivel 6, puedes iluminar un área y añadir **daño radiante** a tu ataque desarmado una vez por turno.
+
+### Explosión Solar
+
+A nivel 11, puedes liberar una explosión de **luz cegadora** a **9 m** a tu alrededor gastando **2 puntos de ki**.
+
+### Avatar del Sol
+
+A nivel 17, tu cuerpo emite un resplandor incesante durante 1 minuto, infligiendo **daño radiante constante** a todos los enemigos cercanos.
+
+---
+
+## Tradición Monástica: Camino del Embriagado (Drunken Master)
+
+Maestros del equilibrio en el caos, los monjes embriagados usan movimientos impredecibles y técnicas evasivas que confunden al enemigo.
+
+### Técnica del Borracho
+
+A nivel 3, cuando uses Ráfaga de Golpes, obtienes **10 m de movimiento adicional** y **no provocas ataques de oportunidad** ese turno.
+
+### Caída Graciosa
+
+A nivel 6, siempre caes de pie y reduces el **daño por caída** a la mitad.
+
+### Borrachera Impredecible
+
+A nivel 11, puedes **redirigir los ataques enemigos fallidos** haciéndolos impactar en otros a **1,5 m**.
+
+### Embriaguez Perfecta
+
+A nivel 17, cada vez que usas Ráfaga de Golpes, puedes realizar un **tercer ataque gratuito** o empujar **3 m** al objetivo.
+
+---
+
+## Tradición Monástica: Camino del Maestro Kensei
+
+Los monjes Kensei transforman las armas en extensión de su espíritu, perfeccionando el dominio de la hoja o el arco como forma de meditación.
+
+### Armas Kensei
+
+A nivel 3, elige **dos armas** para ser tus armas de Kensei. Ganas competencia con ellas y las consideras **ataques del monje**.
+
+### Golpe Preciso
+
+Puedes gastar **1 punto de ki** para añadir tu **modificador de Sabiduría** al daño de un ataque de Kensei.
+
+### Parada Grácil
+
+A nivel 6, puedes usar tu **reacción** para añadir **+2 CA** contra un ataque entrante usando tu arma de Kensei.
+
+### Espíritu Armado
+
+A nivel 11, tus ataques con armas de Kensei se consideran **mágicos** y puedes bloquear proyectiles sin necesidad de acción.
+
+### Maestro del Acero
+
+A nivel 17, tus golpes con armas de Kensei **ignoran resistencias** y puedes realizar **dos ataques adicionales** cuando usas Ráfaga de Golpes.
+
+---
+
+## Tradición Monástica: Camino del Alma Astral
+
+Estos monjes liberan su espíritu interior como forma tangible, combatiendo con manifestaciones místicas.
+
+### Brazos del Alma
+
+A nivel 3, puedes manifestar **brazos astrales** durante 10 minutos, usando tu **Sabiduría** para ataques y daño.
+
+### Visión del Más Allá
+
+A nivel 6, mientras tus brazos astrales estén activos, puedes ver **criaturas invisibles** y escuchar pensamientos superficiales.
+
+### Cuerpo del Espíritu
+
+A nivel 11, puedes manifestar también tu **rostro y torso astrales**, ganando **resistencia al daño elemental** y visión a través de la materia ligera.
+
+### Unión Astral
+
+A nivel 17, puedes convertirte por completo en un **ser espiritual** durante 1 minuto: vuelo, ataques espirituales y resistencia a todos los daños.
+
+---
+
+## Tradición Monástica: Camino del Puño Mercurial (UA / Experimental)
+
+Monjes veloces como el viento, canalizan su ki en rapidez pura y desplazamiento acrobático.
+
+### Golpe Fugaz
+
+A nivel 3, puedes usar Ráfaga de Golpes **sin gastar ki** una vez por **descanso corto**.
+
+### Movimiento Relámpago
+
+A nivel 6, obtienes **+3 m de velocidad** y puedes moverte por el aire o superficies verticales sin caer durante tu turno.
+
+### Doble Impacto
+
+A nivel 11, puedes golpear a **dos enemigos distintos** con la misma acción de ataque.
+
+### Despertar Mercurial
+
+A nivel 17, tu velocidad se **duplica** y puedes **teletransportarte 9 m** tras cada ataque exitoso.
+
+---
+
+## Tradición Monástica: Camino de la Tranquilidad (UA / Monje Pacificador)
+
+Estos monjes buscan la perfección del alma mediante la no violencia y la armonía universal.
+
+### Aura Pacífica
+
+A nivel 3, proyectas una aura calmante a **9 m**, otorgando **ventaja** a las tiradas de Persuasión y **desventaja** a quienes intenten atacar primero.
+
+### Toque Pacificador
+
+A nivel 6, puedes imponer **calma** o **sueño** con un toque cargado de ki.
+
+### Serenidad Interior
+
+A nivel 11, eres **inmune al miedo y al encanto**, y puedes extender esta inmunidad a un aliado cercano.
+
+### Maestro del Equilibrio
+
+A nivel 17, puedes neutralizar conflictos mágicos o emocionales en un área amplia una vez por **descanso largo**.
+
+---
+
 ## Guía de Subida de Nivel
 
 A continuación se detalla, nivel a nivel, qué obtiene el monje en cada avance.

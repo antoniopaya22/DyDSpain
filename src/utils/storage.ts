@@ -18,6 +18,7 @@ export const STORAGE_KEYS = {
   SETTINGS: "dyd:settings",
   SPELL_FAVORITES: (characterId: string) => `dyd:spell_favs:${characterId}`,
   MAGIC_STATE: (characterId: string) => `dyd:magic:${characterId}`,
+  CLASS_RESOURCES: (characterId: string) => `dyd:class_res:${characterId}`,
 } as const;
 
 // ─── Operaciones básicas con tipado ──────────────────────────────────
@@ -33,7 +34,10 @@ export async function setItem<T>(key: string, value: T): Promise<void> {
     await AsyncStorage.setItem(key, jsonValue);
   } catch (error) {
     console.error(`[Storage] Error al guardar "${key}":`, error);
-    throw new StorageError(`No se pudo guardar el dato con clave "${key}"`, error);
+    throw new StorageError(
+      `No se pudo guardar el dato con clave "${key}"`,
+      error,
+    );
   }
 }
 
@@ -61,7 +65,10 @@ export async function getItem<T>(key: string): Promise<T | null> {
  * @param defaultValue - Valor por defecto si la clave no existe
  * @returns El valor deserializado o el valor por defecto
  */
-export async function getItemOrDefault<T>(key: string, defaultValue: T): Promise<T> {
+export async function getItemOrDefault<T>(
+  key: string,
+  defaultValue: T,
+): Promise<T> {
   const value = await getItem<T>(key);
   return value ?? defaultValue;
 }
@@ -75,7 +82,10 @@ export async function removeItem(key: string): Promise<void> {
     await AsyncStorage.removeItem(key);
   } catch (error) {
     console.error(`[Storage] Error al eliminar "${key}":`, error);
-    throw new StorageError(`No se pudo eliminar el dato con clave "${key}"`, error);
+    throw new StorageError(
+      `No se pudo eliminar el dato con clave "${key}"`,
+      error,
+    );
   }
 }
 
@@ -117,7 +127,7 @@ export async function appendToList<T>(key: string, item: T): Promise<T[]> {
 export async function updateInList<T>(
   key: string,
   matchFn: (item: T) => boolean,
-  updater: (item: T) => T
+  updater: (item: T) => T,
 ): Promise<T[] | null> {
   const existing = await getItem<T[]>(key);
   if (!existing) return null;
@@ -145,7 +155,7 @@ export async function updateInList<T>(
  */
 export async function removeFromList<T>(
   key: string,
-  matchFn: (item: T) => boolean
+  matchFn: (item: T) => boolean,
 ): Promise<T[]> {
   const existing = await getItemOrDefault<T[]>(key, []);
   const updated = existing.filter((item) => !matchFn(item));
@@ -164,7 +174,7 @@ export async function removeFromList<T>(
  */
 export async function mergeItem<T extends Record<string, unknown>>(
   key: string,
-  partial: Partial<T>
+  partial: Partial<T>,
 ): Promise<T | null> {
   const existing = await getItem<T>(key);
   if (!existing) return null;
@@ -199,7 +209,10 @@ export async function getKeysByPrefix(prefix: string): Promise<string[]> {
     const allKeys = await AsyncStorage.getAllKeys();
     return allKeys.filter((key) => key.startsWith(prefix));
   } catch (error) {
-    console.error(`[Storage] Error al buscar claves con prefijo "${prefix}":`, error);
+    console.error(
+      `[Storage] Error al buscar claves con prefijo "${prefix}":`,
+      error,
+    );
     return [];
   }
 }
@@ -210,7 +223,7 @@ export async function getKeysByPrefix(prefix: string): Promise<string[]> {
  * @returns Un Map con las claves y sus valores deserializados
  */
 export async function getMultipleItems<T>(
-  keys: string[]
+  keys: string[],
 ): Promise<Map<string, T | null>> {
   try {
     const pairs = await AsyncStorage.multiGet(keys);

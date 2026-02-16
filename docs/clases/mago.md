@@ -590,3 +590,201 @@ A partir del nivel 10, puedes sumar tu **modificador por Inteligencia** a una de
 A partir del nivel 14, puedes aumentar el poder de tus conjuros más sencillos. Cuando lanzas un conjuro de mago de **niveles entre 1 y 5** que causa daño, puedes infligir el **daño máximo** posible.
 
 La primera vez que hagas esto no sufrirás ningún efecto negativo, pero si usas este rasgo de nuevo sin haber finalizado un descanso largo antes, recibirás **2d12 de daño necrótico** por cada nivel del conjuro inmediatamente después de lanzarlo. Cada vez que vuelvas a utilizar este rasgo sin haber terminado un descanso largo, el daño necrótico por cada nivel del conjuro aumentará en 1d12. Este daño ignora cualquier resistencia e inmunidad.
+
+---
+
+## Tradición Arcana: Escuela de la Abjuración
+
+Los abjuradores son guardianes del equilibrio y protectores del plano material. Dominan los conjuros que bloquean, repelen o neutralizan energías peligrosas.
+
+### Protección Arcana
+
+A nivel 2, creas un **escudo mágico personal** que absorbe daño igual al doble de tu nivel de mago. Puedes volver a activarlo tras un descanso.
+
+### Especialista Defensivo
+
+A nivel 6, obtienes bono a todas las **tiradas de salvación contra magia** mientras tu escudo esté activo.
+
+### Proyección de la Abjuración
+
+A nivel 10, puedes transferir parte de tu escudo a un aliado dentro de **9 m** como **acción bonus**.
+
+### Maestro del Círculo Protector
+
+A nivel 14, tus conjuros de abjuración pueden **disipar o contrarrestar** efectos permanentes, incluso si su nivel excede lo normal.
+
+---
+
+## Tradición Arcana: Escuela de la Conjuración
+
+La magia de conjuración trata de invocar energía, criaturas u objetos desde otros lugares o planos.
+
+### Invocador Experto
+
+A nivel 2, puedes crear **objetos simples** como acción menor, y tus conjuros de conjuración se lanzan más rápido de lo habitual.
+
+### Precisión Planar
+
+A nivel 6, tus conjuros de teletransportación son más estables: tú y tus aliados tiráis con **ventaja** al usarlos.
+
+### Vínculo de Invocación
+
+A nivel 10, las criaturas que invoques reciben **PG adicionales** y **+2 a CA**.
+
+### Conjurador Supremo
+
+A nivel 14, puedes mantener una criatura invocada adicional **sin gastar concentración**.
+
+---
+
+## Tradición Arcana: Escuela de la Adivinación
+
+Los adivinos ven el hilo invisible del destino, descifrando el pasado, el presente y los posibles futuros.
+
+### Augurios
+
+A nivel 2, obtienes **dos tiradas de d20** al despertar (Portentos). Puedes usarlas para sustituir cualquier tirada tuya o de otro antes de saber el resultado.
+
+### Visión Clara
+
+A nivel 6, puedes ver ilusiones y campos mágicos invisibles sin esfuerzo durante **10 minutos** al día.
+
+### Presagio Mejorado
+
+A nivel 10, ahora tiras **tres dados de Portento** por día en lugar de dos.
+
+### Maestro del Destino
+
+A nivel 14, puedes forzar o repetir tiradas ajenas gastando tus Portentos, incluso en criaturas inmunes a magia.
+
+---
+
+## Tradición Arcana: Escuela del Encantamiento
+
+Los encantadores manipulan los corazones y las mentes, tejiendo persuasión mágica en cada palabra o gesto.
+
+### Encanto Hipnótico
+
+A nivel 2, puedes **hechizar** temporalmente hasta dos criaturas tras un minuto de conversación.
+
+### Calma de Hechicero
+
+A nivel 6, los enemigos no te consideran hostil inmediatamente después de que falle un efecto de encantamiento contra ellos.
+
+### Manipulación Instintiva
+
+A nivel 10, cuando lanzas un conjuro de encantamiento, puedes elegir **dos objetivos adicionales** dentro del alcance.
+
+### Dominio Absoluto
+
+A nivel 14, puedes mantener un encantamiento **sin requerir concentración** mientras controlas solo una criatura.
+
+---
+
+## Tradición Arcana: Escuela de la Ilusión
+
+Los ilusionistas crean realidades falsas más reales que la verdad misma, jugando con la percepción y los sentidos.
+
+### Ilusión Menor Mejorada
+
+A nivel 2, puedes combinar **imagen y sonido** en una sola *ilusión menor*.
+
+### Mente Engañosa
+
+A nivel 6, puedes alterar una **ilusión existente** sin volver a lanzarla, adaptándola a la situación.
+
+### Duplicado Fantasmal
+
+A nivel 10, puedes crear una **copia ilusoria de ti mismo** que actúa y defiende como si fuera real; los ataques pueden fallar gracias a ella.
+
+### Realidad Ilusoria
+
+A nivel 14, puedes convertir una ilusión en **objeto tangible** o trampa física durante 1 minuto.
+
+---
+
+## Tradición Arcana: Escuela de la Necromancia
+
+Los necromantes exploran la muerte como fuente de poder, manipulando la energía vital tanto para sanar como para matar.
+
+### Tocar la Muerte
+
+A nivel 2, cuando reduces a 0 PG a una criatura, recuperas PG iguales a tu **modificador de Inteligencia + nivel del conjuro**.
+
+### Comando de Muertos
+
+A nivel 6, las criaturas no muertas que controles ganan **+HP** y **+daño** en combate.
+
+### Vampirismo Arcano
+
+A nivel 10, puedes convertir parte del daño infligido en **curación para ti mismo** (una vez por turno).
+
+### Amo del Sepulcro
+
+A nivel 14, puedes controlar permanentemente más no muertos y crear servidumbre arcana de **múltiples criaturas simultáneamente**.
+
+---
+
+## Tradición Arcana: Escuela de la Transmutación
+
+Los transmutadores alteran la forma de la materia y la energía, descubriendo la alquimia mágica del cambio.
+
+### Piedra de Transmutador
+
+A nivel 2, creas una **piedra mágica** que otorga un beneficio (resistencia, velocidad, respiración acuática o visión en la oscuridad).
+
+### Maestro del Cambio
+
+A nivel 6, puedes cambiar el efecto de tu piedra como **acción bonus**.
+
+### Transformación Rápida
+
+A nivel 10, puedes cambiar pequeños objetos de forma o material **sin componentes costosos**.
+
+### Alquimista Supremo
+
+A nivel 14, puedes transformarte en otro ser viviente (similar a *forma verdadera*) una vez por **descanso largo**.
+
+---
+
+## Tradición Arcana: Escuela de la Invocación
+
+Los invocadores crean efectos mágicos espontáneos de destrucción, movimiento o manipulación a gran escala.
+
+### Crear Elemento
+
+A nivel 2, puedes conjurar objetos temporales o efectos menores de energía **sin gastar espacio de conjuro**.
+
+### Control Espacial
+
+A nivel 6, puedes modificar el **alcance o duración** de tus conjuros con un gasto mínimo de energía.
+
+### Portal Instantáneo
+
+A nivel 10, puedes abrir **portales temporales** entre dos puntos visibles de hasta **9 m**.
+
+### Invocador Supremo
+
+A nivel 14, puedes sostener **dos conjuros de concentración** a la vez, siempre que uno sea de la escuela de Invocación.
+
+---
+
+## Tradición Arcana: Escuela de la Cronomancia (UA / Experimental)
+
+Los cronómacos manipulan el tiempo mismo, deteniéndolo, acelerándolo o revirtiéndolo brevemente.
+
+### Eco Temporal
+
+A nivel 2, puedes forzar a **repetir una tirada** dentro de tu alcance una vez por descanso.
+
+### Distorsión del Momento
+
+A nivel 6, puedes actuar fuera de tu turno gastando un espacio de conjuro para **alterar el orden del combate**.
+
+### Reversión Parcial
+
+A nivel 10, cuando recibes daño, puedes retroceder un instante en el tiempo y **repetir la tirada de defensa**.
+
+### Maestro del Tiempo
+
+A nivel 14, puedes **detener el tiempo** durante 1 turno propio sin gastar espacio, una vez por **descanso largo**.

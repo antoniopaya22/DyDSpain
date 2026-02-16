@@ -3,6 +3,8 @@
  *
  * Replaces native Alert.alert with a themed D&D-style modal dialog.
  * Features smooth animations, icon support, and multiple button variants.
+ *
+ * ✅ Theme-aware: adapts to light/dark mode via useTheme()
  */
 
 import { useEffect, useRef, useCallback } from "react";
@@ -19,10 +21,17 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "@/hooks/useTheme";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
-export type DialogType = "confirm" | "danger" | "warning" | "success" | "info" | "error";
+export type DialogType =
+  | "confirm"
+  | "danger"
+  | "warning"
+  | "success"
+  | "info"
+  | "error";
 
 export interface DialogButton {
   /** Button label text */
@@ -56,80 +65,64 @@ export interface ConfirmDialogProps {
   showCloseButton?: boolean;
 }
 
-// ─── Theme Config ────────────────────────────────────────────────────
+// ─── Type Config (accent colors stay consistent across themes) ───────
 
-const TYPE_CONFIG: Record<DialogType, {
+interface TypeConfigEntry {
   icon: keyof typeof Ionicons.glyphMap;
   color: string;
   bgColor: string;
   borderColor: string;
   ringColor: string;
-}> = {
-  confirm: {
-    icon: "help-circle",
-    color: "#60a5fa",
-    bgColor: "rgba(96,165,250,0.10)",
-    borderColor: "rgba(96,165,250,0.20)",
-    ringColor: "rgba(96,165,250,0.12)",
-  },
-  danger: {
-    icon: "warning",
-    color: "#ef4444",
-    bgColor: "rgba(239,68,68,0.10)",
-    borderColor: "rgba(239,68,68,0.20)",
-    ringColor: "rgba(239,68,68,0.12)",
-  },
-  warning: {
-    icon: "alert-circle",
-    color: "#fbbf24",
-    bgColor: "rgba(251,191,36,0.10)",
-    borderColor: "rgba(251,191,36,0.20)",
-    ringColor: "rgba(251,191,36,0.12)",
-  },
-  success: {
-    icon: "checkmark-circle",
-    color: "#22c55e",
-    bgColor: "rgba(34,197,94,0.10)",
-    borderColor: "rgba(34,197,94,0.20)",
-    ringColor: "rgba(34,197,94,0.12)",
-  },
-  info: {
-    icon: "information-circle",
-    color: "#8c8cb3",
-    bgColor: "rgba(140,140,179,0.10)",
-    borderColor: "rgba(140,140,179,0.20)",
-    ringColor: "rgba(140,140,179,0.12)",
-  },
-  error: {
-    icon: "close-circle",
-    color: "#ef4444",
-    bgColor: "rgba(239,68,68,0.10)",
-    borderColor: "rgba(239,68,68,0.20)",
-    ringColor: "rgba(239,68,68,0.12)",
-  },
-};
+}
 
-const BUTTON_STYLES: Record<string, {
-  bg: string;
-  border: string;
-  text: string;
-}> = {
-  default: {
-    bg: "#c62828",
-    border: "#c62828",
-    text: "#ffffff",
-  },
-  cancel: {
-    bg: "rgba(140,140,179,0.10)",
-    border: "rgba(140,140,179,0.25)",
-    text: "#8c8cb3",
-  },
-  destructive: {
-    bg: "rgba(239,68,68,0.15)",
-    border: "rgba(239,68,68,0.35)",
-    text: "#ef4444",
-  },
-};
+function getTypeConfig(
+  colors: import("@/utils/theme").ThemeColors,
+): Record<DialogType, TypeConfigEntry> {
+  return {
+    confirm: {
+      icon: "help-circle",
+      color: colors.accentLightBlue,
+      bgColor: "rgba(96,165,250,0.10)",
+      borderColor: "rgba(96,165,250,0.20)",
+      ringColor: "rgba(96,165,250,0.12)",
+    },
+    danger: {
+      icon: "warning",
+      color: colors.accentDanger,
+      bgColor: "rgba(239,68,68,0.10)",
+      borderColor: "rgba(239,68,68,0.20)",
+      ringColor: "rgba(239,68,68,0.12)",
+    },
+    warning: {
+      icon: "alert-circle",
+      color: colors.accentGold,
+      bgColor: "rgba(251,191,36,0.10)",
+      borderColor: "rgba(251,191,36,0.20)",
+      ringColor: "rgba(251,191,36,0.12)",
+    },
+    success: {
+      icon: "checkmark-circle",
+      color: colors.accentGreen,
+      bgColor: "rgba(34,197,94,0.10)",
+      borderColor: "rgba(34,197,94,0.20)",
+      ringColor: "rgba(34,197,94,0.12)",
+    },
+    info: {
+      icon: "information-circle",
+      color: colors.textSecondary,
+      bgColor: "rgba(140,140,179,0.10)",
+      borderColor: "rgba(140,140,179,0.20)",
+      ringColor: "rgba(140,140,179,0.12)",
+    },
+    error: {
+      icon: "close-circle",
+      color: colors.accentDanger,
+      bgColor: "rgba(239,68,68,0.10)",
+      borderColor: "rgba(239,68,68,0.20)",
+      ringColor: "rgba(239,68,68,0.12)",
+    },
+  };
+}
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const DIALOG_WIDTH = Math.min(SCREEN_WIDTH - 48, 380);
@@ -148,6 +141,8 @@ export default function ConfirmDialog({
   dismissOnBackdrop = true,
   showCloseButton = false,
 }: ConfirmDialogProps) {
+  const { colors, isDark } = useTheme();
+
   const backdropAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.75)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -155,9 +150,48 @@ export default function ConfirmDialog({
   const iconBounceAnim = useRef(new Animated.Value(0.5)).current;
   const buttonsFadeAnim = useRef(new Animated.Value(0)).current;
 
+  const TYPE_CONFIG = getTypeConfig(colors);
   const config = TYPE_CONFIG[type] || TYPE_CONFIG.confirm;
   const iconName = customIcon || config.icon;
   const iconTint = customIconColor || config.color;
+
+  // ── Theme-derived colors ──
+  const dialogBg = isDark ? colors.bgCard : colors.bgElevated;
+  const dialogBgGradient: [string, string, ...string[]] = isDark
+    ? [colors.bgCard, colors.bgSecondary, colors.bgPrimary]
+    : [colors.bgElevated, colors.bgCard, colors.bgSecondary];
+  const dialogBorderColor = colors.borderDefault;
+
+  const titleColor = colors.textPrimary;
+  const messageColor = colors.textSecondary;
+  const closeIconColor = colors.textMuted;
+  const closeBtnBg = colors.bgSubtle;
+  const dividerColor = `${colors.borderDefault}88`;
+  const backdropColor = isDark ? "rgba(0,0,0,0.65)" : "rgba(0,0,0,0.4)";
+
+  // ── Button style resolver (theme-aware) ──
+  const getButtonStyle = (style?: string) => {
+    switch (style) {
+      case "cancel":
+        return {
+          bg: isDark ? "rgba(140,140,179,0.10)" : "rgba(0,0,0,0.06)",
+          border: isDark ? "rgba(140,140,179,0.25)" : "rgba(0,0,0,0.12)",
+          text: colors.textSecondary,
+        };
+      case "destructive":
+        return {
+          bg: isDark ? "rgba(239,68,68,0.15)" : "rgba(239,68,68,0.10)",
+          border: isDark ? "rgba(239,68,68,0.35)" : "rgba(239,68,68,0.25)",
+          text: colors.dangerText,
+        };
+      default:
+        return {
+          bg: colors.accentRed,
+          border: colors.accentRed,
+          text: colors.textInverted,
+        };
+    }
+  };
 
   // ── Animations ──
 
@@ -218,7 +252,15 @@ export default function ConfirmDialog({
         }).start();
       });
     }
-  }, [visible, backdropAnim, scaleAnim, fadeAnim, slideAnim, iconBounceAnim, buttonsFadeAnim]);
+  }, [
+    visible,
+    backdropAnim,
+    scaleAnim,
+    fadeAnim,
+    slideAnim,
+    iconBounceAnim,
+    buttonsFadeAnim,
+  ]);
 
   // ── Android back handler ──
 
@@ -263,31 +305,34 @@ export default function ConfirmDialog({
     });
   }, [backdropAnim, fadeAnim, scaleAnim, onDismiss]);
 
-  const handleButtonPress = useCallback((button: DialogButton) => {
-    // Run exit animation then callback
-    Animated.parallel([
-      Animated.timing(backdropAnim, {
-        toValue: 0,
-        duration: 200,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 170,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 0.9,
-        duration: 200,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      button.onPress?.();
-    });
-  }, [backdropAnim, fadeAnim, scaleAnim]);
+  const handleButtonPress = useCallback(
+    (button: DialogButton) => {
+      // Run exit animation then callback
+      Animated.parallel([
+        Animated.timing(backdropAnim, {
+          toValue: 0,
+          duration: 200,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 170,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 0.9,
+          duration: 200,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        button.onPress?.();
+      });
+    },
+    [backdropAnim, fadeAnim, scaleAnim],
+  );
 
   const handleBackdropPress = useCallback(() => {
     if (dismissOnBackdrop) {
@@ -317,7 +362,12 @@ export default function ConfirmDialog({
       onRequestClose={onDismiss}
     >
       {/* Backdrop */}
-      <Animated.View style={[styles.backdrop, { opacity: backdropAnim }]}>
+      <Animated.View
+        style={[
+          styles.backdrop,
+          { opacity: backdropAnim, backgroundColor: backdropColor },
+        ]}
+      >
         <TouchableOpacity
           style={StyleSheet.absoluteFill}
           activeOpacity={1}
@@ -332,17 +382,23 @@ export default function ConfirmDialog({
             styles.dialog,
             {
               opacity: fadeAnim,
-              transform: [
-                { scale: scaleAnim },
-                { translateY: slideAnim },
-              ],
+              transform: [{ scale: scaleAnim }, { translateY: slideAnim }],
             },
           ]}
         >
           {/* Card background with subtle gradient */}
-          <View style={styles.dialogInner}>
+          <View
+            style={[
+              styles.dialogInner,
+              {
+                borderColor: dialogBorderColor,
+                shadowColor: colors.shadowColor,
+                shadowOpacity: isDark ? 0.4 : 0.2,
+              },
+            ]}
+          >
             <LinearGradient
-              colors={["#1e1e38", "#1a1a30", "#18182c"]}
+              colors={dialogBgGradient}
               style={StyleSheet.absoluteFill}
               start={{ x: 0.5, y: 0 }}
               end={{ x: 0.5, y: 1 }}
@@ -361,12 +417,12 @@ export default function ConfirmDialog({
             {/* Close button */}
             {showCloseButton && (
               <TouchableOpacity
-                style={styles.closeButton}
+                style={[styles.closeButton, { backgroundColor: closeBtnBg }]}
                 onPress={handleDismiss}
                 activeOpacity={0.7}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Ionicons name="close" size={18} color="#555577" />
+                <Ionicons name="close" size={18} color={closeIconColor} />
               </TouchableOpacity>
             )}
 
@@ -377,7 +433,9 @@ export default function ConfirmDialog({
                 { transform: [{ scale: iconBounceAnim }] },
               ]}
             >
-              <View style={[styles.iconRing, { borderColor: config.ringColor }]} />
+              <View
+                style={[styles.iconRing, { borderColor: config.ringColor }]}
+              />
               <View
                 style={[
                   styles.iconBg,
@@ -392,17 +450,19 @@ export default function ConfirmDialog({
             </Animated.View>
 
             {/* Title */}
-            <Text style={styles.title}>{title}</Text>
+            <Text style={[styles.title, { color: titleColor }]}>{title}</Text>
 
             {/* Message */}
             {message ? (
-              <Text style={styles.message}>{message}</Text>
+              <Text style={[styles.message, { color: messageColor }]}>
+                {message}
+              </Text>
             ) : null}
 
             {/* Divider */}
             <View style={styles.divider}>
               <LinearGradient
-                colors={["transparent", "#3a3a5c88", "transparent"]}
+                colors={["transparent", dividerColor, "transparent"]}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
                 style={styles.dividerGradient}
@@ -418,7 +478,7 @@ export default function ConfirmDialog({
               ]}
             >
               {sortedButtons.map((button, index) => {
-                const btnStyle = BUTTON_STYLES[button.style || "default"] || BUTTON_STYLES.default;
+                const btnStyle = getButtonStyle(button.style);
                 const isCancel = button.style === "cancel";
                 const isDestructive = button.style === "destructive";
                 const isDefault = !isCancel && !isDestructive;
@@ -486,7 +546,6 @@ export default function ConfirmDialog({
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.65)",
   },
   container: {
     flex: 1,
@@ -501,16 +560,13 @@ const styles = StyleSheet.create({
   dialogInner: {
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
     overflow: "hidden",
     alignItems: "center",
     paddingTop: 28,
     paddingBottom: 20,
     paddingHorizontal: 24,
-    // Shadow
-    shadowColor: "#000",
+    // Shadow (base values — color/opacity set dynamically)
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
     shadowRadius: 24,
     elevation: 20,
   },
@@ -531,7 +587,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.05)",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 10,
@@ -559,7 +614,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    color: "#ffffff",
     fontSize: 19,
     fontWeight: "800",
     textAlign: "center",
@@ -568,7 +622,6 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
   message: {
-    color: "#8c8cb3",
     fontSize: 14,
     textAlign: "center",
     lineHeight: 21,

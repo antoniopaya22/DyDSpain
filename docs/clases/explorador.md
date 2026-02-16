@@ -207,6 +207,202 @@ A nivel 15, obtienes uno de los siguientes rasgos, a tu elección:
 
 ---
 
+## Arquetipo de Explorador: Maestro de las Bestias (Beast Master)
+
+Estos exploradores forjan un vínculo místico con una criatura compañera, actuando como unidad perfecta de confianza y coordinación en batalla.
+
+### Compañero Animal
+
+A nivel 3, eliges un **animal compañero** (bestia de tamaño pequeño o mediano). Actúa en tu turno y comparte tu iniciativa.
+
+### Ataque Coordinado
+
+A nivel 5, cuando usas la acción de Atacar, tu compañero puede realizar su ataque como **acción bonus**.
+
+### Unión Inquebrantable
+
+A nivel 7, si tu compañero sufre daño, puedes usar tu **reacción** para otorgarle **resistencia** a ese ataque.
+
+### Compañero Sobrenatural
+
+A nivel 11, tu animal mejora sus estadísticas: su CA sube, obtiene **ataques mágicos** y gana nuevos sentidos (visión en la oscuridad, olfato agudo, etc.).
+
+### Espíritu Salvaje Compartido
+
+A nivel 15, cuando entras en combate, tú y tu compañero obtenéis **ventaja** en tiradas de ataque contra la misma criatura durante los tres primeros turnos.
+
+---
+
+## Arquetipo de Explorador: Conjurador del Horizonte (Horizon Walker)
+
+Estos exploradores dominan los umbrales entre planos, protegiendo el equilibrio entre mundos. Son guerreros arcanos de portales y energía planar.
+
+### Detección Etérea
+
+A nivel 3, puedes detectar brechas entre planos y emisiones mágicas extradimensionales a **1 km** de distancia.
+
+### Golpe del Portador
+
+También a nivel 3, puedes imbuir tus ataques con energía radiante o de fuerza, infligiendo **daño extra** una vez por turno.
+
+### Marca Planar
+
+A nivel 7, cuando un enemigo te golpee, puedes **teletransportarte** hasta **9 m** y devolver el ataque como **reacción**.
+
+### Marcha Dimensional
+
+A nivel 11, puedes usar **acción bonus** para teletransportarte **9 m** a un espacio visible.
+
+### Guardián del Horizonte
+
+A nivel 15, tus ataques atraviesan resistencias mágicas y puedes moverte libremente entre planos una vez por **descanso largo**.
+
+---
+
+## Arquetipo de Explorador: Asesino de la Sombra (Gloom Stalker)
+
+Los Gloom Stalker son depredadores de la oscuridad profunda, acechadores de lo desconocido, y cazadores de criaturas sobrenaturales.
+
+### Emboscada Umbría
+
+A nivel 3, tus ataques sorpresa obtienen **daño adicional** y tu velocidad aumenta en el primer turno de combate.
+
+### Sentidos de las Profundidades
+
+A nivel 3, adquieres **visión en la oscuridad** ampliada y la capacidad de volverte **invisible** ante quienes dependen de la oscuridad mágica.
+
+### Instinto Ocaso
+
+A nivel 7, obtienes bonos de iniciativa y **no puedes ser sorprendido** mientras estés consciente.
+
+### Acechador del Abismo
+
+A nivel 11, puedes atacar **una vez adicional** durante tu primer turno de combate en cada encuentro.
+
+### Cazador Invisible
+
+A nivel 15, te fusionas con la oscuridad: puedes **ocultarte** como acción bonus incluso tras atacar.
+
+---
+
+## Arquetipo de Explorador: Caminante del Enjambre (Swarmkeeper)
+
+Este explorador controla un enjambre de espíritus naturales o insectos físicos, guiándolos en combate como extensión de su voluntad.
+
+### Enjambre Espiritual
+
+A nivel 3, puedes comandar una nube viviente que **empuja**, **tira** o **protege** cuando golpeas con tus ataques.
+
+### Aliento de la Colmena
+
+A nivel 7, puedes usar tu bonus de enjambre para **volar brevemente** o desplazarte **4,5 m** sin provocar ataques de oportunidad.
+
+### Furia del Enjambre
+
+A nivel 11, tus ataques están imbuidos con **daño adicional** gracias al enjambre, que también puede absorber parcialmente los efectos dañinos de área.
+
+### Señor de la Colmena
+
+A nivel 15, tu enjambre puede asumir **forma gigante**: ocupando espacio a tu alrededor, protege aliados o aplasta enemigos.
+
+---
+
+## Arquetipo de Explorador: Cazador de Monstruos (Monster Slayer)
+
+El Cazador de Monstruos es un experto en los fenómenos sobrenaturales, especializado en analizar, neutralizar y destruir criaturas mágicas.
+
+### Técnica del Asesino de lo Sobrenatural
+
+A nivel 3, puedes marcar a una criatura objetivo, añadiendo **daño adicional** la primera vez que la golpeas cada turno.
+
+### Sentido de la Presa
+
+También a nivel 3, obtienes **ventaja** en tiradas de Sabiduría (Perspicacia) y Arcanos contra tu criatura marcada.
+
+### Escudo Místico
+
+A nivel 7, puedes usar tu **reacción** para tirada de salvación adicional o reducir daño mágico recibido.
+
+### Antimagia Instintiva
+
+A nivel 11, puedes interrumpir lanzamientos de conjuros de tu presa como si usaras *contrahechizo*, una vez por descanso.
+
+### Fin del Engaño
+
+A nivel 15, tus ataques **ignoran resistencias** y cualquier intento de ilusiones o transformaciones de tu presa se disipa instantáneamente.
+
+---
+
+## Arquetipo de Explorador: Explorador Feérico (Fey Wanderer)
+
+Estos exploradores han sido tocados por la magia salvaje del Feywild, desarrollando una elegancia sobrenatural y un carisma encantador... y peligroso.
+
+### Magia Feérica
+
+A nivel 3, obtienes conjuros basados en ilusión y encanto (como *hechizar persona* y *paso brumoso*).
+
+### Bendición de la Corte
+
+También a nivel 3, añades tu **modificador de Sabiduría** a las tiradas de Carisma (Persuasión) y (Engaño).
+
+### Defensa Sobrenatural
+
+A nivel 7, ganas **resistencia al daño psíquico** y **ventaja** contra ser hechizado o asustado.
+
+### Presencia Iridiscente
+
+A nivel 11, cuando dañes a un enemigo, puedes forzarlo a realizar una tirada de Sabiduría o quedar **hechizado** por ti.
+
+### Soberanía Feérica
+
+A nivel 15, puedes volverte **invisible** y moverte entre planos feéricos durante unos segundos, una vez por descanso.
+
+---
+
+## Arquetipo de Explorador: Guardián del Devorador de Horizontes (Drakewarden)
+
+Los Drakewarden son exploradores que han forjado un vínculo antiguo con un dragón espiritual, combinando velocidad, instinto y poder dracónico.
+
+### Vínculo Dracónico
+
+A nivel 3, obtienes un **Draco compañero** que pelea contigo, crece contigo y mejora tus ataques.
+
+### Afinidad Elemental
+
+A nivel 7, tú y tu dragón obtenéis **resistencia** al tipo de daño elemental de vuestro linaje.
+
+### Vuelo del Vínculo
+
+A nivel 11, el dragón obtiene **alas permanentes** y puedes volar montado sobre él.
+
+### Poder Ancestral
+
+A nivel 15, tus ataques y los de tu dragón **ignoran resistencias** y su daño elemental se duplica una vez por turno.
+
+---
+
+## Arquetipo de Explorador: Guardián Primeval (UA / Experimental)
+
+Guardianes de lo antiguo, estos exploradores canalizan fuerzas bestiales y elementales para mantener el balance primordial del mundo.
+
+### Transformación Primeval
+
+A nivel 3, puedes adoptar una **forma de bestia mística** durante 1 minuto, aumentando tu fuerza y resistencia, con garras capaces de canalizar energía natural.
+
+### Empatía Salvaje
+
+A nivel 7, puedes hablar con bestias y plantas sin gastar conjuros y obtener de ellas conocimiento de su entorno.
+
+### Furia de la Tierra
+
+A nivel 11, cuando adoptas tu forma primeval, obtienes **resistencia al daño físico no mágico** y puedes atacar dos veces como **acción bonus**.
+
+### Alma del Mundo
+
+A nivel 15, tu vínculo con la naturaleza es total: impacto crítico recupera PG, resistencias completas y sentidos superiores que detectan enemigos ocultos.
+
+---
+
 ## Guía de Subida de Nivel
 
 A continuación se detalla, nivel a nivel, qué obtiene el explorador en cada avance.

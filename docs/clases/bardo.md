@@ -202,6 +202,195 @@ A partir del nivel 14, cuando hagas una prueba de característica, podrás gasta
 
 ---
 
+## Colegio Bárdico: Colegio del Valor
+
+Los bardos del Valor celebran la bravura, el heroísmo y el espíritu marcial. Sus canciones y relatos ensalzan las hazañas de los grandes héroes del pasado, inspirando a una nueva generación de guerreros a defender la justicia y luchar con valentía. Estos bardos se encuentran a menudo en el frente de batalla, codo con codo con los combatientes, alentándolos con su música y sus palabras.
+
+### Competencias Adicionales
+
+Cuando te unes al Colegio del Valor a nivel 3, ganas competencia con **armaduras medianas**, **escudos** y **armas marciales**.
+
+### Inspiración de Combate
+
+También a nivel 3, cuando otorgas a una criatura un dado de Inspiración Bárdica, esta puede usarlo de una de las siguientes formas:
+- **Tirada de daño:** La criatura puede sumar el dado de Inspiración Bárdica a una tirada de daño de un arma que acabe de realizar.
+- **CA como reacción:** Cuando la criatura es atacada, puede usar su **reacción** para sumar el dado de Inspiración Bárdica a su **CA** contra ese ataque, después de ver la tirada pero antes de saber si impacta o no.
+
+### Ataque Extra
+
+A partir del nivel 6, puedes atacar **dos veces**, en lugar de una, cada vez que realices la acción de Atacar en tu turno.
+
+### Inspiración de Batalla Superior
+
+A nivel 14, cuando un aliado use tu dado de Inspiración Bárdica en una tirada de daño o para aumentar su CA, tirará **dos dados** de Inspiración Bárdica y elegirá el **resultado mayor**.
+
+---
+
+## Colegio Bárdico: Colegio de las Espadas
+
+Los bardos del Colegio de las Espadas son artistas marciales que combinan el arte escénico con la destreza combativa. Entrenan con hojas afiladas, convirtiendo cada estocada y parada en una coreografía letal. Para ellos, la espada no es solo un arma, sino una extensión de su actuación.
+
+### Competencias Adicionales
+
+Cuando te unes al Colegio de las Espadas a nivel 3, ganas competencia con **armaduras medianas** y con la **cimitarra**. Si tienes competencia con un arma cuerpo a cuerpo simple o marcial, puedes usarla como **canalizador mágico** para tus conjuros de bardo mientras la empuñes.
+
+### Estilo de Combate
+
+A nivel 3, eliges uno de los siguientes estilos de combate como especialidad:
+- **Duelo:** Cuando empuñas un arma cuerpo a cuerpo en una mano y ninguna otra arma, obtienes un bonificador de +2 a las tiradas de daño con esa arma.
+- **Combate con Dos Armas:** Cuando combates con dos armas, puedes sumar tu modificador de característica al daño del segundo ataque.
+
+### Florituras con Cuchillas
+
+También a nivel 3, aprendes a realizar impresionantes florituras con tus armas. Cuando realizas la acción de Atacar en tu turno, puedes gastar un uso de **Inspiración Bárdica** y añadir el dado a la tirada de daño del arma. Además, elige una de las siguientes florituras:
+- **Floritura Defensiva:** Sumas el resultado del dado de Inspiración Bárdica a tu **CA** hasta el comienzo de tu siguiente turno.
+- **Floritura Móvil:** Sumas el resultado del dado de Inspiración Bárdica a tu **velocidad de movimiento** durante ese turno. No provocas ataques de oportunidad del objetivo.
+- **Floritura Ofensiva:** Empujas a la criatura impactada hasta **1,5 m × el resultado del dado** en cualquier dirección.
+
+### Ataque Extra
+
+A partir del nivel 6, puedes atacar **dos veces**, en lugar de una, cada vez que realices la acción de Atacar en tu turno.
+
+### Floritura Magistral
+
+A nivel 14, cada vez que uses una Floritura con Cuchillas, puedes tirar un **d6** y usarlo en lugar de gastar un dado de Inspiración Bárdica. Además, si el resultado del dado de Inspiración Bárdica (si decides gastarlo) es un **9 o 10**, la Floritura no consume el uso de Inspiración Bárdica.
+
+---
+
+## Colegio Bárdico: Colegio del Glamour
+
+Originarios de los dominios feéricos, los bardos del Colegio del Glamour han aprendido a canalizar la belleza sobrenatural y la presencia cautivadora de las hadas. Su música y su porte tienen el poder de fascinar, encantar y hacer que cualquiera que los contemple quede sin aliento. Son maestros de la seducción arcana y la inspiración etérea.
+
+### Presencia Manifiesta
+
+A nivel 3, como **acción bonus**, puedes gastar un uso de Inspiración Bárdica para proyectar una presencia cautivadora. Elige un número de criaturas que puedas ver a **18 m o menos** de ti (hasta un número igual a tu modificador de Carisma, con un mínimo de 1). Cada objetivo debe superar una **tirada de salvación de Sabiduría** contra tu CD de salvación de conjuros o quedará **hechizado** por ti durante **1 minuto**. Mientras está hechizada, la criatura te idolatra, habla efusivamente de ti y obstaculiza a quienes se te opongan, aunque evitará la violencia a menos que ya fuera hostil hacia ti.
+
+### Manto de Inspiración
+
+También a nivel 3, como **acción bonus**, puedes gastar un uso de Inspiración Bárdica para otorgar a hasta **5 aliados** que puedas ver a **18 m o menos** de ti una cantidad de **puntos de golpe temporales** igual al resultado del dado de Inspiración Bárdica + tu modificador de Carisma. Además, cada aliado beneficiado puede usar inmediatamente su **reacción** para moverse hasta su velocidad **sin provocar ataques de oportunidad**.
+
+### Manto de la Majestad
+
+A nivel 6, ganas la capacidad de envolverse en un aura de majestuosidad feérica. Como **acción bonus**, puedes lanzar **Mandato** (*Command*) como acción bonus **sin gastar un espacio de conjuro** en cada uno de tus turnos durante **1 minuto**. Cualquier criatura hechizada por ti falla automáticamente su tirada de salvación contra el Mandato. Puedes usar este rasgo una vez por **descanso largo**.
+
+### Belleza Irresistible
+
+A partir del nivel 14, tu presencia sobrenatural se vuelve devastadora. Como **acción**, puedes proyectar tu belleza feérica durante **1 minuto**. Durante ese tiempo, cualquier criatura que te ataque por primera vez en cada turno debe superar una **tirada de salvación de Sabiduría** contra tu CD de salvación de conjuros o quedará **hechizada** hasta el final de su turno actual, durante el cual no podrá atacarte. Puedes usar este rasgo una vez por **descanso largo**.
+
+---
+
+## Colegio Bárdico: Colegio de la Elocuencia
+
+El lenguaje es el arma definitiva de los bardos del Colegio de la Elocuencia. Dominan las palabras con tal maestría que pueden persuadir, conmover, desarmar y destruir cualquier argumento o resistencia. Su retórica es tan poderosa que incluso la magia se dobla ante la fuerza de su oratoria.
+
+### Maestro del Argumento
+
+A nivel 3, obtienes competencia en las habilidades de **Persuasión** y **Engaño**. Si ya eres competente en alguna de ellas, tu **bonificador de competencia se duplica** para las pruebas que realices con esas habilidades.
+
+### Verdad Innegable
+
+También a nivel 3, cuando una criatura tira tu dado de **Inspiración Bárdica** y obtiene un **1**, puede volver a tirar el dado y debe usar el nuevo resultado. Además, si el resultado final es inferior a **2**, se considera un **2**.
+
+### Elocuencia Imparable
+
+A nivel 6, cuando una criatura suma tu dado de Inspiración Bárdica a una prueba de característica, una tirada de ataque o una tirada de salvación y **falla** de todos modos, la criatura **no pierde** ese uso de Inspiración Bárdica.
+
+### Palabras Universales
+
+A nivel 14, puedes lanzar el conjuro **Sugerencia** (*Suggestion*) **sin gastar un espacio de conjuro** y **sin necesidad de concentración**, pudiendo afectar a hasta **5 criaturas** simultáneamente (cada una realiza su propia tirada de salvación). Puedes usar este rasgo una vez por **descanso largo**.
+
+---
+
+## Colegio Bárdico: Colegio de los Lamentos (*Whispers*)
+
+Los bardos del Colegio de los Lamentos son maestros del miedo, los secretos y la manipulación psicológica. Tras una fachada de melodías encantadoras se oculta un veneno emocional que corroe las defensas de sus víctimas. Estos bardos prosperan en las sombras, utilizando los temores y las debilidades ajenas como armas letales.
+
+### Palabras del Terror
+
+A nivel 3, si hablas con una criatura humanoide a solas durante al menos **1 minuto**, puedes intentar sembrar la semilla del terror en su mente. Al final de la conversación, el objetivo debe superar una **tirada de salvación de Sabiduría** contra tu CD de salvación de conjuros o quedará **aterrorizado** por ti o por otra criatura o entidad de tu elección. La criatura no sabe que la has asustado mágicamente. El efecto dura **1 hora** o hasta que tú o tus aliados la dañéis.
+
+### Inspiración del Lamento
+
+También a nivel 3, cuando impactas a una criatura con un ataque con arma, puedes gastar un uso de **Inspiración Bárdica** para infligir **daño psíquico** adicional. El daño psíquico adicional es igual al resultado del dado de Inspiración Bárdica: **2d6** a nivel 3, **3d6** a nivel 5, **5d6** a nivel 10 y **8d6** a nivel 15. Solo puedes usar este rasgo una vez por turno.
+
+### Manto de Sombras
+
+A nivel 6, puedes usar tu **acción bonus** y gastar un uso de Inspiración Bárdica para volverte **invisible** durante **1 minuto** o hasta que ataques, lances un conjuro o te concentres en un conjuro.
+
+### Palabras Mortíferas
+
+A nivel 14, cuando reduces los puntos de golpe de una criatura humanoide a **0**, puedes capturar su **sombra espiritual** temporalmente. Mientras tengas la sombra, puedes usarla para asumir mágicamente la **apariencia, la voz y los recuerdos superficiales** de esa criatura. Este disfraz dura **1 hora** o hasta que lo descartes. Mientras estés disfrazado, las criaturas que conocían a la víctima deben superar una prueba de **Sabiduría (Perspicacia)** contra tu CD de salvación de conjuros para detectar el engaño.
+
+---
+
+## Colegio Bárdico: Colegio de la Creación
+
+Los bardos del Colegio de la Creación creen que el cosmos fue cantado a la existencia y que la música es la fuerza primordial de toda la creación. Cada nota que tocan resuena con la melodía original que dio forma al mundo. Estos bardos buscan armonizar con esa canción cósmica para traer al mundo objetos, criaturas y maravillas.
+
+### Notas de Creación
+
+A nivel 3, cuando otorgas a una criatura un dado de **Inspiración Bárdica**, puedes manifestar pequeños efectos sensoriales que potencian tu magia: notas musicales visibles, ráfagas de color o reverberaciones armónicas. La criatura que recibe la inspiración también gana **puntos de golpe temporales** iguales al resultado del dado de Inspiración Bárdica.
+
+### Objeto de Rendimiento
+
+También a nivel 3, como **acción**, puedes crear un **objeto no mágico** de hasta **1 m³** de tamaño. El objeto aparece en un espacio desocupado a **3 m o menos** de ti y debe ser algo que hayas visto antes. Su tamaño máximo y duración aumentan con tu nivel de bardo. El objeto emite un brillo tenue y desaparece al expirar su duración.
+
+### Animar la Creación
+
+A nivel 6, como **acción**, puedes animar un objeto **Grande o más pequeño** que esté a **9 m o menos** de ti. El objeto animado cobra vida durante **1 hora**, tiene estadísticas basadas en su tamaño y obedece tus órdenes verbales (similar al conjuro *Animar objetos*). Puedes usar este rasgo un número de veces igual a tu **modificador de Carisma** (mínimo 1) por **descanso largo**.
+
+### Canción de la Creación
+
+A nivel 14, cuando uses tu **Objeto de Rendimiento**, puedes crear más de un objeto a la vez. Además, puedes usar tu **acción** para restaurar un uso gastado de **Notas de Creación**, llenando el entorno de energía creativa primordial. Puedes usar esta restauración una vez por **descanso largo**.
+
+---
+
+## Colegio Bárdico: Colegio del Espíritu
+
+Los bardos del Colegio del Espíritu canalizan las historias de los héroes caídos y los espíritus del más allá. Cuando narran sus cuentos, las leyendas cobran vida a su alrededor, manifestando efectos mágicos que reflejan las hazañas de los héroes de antaño.
+
+### Cuentos de Más Allá
+
+A nivel 3, cuando otorgas un dado de **Inspiración Bárdica** a una criatura, tiras en la **tabla de Cuentos del Más Allá** para determinar qué relato legendario manifiestas. El cuento otorga un efecto especial al aliado que recibe la inspiración, como resistencia al daño, capacidad de curación o un ataque espectral, dependiendo del resultado.
+
+### Guía Espiritual
+
+También a nivel 3, aprendes el conjuro **Hablar con los muertos** y puedes lanzarlo **sin componente material**. Este conjuro no cuenta para el total de conjuros de bardo que conoces. Además, puedes lanzarlo como **ritual**.
+
+### Canal del Más Allá
+
+A nivel 6, cuando una criatura que tenga tu dado de **Inspiración Bárdica** lo use y falle en su prueba, tirada de ataque o tirada de salvación, puedes usar tu **reacción** para recuperar el dado de Inspiración Bárdica gastado. Puedes usar este rasgo un número de veces igual a tu **modificador de Carisma** (mínimo 1) por **descanso largo**.
+
+### Historias Eternas
+
+A nivel 14, cuando usas tu rasgo de **Cuentos de Más Allá**, puedes otorgar el cuento a **dos criaturas** a la vez (ambas reciben el mismo efecto). Además, puedes tirar en la tabla de Cuentos **dos veces** y elegir qué cuento manifiestas.
+
+---
+
+## Colegio Bárdico: Colegio de la Sátira *(Unearthed Arcana)*
+
+> **Nota:** Este colegio procede de *Unearthed Arcana* y no es contenido oficial publicado. Muchos DM lo permiten en sus mesas, especialmente para campañas con un tono más cómico o ingenioso.
+
+Los bardos del Colegio de la Sátira son bufones, acróbatas y agitadores que usan el humor, la burla y el caos teatral como herramientas mágicas. Su objetivo no es solo entretener, sino desestabilizar, ridiculizar y, en última instancia, revelar verdades incómodas a través de la risa.
+
+### Humor Cortante
+
+A nivel 3, obtienes competencia en **Acrobacia** y **Engaño**. Además, aprendes una técnica de improvisación acrobática que te permite moverte con agilidad cómica: puedes usar tu **acción bonus** para realizar un salto, una pirueta o un giro que te permita **Desvincularte** sin usar tu acción.
+
+### Caída Improvisada
+
+También a nivel 3, puedes usar tu **reacción** cuando sufras daño por caída para reducir el daño en una cantidad igual a **10 + tu modificador de Destreza + tu nivel de bardo**. Si reduces el daño a 0, aterrizas de pie en una postura teatralmente absurda.
+
+### Burla Magistral
+
+A nivel 6, puedes usar una **acción bonus** para burlarte de una criatura que puedas ver a **9 m o menos** de ti. El objetivo debe superar una **tirada de salvación de Sabiduría** contra tu CD de salvación de conjuros o tendrá **desventaja** en la siguiente tirada de ataque que realice antes del final de su siguiente turno.
+
+### Improvisación Caótica
+
+A nivel 14, cuando falles una **tirada de salvación**, puedes usar tu **reacción** y gastar un uso de **Inspiración Bárdica** para sumar el dado de Inspiración Bárdica al resultado de tu tirada de salvación. Puedes elegir hacerlo después de ver el resultado, pero antes de que el DM declare las consecuencias.
+
+---
+
 ## Guía de Subida de Nivel
 
 A continuación se detalla, nivel a nivel, qué obtiene el bardo en cada avance.
