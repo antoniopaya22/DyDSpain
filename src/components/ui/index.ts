@@ -32,7 +32,7 @@ export {
   OrnateFrame,
   FloatingParticles,
   DndBackdrop,
-} from "./FantasyDecorations";
+} from "./decorations";
 
 // ─── Glow Card & Variants ────────────────────────────────────────────
 export { default as GlowCard } from "./GlowCard";
@@ -73,3 +73,47 @@ export type { WebTransitionProps } from "./WebTransition";
 // ─── Search Bar ──────────────────────────────────────────────────────
 export { default as SearchBar } from "./SearchBar";
 export type { SearchBarProps } from "./SearchBar";
+
+// ─── Screen Container (background gradient wrapper) ──────────────────
+export { default as ScreenContainer } from "./ScreenContainer";
+export type { ScreenContainerProps } from "./ScreenContainer";
+
+// ─── Page Header (back button + label + title) ──────────────────────
+export { default as PageHeader } from "./PageHeader";
+export type { PageHeaderProps } from "./PageHeader";
+
+// ─── Collapsible Section / Card ──────────────────────────────────────
+export { default as CollapsibleSection } from "./CollapsibleSection";
+export { CollapsibleCard } from "./CollapsibleSection";
+export type {
+  CollapsibleSectionProps,
+  CollapsibleCardProps,
+} from "./CollapsibleSection";
+
+// ─── Detail Badge (label + value) ───────────────────────────────────
+export { default as DetailBadge } from "./DetailBadge";
+export type { DetailBadgeProps } from "./DetailBadge";
+
+// ─── Info Badge (icon + label pill) ──────────────────────────────────
+export { default as InfoBadge } from "./InfoBadge";
+export type { InfoBadgeProps } from "./InfoBadge";
+
+// ─── Section Label (gradient-line header) ────────────────────────────
+export { default as SectionLabel } from "./SectionLabel";
+export type { SectionLabelProps } from "./SectionLabel";
+
+// ─── Empty State ─────────────────────────────────────────────────────
+export { default as EmptyState } from "./EmptyState";
+export type { EmptyStateProps } from "./EmptyState";
+
+// ─── Badge / Chip / Tag ──────────────────────────────────────────────
+export { default as Badge } from "./Badge";
+export type { BadgeProps } from "./Badge";
+
+// ─── Gradient Button (primary CTA) ──────────────────────────────────
+export { default as GradientButton } from "./GradientButton";
+export type { GradientButtonProps } from "./GradientButton";
+
+// ─── Segmented Tabs (animated tab selector) ──────────────────────────
+export { default as SegmentedTabs } from "./SegmentedTabs";
+export type { SegmentedTabsProps, TabItem } from "./SegmentedTabs";

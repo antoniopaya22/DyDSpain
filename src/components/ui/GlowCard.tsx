@@ -18,7 +18,7 @@ import {
   Text,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 // ─── Props ───────────────────────────────────────────────────────────
 

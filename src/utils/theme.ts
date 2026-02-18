@@ -62,6 +62,8 @@ export interface ThemeColors {
   accentBlue: string;
   /** Purple accent (hit dice, concentration, caster badges) */
   accentPurple: string;
+  /** Pink accent (subclass, d20) */
+  accentPink: string;
   /** Amber / warning accent (conditions, initiative, warnings) */
   accentAmber: string;
   /** Orange accent (HP critical-low, fire) */
@@ -74,6 +76,8 @@ export interface ThemeColors {
   accentDanger: string;
   /** Deep purple accent (pact casters) */
   accentDeepPurple: string;
+  /** Indigo accent (d100, secondary-purple) */
+  accentIndigo: string;
   /** Yellow accent (clues, secondary-gold) */
   accentYellow: string;
 
@@ -178,39 +182,43 @@ export interface ThemeColors {
   tabActiveText: string;
   detailBg: string;
   detailBorder: string;
+
+  // ── Overlays ──
+  /** Semi-transparent backdrop for modals, pickers, etc. */
+  backdrop: string;
 }
 
 // ─── Dark Palette ────────────────────────────────────────────────────
 
 export const DARK_THEME: ThemeColors = {
   // Backgrounds
-  bgPrimary: "#1a1a2e",
-  bgSecondary: "#141425",
-  bgCard: "#23233d",
-  bgElevated: "#2d2d52",
+  bgPrimary: "#272519",
+  bgSecondary: "#1F1D14",
+  bgCard: "#323021",
+  bgElevated: "#423E2B",
   bgSubtle: "rgba(255,255,255,0.03)",
   bgInput: "rgba(255,255,255,0.05)",
 
   // Gradients
-  gradientMain: ["#0d0d1a", "#141425", "#1a1a2e", "#1a1a2e"],
-  gradientHeader: ["#0d0d1a", "#13132200"],
+  gradientMain: ["#17160F", "#1F1D14", "#272519", "#272519"],
+  gradientHeader: ["#17160F", "#1F1D1400"],
   gradientLocations: [0, 0.12, 0.3, 1],
 
   // Text
   textPrimary: "#ffffff",
-  textSecondary: "#b3b3cc",
-  textMuted: "#666699",
-  textInverted: "#0d0d1a",
+  textSecondary: "#AAA37B",
+  textMuted: "#807953",
+  textInverted: "#17160F",
 
   // Borders
-  borderDefault: "#3a3a5c",
+  borderDefault: "#514D35",
   borderSubtle: "rgba(255,255,255,0.06)",
-  borderSeparator: "rgba(58,58,92,0.6)",
+  borderSeparator: "rgba(81,77,53,0.6)",
 
   // Accents
-  accentGold: "#fbbf24",
-  accentGoldGlow: "rgba(251,191,36,0.2)",
-  accentRed: "#c62828",
+  accentGold: "#CDC9B2",
+  accentGoldGlow: "rgba(178,172,136,0.2)",
+  accentRed: "#8f3d38",
   accentGreen: "#22c55e",
   accentBlue: "#3b82f6",
   accentPurple: "#a855f7",
@@ -220,19 +228,21 @@ export const DARK_THEME: ThemeColors = {
   accentLightBlue: "#60a5fa",
   accentDanger: "#ef4444",
   accentDeepPurple: "#7c3aed",
+  accentIndigo: "#6366f1",
+  accentPink: "#ec4899",
   accentYellow: "#eab308",
 
   // Interactive
   optionBg: "rgba(255,255,255,0.03)",
   optionBorder: "rgba(255,255,255,0.06)",
-  optionSelectedBg: "rgba(251,191,36,0.08)",
-  optionSelectedBorder: "rgba(251,191,36,0.4)",
+  optionSelectedBg: "rgba(178,172,136,0.08)",
+  optionSelectedBorder: "rgba(178,172,136,0.4)",
 
   // Switch
-  switchTrackOff: "#3a3a5c",
-  switchTrackOn: "#c6282860",
-  switchThumbOff: "#8c8cb3",
-  switchThumbOn: "#c62828",
+  switchTrackOff: "#514D35",
+  switchTrackOn: "#8f3d3860",
+  switchThumbOff: "#AAA37B",
+  switchThumbOn: "#8f3d38",
 
   // Icon bg alpha suffix
   iconBgAlpha: "20",
@@ -247,11 +257,11 @@ export const DARK_THEME: ThemeColors = {
   // Header
   headerButtonBg: "rgba(255,255,255,0.07)",
   headerButtonBorder: "rgba(255,255,255,0.09)",
-  headerLabelColor: "#fbbf24",
+  headerLabelColor: "#CDC9B2",
   headerTitleColor: "#ffffff",
   sectionTitleColor: "#ffffff",
-  sectionDescColor: "#8c8cb3",
-  chevronColor: "#666699",
+  sectionDescColor: "#AAA37B",
+  chevronColor: "#807953",
 
   // Danger
   dangerBg: "rgba(239,68,68,0.06)",
@@ -262,81 +272,84 @@ export const DARK_THEME: ThemeColors = {
   // Chips
   chipBg: "rgba(255,255,255,0.04)",
   chipBorder: "rgba(255,255,255,0.06)",
-  chipText: "#8c8cb3",
+  chipText: "#AAA37B",
 
   // Search
   searchBg: "rgba(255,255,255,0.05)",
   searchBorder: "rgba(255,255,255,0.08)",
-  searchBorderFocused: "rgba(251,191,36,0.35)",
+  searchBorderFocused: "rgba(178,172,136,0.35)",
   searchText: "#ffffff",
-  searchPlaceholder: "#666699",
+  searchPlaceholder: "#807953",
 
   // Stats
   statsBg: "rgba(255,255,255,0.04)",
   statsBorder: "rgba(255,255,255,0.06)",
   statsValue: "#ffffff",
-  statsLabel: "#555577",
+  statsLabel: "#6C6746",
   statsDivider: "rgba(255,255,255,0.06)",
 
   // Campaign card
-  cardBg: "#23233d",
-  cardBorder: "#3a3a5c",
+  cardBg: "#323021",
+  cardBorder: "#514D35",
   cardTitle: "#ffffff",
-  cardDescription: "#8c8cb3",
+  cardDescription: "#AAA37B",
   cardChevronBg: "rgba(255,255,255,0.06)",
 
   // Empty
-  emptyIconRingBorder: "rgba(198,40,40,0.15)",
-  emptyIconBg: "rgba(198,40,40,0.08)",
-  emptyIconBorder: "rgba(198,40,40,0.12)",
+  emptyIconRingBorder: "rgba(143,61,56,0.15)",
+  emptyIconBg: "rgba(143,61,56,0.08)",
+  emptyIconBorder: "rgba(143,61,56,0.12)",
   emptyTitle: "#ffffff",
-  emptySubtitle: "#8c8cb3",
+  emptySubtitle: "#AAA37B",
   emptyDividerLine: "rgba(255,255,255,0.06)",
-  emptyDividerDiamond: "rgba(198,40,40,0.25)",
-  emptyHintText: "#555577",
+  emptyDividerDiamond: "rgba(143,61,56,0.25)",
+  emptyHintText: "#6C6746",
 
   // Compendium
   tabBg: "rgba(255,255,255,0.04)",
   tabBorder: "rgba(255,255,255,0.06)",
-  tabActiveBg: "rgba(198,40,40,0.12)",
-  tabActiveBorder: "rgba(198,40,40,0.3)",
-  tabText: "#8c8cb3",
+  tabActiveBg: "rgba(143,61,56,0.12)",
+  tabActiveBorder: "rgba(143,61,56,0.3)",
+  tabText: "#AAA37B",
   tabActiveText: "#ffffff",
   detailBg: "rgba(255,255,255,0.03)",
   detailBorder: "rgba(255,255,255,0.05)",
+
+  // Overlays
+  backdrop: "rgba(0,0,0,0.5)",
 };
 
 // ─── Light Palette ───────────────────────────────────────────────────
 
 export const LIGHT_THEME: ThemeColors = {
   // Backgrounds
-  bgPrimary: "#f3ead9",
-  bgSecondary: "#e8dcc4",
-  bgCard: "#fff8ee",
-  bgElevated: "#fffdf7",
-  bgSubtle: "rgba(124,92,44,0.06)",
-  bgInput: "rgba(124,92,44,0.08)",
+  bgPrimary: "#F0EFE8",
+  bgSecondary: "#E8E7DC",
+  bgCard: "#FAFAF7",
+  bgElevated: "#FCFCFB",
+  bgSubtle: "rgba(151,143,98,0.06)",
+  bgInput: "rgba(151,143,98,0.08)",
 
   // Gradients
-  gradientMain: ["#efe3cf", "#f4ead8", "#f7efe2", "#f7efe2"],
-  gradientHeader: ["#eadfc7", "#efe3cf00"],
+  gradientMain: ["#E6E4D8", "#EDECE4", "#F0EFE8", "#F0EFE8"],
+  gradientHeader: ["#E6E4D8", "#EDECE400"],
   gradientLocations: [0, 0.12, 0.3, 1],
 
   // Text
-  textPrimary: "#1a1a2e",
-  textSecondary: "#4a4a6a",
-  textMuted: "#8888aa",
+  textPrimary: "#272519",
+  textSecondary: "#555137",
+  textMuted: "#978F62",
   textInverted: "#ffffff",
 
   // Borders
-  borderDefault: "#d0d0e0",
+  borderDefault: "#D4D1BD",
   borderSubtle: "rgba(0,0,0,0.08)",
   borderSeparator: "rgba(0,0,0,0.08)",
 
   // Accents (keep vibrant)
-  accentGold: "#d4a017",
-  accentGoldGlow: "rgba(212,160,23,0.15)",
-  accentRed: "#c62828",
+  accentGold: "#978F62",
+  accentGoldGlow: "rgba(151,143,98,0.15)",
+  accentRed: "#8f3d38",
   accentGreen: "#16a34a",
   accentBlue: "#2563eb",
   accentPurple: "#9333ea",
@@ -346,19 +359,21 @@ export const LIGHT_THEME: ThemeColors = {
   accentLightBlue: "#3b82f6",
   accentDanger: "#dc2626",
   accentDeepPurple: "#6d28d9",
+  accentIndigo: "#4f46e5",
+  accentPink: "#db2777",
   accentYellow: "#ca8a04",
 
   // Interactive
   optionBg: "rgba(0,0,0,0.03)",
   optionBorder: "rgba(0,0,0,0.08)",
-  optionSelectedBg: "rgba(212,160,23,0.10)",
-  optionSelectedBorder: "rgba(212,160,23,0.45)",
+  optionSelectedBg: "rgba(151,143,98,0.10)",
+  optionSelectedBorder: "rgba(151,143,98,0.45)",
 
   // Switch
-  switchTrackOff: "#c0c0d8",
-  switchTrackOn: "rgba(198,40,40,0.35)",
+  switchTrackOff: "#C5C1A6",
+  switchTrackOn: "rgba(143,61,56,0.35)",
   switchThumbOff: "#ffffff",
-  switchThumbOn: "#c62828",
+  switchThumbOn: "#8f3d38",
 
   // Icon bg alpha suffix
   iconBgAlpha: "18",
@@ -373,11 +388,11 @@ export const LIGHT_THEME: ThemeColors = {
   // Header
   headerButtonBg: "rgba(0,0,0,0.05)",
   headerButtonBorder: "rgba(0,0,0,0.08)",
-  headerLabelColor: "#b8860b",
-  headerTitleColor: "#1a1a2e",
-  sectionTitleColor: "#1a1a2e",
-  sectionDescColor: "#6a6a8a",
-  chevronColor: "#8888aa",
+  headerLabelColor: "#807953",
+  headerTitleColor: "#272519",
+  sectionTitleColor: "#272519",
+  sectionDescColor: "#7C7650",
+  chevronColor: "#978F62",
 
   // Danger
   dangerBg: "rgba(239,68,68,0.06)",
@@ -388,51 +403,87 @@ export const LIGHT_THEME: ThemeColors = {
   // Chips
   chipBg: "rgba(0,0,0,0.04)",
   chipBorder: "rgba(0,0,0,0.08)",
-  chipText: "#6a6a8a",
+  chipText: "#7C7650",
 
   // Search
   searchBg: "rgba(0,0,0,0.04)",
   searchBorder: "rgba(0,0,0,0.10)",
-  searchBorderFocused: "rgba(212,160,23,0.40)",
-  searchText: "#1a1a2e",
-  searchPlaceholder: "#8888aa",
+  searchBorderFocused: "rgba(151,143,98,0.40)",
+  searchText: "#272519",
+  searchPlaceholder: "#978F62",
 
   // Stats
   statsBg: "rgba(0,0,0,0.03)",
   statsBorder: "rgba(0,0,0,0.08)",
-  statsValue: "#1a1a2e",
-  statsLabel: "#6a6a8a",
+  statsValue: "#272519",
+  statsLabel: "#7C7650",
   statsDivider: "rgba(0,0,0,0.08)",
 
   // Campaign card
-  cardBg: "#ffffff",
-  cardBorder: "#d0d0e0",
-  cardTitle: "#1a1a2e",
-  cardDescription: "#6a6a8a",
+  cardBg: "#FAFAF7",
+  cardBorder: "#D4D1BD",
+  cardTitle: "#272519",
+  cardDescription: "#7C7650",
   cardChevronBg: "rgba(0,0,0,0.05)",
 
   // Empty
-  emptyIconRingBorder: "rgba(198,40,40,0.18)",
-  emptyIconBg: "rgba(198,40,40,0.08)",
-  emptyIconBorder: "rgba(198,40,40,0.15)",
-  emptyTitle: "#1a1a2e",
-  emptySubtitle: "#6a6a8a",
+  emptyIconRingBorder: "rgba(143,61,56,0.18)",
+  emptyIconBg: "rgba(143,61,56,0.08)",
+  emptyIconBorder: "rgba(143,61,56,0.15)",
+  emptyTitle: "#272519",
+  emptySubtitle: "#7C7650",
   emptyDividerLine: "rgba(0,0,0,0.08)",
-  emptyDividerDiamond: "rgba(198,40,40,0.25)",
-  emptyHintText: "#8888aa",
+  emptyDividerDiamond: "rgba(143,61,56,0.25)",
+  emptyHintText: "#978F62",
 
   // Compendium
   tabBg: "rgba(0,0,0,0.04)",
   tabBorder: "rgba(0,0,0,0.08)",
-  tabActiveBg: "rgba(198,40,40,0.10)",
-  tabActiveBorder: "rgba(198,40,40,0.30)",
-  tabText: "#6a6a8a",
-  tabActiveText: "#1a1a2e",
+  tabActiveBg: "rgba(143,61,56,0.10)",
+  tabActiveBorder: "rgba(143,61,56,0.30)",
+  tabText: "#7C7650",
+  tabActiveText: "#272519",
   detailBg: "rgba(0,0,0,0.02)",
   detailBorder: "rgba(0,0,0,0.06)",
+
+  // Overlays
+  backdrop: "rgba(0,0,0,0.35)",
 };
 
 // ─── Helper ──────────────────────────────────────────────────────────
+
+/**
+ * Parses a hex color (#RGB, #RRGGBB, or #RRGGBBAA) or an rgb()/rgba()
+ * string and returns a new `rgba(r,g,b,opacity)` string.
+ *
+ * Usage:
+ *   withAlpha('#8f3d38', 0.15)   → 'rgba(143,61,56,0.15)'
+ *   withAlpha('#fff', 0.5)       → 'rgba(255,255,255,0.5)'
+ *   withAlpha(colors.accentRed, 0.12)
+ */
+export function withAlpha(color: string, opacity: number): string {
+  // Already rgba — replace the alpha component
+  const rgbaMatch = color.match(
+    /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/,
+  );
+  if (rgbaMatch) {
+    return `rgba(${rgbaMatch[1]},${rgbaMatch[2]},${rgbaMatch[3]},${opacity})`;
+  }
+
+  // Hex → rgb components
+  let hex = color.replace("#", "");
+  if (hex.length === 3) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+  // Strip alpha hex if present (#RRGGBBAA)
+  hex = hex.substring(0, 6);
+
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  return `rgba(${r},${g},${b},${opacity})`;
+}
 
 /**
  * Returns the correct theme palette for a given resolved mode.

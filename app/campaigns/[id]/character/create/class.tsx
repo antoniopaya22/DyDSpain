@@ -13,7 +13,7 @@ import {
 import type { ClassData } from "@/data/srd/classes";
 import type { ClassId, AbilityKey } from "@/types/character";
 import { ABILITY_NAMES } from "@/types/character";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 import type { ThemeColors } from "@/utils/theme";
 
 const CURRENT_STEP = 3;

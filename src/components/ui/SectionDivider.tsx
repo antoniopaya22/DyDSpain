@@ -1,4 +1,4 @@
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 /**
  * SectionDivider - D&D themed decorative divider with diamond center accent,

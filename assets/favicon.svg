@@ -3,12 +3,12 @@
   <defs>
     <linearGradient id="fFaceHL" x1="50%" y1="0%" x2="50%" y2="100%">
       <stop offset="0%" stop-color="#ef5350"/>
-      <stop offset="55%" stop-color="#c62828"/>
+      <stop offset="55%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000"/>
     </linearGradient>
     <linearGradient id="fFaceMain" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#d32f2f"/>
-      <stop offset="50%" stop-color="#c62828"/>
+      <stop offset="50%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#8e0000"/>
     </linearGradient>
     <linearGradient id="fFaceSH" x1="50%" y1="0%" x2="50%" y2="100%">
@@ -17,16 +17,16 @@
     </linearGradient>
     <radialGradient id="fCenterGrad" cx="50%" cy="42%" r="60%">
       <stop offset="0%" stop-color="#ef5350" stop-opacity="0.35"/>
-      <stop offset="45%" stop-color="#c62828"/>
+      <stop offset="45%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000"/>
     </radialGradient>
   </defs>
 
   <!-- Background -->
-  <rect width="48" height="48" rx="7.199999999999999" fill="#0d0d1a"/>
+  <rect width="48" height="48" rx="7.199999999999999" fill="#17160F"/>
 
   <!-- Border -->
-  <rect x="1" y="1" width="46" height="46" rx="6.720000000000001" fill="none" stroke="#fbbf24" stroke-width="0.5" stroke-opacity="0.3"/>
+  <rect x="1" y="1" width="46" height="46" rx="6.720000000000001" fill="none" stroke="#CDC9B2" stroke-width="0.5" stroke-opacity="0.3"/>
 
   <!-- Outer faces -->
   <polygon points="24.00,5.76 41.35,18.36 30.00,15.74" fill="url(#fFaceHL)" stroke="#5d0000" stroke-width="0.5" opacity="0.99"/>

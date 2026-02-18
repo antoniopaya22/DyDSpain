@@ -12,7 +12,7 @@ import {
 import type { RaceData, SubraceData } from "@/data/srd/races";
 import type { RaceId, SubraceId, AbilityKey } from "@/types/character";
 import { ABILITY_NAMES } from "@/types/character";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 const CURRENT_STEP = 2;
 

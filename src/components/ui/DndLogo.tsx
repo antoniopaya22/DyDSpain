@@ -1,5 +1,5 @@
 /**
- * DndLogo — Revamped D&D themed logo with SVG D20 die,
+ * DndLogo â€” Revamped D&D themed logo with SVG D20 die,
  * dragon accents, runic decorations, and distinctive branding.
  *
  * Features:
@@ -24,8 +24,13 @@ import {
   StyleSheet,
   ViewStyle,
 } from "react-native";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 import { LinearGradient } from "expo-linear-gradient";
+import {
+  getD20Geometry,
+  pointsToString,
+  type D20GeometryOptions,
+} from "@/utils/d20Geometry";
 import Svg, {
   Defs,
   LinearGradient as SvgLinearGradient,
@@ -39,7 +44,7 @@ import Svg, {
   Line,
 } from "react-native-svg";
 
-// ─── Props ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Props â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface DndLogoProps {
   /** Size variant */
@@ -56,7 +61,7 @@ interface DndLogoProps {
   style?: ViewStyle;
 }
 
-// ─── Size Presets ────────────────────────────────────────────────────
+// â”€â”€â”€ Size Presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const SIZE_PRESETS = {
   sm: {
@@ -101,78 +106,19 @@ const SIZE_PRESETS = {
   },
 };
 
-// ─── Rune characters (Elder Futhark) ─────────────────────────────────
+// â”€â”€â”€ Rune characters (Elder Futhark) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const RUNES = "ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃ";
+const RUNES = "áš áš¢áš¦áš¨áš±áš²áš·áš¹ášºáš¾á›á›ƒ";
 
-// ─── D20 Geometry Helper ─────────────────────────────────────────────
+// â”€â”€â”€ D20 Geometry â€” DndLogo shade configuration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-function getD20Faces(cx: number, cy: number, radius: number) {
-  const r = radius;
-  const r2 = r * 0.56;
+const LOGO_D20_OPTIONS: D20GeometryOptions = {
+  innerRadiusRatio: 0.56,
+  outerShades: [0.9, 0.72, 0.48, 0.52, 0.78],
+  innerShades: [0.62, 0.42, 0.32, 0.38, 0.56],
+};
 
-  const outerPoints: { x: number; y: number }[] = [];
-  for (let i = 0; i < 5; i++) {
-    const angle = (Math.PI * 2 * i) / 5 - Math.PI / 2;
-    outerPoints.push({
-      x: cx + r * Math.cos(angle),
-      y: cy + r * Math.sin(angle),
-    });
-  }
-
-  const innerPoints: { x: number; y: number }[] = [];
-  for (let i = 0; i < 5; i++) {
-    const angle = (Math.PI * 2 * i) / 5 - Math.PI / 2 + Math.PI / 5;
-    innerPoints.push({
-      x: cx + r2 * Math.cos(angle),
-      y: cy + r2 * Math.sin(angle),
-    });
-  }
-
-  const outerFaces: { points: { x: number; y: number }[]; shade: number }[] =
-    [];
-  for (let i = 0; i < 5; i++) {
-    const next = (i + 1) % 5;
-    outerFaces.push({
-      points: [outerPoints[i], outerPoints[next], innerPoints[i]],
-      shade:
-        i === 0 ? 0.9 : i === 1 ? 0.72 : i === 4 ? 0.78 : i === 2 ? 0.48 : 0.52,
-    });
-  }
-
-  const innerFaces: { points: { x: number; y: number }[]; shade: number }[] =
-    [];
-  for (let i = 0; i < 5; i++) {
-    const next = (i + 1) % 5;
-    innerFaces.push({
-      points: [innerPoints[i], innerPoints[next], outerPoints[next]],
-      shade:
-        i === 0
-          ? 0.62
-          : i === 1
-            ? 0.42
-            : i === 4
-              ? 0.56
-              : i === 2
-                ? 0.32
-                : 0.38,
-    });
-  }
-
-  return {
-    outerPoints,
-    innerPoints,
-    outerFaces,
-    innerFaces,
-    centerFace: innerPoints,
-  };
-}
-
-function ptsStr(points: { x: number; y: number }[]): string {
-  return points.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
-}
-
-// ─── D20 SVG Sub-Component ───────────────────────────────────────────
+// â”€â”€â”€ D20 SVG Sub-Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function D20Svg({
   svgSize,
@@ -185,7 +131,7 @@ function D20Svg({
   const cx = 50;
   const cy = 50;
   const dieRadius = showRunicRing ? 32 : 38;
-  const geo = getD20Faces(cx, cy, dieRadius);
+  const geo = getD20Geometry(cx, cy, dieRadius, LOGO_D20_OPTIONS);
   const fontSize = 17;
 
   // Runic ring properties
@@ -196,12 +142,12 @@ function D20Svg({
       <Defs>
         <SvgLinearGradient id="logoFaceHL" x1="0.5" y1="0" x2="0.5" y2="1">
           <Stop offset="0" stopColor="#ef5350" stopOpacity="0.95" />
-          <Stop offset="0.55" stopColor="#c62828" stopOpacity="1" />
+          <Stop offset="0.55" stopColor="#8f3d38" stopOpacity="1" />
           <Stop offset="1" stopColor="#7f0000" stopOpacity="1" />
         </SvgLinearGradient>
         <SvgLinearGradient id="logoFaceMain" x1="0" y1="0" x2="1" y2="1">
           <Stop offset="0" stopColor="#d32f2f" stopOpacity="1" />
-          <Stop offset="0.5" stopColor="#c62828" stopOpacity="1" />
+          <Stop offset="0.5" stopColor="#8f3d38" stopOpacity="1" />
           <Stop offset="1" stopColor="#8e0000" stopOpacity="1" />
         </SvgLinearGradient>
         <SvgLinearGradient id="logoFaceSH" x1="0.5" y1="0" x2="0.5" y2="1">
@@ -216,7 +162,7 @@ function D20Svg({
           ry="0.6"
         >
           <Stop offset="0" stopColor="#ef5350" stopOpacity="0.35" />
-          <Stop offset="0.45" stopColor="#c62828" stopOpacity="1" />
+          <Stop offset="0.45" stopColor="#8f3d38" stopOpacity="1" />
           <Stop offset="1" stopColor="#7f0000" stopOpacity="0.95" />
         </RadialGradient>
         <SvgLinearGradient id="logoEdgeShine" x1="0" y1="0" x2="1" y2="1">
@@ -225,13 +171,13 @@ function D20Svg({
           <Stop offset="1" stopColor="#000000" stopOpacity="0.18" />
         </SvgLinearGradient>
         <RadialGradient id="logoOuterGlow" cx="0.5" cy="0.5" rx="0.5" ry="0.5">
-          <Stop offset="0" stopColor="#c62828" stopOpacity="0.2" />
-          <Stop offset="0.6" stopColor="#c62828" stopOpacity="0.08" />
-          <Stop offset="1" stopColor="#c62828" stopOpacity="0" />
+          <Stop offset="0" stopColor="#8f3d38" stopOpacity="0.2" />
+          <Stop offset="0.6" stopColor="#8f3d38" stopOpacity="0.08" />
+          <Stop offset="1" stopColor="#8f3d38" stopOpacity="0" />
         </RadialGradient>
         <RadialGradient id="logoRuneGlow" cx="0.5" cy="0.5" rx="0.5" ry="0.5">
-          <Stop offset="0" stopColor="#fbbf24" stopOpacity="0.12" />
-          <Stop offset="1" stopColor="#fbbf24" stopOpacity="0" />
+          <Stop offset="0" stopColor="#CDC9B2" stopOpacity="0.12" />
+          <Stop offset="1" stopColor="#CDC9B2" stopOpacity="0" />
         </RadialGradient>
       </Defs>
 
@@ -250,7 +196,7 @@ function D20Svg({
             cy={cy}
             r={runicR}
             fill="none"
-            stroke="#fbbf24"
+            stroke="#CDC9B2"
             strokeWidth={0.6}
             strokeOpacity={0.4}
           />
@@ -260,7 +206,7 @@ function D20Svg({
             cy={cy}
             r={runicR - 4}
             fill="none"
-            stroke="#fbbf24"
+            stroke="#CDC9B2"
             strokeWidth={0.4}
             strokeOpacity={0.25}
           />
@@ -276,7 +222,7 @@ function D20Svg({
                 y={cy + rx * Math.sin(angle) + 2.5}
                 textAnchor="middle"
                 fontSize={5.5}
-                fill="#fbbf24"
+                fill="#CDC9B2"
                 opacity={0.55}
               >
                 {rune}
@@ -296,7 +242,7 @@ function D20Svg({
                 y1={cy + r1 * Math.sin(angle)}
                 x2={cx + r2 * Math.cos(angle)}
                 y2={cy + r2 * Math.sin(angle)}
-                stroke="#fbbf24"
+                stroke="#CDC9B2"
                 strokeWidth={i % 2 === 0 ? 1 : 0.5}
                 strokeOpacity={i % 2 === 0 ? 0.6 : 0.35}
               />
@@ -313,7 +259,7 @@ function D20Svg({
               <Polygon
                 key={`cdiamond-${i}`}
                 points={`${dx},${dy - 2} ${dx + 1.5},${dy} ${dx},${dy + 2} ${dx - 1.5},${dy}`}
-                fill="#fbbf24"
+                fill="#CDC9B2"
                 opacity={0.45}
               />
             );
@@ -327,7 +273,7 @@ function D20Svg({
         cy={cy}
         r={dieRadius + 2}
         fill="none"
-        stroke="#c62828"
+        stroke="#8f3d38"
         strokeWidth={0.8}
         strokeOpacity={0.3}
       />
@@ -336,7 +282,7 @@ function D20Svg({
       {geo.outerFaces.map((face, i) => (
         <Polygon
           key={`of-${i}`}
-          points={ptsStr(face.points)}
+          points={pointsToString(face.points)}
           fill={
             face.shade > 0.7
               ? "url(#logoFaceHL)"
@@ -355,7 +301,7 @@ function D20Svg({
       {geo.innerFaces.map((face, i) => (
         <Polygon
           key={`if-${i}`}
-          points={ptsStr(face.points)}
+          points={pointsToString(face.points)}
           fill={face.shade > 0.5 ? "url(#logoFaceMain)" : "url(#logoFaceSH)"}
           stroke="#5d0000"
           strokeWidth={0.5}
@@ -366,7 +312,7 @@ function D20Svg({
 
       {/* Center pentagon face */}
       <Polygon
-        points={ptsStr(geo.centerFace)}
+        points={pointsToString(geo.centerFace)}
         fill="url(#logoCenterGrad)"
         stroke="#ef5350"
         strokeWidth={0.6}
@@ -375,12 +321,12 @@ function D20Svg({
 
       {/* Specular highlights on top faces */}
       <Polygon
-        points={ptsStr(geo.outerFaces[0].points)}
+        points={pointsToString(geo.outerFaces[0].points)}
         fill="url(#logoEdgeShine)"
         opacity={0.45}
       />
       <Polygon
-        points={ptsStr(geo.outerFaces[4].points)}
+        points={pointsToString(geo.outerFaces[4].points)}
         fill="url(#logoEdgeShine)"
         opacity={0.3}
       />
@@ -399,7 +345,7 @@ function D20Svg({
         );
       })}
 
-      {/* "20" number — shadow */}
+      {/* "20" number â€” shadow */}
       <SvgText
         x={cx + 0.4}
         y={cy + fontSize * 0.34 + 0.7}
@@ -411,7 +357,7 @@ function D20Svg({
       >
         20
       </SvgText>
-      {/* "20" number — main */}
+      {/* "20" number â€” main */}
       <SvgText
         x={cx}
         y={cy + fontSize * 0.34}
@@ -437,14 +383,14 @@ function D20Svg({
       <G opacity={0.6}>
         <Path
           d={`M${cx + dieRadius + 5},${cy - dieRadius + 2} l1.5,-3 l1.5,3 l-1.5,3 z`}
-          fill="#fbbf24"
+          fill="#CDC9B2"
           opacity={0.7}
         />
         <Circle
           cx={cx - dieRadius - 3}
           cy={cy + dieRadius - 5}
           r={1}
-          fill="#fbbf24"
+          fill="#CDC9B2"
           opacity={0.5}
         />
       </G>
@@ -452,7 +398,7 @@ function D20Svg({
   );
 }
 
-// ─── Main Logo Component ─────────────────────────────────────────────
+// â”€â”€â”€ Main Logo Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export default function DndLogo({
   size = "md",
@@ -545,7 +491,7 @@ export default function DndLogo({
             height: preset.outerRing,
             borderRadius: preset.outerRing / 2,
             opacity: glowAnim,
-            shadowColor: "#c62828",
+            shadowColor: "#8f3d38",
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.7,
             shadowRadius: preset.glowRadius,
@@ -572,7 +518,7 @@ export default function DndLogo({
         <Svg width={14} height={14} viewBox="0 0 14 14">
           <Path
             d="M7,0 L8.2,5.2 L14,7 L8.2,8.8 L7,14 L5.8,8.8 L0,7 L5.8,5.2 Z"
-            fill="#fbbf24"
+            fill="#CDC9B2"
             opacity={0.85}
           />
         </Svg>
@@ -593,12 +539,12 @@ export default function DndLogo({
               >
                 <Path
                   d="M22,6 C18,6 14,3 10,2 C6,1 2,2 0,4 C2,5 6,4 10,5 C14,6 18,7 22,6 Z"
-                  fill="#fbbf24"
+                  fill="#CDC9B2"
                   opacity={0.4}
                 />
                 <Path
                   d="M22,6 C18,7 14,9 10,10 C6,11 2,10 0,8 C2,7 6,8 10,7 C14,6 18,6 22,6 Z"
-                  fill="#fbbf24"
+                  fill="#CDC9B2"
                   opacity={0.25}
                 />
               </Svg>
@@ -631,12 +577,12 @@ export default function DndLogo({
               >
                 <Path
                   d="M0,6 C4,6 8,3 12,2 C16,1 20,2 22,4 C20,5 16,4 12,5 C8,6 4,7 0,6 Z"
-                  fill="#fbbf24"
+                  fill="#CDC9B2"
                   opacity={0.4}
                 />
                 <Path
                   d="M0,6 C4,7 8,9 12,10 C16,11 20,10 22,8 C20,7 16,8 12,7 C8,6 4,6 0,6 Z"
-                  fill="#fbbf24"
+                  fill="#CDC9B2"
                   opacity={0.25}
                 />
               </Svg>
@@ -667,7 +613,7 @@ export default function DndLogo({
   );
 }
 
-// ─── Compact Inline Logo (for headers) ──────────────────────────────
+// â”€â”€â”€ Compact Inline Logo (for headers) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface InlineLogoProps {
   style?: ViewStyle;
@@ -697,7 +643,7 @@ export function InlineDndLogo({ style }: InlineLogoProps) {
         style,
       ]}
     >
-      {/* Inline D20 SVG — small, no runic ring */}
+      {/* Inline D20 SVG â€” small, no runic ring */}
       <View style={styles.inlineDieContainer}>
         <D20Svg svgSize={38} showRunicRing={false} />
       </View>
@@ -742,7 +688,7 @@ export function InlineDndLogo({ style }: InlineLogoProps) {
   );
 }
 
-// ─── Minimal D20 Logo (just the die, no text) ───────────────────────
+// â”€â”€â”€ Minimal D20 Logo (just the die, no text) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface MinimalLogoProps {
   size?: number;
@@ -798,7 +744,7 @@ export function MinimalD20Logo({
   );
 }
 
-// ─── Styles ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -831,7 +777,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   labelTitle: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontWeight: "900",
     letterSpacing: 3,
     textShadowColor: "rgba(251, 191, 36, 0.35)",
@@ -845,13 +791,13 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 
-  // ── Inline Logo ──
+  // â”€â”€ Inline Logo â”€â”€
   inlineWrapper: {
     flexDirection: "row",
     alignItems: "center",
   },
   inlineDieContainer: {
-    shadowColor: "#c62828",
+    shadowColor: "#8f3d38",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.35,
     shadowRadius: 8,
@@ -861,7 +807,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   inlineTitle: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 17,
     fontWeight: "900",
     letterSpacing: 0.8,

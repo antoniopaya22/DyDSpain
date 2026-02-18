@@ -101,10 +101,6 @@ interface SettingsActions {
   /** Cambia la anticipación del recordatorio */
   setRecordatorioAnticipacion: (minutos: number) => Promise<void>;
 
-  // ── PV ──
-  /** Cambia preferencia de PV fijos vs tirada */
-  setPvFijos: (fijos: boolean) => Promise<void>;
-
   // ── Backup ──
   /** Registra la fecha del último backup */
   setUltimoBackup: (fecha: string) => Promise<void>;
@@ -122,7 +118,12 @@ type SettingsStore = SettingsState & SettingsActions;
 // ─── Helper de persistencia ──────────────────────────────────────────
 
 async function persistSettings(settings: AppSettings): Promise<void> {
-  await setItem(STORAGE_KEYS.SETTINGS, settings);
+  try {
+    await setItem(STORAGE_KEYS.SETTINGS, settings);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[SettingsStore] Error persisting settings: ${message}`);
+  }
 }
 
 // ─── Store ───────────────────────────────────────────────────────────
@@ -237,19 +238,6 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     const { settings } = get();
     const clamped = Math.max(0, Math.min(1440, minutos)); // 0 a 24h
     const updated = { ...settings, recordatorioAnticipacion: clamped };
-    set({ settings: updated });
-    await persistSettings(updated);
-  },
-
-  setPvFijos: async (fijos: boolean) => {
-    const { settings } = get();
-    const updated: AppSettings = {
-      ...settings,
-      reglasOpcionales: {
-        ...settings.reglasOpcionales,
-        pvFijos: fijos,
-      },
-    };
     set({ settings: updated });
     await persistSettings(updated);
   },

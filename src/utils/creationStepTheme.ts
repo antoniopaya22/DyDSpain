@@ -89,6 +89,11 @@ export interface CreationThemeOverrides {
   levelBadge: ViewStyle;
   levelBadgeText: TextStyle;
   counterText: TextStyle;
+  counterTextValid: TextStyle;
+
+  // ── Abilities specific ──
+  pointsValue: TextStyle;
+  allAssigned: TextStyle;
 
   // ── Granted / reference skills ──
   grantedRow: ViewStyle;
@@ -336,6 +341,17 @@ export function getCreationThemeOverrides(
     },
     counterText: {
       color: colors.accentGold,
+    },
+    counterTextValid: {
+      color: colors.accentGreen,
+    },
+
+    // ── Abilities specific ──
+    pointsValue: {
+      color: colors.accentGold,
+    },
+    allAssigned: {
+      color: colors.accentGreen,
     },
 
     // ── Granted / reference skills ──

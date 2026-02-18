@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 export default function CampaignDetailLayout() {
   const { colors } = useTheme();

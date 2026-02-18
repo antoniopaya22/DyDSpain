@@ -16,7 +16,7 @@ import {
   getRequiredSkillCount,
 } from "@/stores/creationStore";
 import { SKILLS, ABILITY_NAMES, type SkillKey } from "@/types/character";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 6;
@@ -165,7 +165,7 @@ export default function SkillsStep() {
         <View style={styles.counterRow}>
           <View style={[styles.counterBadge, themed.card]}>
             <Text
-              style={[styles.counterText, isValid && styles.counterTextValid]}
+              style={[styles.counterText, themed.counterText, isValid && [styles.counterTextValid, themed.counterTextValid]]}
             >
               {selectedSkills.length} / {requiredCount} seleccionadas
             </Text>
@@ -347,7 +347,7 @@ export default function SkillsStep() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#272519",
   },
   scroll: {
     flex: 1,
@@ -367,24 +367,24 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     alignItems: "center",
     justifyContent: "center",
   },
   stepText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     fontWeight: "600",
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 3,
   },
   titleSection: {
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(198,40,40,0.15)",
+    backgroundColor: "rgba(143,61,56,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -420,15 +420,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   counterBadge: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   counterText: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 15,
     fontWeight: "bold",
   },
@@ -480,30 +480,30 @@ const styles = StyleSheet.create({
   emptyState: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 10,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   emptyText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     lineHeight: 20,
     marginLeft: 10,
     flex: 1,
   },
   skillCard: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 10,
     padding: 14,
     marginBottom: 6,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   skillCardSelected: {
-    borderColor: "#c62828",
-    backgroundColor: "rgba(198,40,40,0.08)",
+    borderColor: "#8f3d38",
+    backgroundColor: "rgba(143,61,56,0.08)",
   },
   skillCardDisabled: {
     opacity: 0.4,
@@ -517,14 +517,14 @@ const styles = StyleSheet.create({
     width: 28,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: "#666699",
+    borderColor: "#807953",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
   },
   checkboxSelected: {
-    borderColor: "#c62828",
-    backgroundColor: "#c62828",
+    borderColor: "#8f3d38",
+    backgroundColor: "#8f3d38",
   },
   skillInfo: {
     flex: 1,
@@ -539,11 +539,11 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   skillAbility: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 13,
   },
   refTitle: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 12,
     fontWeight: "700",
     textTransform: "uppercase",
@@ -554,7 +554,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   refAbility: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 12,
     fontWeight: "700",
     marginBottom: 4,
@@ -565,23 +565,23 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   refBadge: {
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   refBadgeGranted: {
     borderColor: "rgba(34,197,94,0.4)",
     backgroundColor: "rgba(34,197,94,0.1)",
   },
   refBadgeChosen: {
-    borderColor: "rgba(198,40,40,0.5)",
-    backgroundColor: "rgba(198,40,40,0.15)",
+    borderColor: "rgba(143,61,56,0.5)",
+    backgroundColor: "rgba(143,61,56,0.15)",
   },
   refBadgeText: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 12,
   },
   refBadgeTextActive: {
@@ -593,10 +593,10 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#3a3a5c",
+    borderTopColor: "#514D35",
   },
   nextButton: {
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: "row",
@@ -604,7 +604,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nextButtonDisabled: {
-    backgroundColor: "#2d2d44",
+    backgroundColor: "#423E2B",
     opacity: 0.5,
   },
   nextButtonText: {

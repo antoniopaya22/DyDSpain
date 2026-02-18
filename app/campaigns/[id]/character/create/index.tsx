@@ -11,8 +11,7 @@ import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import { ConfirmDialog } from "@/components/ui";
-import { useDialog } from "@/hooks/useDialog";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme, useDialog } from "@/hooks";
 
 const CURRENT_STEP = 1;
 

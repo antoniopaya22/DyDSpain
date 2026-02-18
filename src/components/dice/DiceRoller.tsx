@@ -25,19 +25,17 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ConfirmDialog, Toast } from "@/components/ui";
-import { useDialog, useToast } from "@/hooks/useDialog";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme, useDialog, useToast } from "@/hooks";
+import {
+  type DieType,
+  type DieRollResultEx as DieRollResult,
+  type ParsedFormula,
+  type AdvantageMode,
+  parseFormula,
+  executeFormula,
+} from "@/utils/dice";
 
 // ─── Types ───────────────────────────────────────────────────────────
-
-type DieType = "d4" | "d6" | "d8" | "d10" | "d12" | "d20" | "d100";
-type AdvantageMode = "normal" | "ventaja" | "desventaja";
-
-interface DieRollResult {
-  die: DieType;
-  value: number;
-  discarded?: boolean;
-}
 
 interface RollHistoryEntry {
   id: string;
@@ -84,8 +82,8 @@ function getDiePresets(
     colors.accentPurple, // d8
     colors.accentAmber, // d10
     colors.accentDanger, // d12
-    "#ec4899", // d20  (pink — no theme token yet)
-    "#6366f1", // d100 (indigo — no theme token yet)
+    colors.accentPink, // d20
+    colors.accentIndigo, // d100
   ];
   return DIE_PRESET_SIDES.map((p, i) => ({ ...p, color: palette[i] }));
 }
@@ -98,187 +96,6 @@ function getAdvantageColors(
     normal: colors.textMuted,
     ventaja: colors.accentGreen,
     desventaja: colors.accentDanger,
-  };
-}
-
-// ─── Dice Logic ──────────────────────────────────────────────────────
-
-function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function rollDie(sides: number): number {
-  return randomInt(1, sides);
-}
-
-function parseDieType(sides: number): DieType {
-  const map: Record<number, DieType> = {
-    4: "d4",
-    6: "d6",
-    8: "d8",
-    10: "d10",
-    12: "d12",
-    20: "d20",
-    100: "d100",
-  };
-  return map[sides] || "d20";
-}
-
-interface ParsedFormula {
-  groups: {
-    count: number;
-    sides: number;
-    keepHighest?: number;
-    keepLowest?: number;
-  }[];
-  modifier: number;
-}
-
-function parseFormula(formula: string): ParsedFormula | null {
-  const cleaned = formula.replace(/\s+/g, "").toLowerCase();
-  if (!cleaned) return null;
-
-  const groups: ParsedFormula["groups"] = [];
-  let modifier = 0;
-
-  // Split by + or -, keeping the sign
-  const tokens = cleaned.match(/[+-]?[^+-]+/g);
-  if (!tokens) return null;
-
-  for (const token of tokens) {
-    const sign = token.startsWith("-") ? -1 : 1;
-    const abs = token.replace(/^[+-]/, "");
-
-    // Check if it's a dice expression: NdX, NdXkhY, NdXklY
-    const diceMatch = abs.match(/^(\d*)d(\d+)(?:kh(\d+)|kl(\d+))?$/);
-    if (diceMatch) {
-      const count = parseInt(diceMatch[1] || "1", 10);
-      const sides = parseInt(diceMatch[2], 10);
-      const keepHighest = diceMatch[3] ? parseInt(diceMatch[3], 10) : undefined;
-      const keepLowest = diceMatch[4] ? parseInt(diceMatch[4], 10) : undefined;
-
-      if (sides <= 0 || count <= 0 || count > 100 || sides > 1000) return null;
-      if (keepHighest && keepHighest > count) return null;
-      if (keepLowest && keepLowest > count) return null;
-
-      groups.push({
-        count: count * sign,
-        sides,
-        keepHighest,
-        keepLowest,
-      });
-    } else {
-      // It's a flat modifier
-      const num = parseInt(abs, 10);
-      if (isNaN(num)) return null;
-      modifier += num * sign;
-    }
-  }
-
-  if (groups.length === 0 && modifier === 0) return null;
-
-  return { groups, modifier };
-}
-
-function executeFormula(
-  parsed: ParsedFormula,
-  advantageMode: AdvantageMode,
-  extraModifier: number,
-): {
-  rolls: DieRollResult[];
-  subtotal: number;
-  total: number;
-  isCritical: boolean;
-  isFumble: boolean;
-} {
-  const allRolls: DieRollResult[] = [];
-  let subtotal = 0;
-
-  // Check if it's a single d20 roll (for advantage/disadvantage)
-  const isSingleD20 =
-    parsed.groups.length === 1 &&
-    Math.abs(parsed.groups[0].count) === 1 &&
-    parsed.groups[0].sides === 20 &&
-    !parsed.groups[0].keepHighest &&
-    !parsed.groups[0].keepLowest;
-
-  if (isSingleD20 && advantageMode !== "normal") {
-    const roll1 = rollDie(20);
-    const roll2 = rollDie(20);
-    const sign = parsed.groups[0].count > 0 ? 1 : -1;
-
-    let chosen: number;
-    let discardedValue: number;
-
-    if (advantageMode === "ventaja") {
-      chosen = Math.max(roll1, roll2);
-      discardedValue = Math.min(roll1, roll2);
-    } else {
-      chosen = Math.min(roll1, roll2);
-      discardedValue = Math.max(roll1, roll2);
-    }
-
-    // The chosen die
-    allRolls.push({ die: "d20", value: chosen, discarded: false });
-    // The discarded die
-    allRolls.push({ die: "d20", value: discardedValue, discarded: true });
-
-    subtotal = chosen * sign;
-  } else {
-    for (const group of parsed.groups) {
-      const sign = group.count > 0 ? 1 : -1;
-      const absCount = Math.abs(group.count);
-      const dieType = parseDieType(group.sides);
-
-      const rolledValues: { value: number; index: number }[] = [];
-      for (let i = 0; i < absCount; i++) {
-        const value = rollDie(group.sides);
-        rolledValues.push({ value, index: i });
-      }
-
-      if (group.keepHighest || group.keepLowest) {
-        const sorted = [...rolledValues].sort((a, b) => b.value - a.value);
-        const keepCount = group.keepHighest || group.keepLowest || absCount;
-
-        let kept: Set<number>;
-        if (group.keepHighest) {
-          kept = new Set(sorted.slice(0, keepCount).map((r) => r.index));
-        } else {
-          kept = new Set(
-            sorted.slice(sorted.length - keepCount).map((r) => r.index),
-          );
-        }
-
-        for (const rv of rolledValues) {
-          const isKept = kept.has(rv.index);
-          allRolls.push({ die: dieType, value: rv.value, discarded: !isKept });
-          if (isKept) {
-            subtotal += rv.value * sign;
-          }
-        }
-      } else {
-        for (const rv of rolledValues) {
-          allRolls.push({ die: dieType, value: rv.value, discarded: false });
-          subtotal += rv.value * sign;
-        }
-      }
-    }
-  }
-
-  const totalModifier = parsed.modifier + extraModifier;
-  const total = subtotal + totalModifier;
-
-  // Check for critical/fumble (only on d20 single rolls)
-  const mainD20Roll = allRolls.find((r) => r.die === "d20" && !r.discarded);
-  const isCritical = isSingleD20 && mainD20Roll?.value === 20;
-  const isFumble = isSingleD20 && mainD20Roll?.value === 1;
-
-  return {
-    rolls: allRolls,
-    subtotal,
-    total,
-    isCritical,
-    isFumble,
   };
 }
 
@@ -1172,7 +989,7 @@ export default function DiceRoller({
       <View
         style={{
           flex: 1,
-          backgroundColor: "rgba(0,0,0,0.5)",
+          backgroundColor: colors.backdrop,
           justifyContent: "flex-end",
         }}
       >

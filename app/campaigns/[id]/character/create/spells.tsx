@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import { getClassData, isSpellcaster, hasSpellsAtLevel1 } from "@/data/srd";
 import { getCantripsForClass, getSpellsForClass } from "@/data/srd/spells";
 import { getSpellDescription } from "@/data/srd/spellDescriptions";
 import type { ClassId } from "@/types/character";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 7;
@@ -239,8 +239,9 @@ export default function SpellsStep() {
                 <Text
                   style={[
                     styles.counterText,
+                    themed.counterText,
                     selectedCantrips.length === maxCantrips &&
-                      styles.counterTextValid,
+                      [styles.counterTextValid, themed.counterTextValid],
                   ]}
                 >
                   {selectedCantrips.length} / {maxCantrips}
@@ -319,8 +320,9 @@ export default function SpellsStep() {
                 <Text
                   style={[
                     styles.counterText,
+                    themed.counterText,
                     selectedSpells.length === maxSpells &&
-                      styles.counterTextValid,
+                      [styles.counterTextValid, themed.counterTextValid],
                   ]}
                 >
                   {selectedSpells.length} / {maxSpells}
@@ -426,7 +428,7 @@ export default function SpellsStep() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#272519",
   },
   scroll: {
     flex: 1,
@@ -446,24 +448,24 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     alignItems: "center",
     justifyContent: "center",
   },
   stepText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     fontWeight: "600",
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 3,
   },
   titleSection: {
@@ -475,7 +477,7 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(198,40,40,0.15)",
+    backgroundColor: "rgba(143,61,56,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
@@ -488,7 +490,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -497,14 +499,14 @@ const styles = StyleSheet.create({
   aptitudBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(251,191,36,0.15)",
+    backgroundColor: "rgba(178,172,136,0.15)",
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 6,
     marginTop: 12,
   },
   aptitudText: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 13,
     fontWeight: "600",
     marginLeft: 6,
@@ -527,15 +529,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
   },
   counterBadge: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   counterText: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 13,
     fontWeight: "bold",
   },
@@ -543,16 +545,16 @@ const styles = StyleSheet.create({
     color: "#22c55e",
   },
   spellCard: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   spellCardSelected: {
-    borderColor: "#c62828",
-    backgroundColor: "rgba(198,40,40,0.08)",
+    borderColor: "#8f3d38",
+    backgroundColor: "rgba(143,61,56,0.08)",
   },
   spellCardDisabled: {
     opacity: 0.4,
@@ -566,14 +568,14 @@ const styles = StyleSheet.create({
     width: 28,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: "#666699",
+    borderColor: "#807953",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
   },
   checkboxSelected: {
-    borderColor: "#c62828",
-    backgroundColor: "#c62828",
+    borderColor: "#8f3d38",
+    backgroundColor: "#8f3d38",
   },
   spellInfo: {
     flex: 1,
@@ -589,12 +591,12 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   spellDesc: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 12,
     lineHeight: 17,
   },
   levelBadge: {
-    backgroundColor: "#2d2d52",
+    backgroundColor: "#423E2B",
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -603,19 +605,19 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(59,130,246,0.2)",
   },
   levelBadgeText: {
-    color: "#b3b3cc",
+    color: "#D4D1BD",
     fontSize: 11,
     fontWeight: "700",
   },
   infoBox: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: "rgba(251,191,36,0.1)",
+    backgroundColor: "rgba(178,172,136,0.1)",
     borderRadius: 10,
     padding: 12,
     marginTop: 8,
     borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.2)",
+    borderColor: "rgba(178,172,136,0.2)",
   },
   infoBoxText: {
     color: "#d9d9e6",
@@ -639,7 +641,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   skipSubtext: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 15,
   },
   footer: {
@@ -647,10 +649,10 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#3a3a5c",
+    borderTopColor: "#514D35",
   },
   nextButton: {
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: "row",
@@ -658,7 +660,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nextButtonDisabled: {
-    backgroundColor: "#2d2d44",
+    backgroundColor: "#423E2B",
     opacity: 0.5,
   },
   nextButtonText: {

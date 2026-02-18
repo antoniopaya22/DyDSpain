@@ -23,6 +23,9 @@ export {
   CLASSES,
   CLASS_ICONS,
   SPELLCASTING_DESCRIPTIONS,
+  CLASS_CASTER_TYPE_FROM_CLASSES,
+  SPELLCASTING_ABILITY_FROM_CLASSES,
+  CLASS_SPELL_PREPARATION_FROM_CLASSES,
   getClassData,
   getClassList,
   isSpellcaster,
@@ -97,4 +100,25 @@ export {
   getCantripsForClass,
 } from "./spells";
 
-export type { SrdSpell } from "./spells";
+export type { SrdSpell, SrdMagicSchool } from "./spells";
+
+// ─── Descripciones de hechizos (auto-generado) ──────────────────────
+export { getSpellDescription } from "./spellDescriptions";
+export type { SpellDescription } from "./spellDescriptions";
+
+// ─── Rasgos de subclase ─────────────────────────────────────────────
+export {
+  SUBCLASS_FEATURES,
+  getSubclassFeatures,
+  getSubclassFeaturesForLevel,
+  getSubclassFeaturesUpToLevel,
+  getSubclassChoicesForLevel,
+} from "./subclassFeatures";
+
+export type {
+  SubclassChoiceOption,
+  SubclassFeatureChoice,
+  SubclassFeatureDetail,
+  SubclassLevelBlock,
+  SubclassFeatureData,
+} from "./subclassFeatures";

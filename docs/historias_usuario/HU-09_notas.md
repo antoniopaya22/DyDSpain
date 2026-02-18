@@ -130,28 +130,7 @@ El jugador necesita un sistema flexible de notas para registrar información imp
 
 ---
 
-## HU-09.8: Notas Compartidas con el Master (Modo Master)
-
-**Como** jugador,
-**quiero** poder marcar ciertas notas como visibles para el Master,
-**para** que pueda consultarlas si es necesario durante la partida.
-
-**Como** Master,
-**quiero** poder enviar notas a los jugadores de mi sala,
-**para** comunicarles información narrativa, descripciones o pistas.
-
-### Criterios de Aceptación
-
-- El jugador puede marcar una nota como **"Visible para el Master"**.
-- El Master, desde su panel, puede ver las notas compartidas de cada jugador conectado.
-- El Master puede crear una nota y enviarla a **uno, varios o todos** los jugadores de la sala.
-- Las notas recibidas del Master aparecen con una marca visual especial (icono de pergamino o similar).
-- Las notas del Master son de solo lectura para el jugador receptor.
-- Requiere conexión activa a la sala del Master para el envío/recepción.
-
----
-
-## HU-09.9: Notas Rápidas
+## HU-09.8: Notas Rápidas
 
 **Como** jugador,
 **quiero** poder crear notas rápidas desde cualquier pantalla de la app,
@@ -202,5 +181,4 @@ Nota {
 | HU-09.5 Etiquetas | 🟡 Media | Media |
 | HU-09.6 Fijar notas | 🟡 Media | Baja |
 | HU-09.7 Diario de sesión | 🟡 Media | Media |
-| HU-09.8 Notas compartidas | 🟠 Media-Baja | Alta |
-| HU-09.9 Notas rápidas | 🟡 Media | Baja |
+| HU-09.8 Notas rápidas | 🟡 Media | Baja |

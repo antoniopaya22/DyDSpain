@@ -11,19 +11,20 @@ import {
   Animated,
   Easing,
   StyleSheet,
-  Dimensions,
   Platform,
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCampaignStore } from "@/stores/campaignStore";
-import { ConfirmDialog, Toast, DndBackdrop } from "@/components/ui";
-import { useDialog, useToast } from "@/hooks/useDialog";
-import { useTheme } from "@/hooks/useTheme";
+import {
+  ConfirmDialog,
+  Toast,
+  DndBackdrop,
+  SectionLabel,
+} from "@/components/ui";
+import { useTheme, useDialog, useToast } from "@/hooks";
 import type { Campaign } from "@/types/campaign";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 // ─── Animated Action Card ────────────────────────────────────────────
 
@@ -290,65 +291,6 @@ function QuickActionItem({
   );
 }
 
-// ─── Section Header ──────────────────────────────────────────────────
-
-function SectionLabel({
-  label,
-  color,
-  icon,
-  delay = 0,
-}: {
-  label: string;
-  color?: string;
-  icon?: keyof typeof Ionicons.glyphMap;
-  delay?: number;
-}) {
-  const { colors: slColors } = useTheme();
-  const resolvedColor = color ?? slColors.accentGold;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 350,
-      delay,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start();
-  }, [delay, fadeAnim]);
-
-  return (
-    <Animated.View style={[detailStyles.sectionLabel, { opacity: fadeAnim }]}>
-      <View style={detailStyles.sectionLabelRow}>
-        {icon && (
-          <Ionicons
-            name={icon}
-            size={14}
-            color={`${resolvedColor}99`}
-            style={{ marginRight: 6 }}
-          />
-        )}
-        <Text
-          style={[
-            detailStyles.sectionLabelText,
-            { color: `${resolvedColor}CC` },
-          ]}
-        >
-          {label}
-        </Text>
-      </View>
-      <View style={detailStyles.sectionLabelLine}>
-        <LinearGradient
-          colors={[`${resolvedColor}40`, "transparent"]}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={{ flex: 1, height: 1 }}
-        />
-      </View>
-    </Animated.View>
-  );
-}
-
 // ─── Main Screen ─────────────────────────────────────────────────────
 
 export default function CampaignDetailScreen() {
@@ -368,7 +310,7 @@ export default function CampaignDetailScreen() {
   const [loading, setLoading] = useState(true);
 
   // ── Dialog & Toast hooks ──
-  const { dialogProps, showDestructive, showAlert } = useDialog();
+  const { dialogProps, showDestructive } = useDialog();
   const {
     toastProps,
     showSuccess: toastSuccess,
@@ -381,8 +323,7 @@ export default function CampaignDetailScreen() {
   const [editDescripcion, setEditDescripcion] = useState("");
   const [editSaving, setEditSaving] = useState(false);
 
-  // Master mode state
-  const [showMasterMode, setShowMasterMode] = useState(false);
+
 
   useFocusEffect(
     useCallback(() => {
@@ -471,15 +412,11 @@ export default function CampaignDetailScreen() {
     router.push(`/campaigns/${id}/character/sheet?tab=notes`);
   };
 
-  const handleOpenMasterMode = () => {
-    setShowMasterMode(true);
-  };
-
   if (loading) {
     return (
-      <View className="flex-1 bg-dark-800 items-center justify-center">
+      <View className="flex-1 bg-gray-50 dark:bg-dark-800 items-center justify-center">
         <ActivityIndicator size="large" color={colors.accentRed} />
-        <Text className="text-dark-300 text-base mt-4">
+        <Text className="text-gray-500 dark:text-dark-300 text-base mt-4">
           Cargando partida...
         </Text>
       </View>
@@ -628,364 +565,10 @@ export default function CampaignDetailScreen() {
     </Modal>
   );
 
-  // ── Master Mode Modal ──
-  const renderMasterModeModal = () => (
-    <Modal
-      visible={showMasterMode}
-      animationType="slide"
-      transparent={false}
-      onRequestClose={() => setShowMasterMode(false)}
-    >
-      <View className="flex-1 bg-gray-50 dark:bg-dark-800">
-        {/* Header */}
-        <View className="px-5 pt-14 pb-4 border-b border-dark-100 dark:border-surface-border">
-          <View className="flex-row items-center justify-between">
-            <TouchableOpacity
-              className="h-10 w-10 rounded-full bg-gray-200 dark:bg-surface items-center justify-center active:bg-gray-300 dark:active:bg-surface-light"
-              onPress={() => setShowMasterMode(false)}
-            >
-              <Ionicons
-                name="arrow-back"
-                size={22}
-                color={colors.textPrimary}
-              />
-            </TouchableOpacity>
-            <Text className="text-gold-700 dark:text-gold-400 text-lg font-bold">
-              Modo Master (DM)
-            </Text>
-            <View className="h-10 w-10" />
-          </View>
-        </View>
 
-        <ScrollView
-          className="flex-1 px-5"
-          contentContainerStyle={{ paddingBottom: 40 }}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Campaign Info */}
-          <View className="bg-white dark:bg-surface-card rounded-card border border-gold-600/30 p-4 mt-4 mb-4">
-            <View className="flex-row items-center mb-3">
-              <View className="h-12 w-12 rounded-xl bg-gold-500/20 items-center justify-center mr-3">
-                <Ionicons name="eye" size={24} color={colors.accentGold} />
-              </View>
-              <View className="flex-1">
-                <Text className="text-gold-700 dark:text-gold-400 text-base font-bold">
-                  {campaign.nombre}
-                </Text>
-                <Text className="text-dark-400 dark:text-dark-300 text-xs">
-                  Herramientas de Dungeon Master
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Initiative Tracker */}
-          <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 uppercase tracking-wider">
-            Herramientas de Combate
-          </Text>
-
-          <TouchableOpacity
-            className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3 flex-row items-center active:bg-gray-50 dark:active:bg-surface-light"
-            onPress={() => {
-              toastSuccess(
-                "Tirada de iniciativa: " + (Math.floor(Math.random() * 20) + 1),
-              );
-            }}
-          >
-            <View className="h-12 w-12 rounded-xl bg-amber-500/20 items-center justify-center mr-4">
-              <Ionicons name="flash" size={24} color={colors.accentAmber} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-dark-900 dark:text-white text-base font-semibold">
-                Tirada de Iniciativa
-              </Text>
-              <Text className="text-dark-400 dark:text-dark-300 text-sm mt-0.5">
-                Pulsa para tirar 1d20 de iniciativa
-              </Text>
-            </View>
-            <Ionicons
-              name="dice-outline"
-              size={22}
-              color={colors.accentAmber}
-            />
-          </TouchableOpacity>
-
-          {/* Quick Dice Roller */}
-          <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 mt-4 uppercase tracking-wider">
-            Tiradas Rápidas
-          </Text>
-
-          <View className="flex-row flex-wrap mb-4">
-            {[
-              { die: "d4", sides: 4, color: colors.accentGreen },
-              { die: "d6", sides: 6, color: colors.accentBlue },
-              { die: "d8", sides: 8, color: colors.accentPurple },
-              { die: "d10", sides: 10, color: "#ec4899" },
-              { die: "d12", sides: 12, color: colors.accentAmber },
-              { die: "d20", sides: 20, color: colors.accentDanger },
-              { die: "d100", sides: 100, color: "#14b8a6" },
-            ].map((dice) => (
-              <TouchableOpacity
-                key={dice.die}
-                className="rounded-xl border border-dark-100 dark:border-surface-border p-3 mr-2 mb-2 items-center active:opacity-70"
-                style={{
-                  backgroundColor: `${dice.color}15`,
-                  borderColor: `${dice.color}30`,
-                  minWidth: 72,
-                }}
-                onPress={() => {
-                  const result = Math.floor(Math.random() * dice.sides) + 1;
-                  showAlert(`🎲 ${dice.die}`, `Resultado: ${result}`, {
-                    type: "info",
-                    buttonText: "OK",
-                  });
-                }}
-              >
-                <Ionicons name="dice-outline" size={24} color={dice.color} />
-                <Text
-                  className="text-sm font-bold mt-1"
-                  style={{ color: dice.color }}
-                >
-                  {dice.die}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* NPC Quick Generator */}
-          <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 mt-2 uppercase tracking-wider">
-            Generador Rápido de NPC
-          </Text>
-
-          <TouchableOpacity
-            className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3 flex-row items-center active:bg-gray-50 dark:active:bg-surface-light"
-            onPress={() => {
-              const nombres = [
-                "Theron",
-                "Elara",
-                "Brom",
-                "Lyra",
-                "Gareth",
-                "Isolde",
-                "Darian",
-                "Mira",
-                "Aldric",
-                "Selene",
-                "Kael",
-                "Nessa",
-                "Roderick",
-                "Vala",
-                "Magnus",
-                "Freya",
-                "Orion",
-                "Zara",
-              ];
-              const profesiones = [
-                "Tabernero/a",
-                "Herrero/a",
-                "Mercader",
-                "Guardia",
-                "Curandero/a",
-                "Bardo",
-                "Ladrón/a",
-                "Sacerdote/isa",
-                "Granjero/a",
-                "Noble",
-                "Soldado",
-                "Mago/a errante",
-                "Cazarrecompensas",
-                "Marinero/a",
-              ];
-              const rasgos = [
-                "habla en susurros",
-                "ríe nerviosamente",
-                "siempre mira por encima del hombro",
-                "tiene una cicatriz notable",
-                "es extremadamente educado/a",
-                "desconfía de los extraños",
-                "colecciona monedas extrañas",
-                "cuenta historias increíbles",
-                "tiene un acento extraño",
-                "siempre está comiendo algo",
-                "parpadea excesivamente",
-              ];
-              const nombre =
-                nombres[Math.floor(Math.random() * nombres.length)];
-              const profesion =
-                profesiones[Math.floor(Math.random() * profesiones.length)];
-              const rasgo = rasgos[Math.floor(Math.random() * rasgos.length)];
-
-              showAlert(
-                "NPC Generado",
-                `Nombre: ${nombre}\nProfesión: ${profesion}\nRasgo: ${rasgo}`,
-                { type: "success", buttonText: "OK" },
-              );
-            }}
-          >
-            <View className="h-12 w-12 rounded-xl bg-purple-500/20 items-center justify-center mr-4">
-              <Ionicons name="people" size={24} color={colors.accentPurple} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-dark-900 dark:text-white text-base font-semibold">
-                Generar NPC
-              </Text>
-              <Text className="text-dark-400 dark:text-dark-300 text-sm mt-0.5">
-                Nombre, profesión y rasgo aleatorios
-              </Text>
-            </View>
-            <Ionicons name="sparkles" size={22} color={colors.accentPurple} />
-          </TouchableOpacity>
-
-          {/* Quick encounter difficulty reference */}
-          <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-3 mt-4 uppercase tracking-wider">
-            Referencia Rápida
-          </Text>
-
-          <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3">
-            <Text className="text-dark-900 dark:text-white text-sm font-semibold mb-2">
-              Dificultad de Encuentro (Nv. 1)
-            </Text>
-            <View className="flex-row justify-between">
-              <View className="items-center flex-1">
-                <Text className="text-green-600 dark:text-green-400 text-lg font-bold">
-                  25
-                </Text>
-                <Text className="text-dark-400 text-[10px] uppercase">
-                  Fácil
-                </Text>
-              </View>
-              <View className="items-center flex-1">
-                <Text className="text-yellow-600 dark:text-yellow-400 text-lg font-bold">
-                  50
-                </Text>
-                <Text className="text-dark-400 text-[10px] uppercase">
-                  Medio
-                </Text>
-              </View>
-              <View className="items-center flex-1">
-                <Text className="text-orange-600 dark:text-orange-400 text-lg font-bold">
-                  75
-                </Text>
-                <Text className="text-dark-400 text-[10px] uppercase">
-                  Difícil
-                </Text>
-              </View>
-              <View className="items-center flex-1">
-                <Text className="text-red-600 dark:text-red-400 text-lg font-bold">
-                  100
-                </Text>
-                <Text className="text-dark-400 text-[10px] uppercase">
-                  Mortal
-                </Text>
-              </View>
-            </View>
-            <Text className="text-dark-300 dark:text-dark-500 text-[10px] mt-2 text-center">
-              XP total del encuentro por personaje
-            </Text>
-          </View>
-
-          {/* Common DCs */}
-          <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3">
-            <Text className="text-dark-900 dark:text-white text-sm font-semibold mb-2">
-              CDs Comunes
-            </Text>
-            {[
-              { label: "Muy fácil", dc: "5", color: colors.accentGreen },
-              { label: "Fácil", dc: "10", color: colors.accentLime },
-              { label: "Moderada", dc: "15", color: colors.accentYellow },
-              { label: "Difícil", dc: "20", color: colors.accentOrange },
-              { label: "Muy difícil", dc: "25", color: colors.accentDanger },
-              { label: "Casi imposible", dc: "30", color: colors.accentRed },
-            ].map((row) => (
-              <View
-                key={row.dc}
-                className="flex-row items-center justify-between py-1.5 border-b border-dark-100/30 dark:border-surface-border/30"
-              >
-                <Text className="text-dark-600 dark:text-dark-200 text-sm">
-                  {row.label}
-                </Text>
-                <Text
-                  className="text-sm font-bold"
-                  style={{ color: row.color }}
-                >
-                  CD {row.dc}
-                </Text>
-              </View>
-            ))}
-          </View>
-
-          {/* Conditions quick reference */}
-          <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3">
-            <Text className="text-dark-900 dark:text-white text-sm font-semibold mb-2">
-              Condiciones Rápidas
-            </Text>
-            <View className="flex-row flex-wrap">
-              {[
-                "Agarrado",
-                "Asustado",
-                "Aturdido",
-                "Cegado",
-                "Derribado",
-                "Encantado",
-                "Ensordecido",
-                "Envenenado",
-                "Incapacitado",
-                "Inconsciente",
-                "Invisible",
-                "Paralizado",
-                "Petrificado",
-                "Restringido",
-              ].map((cond) => (
-                <View
-                  key={cond}
-                  className="bg-gray-100 dark:bg-dark-700 rounded-full px-2.5 py-1 mr-1.5 mb-1.5 border border-dark-100 dark:border-surface-border"
-                >
-                  <Text className="text-dark-600 dark:text-dark-200 text-[10px]">
-                    {cond}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          {/* Session notes shortcut */}
-          {hasCharacter && (
-            <TouchableOpacity
-              className="bg-white dark:bg-surface-card rounded-card border border-blue-500/30 p-4 mb-4 flex-row items-center active:bg-gray-50 dark:active:bg-surface-light"
-              onPress={() => {
-                setShowMasterMode(false);
-                handleOpenNotes();
-              }}
-            >
-              <View className="h-12 w-12 rounded-xl bg-blue-500/20 items-center justify-center mr-4">
-                <Ionicons
-                  name="document-text"
-                  size={24}
-                  color={colors.accentBlue}
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-dark-900 dark:text-white text-base font-semibold">
-                  Notas de la Partida
-                </Text>
-                <Text className="text-dark-400 dark:text-dark-300 text-sm mt-0.5">
-                  Accede a las notas y diario de sesión
-                </Text>
-              </View>
-              <Ionicons
-                name="chevron-forward"
-                size={20}
-                color={colors.accentBlue}
-              />
-            </TouchableOpacity>
-          )}
-        </ScrollView>
-      </View>
-    </Modal>
-  );
 
   return (
-    <View style={detailStyles.container}>
+    <View style={[detailStyles.container, { backgroundColor: colors.bgPrimary }]}>
       {/* Themed backdrop */}
       <DndBackdrop />
 
@@ -1172,12 +755,20 @@ export default function CampaignDetailScreen() {
             <ActionCard
               icon="shield-half-sharp"
               iconColor={colors.accentRed}
-              iconBg="rgba(198,40,40,0.15)"
+              iconBg="rgba(143,61,56,0.15)"
               title="Ver Hoja de Personaje"
               subtitle="Estadísticas, habilidades, inventario y más"
               onPress={handleOpenCharacterSheet}
               delay={150}
               accentColor={colors.accentRed}
+            />
+
+            {/* Quick actions label */}
+            <SectionLabel
+              label="Acceso Rápido"
+              icon="flash"
+              color={colors.accentGold}
+              delay={200}
             />
 
             {/* Quick action grid */}
@@ -1189,7 +780,7 @@ export default function CampaignDetailScreen() {
                 label="Combate"
                 sublabel="Vida y ataques"
                 onPress={handleOpenCombat}
-                delay={200}
+                delay={250}
               />
               <View style={{ width: 10 }} />
               <QuickActionItem
@@ -1199,7 +790,7 @@ export default function CampaignDetailScreen() {
                 label="Habilidades"
                 sublabel="Clase y magia"
                 onPress={handleOpenSpells}
-                delay={250}
+                delay={300}
               />
             </View>
 
@@ -1207,11 +798,11 @@ export default function CampaignDetailScreen() {
               <QuickActionItem
                 icon="bag-handle"
                 iconColor={colors.accentGold}
-                iconBg="rgba(212,160,23,0.15)"
+                iconBg="rgba(151,143,98,0.15)"
                 label="Inventario"
                 sublabel="Objetos y oro"
                 onPress={handleOpenInventory}
-                delay={300}
+                delay={350}
               />
               <View style={{ width: 10 }} />
               <QuickActionItem
@@ -1221,64 +812,9 @@ export default function CampaignDetailScreen() {
                 label="Notas"
                 sublabel="Diario y apuntes"
                 onPress={handleOpenNotes}
-                delay={350}
+                delay={400}
               />
             </View>
-
-            {/* Ornate divider */}
-            <View style={detailStyles.ornateDivider}>
-              <LinearGradient
-                colors={[
-                  "transparent",
-                  colors.accentGold + "40",
-                  "transparent",
-                ]}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-                style={{ height: 1, flex: 1 }}
-              />
-              <View style={detailStyles.ornateDiamondWrapper}>
-                <View
-                  style={[
-                    detailStyles.ornateDiamond,
-                    {
-                      backgroundColor: colors.accentGold + "60",
-                      shadowColor: colors.accentGold,
-                    },
-                  ]}
-                />
-              </View>
-              <LinearGradient
-                colors={[
-                  "transparent",
-                  colors.accentGold + "40",
-                  "transparent",
-                ]}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-                style={{ height: 1, flex: 1 }}
-              />
-            </View>
-
-            {/* Master mode */}
-            <SectionLabel
-              label="Herramientas de Partida"
-              icon="eye"
-              color={colors.accentGold}
-              delay={400}
-            />
-
-            <ActionCard
-              icon="eye"
-              iconColor={colors.accentGold}
-              iconBg="rgba(212,160,23,0.15)"
-              title="Modo Master (DM)"
-              subtitle="Dados, NPC, referencia rápida y más"
-              onPress={handleOpenMasterMode}
-              delay={450}
-              accentColor={colors.accentGold}
-              borderAccent
-            />
           </View>
         ) : (
           /* ── No Character — Creation Prompt ── */
@@ -1394,36 +930,31 @@ export default function CampaignDetailScreen() {
                 />
               </View>
 
-              {/* Steps preview */}
+              {/* Steps preview — compact 2-column grid */}
               <Text
                 style={[detailStyles.stepsTitle, { color: colors.textMuted }]}
               >
-                Pasos del proceso
+                11 pasos de creación
               </Text>
 
-              {[
-                { icon: "text-outline", label: "Nombre del personaje" },
-                { icon: "people-outline", label: "Raza y subraza" },
-                { icon: "shield-outline", label: "Clase" },
-                { icon: "stats-chart-outline", label: "Estadísticas" },
-                { icon: "book-outline", label: "Trasfondo" },
-                { icon: "school-outline", label: "Habilidades" },
-                {
-                  icon: "star-outline",
-                  label: "Conjuros y poderes (si aplica)",
-                },
-                { icon: "bag-outline", label: "Equipamiento" },
-                { icon: "chatbubble-outline", label: "Personalidad" },
-                { icon: "body-outline", label: "Apariencia (opcional)" },
-                {
-                  icon: "checkmark-circle-outline",
-                  label: "Resumen y confirmación",
-                },
-              ].map((step, index) => (
-                <View key={index} style={detailStyles.stepRow}>
+              <View style={detailStyles.stepsGrid}>
+                {[
+                  { icon: "text-outline", label: "Nombre" },
+                  { icon: "people-outline", label: "Raza" },
+                  { icon: "shield-outline", label: "Clase" },
+                  { icon: "stats-chart-outline", label: "Estadísticas" },
+                  { icon: "book-outline", label: "Trasfondo" },
+                  { icon: "school-outline", label: "Habilidades" },
+                  { icon: "star-outline", label: "Conjuros" },
+                  { icon: "bag-outline", label: "Equipamiento" },
+                  { icon: "chatbubble-outline", label: "Personalidad" },
+                  { icon: "body-outline", label: "Apariencia" },
+                  { icon: "checkmark-circle-outline", label: "Resumen" },
+                ].map((step, index) => (
                   <View
+                    key={index}
                     style={[
-                      detailStyles.stepNumber,
+                      detailStyles.stepChip,
                       {
                         backgroundColor: colors.bgSubtle,
                         borderColor: colors.borderSubtle,
@@ -1432,28 +963,29 @@ export default function CampaignDetailScreen() {
                   >
                     <Text
                       style={[
-                        detailStyles.stepNumberText,
+                        detailStyles.stepChipNumber,
                         { color: colors.textMuted },
                       ]}
                     >
                       {index + 1}
                     </Text>
+                    <Ionicons
+                      name={step.icon as any}
+                      size={13}
+                      color={colors.textMuted}
+                    />
+                    <Text
+                      style={[
+                        detailStyles.stepChipLabel,
+                        { color: colors.textSecondary },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {step.label}
+                    </Text>
                   </View>
-                  <Ionicons
-                    name={step.icon as any}
-                    size={15}
-                    color={colors.textMuted}
-                  />
-                  <Text
-                    style={[
-                      detailStyles.stepLabel,
-                      { color: colors.textSecondary },
-                    ]}
-                  >
-                    {step.label}
-                  </Text>
-                </View>
-              ))}
+                ))}
+              </View>
             </View>
           </View>
         )}
@@ -1461,7 +993,6 @@ export default function CampaignDetailScreen() {
 
       {/* Modals */}
       {renderEditModal()}
-      {renderMasterModeModal()}
 
       {/* Custom dialog (replaces Alert.alert) */}
       <ConfirmDialog {...dialogProps} />
@@ -1477,7 +1008,7 @@ export default function CampaignDetailScreen() {
 const detailStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e", // overridden inline via colors.bgPrimary
+    backgroundColor: "transparent", // themed inline via colors.bgPrimary
   },
 
   // ── Hero Header ──
@@ -1511,13 +1042,13 @@ const detailStyles = StyleSheet.create({
     marginBottom: 16,
   },
   heroLabel: {
-    color: "#fbbf24", // overridden inline via colors.accentGold
+    color: "#CDC9B2", // overridden inline via colors.accentGold
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 2,
     textTransform: "uppercase",
     marginBottom: 4,
-    textShadowColor: "rgba(251,191,36,0.2)",
+    textShadowColor: "rgba(178,172,136,0.2)",
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 6,
   },
@@ -1529,7 +1060,7 @@ const detailStyles = StyleSheet.create({
     marginBottom: 6,
   },
   heroDescription: {
-    color: "#8c8cb3", // overridden inline via colors.textSecondary
+    color: "#AAA37B", // overridden inline via colors.textSecondary
     fontSize: 14,
     lineHeight: 21,
     marginBottom: 12,
@@ -1550,7 +1081,7 @@ const detailStyles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.05)",
   },
   heroBadgeText: {
-    color: "#555577", // overridden inline via colors.textMuted
+    color: "#6C6746", // overridden inline via colors.textMuted
     fontSize: 11,
     fontWeight: "500",
     marginLeft: 5,
@@ -1565,31 +1096,12 @@ const detailStyles = StyleSheet.create({
     paddingTop: 18,
   },
 
-  // ── Section Label ──
-  sectionLabel: {
-    marginBottom: 12,
-  },
-  sectionLabelRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-  sectionLabelText: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1.5,
-    textTransform: "uppercase",
-  },
-  sectionLabelLine: {
-    height: 1,
-  },
-
   // ── Action Card ──
   actionCard: {
     borderRadius: 14,
-    backgroundColor: "#23233d", // overridden inline via colors.bgCard
+    backgroundColor: "transparent", // themed inline via colors.bgCard
     borderWidth: 1,
-    borderColor: "#3a3a5c", // overridden inline via colors.borderDefault
+    borderColor: "transparent", // themed inline via colors.borderDefault
     paddingHorizontal: 16,
     paddingVertical: 14,
     paddingLeft: 20,
@@ -1626,7 +1138,7 @@ const detailStyles = StyleSheet.create({
     marginBottom: 2,
   },
   actionCardSubtitle: {
-    color: "#8c8cb3", // overridden inline via colors.textSecondary
+    color: "#AAA37B", // overridden inline via colors.textSecondary
     fontSize: 13,
     lineHeight: 18,
   },
@@ -1647,9 +1159,9 @@ const detailStyles = StyleSheet.create({
   },
   quickActionCard: {
     borderRadius: 14,
-    backgroundColor: "#23233d", // overridden inline via colors.bgCard
+    backgroundColor: "transparent", // themed inline via colors.bgCard
     borderWidth: 1,
-    borderColor: "#3a3a5c", // overridden inline via colors.borderDefault
+    borderColor: "transparent", // themed inline via colors.borderDefault
     paddingHorizontal: 14,
     paddingVertical: 14,
     alignItems: "center",
@@ -1678,40 +1190,18 @@ const detailStyles = StyleSheet.create({
     fontWeight: "700",
   },
   quickActionSublabel: {
-    color: "#666699", // overridden inline via colors.textMuted
+    color: "#807953", // overridden inline via colors.textMuted
     fontSize: 10,
     fontWeight: "500",
     marginTop: 2,
   },
 
-  // ── Ornate Divider ──
-  ornateDivider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 18,
-    paddingHorizontal: 12,
-  },
-  ornateDiamondWrapper: {
-    paddingHorizontal: 12,
-  },
-  ornateDiamond: {
-    width: 7,
-    height: 7,
-    backgroundColor: "#fbbf2460", // overridden inline via colors.accentGold + "60"
-    transform: [{ rotate: "45deg" }],
-    shadowColor: "#fbbf24", // overridden inline via colors.accentGold
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-
   // ── Create Character Card ──
   createCard: {
     borderRadius: 16,
-    backgroundColor: "#23233d", // overridden inline via colors.bgCard
+    backgroundColor: "transparent", // themed inline via colors.bgCard
     borderWidth: 1,
-    borderColor: "#3a3a5c", // overridden inline via colors.borderDefault
+    borderColor: "transparent", // themed inline via colors.borderDefault
     padding: 24,
     alignItems: "center",
     overflow: "hidden",
@@ -1755,7 +1245,7 @@ const detailStyles = StyleSheet.create({
     letterSpacing: -0.3,
   },
   createSubtitle: {
-    color: "#8c8cb3", // overridden inline via colors.textSecondary
+    color: "#AAA37B", // overridden inline via colors.textSecondary
     fontSize: 14,
     textAlign: "center",
     lineHeight: 21,
@@ -1766,7 +1256,7 @@ const detailStyles = StyleSheet.create({
     borderRadius: 14,
     overflow: "hidden",
     width: "100%",
-    shadowColor: "#c62828", // overridden inline via colors.accentRed
+    shadowColor: "#8f3d38", // overridden inline via colors.accentRed
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -1789,40 +1279,38 @@ const detailStyles = StyleSheet.create({
     marginVertical: 20,
   },
   stepsTitle: {
-    color: "#555577", // overridden inline via colors.textMuted
+    color: "#6C6746",
     fontSize: 10,
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 1.5,
-    marginBottom: 12,
+    marginBottom: 10,
     textAlign: "center",
   },
-  stepRow: {
+  stepsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 6,
+  },
+  stepChip: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
-    paddingHorizontal: 4,
-  },
-  stepNumber: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: "rgba(255,255,255,0.04)",
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
   },
-  stepNumberText: {
-    color: "#555577", // overridden inline via colors.textMuted
-    fontSize: 11,
+  stepChipNumber: {
+    fontSize: 10,
     fontWeight: "700",
+    marginRight: 4,
+    minWidth: 12,
+    textAlign: "center",
   },
-  stepLabel: {
-    color: "#8c8cb3", // overridden inline via colors.textSecondary
-    fontSize: 13,
-    marginLeft: 8,
+  stepChipLabel: {
+    fontSize: 11,
     fontWeight: "500",
+    marginLeft: 4,
   },
 });

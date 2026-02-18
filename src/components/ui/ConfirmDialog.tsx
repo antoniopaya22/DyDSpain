@@ -21,7 +21,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -96,9 +96,9 @@ function getTypeConfig(
     warning: {
       icon: "alert-circle",
       color: colors.accentGold,
-      bgColor: "rgba(251,191,36,0.10)",
-      borderColor: "rgba(251,191,36,0.20)",
-      ringColor: "rgba(251,191,36,0.12)",
+      bgColor: "rgba(178,172,136,0.10)",
+      borderColor: "rgba(178,172,136,0.20)",
+      ringColor: "rgba(178,172,136,0.12)",
     },
     success: {
       icon: "checkmark-circle",
@@ -502,7 +502,7 @@ export default function ConfirmDialog({
                     {/* Default (primary) button gets gradient */}
                     {isDefault && (
                       <LinearGradient
-                        colors={["#d32f2f", "#c62828", "#b71c1c"]}
+                        colors={["#A0443F", "#8f3d38", "#7C3530"]}
                         style={[StyleSheet.absoluteFill, { borderRadius: 11 }]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 0, y: 1 }}

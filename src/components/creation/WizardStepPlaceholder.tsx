@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 const TOTAL_STEPS = 11;
 
@@ -144,7 +144,7 @@ export default function WizardStepPlaceholder({
             className="rounded-xl py-4 items-center flex-row justify-center bg-primary-500 active:bg-primary-600 mb-3"
             onPress={handleNext}
           >
-            <Text className="text-dark-900 dark:text-white font-bold text-base mr-2">
+            <Text className="text-white font-bold text-base mr-2">
               {nextLabel ?? "Siguiente"}
             </Text>
             <Ionicons name="arrow-forward" size={20} color="white" />

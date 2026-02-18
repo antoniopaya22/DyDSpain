@@ -15,8 +15,10 @@ import {
   UIManager,
   Alert,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
+import { useCreationStore } from "@/stores/creationStore";
 import {
   ABILITY_NAMES,
   ABILITY_ABBR,
@@ -31,7 +33,9 @@ import { getClassData } from "@/data/srd/classes";
 import { getBackgroundData } from "@/data/srd/backgrounds";
 import ExperienceSection from "./ExperienceSection";
 import LevelUpModal from "./LevelUpModal";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
+import { CollapsibleSection, InfoBadge } from "@/components/ui";
+import { TraitCard } from "./TraitCard";
 
 if (
   Platform.OS === "android" &&
@@ -53,7 +57,9 @@ const ABILITY_ORDER: AbilityKey[] = ["fue", "des", "con", "int", "sab", "car"];
 
 export default function OverviewTab() {
   const { isDark, colors } = useTheme();
-  const { character, saveCharacter, resetToLevel1 } = useCharacterStore();
+  const router = useRouter();
+  const { character, saveCharacter, resetToLevel1, getSavingThrowBonus, getSkillBonus } = useCharacterStore();
+  const { startRecreation } = useCreationStore();
   const [expandedSection, setExpandedSection] = useState<string | null>(
     "abilities",
   );
@@ -69,22 +75,27 @@ export default function OverviewTab() {
   }, [saveCharacter]);
 
   const handleResetToLevel1 = useCallback(() => {
+    if (!character) return;
     Alert.alert(
       "Resetear a Nivel 1",
-      "¿Estás seguro? Se perderán todas las subidas de nivel, mejoras de característica, subclase y hechizos aprendidos. Esta acción no se puede deshacer.",
+      "¿Estás seguro? Se volverá al asistente de creación para que selecciones de nuevo tus estadísticas, habilidades, hechizos y equipamiento. Esta acción no se puede deshacer.",
       [
         { text: "Cancelar", style: "cancel" },
         {
           text: "Resetear",
           style: "destructive",
           onPress: async () => {
-            await resetToLevel1();
-            await saveCharacter();
+            // Create a recreation draft from the current character
+            await startRecreation(character);
+            // Navigate to the creation wizard (abilities step)
+            router.replace(
+              `/campaigns/${character.campaignId}/character/create/abilities`,
+            );
           },
         },
       ],
     );
-  }, [resetToLevel1, saveCharacter]);
+  }, [character, startRecreation, router]);
 
   if (!character) {
     return (
@@ -108,7 +119,7 @@ export default function OverviewTab() {
   // ── Render helpers ──
 
   const renderBasicInfo = () => (
-    <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
       <View className="flex-row items-center mb-3">
         <View className="h-14 w-14 rounded-xl bg-primary-500/20 items-center justify-center mr-4">
           <Ionicons
@@ -202,7 +213,6 @@ export default function OverviewTab() {
   );
 
   const renderSavingThrows = () => {
-    const { getSavingThrowBonus } = useCharacterStore.getState();
     return (
       <CollapsibleSection
         title="Tiradas de Salvación"
@@ -266,7 +276,6 @@ export default function OverviewTab() {
   };
 
   const renderSkills = () => {
-    const { getSkillBonus } = useCharacterStore.getState();
     const sortedSkills = (Object.keys(SKILLS) as SkillKey[]).sort((a, b) =>
       SKILLS[a].nombre.localeCompare(SKILLS[b].nombre, "es"),
     );
@@ -479,7 +488,7 @@ export default function OverviewTab() {
   );
 
   const renderSpeed = () => (
-    <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
       <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider mb-3">
         Movimiento
       </Text>
@@ -579,67 +588,6 @@ export default function OverviewTab() {
 
 // ─── Sub-components ──────────────────────────────────────────────────
 
-function CollapsibleSection({
-  title,
-  icon,
-  isExpanded,
-  onToggle,
-  children,
-}: {
-  title: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  isExpanded: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
-}) {
-  const { colors: csColors } = useTheme();
-  return (
-    <View className="bg-white dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border mb-4 overflow-hidden">
-      <TouchableOpacity
-        className="flex-row items-center p-4 active:bg-gray-50 dark:active:bg-surface-light"
-        onPress={onToggle}
-      >
-        <Ionicons name={icon} size={20} color={csColors.accentGold} />
-        <Text className="text-dark-900 dark:text-white text-base font-semibold flex-1 ml-3">
-          {title}
-        </Text>
-        <Ionicons
-          name={isExpanded ? "chevron-up" : "chevron-down"}
-          size={20}
-          color={csColors.textMuted}
-        />
-      </TouchableOpacity>
-      {isExpanded && (
-        <View className="px-4 pb-4 border-t border-dark-100 dark:border-surface-border/50 pt-3">
-          {children}
-        </View>
-      )}
-    </View>
-  );
-}
-
-function InfoBadge({
-  icon,
-  label,
-  color,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  color: string;
-}) {
-  return (
-    <View
-      className="flex-row items-center rounded-full px-3 py-1.5 mr-2 mb-2"
-      style={{ backgroundColor: `${color}15` }}
-    >
-      <Ionicons name={icon} size={12} color={color} />
-      <Text className="text-xs ml-1.5 font-medium" style={{ color }}>
-        {label}
-      </Text>
-    </View>
-  );
-}
-
 function SpeedBadge({
   icon,
   label,
@@ -697,80 +645,4 @@ function ProficiencyGroup({
   );
 }
 
-function TraitCard({ trait }: { trait: any }) {
-  const { colors: tcColors } = useTheme();
-  const [expanded, setExpanded] = useState(false);
 
-  const originColors: Record<string, string> = {
-    raza: tcColors.accentGreen,
-    clase: tcColors.accentRed,
-    subclase: tcColors.accentAmber,
-    trasfondo: tcColors.accentBlue,
-    dote: tcColors.accentPurple,
-    manual: tcColors.textMuted,
-  };
-
-  const originNames: Record<string, string> = {
-    raza: "Raza",
-    clase: "Clase",
-    subclase: "Subclase",
-    trasfondo: "Trasfondo",
-    dote: "Dote",
-    manual: "Manual",
-  };
-
-  const color = originColors[trait.origen] ?? tcColors.textMuted;
-
-  return (
-    <TouchableOpacity
-      className="bg-gray-200 dark:bg-dark-700 rounded-lg p-3 mb-2 border border-dark-100 dark:border-surface-border"
-      onPress={() => setExpanded(!expanded)}
-      activeOpacity={0.7}
-    >
-      <View className="flex-row items-center">
-        <View className="flex-1">
-          <View className="flex-row items-center">
-            <Text className="text-dark-900 dark:text-white text-sm font-semibold flex-1">
-              {trait.nombre}
-            </Text>
-            <View
-              className="rounded-full px-2 py-0.5 ml-2"
-              style={{ backgroundColor: `${color}22` }}
-            >
-              <Text className="text-[10px] font-semibold" style={{ color }}>
-                {originNames[trait.origen] ?? trait.origen}
-              </Text>
-            </View>
-          </View>
-
-          {trait.maxUses !== null && (
-            <View className="flex-row items-center mt-1">
-              <Text className="text-dark-400 text-[10px]">
-                Usos: {trait.currentUses}/{trait.maxUses}
-                {trait.recharge === "short_rest"
-                  ? " (desc. corto)"
-                  : trait.recharge === "long_rest"
-                    ? " (desc. largo)"
-                    : trait.recharge === "dawn"
-                      ? " (al amanecer)"
-                      : ""}
-              </Text>
-            </View>
-          )}
-        </View>
-        <Ionicons
-          name={expanded ? "chevron-up" : "chevron-down"}
-          size={16}
-          color={tcColors.textMuted}
-          style={{ marginLeft: 8 }}
-        />
-      </View>
-
-      {expanded && (
-        <Text className="text-dark-500 dark:text-dark-300 text-xs leading-5 mt-2 pt-2 border-t border-dark-100 dark:border-surface-border/50">
-          {trait.descripcion}
-        </Text>
-      )}
-    </TouchableOpacity>
-  );
-}

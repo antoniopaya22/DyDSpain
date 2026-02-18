@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 /**
  * Layout del wizard de creación de personaje.

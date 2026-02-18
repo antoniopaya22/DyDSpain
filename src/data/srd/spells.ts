@@ -16,14 +16,15 @@ export interface SrdSpell {
   /** 0 = truco, 1-9 = nivel */
   nivel: number;
   /** Escuela de magia */
-  escuela: string;
+  escuela: SrdMagicSchool;
   /** IDs de las clases que lo tienen en su lista */
   clases: ClassId[];
 }
 
 // ─── Escuelas ───────────────────────────────────────────────────────
 
-type Esc =
+/** Escuelas de magia en formato display (título + acentos) como aparecen en los datos SRD */
+export type SrdMagicSchool =
   | "Abjuración"
   | "Adivinación"
   | "Conjuración"

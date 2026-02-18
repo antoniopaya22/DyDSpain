@@ -16,7 +16,7 @@ import {
   type Alignment,
   type Personality,
 } from "@/types/character";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 9;
@@ -106,12 +106,7 @@ export default function PersonalityStep() {
   const backgroundId = draft?.trasfondo;
   const backgroundData = backgroundId ? getBackgroundData(backgroundId) : null;
 
-  const isValid =
-    traits.trim().length > 0 &&
-    ideals.trim().length > 0 &&
-    bonds.trim().length > 0 &&
-    flaws.trim().length > 0 &&
-    alignment !== null;
+  const isValid = true; // All fields are optional
 
   const handleRandomize = () => {
     if (!backgroundId) return;
@@ -123,7 +118,6 @@ export default function PersonalityStep() {
   };
 
   const handleNext = async () => {
-    if (!isValid || !alignment) return;
     const personality: Personality = {
       traits: traits
         .split("\n")
@@ -135,7 +129,7 @@ export default function PersonalityStep() {
       backstory: backstory.trim() || undefined,
     };
     setPersonality(personality);
-    setAlineamiento(alignment);
+    if (alignment) setAlineamiento(alignment);
     await saveDraft();
     router.push({
       pathname: "/campaigns/[id]/character/create/appearance",
@@ -211,7 +205,9 @@ export default function PersonalityStep() {
           </Text>
           <Text style={[styles.subtitle, themed.subtitle]}>
             Define la personalidad de tu personaje: cómo actúa, qué valora y
-            cuáles son sus defectos. También elige su alineamiento moral.
+            cuáles son sus defectos. También elige su alineamiento moral.{"\n"}
+            Este paso es completamente opcional. Si prefieres, puedes pulsar
+            "Siguiente" e ir directamente al siguiente paso.
           </Text>
         </View>
 
@@ -238,7 +234,7 @@ export default function PersonalityStep() {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, themed.sectionTitle]}>
             Rasgos de Personalidad{" "}
-            <Text style={[styles.required, themed.required]}>*</Text>
+            <Text style={[styles.optional, themed.optional]}>(opcional)</Text>
           </Text>
           <Text style={[styles.fieldHint, themed.fieldHint]}>
             ¿Cómo se comporta tu personaje? Describe uno o dos rasgos
@@ -259,7 +255,8 @@ export default function PersonalityStep() {
         {/* Ideals */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, themed.sectionTitle]}>
-            Ideales <Text style={[styles.required, themed.required]}>*</Text>
+            Ideales{" "}
+            <Text style={[styles.optional, themed.optional]}>(opcional)</Text>
           </Text>
           <Text style={[styles.fieldHint, themed.fieldHint]}>
             ¿Qué principios guían a tu personaje? ¿Qué es lo más importante para
@@ -280,7 +277,8 @@ export default function PersonalityStep() {
         {/* Bonds */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, themed.sectionTitle]}>
-            Vínculos <Text style={[styles.required, themed.required]}>*</Text>
+            Vínculos{" "}
+            <Text style={[styles.optional, themed.optional]}>(opcional)</Text>
           </Text>
           <Text style={[styles.fieldHint, themed.fieldHint]}>
             ¿Qué personas, lugares o cosas son más importantes para tu
@@ -301,7 +299,8 @@ export default function PersonalityStep() {
         {/* Flaws */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, themed.sectionTitle]}>
-            Defectos <Text style={[styles.required, themed.required]}>*</Text>
+            Defectos{" "}
+            <Text style={[styles.optional, themed.optional]}>(opcional)</Text>
           </Text>
           <Text style={[styles.fieldHint, themed.fieldHint]}>
             ¿Cuál es la debilidad o vicio de tu personaje? Algo que pueda ser
@@ -349,7 +348,7 @@ export default function PersonalityStep() {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, themed.sectionTitle]}>
             Alineamiento{" "}
-            <Text style={[styles.required, themed.required]}>*</Text>
+            <Text style={[styles.optional, themed.optional]}>(opcional)</Text>
           </Text>
           <Text style={[styles.fieldHint, themed.fieldHint]}>
             El alineamiento describe la brújula moral de tu personaje en dos
@@ -517,7 +516,7 @@ export default function PersonalityStep() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#272519",
   },
   scroll: {
     flex: 1,
@@ -537,24 +536,24 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     alignItems: "center",
     justifyContent: "center",
   },
   stepText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     fontWeight: "600",
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 3,
   },
   titleSection: {
@@ -566,7 +565,7 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(198,40,40,0.15)",
+    backgroundColor: "rgba(143,61,56,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
@@ -579,7 +578,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -596,25 +595,25 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   required: {
-    color: "#c62828",
+    color: "#8f3d38",
     fontSize: 14,
   },
   optional: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 12,
     fontWeight: "400",
   },
   fieldHint: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 13,
     lineHeight: 18,
     marginBottom: 10,
   },
   textArea: {
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
     paddingHorizontal: 16,
     paddingVertical: 12,
     color: "#ffffff",
@@ -626,7 +625,7 @@ const styles = StyleSheet.create({
     minHeight: 130,
   },
   charCount: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 12,
     textAlign: "right",
     marginTop: 4,
@@ -635,23 +634,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(251,191,36,0.1)",
+    backgroundColor: "rgba(178,172,136,0.1)",
     borderRadius: 12,
     paddingVertical: 14,
     borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.25)",
+    borderColor: "rgba(178,172,136,0.25)",
   },
   randomButtonText: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 15,
     fontWeight: "600",
     marginLeft: 8,
   },
   alignmentGrid: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
     padding: 10,
     marginBottom: 12,
   },
@@ -667,7 +666,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   alignmentHeaderText: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 12,
     fontWeight: "700",
     textTransform: "uppercase",
@@ -682,7 +681,7 @@ const styles = StyleSheet.create({
     width: 64,
   },
   alignmentRowText: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 12,
     fontWeight: "700",
   },
@@ -691,11 +690,11 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 3,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
   },
   alignmentCellDot: {
     height: 18,
@@ -704,11 +703,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   alignmentDescBox: {
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 12,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   alignmentDescHeader: {
     flexDirection: "row",
@@ -727,7 +726,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   alignmentDescText: {
-    color: "#b3b3cc",
+    color: "#D4D1BD",
     fontSize: 14,
     lineHeight: 20,
   },
@@ -736,10 +735,10 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#3a3a5c",
+    borderTopColor: "#514D35",
   },
   nextButton: {
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: "row",
@@ -747,7 +746,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nextButtonDisabled: {
-    backgroundColor: "#2d2d44",
+    backgroundColor: "#423E2B",
     opacity: 0.5,
   },
   nextButtonText: {

@@ -9,7 +9,7 @@ import {
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { ConfirmDialog } from "@/components/ui";
-import { useDialog } from "@/hooks/useDialog";
+import { useTheme, useDialog } from "@/hooks";
 import {
   useCreationStore,
   TOTAL_STEPS,
@@ -23,7 +23,6 @@ import {
   type AbilityScores,
   type AbilityScoreMethod,
 } from "@/types/character";
-import { useTheme } from "@/hooks/useTheme";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 4;
@@ -311,7 +310,7 @@ export default function AbilitiesStep() {
               <Ionicons
                 name="arrow-back"
                 size={22}
-                color={isDark ? "white" : "#1a1a2e"}
+                color={isDark ? "white" : "#272519"}
               />
             </TouchableOpacity>
             <Text style={[styles.stepText, themed.stepText]}>
@@ -329,7 +328,7 @@ export default function AbilitiesStep() {
         {/* Title */}
         <View style={styles.titleSection}>
           <View style={styles.iconCircle}>
-            <Ionicons name="stats-chart-outline" size={40} color="#c62828" />
+            <Ionicons name="stats-chart-outline" size={40} color="#8f3d38" />
           </View>
           <Text style={[styles.title, themed.title]}>
             Puntuaciones de Característica
@@ -439,7 +438,7 @@ export default function AbilitiesStep() {
                       </View>
                     ))
                   ) : (
-                    <Text style={styles.allAssigned}>✓ Todos asignados</Text>
+                    <Text style={[styles.allAssigned, themed.allAssigned]}>✓ Todos asignados</Text>
                   )}
                 </View>
 
@@ -507,8 +506,9 @@ export default function AbilitiesStep() {
                   <Text
                     style={[
                       styles.pointsValue,
-                      pointsRemaining < 0 && { color: "#ef4444" },
-                      pointsRemaining === 0 && { color: "#22c55e" },
+                      themed.pointsValue,
+                      pointsRemaining < 0 && { color: colors.accentDanger },
+                      pointsRemaining === 0 && { color: colors.accentGreen },
                     ]}
                   >
                     {pointsRemaining} / {POINT_BUY_TOTAL}
@@ -744,7 +744,7 @@ export default function AbilitiesStep() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#272519",
   },
   scroll: {
     flex: 1,
@@ -764,24 +764,24 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     alignItems: "center",
     justifyContent: "center",
   },
   stepText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     fontWeight: "600",
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 3,
   },
   titleSection: {
@@ -793,7 +793,7 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(198,40,40,0.15)",
+    backgroundColor: "rgba(143,61,56,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
@@ -806,7 +806,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -826,10 +826,10 @@ const styles = StyleSheet.create({
   methodCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
     padding: 16,
     marginBottom: 10,
   },
@@ -837,7 +837,7 @@ const styles = StyleSheet.create({
     height: 48,
     width: 48,
     borderRadius: 12,
-    backgroundColor: "rgba(251,191,36,0.15)",
+    backgroundColor: "rgba(178,172,136,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
@@ -849,28 +849,28 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   methodDesc: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 13,
     lineHeight: 18,
   },
   changeMethodBtn: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   changeMethodText: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 14,
     fontWeight: "600",
     marginLeft: 8,
   },
   infoText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 16,
@@ -882,13 +882,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   availableLabel: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 13,
     fontWeight: "600",
     marginRight: 8,
   },
   availableBadge: {
-    backgroundColor: "#2d2d52",
+    backgroundColor: "#423E2B",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -896,7 +896,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   availableBadgeText: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 15,
     fontWeight: "bold",
   },
@@ -909,19 +909,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 10,
     padding: 14,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   abilityLabel: {
     flexDirection: "row",
     alignItems: "center",
   },
   abilityAbbr: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 14,
     fontWeight: "bold",
     width: 36,
@@ -933,7 +933,7 @@ const styles = StyleSheet.create({
   assignedValue: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#2d2d52",
+    backgroundColor: "#423E2B",
     borderRadius: 8,
     paddingHorizontal: 14,
     paddingVertical: 6,
@@ -949,12 +949,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   valueOption: {
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   valueOptionText: {
     color: "#ffffff",
@@ -969,7 +969,7 @@ const styles = StyleSheet.create({
     height: 36,
     width: 36,
     borderRadius: 18,
-    backgroundColor: "#2d2d52",
+    backgroundColor: "#423E2B",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -984,7 +984,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   costText: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 12,
     marginLeft: 8,
   },
@@ -992,12 +992,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 10,
     padding: 14,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   pointsLabel: {
     color: "#d9d9e6",
@@ -1005,7 +1005,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   pointsValue: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 20,
     fontWeight: "bold",
   },
@@ -1013,7 +1013,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 12,
     paddingVertical: 14,
     marginBottom: 16,
@@ -1031,14 +1031,14 @@ const styles = StyleSheet.create({
   },
   previewSection: {
     marginTop: 20,
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   previewTitle: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 13,
     fontWeight: "700",
     textTransform: "uppercase",
@@ -1053,14 +1053,14 @@ const styles = StyleSheet.create({
   },
   previewCard: {
     width: "30%",
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 10,
     padding: 12,
     alignItems: "center",
     marginBottom: 10,
   },
   previewAbbr: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 12,
     fontWeight: "bold",
     marginBottom: 4,
@@ -1071,13 +1071,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   previewMod: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     fontWeight: "600",
     marginTop: 2,
   },
   previewRacial: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 11,
     marginTop: 2,
   },
@@ -1086,10 +1086,10 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#3a3a5c",
+    borderTopColor: "#514D35",
   },
   nextButton: {
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: "row",
@@ -1097,7 +1097,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nextButtonDisabled: {
-    backgroundColor: "#2d2d44",
+    backgroundColor: "#423E2B",
     opacity: 0.5,
   },
   nextButtonText: {

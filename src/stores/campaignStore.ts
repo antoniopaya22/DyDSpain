@@ -6,7 +6,10 @@
 import { create } from "zustand";
 import { randomUUID } from "expo-crypto";
 import type { Campaign, CreateCampaignInput, UpdateCampaignInput } from "@/types/campaign";
-import { STORAGE_KEYS, setItem, getItem, removeItem } from "@/utils/storage";
+import { STORAGE_KEYS, setItem, getItem } from "@/utils/storage";
+import { now } from "@/utils/providers";
+import { useCharacterStore } from "./characterStore";
+import { deleteCreationDraft } from "./creationStore";
 
 // ─── Tipos del store ─────────────────────────────────────────────────
 
@@ -90,15 +93,15 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
   },
 
   createCampaign: async (input: CreateCampaignInput) => {
-    const now = new Date().toISOString();
+    const timestamp = now();
     const newCampaign: Campaign = {
       id: randomUUID(),
       nombre: input.nombre.trim(),
       descripcion: input.descripcion?.trim() || undefined,
       imagen: input.imagen || undefined,
       personajeId: undefined,
-      creadoEn: now,
-      actualizadoEn: now,
+      creadoEn: timestamp,
+      actualizadoEn: timestamp,
     };
 
     try {
@@ -134,7 +137,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
             ? input.descripcion?.trim() || undefined
             : existing.descripcion,
         imagen: input.imagen !== undefined ? input.imagen : existing.imagen,
-        actualizadoEn: new Date().toISOString(),
+        actualizadoEn: now(),
       };
 
       const updatedList = [...campaigns];
@@ -159,26 +162,15 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
       const campaign = campaigns.find((c) => c.id === id);
       if (!campaign) return;
 
-      // Eliminar datos asociados del personaje e inventario si existen
+      // Eliminar datos asociados del personaje si existen
       if (campaign.personajeId) {
-        const charKey = STORAGE_KEYS.CHARACTER(campaign.personajeId);
-        const invKey = STORAGE_KEYS.INVENTORY(campaign.personajeId);
-        const notesKey = STORAGE_KEYS.NOTES(campaign.personajeId);
-        const magicKey = STORAGE_KEYS.MAGIC_STATE(campaign.personajeId);
-        const spellFavsKey = STORAGE_KEYS.SPELL_FAVORITES(campaign.personajeId);
-
-        await Promise.allSettled([
-          removeItem(charKey),
-          removeItem(invKey),
-          removeItem(notesKey),
-          removeItem(magicKey),
-          removeItem(spellFavsKey),
-        ]);
+        await useCharacterStore
+          .getState()
+          .deleteAllCharacterData(campaign.personajeId);
       }
 
       // Eliminar borrador de creación si existe
-      const draftKey = STORAGE_KEYS.CREATION_DRAFT(id);
-      await removeItem(draftKey).catch(() => {});
+      await deleteCreationDraft(id);
 
       // Actualizar la lista
       const filtered = campaigns.filter((c) => c.id !== id);
@@ -216,7 +208,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
       updatedList[index] = {
         ...updatedList[index],
         personajeId: characterId,
-        actualizadoEn: new Date().toISOString(),
+        actualizadoEn: now(),
       };
 
       const sorted = sortByLastAccess(updatedList);
@@ -240,7 +232,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
       updatedList[index] = {
         ...updatedList[index],
         personajeId: undefined,
-        actualizadoEn: new Date().toISOString(),
+        actualizadoEn: now(),
       };
 
       const sorted = sortByLastAccess(updatedList);
@@ -265,7 +257,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
       const updatedList = [...campaigns];
       updatedList[index] = {
         ...updatedList[index],
-        actualizadoEn: new Date().toISOString(),
+        actualizadoEn: now(),
       };
 
       const sorted = sortByLastAccess(updatedList);

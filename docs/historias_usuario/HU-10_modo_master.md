@@ -2,319 +2,365 @@
 
 ## Descripción General
 
-Como **Director de Juego (DM/Master)**, quiero un modo especial en la aplicación que me permita crear salas de partida, invitar jugadores y monitorizar en tiempo real el estado de sus personajes durante la sesión de juego.
+La aplicación ofrece dos modos de uso seleccionables al inicio: **Modo Jugador (Player)** y **Modo Master**. El Modo Master es una **característica premium (de pago)** que permite al Director de Juego gestionar campañas, añadir jugadores mediante un código identificador y visualizar en tiempo real las hojas de personaje de sus jugadores, sincronizadas a través de **Supabase**.
 
 ---
 
 ## Historias de Usuario
 
-### HU-10.1: Activar Modo Master
+### HU-10.1: Selección de Modo al Inicio
 
-**Como** director de juego,
-**quiero** poder activar el "Modo Master" dentro de una partida,
-**para** acceder a las herramientas de gestión de sesión en vivo.
+**Como** usuario,
+**quiero** elegir entre "Modo Jugador" y "Modo Master" al abrir la aplicación por primera vez,
+**para** acceder a las funcionalidades correspondientes a mi rol en la mesa de juego.
 
 #### Criterios de Aceptación
 
-- [ ] Existe una opción claramente visible para activar el Modo Master en una partida
-- [ ] Al activar el modo, se muestra un panel de control específico para el DM
-- [ ] El modo master es independiente por partida (puedo ser jugador en una y master en otra)
-- [ ] Al desactivar el modo, se vuelve a la vista normal de partida
+- [ ] Al abrir la app por primera vez (o sin modo seleccionado), se muestra una pantalla de selección con dos opciones: **Modo Jugador** y **Modo Master**.
+- [ ] Cada opción tiene un icono representativo, nombre y breve descripción de sus funcionalidades.
+- [ ] El Modo Master muestra una insignia o etiqueta de **"Premium"** visible.
+- [ ] La selección se guarda de forma persistente y se recuerda en siguientes aperturas.
+- [ ] Se puede cambiar de modo en cualquier momento desde la pantalla de Ajustes (HU-14).
+- [ ] Al seleccionar Modo Jugador, se accede al flujo normal de la app (gestión de partidas, personajes, etc.).
+- [ ] Al seleccionar Modo Master, se verifica si el usuario tiene la suscripción premium activa antes de continuar.
 
 #### Notas Técnicas
 
-- El rol de master se asigna a nivel de partida, no de usuario global
-- Un mismo usuario puede ser master en una partida y jugador en otra
+- Almacenar el modo seleccionado en almacenamiento local (AsyncStorage / Zustand).
+- La verificación premium puede realizarse contra un flag en el perfil del usuario en Supabase.
+- Considerar una animación o transición visual que refuerce la diferencia entre ambos modos.
 
 ---
 
-### HU-10.2: Crear Sala de Sesión
+### HU-10.2: Suscripción Premium para Modo Master
 
-**Como** director de juego,
-**quiero** poder crear una sala de sesión en vivo,
-**para** que los jugadores de mi partida se conecten durante la sesión de juego.
+**Como** usuario,
+**quiero** poder suscribirme al plan premium para desbloquear el Modo Master,
+**para** acceder a las herramientas de Director de Juego.
 
 #### Criterios de Aceptación
 
-- [ ] Puedo crear una sala desde el panel de Modo Master
-- [ ] La sala genera un código único e identificable para compartir con los jugadores
-- [ ] La sala muestra su estado: activa, esperando jugadores, cerrada
-- [ ] Puedo ponerle un nombre o descripción a la sesión (ej. "Sesión 12 - La Cripta del Rey Lich")
-- [ ] La sala permanece activa mientras el master no la cierre
+- [ ] Al intentar activar el Modo Master sin suscripción, se muestra una pantalla de información del plan premium con las funcionalidades incluidas.
+- [ ] Se ofrece un botón de suscripción que redirige al flujo de compra in-app (App Store / Google Play).
+- [ ] Tras la compra exitosa, el modo se desbloquea inmediatamente sin reiniciar la app.
+- [ ] El estado de suscripción se sincroniza con el perfil del usuario en Supabase.
+- [ ] Si la suscripción caduca o se cancela, el Modo Master se bloquea mostrando un aviso claro, pero los datos de las campañas del master se conservan.
+- [ ] Existe una opción para restaurar compras.
 
 #### Notas Técnicas
 
-- El código de sala debe ser corto y fácil de compartir (ej. 6 caracteres alfanuméricos)
-- Considerar conexión mediante WebSockets o similar para tiempo real
-- Evaluar servicios como Firebase Realtime Database, Supabase Realtime o un servidor WebSocket propio
+- Utilizar `expo-in-app-purchases` o `react-native-iap` para gestionar las compras.
+- Almacenar el estado de suscripción tanto localmente (caché) como en Supabase (fuente de verdad).
+- Validar los recibos de compra en el servidor (Supabase Edge Functions) para evitar fraudes.
 
 ---
 
-### HU-10.3: Unirse a una Sala como Jugador
+### HU-10.3: Pantalla Principal del Modo Master
 
-**Como** jugador,
-**quiero** poder unirme a la sala de sesión creada por mi master introduciendo el código,
-**para** compartir la información de mi personaje en tiempo real.
+**Como** Master,
+**quiero** ver una pantalla principal adaptada a mi rol con mis campañas,
+**para** gestionar mis partidas como Director de Juego.
 
 #### Criterios de Aceptación
 
-- [ ] Existe una opción "Unirse a sala" accesible desde la partida
-- [ ] Puedo introducir el código de sala manualmente
-- [ ] Al unirme, selecciono qué personaje de esa partida quiero conectar
-- [ ] Se muestra confirmación de conexión exitosa
-- [ ] Si el código es inválido o la sala está cerrada, se muestra un mensaje de error claro
-- [ ] Puedo desconectarme de la sala en cualquier momento
+- [ ] La pantalla principal en Modo Master muestra una lista de campañas creadas por el master.
+- [ ] Cada campaña muestra: nombre, imagen/icono opcional, número de jugadores conectados y fecha de última sesión.
+- [ ] Se puede crear, editar y eliminar campañas (similar a HU-01, pero orientado al master).
+- [ ] Si no hay campañas, se muestra un mensaje invitando a crear una nueva.
+- [ ] La interfaz tiene un estilo visual diferenciado (colores, iconografía) para distinguirla del Modo Jugador.
 
 #### Notas Técnicas
 
-- La conexión debe ser persistente mientras la app esté abierta
-- Manejar reconexión automática si se pierde la conexión temporalmente
+- Reutilizar la estructura de datos de campaña (HU-01) extendida con campos específicos del master.
+- Las campañas del master se almacenan tanto localmente como en Supabase.
 
 ---
 
-### HU-10.4: Panel de Monitorización en Vivo
+### HU-10.4: Crear y Gestionar Campañas como Master
 
-**Como** director de juego,
-**quiero** ver en tiempo real la información clave de los personajes conectados,
-**para** gestionar el combate y la narrativa sin tener que preguntar constantemente a los jugadores.
+**Como** Master,
+**quiero** crear campañas y configurar sus detalles,
+**para** tener organizada la información de cada mesa de juego que dirijo.
 
 #### Criterios de Aceptación
 
-- [ ] Veo una lista/cuadrícula con todos los personajes conectados a la sala
-- [ ] Para cada personaje puedo ver en tiempo real:
-  - **Nombre del personaje** y nombre del jugador
-  - **Puntos de golpe actuales / máximos** (con indicador visual de estado: sano, herido, crítico, inconsciente)
-  - **Clase de armadura (CA)**
-  - **Espacios de hechizo restantes** por nivel
-  - **Nivel y clase** del personaje
-  - **Condiciones/estados** activos (envenenado, paralizado, etc.)
-- [ ] Los cambios que haga el jugador en su personaje se reflejan inmediatamente en mi panel
-- [ ] Puedo ver un resumen compacto o expandir la vista detallada de cada personaje
+- [ ] Puedo crear una nueva campaña con: nombre (obligatorio), descripción (opcional) e imagen/icono (opcional).
+- [ ] Puedo editar los datos de una campaña existente.
+- [ ] Puedo eliminar una campaña con diálogo de doble confirmación (se elimina la relación con los jugadores, no sus personajes).
+- [ ] La campaña se sincroniza con Supabase al crearla/editarla para que sea accesible en tiempo real.
+- [ ] Cada campaña tiene un identificador único generado automáticamente.
 
 #### Notas Técnicas
 
-- Priorizar baja latencia en las actualizaciones (< 2 segundos)
-- Los datos sensibles como notas privadas del jugador NO se comparten con el master
-- Optimizar el ancho de banda enviando solo los deltas (cambios), no el estado completo
+- Modelo de datos para campaña del master:
+
+| Campo             | Tipo     | Obligatorio | Descripción                                  |
+|-------------------|----------|-------------|----------------------------------------------|
+| `id`              | UUID     | Sí          | Identificador único de la campaña            |
+| `master_id`       | UUID     | Sí          | ID del usuario master (ref. a auth.users)    |
+| `nombre`          | string   | Sí          | Nombre de la campaña                         |
+| `descripcion`     | string   | No          | Descripción o notas de la campaña            |
+| `imagen`          | string   | No          | URI de la imagen/icono                       |
+| `jugadores`       | UUID[]   | No          | Lista de IDs de jugadores vinculados         |
+| `creado_en`       | datetime | Sí          | Fecha de creación                            |
+| `actualizado_en`  | datetime | Sí          | Fecha de última modificación                 |
 
 ---
 
-### HU-10.5: Vista Detallada de Personaje (Master)
+### HU-10.5: Identificador de Jugador (Código para Compartir)
 
-**Como** director de juego,
-**quiero** poder abrir una vista detallada de cualquier personaje conectado,
-**para** consultar información más específica cuando lo necesite.
-
-#### Criterios de Aceptación
-
-- [ ] Al tocar/clickar en un personaje del panel, se abre su vista detallada
-- [ ] En la vista detallada puedo ver:
-  - Todas las estadísticas (Fuerza, Destreza, Constitución, Inteligencia, Sabiduría, Carisma)
-  - Habilidades y competencias
-  - Lista de hechizos preparados/conocidos
-  - Inventario completo con objetos equipados destacados
-  - Rasgos de raza y clase
-  - Tiradas de salvación
-- [ ] Puedo volver al panel general fácilmente
-- [ ] La vista se actualiza en tiempo real igual que el panel
-
----
-
-### HU-10.6: Gestión de Iniciativa
-
-**Como** director de juego,
-**quiero** poder gestionar el orden de iniciativa durante el combate,
-**para** llevar un control organizado de los turnos.
+**Como** jugador (en Modo Jugador),
+**quiero** tener un identificador único que pueda compartir con mi Master,
+**para** que pueda añadirme a su campaña y ver mi personaje en tiempo real.
 
 #### Criterios de Aceptación
 
-- [ ] Puedo iniciar un "modo combate" desde el panel de master
-- [ ] Puedo introducir la tirada de iniciativa de cada personaje conectado
-- [ ] Puedo añadir entradas manuales para enemigos/NPCs con nombre e iniciativa
-- [ ] Se genera automáticamente una lista ordenada de mayor a menor iniciativa
-- [ ] Puedo marcar de quién es el turno actual y avanzar al siguiente
-- [ ] Los jugadores conectados pueden ver el orden de iniciativa y de quién es el turno
-- [ ] Puedo reordenar, añadir o eliminar entradas durante el combate
-- [ ] Puedo finalizar el combate y volver al modo normal
+- [ ] Cada usuario en Modo Jugador tiene un **código de jugador** único visible en su perfil o en la pantalla de ajustes.
+- [ ] El código es corto, legible y fácil de dictar/copiar (ej. 6-8 caracteres alfanuméricos, como `A7K3MX`).
+- [ ] Existe un botón para **copiar** el código al portapapeles.
+- [ ] Existe un botón para **compartir** el código mediante la hoja de compartir del sistema (WhatsApp, mensaje, etc.).
+- [ ] El código se genera al crear la cuenta del usuario en Supabase y es permanente.
+- [ ] Se muestra el nombre del jugador junto al código para verificar la identidad.
 
 #### Notas Técnicas
 
-- La lista de iniciativa es visible tanto para el master como para los jugadores
-- Los enemigos pueden mostrarse con nombre genérico si el master lo desea (ej. "Goblin 1", "Goblin 2")
+- El código puede ser un hash corto derivado del UUID del usuario, o un código generado independientemente y almacenado en la tabla `profiles` de Supabase.
+- Garantizar unicidad del código con una constraint UNIQUE en la base de datos.
+- Considerar un formato legible que evite ambigüedades (sin `0/O`, `1/l/I`).
 
 ---
 
-### HU-10.7: Enviar Notificaciones a Jugadores
+### HU-10.6: Añadir Jugadores a una Campaña
 
-**Como** director de juego,
-**quiero** poder enviar mensajes o notificaciones a los jugadores conectados,
-**para** comunicar información relevante durante la partida.
+**Como** Master,
+**quiero** añadir jugadores a mi campaña introduciendo su código de jugador,
+**para** vincularlos y poder ver sus personajes en tiempo real.
 
 #### Criterios de Aceptación
 
-- [ ] Puedo enviar un mensaje a todos los jugadores conectados
-- [ ] Puedo enviar un mensaje privado a un jugador específico
-- [ ] Los mensajes aparecen como notificaciones visibles en la app del jugador
-- [ ] Los mensajes pueden incluir texto libre
-- [ ] Existe un historial de mensajes enviados durante la sesión
+- [ ] Desde la vista de una campaña, existe un botón "Añadir jugador".
+- [ ] Se abre un formulario donde el master introduce el código del jugador.
+- [ ] Al introducir un código válido, se muestra el **nombre del jugador** para confirmar antes de añadirlo.
+- [ ] Si el código es inválido o no existe, se muestra un mensaje de error claro.
+- [ ] Al confirmar, el jugador queda vinculado a la campaña.
+- [ ] El jugador puede estar vinculado a múltiples campañas de diferentes masters.
+- [ ] Se muestra la lista de jugadores actuales de la campaña con opción de eliminarlos.
+- [ ] Al eliminar un jugador de la campaña, se desvincula pero sus datos de personaje permanecen intactos en su cuenta.
 
 #### Notas Técnicas
 
-- Los mensajes no necesitan persistir más allá de la sesión activa (salvo preferencia futura)
-- Considerar notificaciones push si la app está en segundo plano
+- Tabla intermedia en Supabase para la relación campaña-jugador:
+
+| Campo           | Tipo     | Descripción                                  |
+|-----------------|----------|----------------------------------------------|
+| `campana_id`    | UUID     | Referencia a la campaña del master           |
+| `jugador_id`    | UUID     | Referencia al usuario jugador                |
+| `personaje_id`  | UUID     | Referencia al personaje del jugador (puede ser null hasta que se asigne) |
+| `unido_en`      | datetime | Fecha en que se añadió                       |
+
+- Utilizar Row Level Security (RLS) en Supabase para que el master solo pueda leer (no modificar) los datos de los personajes de sus jugadores.
 
 ---
 
-### HU-10.8: Aplicar Daño o Curación desde el Master
+### HU-10.7: Selección de Personaje por el Jugador
 
-**Como** director de juego,
-**quiero** poder aplicar daño o curación directamente a los personajes conectados,
-**para** agilizar el flujo de combate.
+**Como** jugador vinculado a una campaña de un Master,
+**quiero** seleccionar qué personaje comparto con esa campaña,
+**para** que el Master vea la ficha correcta del personaje que estoy jugando.
 
 #### Criterios de Aceptación
 
-- [ ] Desde el panel de monitorización, puedo seleccionar uno o varios personajes
-- [ ] Puedo introducir una cantidad de daño a aplicar
-- [ ] Puedo introducir una cantidad de curación a aplicar
-- [ ] El cambio se refleja instantáneamente en la ficha del jugador
-- [ ] El jugador recibe una notificación del daño/curación recibida
-- [ ] Se mantiene un log de los cambios de vida realizados por el master durante la sesión
+- [ ] Cuando un Master añade a un jugador a su campaña, el jugador recibe una notificación o indicador visible en su app.
+- [ ] El jugador puede ver las campañas de Master a las que está vinculado (sección especial en su interfaz).
+- [ ] Para cada campaña, el jugador selecciona cuál de sus personajes compartir.
+- [ ] El jugador puede cambiar el personaje compartido en cualquier momento.
+- [ ] El jugador puede dejar de compartir (desvincularse) de una campaña de Master si lo desea.
 
 #### Notas Técnicas
 
-- El daño aplicado por el master debe respetar las reglas (no bajar de 0 PG, etc.)
-- Considerar opción de aplicar daño con tipo (cortante, fuego, etc.) para futuras resistencias
+- Los datos del personaje se sincronizan con Supabase cuando el jugador confirma compartir.
+- Cualquier cambio que el jugador haga en su personaje (local) se refleja en Supabase automáticamente.
 
 ---
 
-### HU-10.9: Notas del Master
+### HU-10.8: Vista en Tiempo Real de Personajes (Panel del Master)
 
-**Como** director de juego,
-**quiero** tener un espacio de notas propio dentro del Modo Master,
-**para** apuntar información relevante de la sesión que los jugadores no pueden ver.
-
-#### Criterios de Aceptación
-
-- [ ] Existe una sección de notas accesible desde el panel de master
-- [ ] Puedo crear, editar y eliminar notas
-- [ ] Las notas son privadas y solo visibles para el master
-- [ ] Las notas persisten entre sesiones de la misma partida
-- [ ] Puedo asociar notas a personajes específicos si lo deseo
-
----
-
-### HU-10.10: Historial de Sesiones
-
-**Como** director de juego,
-**quiero** poder ver un historial de las sesiones que he dirigido en una partida,
-**para** llevar un registro de lo ocurrido.
+**Como** Master,
+**quiero** ver las hojas de personaje de mis jugadores actualizadas en tiempo real,
+**para** tener siempre la información actualizada durante la sesión sin preguntar a cada jugador.
 
 #### Criterios de Aceptación
 
-- [ ] Se registra automáticamente la fecha y hora de inicio/fin de cada sesión
-- [ ] Puedo ver una lista de sesiones pasadas con su nombre y fecha
-- [ ] Puedo añadir un resumen/notas a cada sesión pasada
-- [ ] Se registra qué jugadores participaron en cada sesión
-
----
-
-### HU-10.11: Desconexión y Reconexión
-
-**Como** jugador conectado a una sala,
-**quiero** que mi conexión se mantenga estable y se reconecte automáticamente,
-**para** no perder la sincronización durante la partida.
-
-#### Criterios de Aceptación
-
-- [ ] Si pierdo conexión momentáneamente, la app intenta reconectarse automáticamente
-- [ ] Durante la desconexión, los cambios locales se guardan y se sincronizan al reconectar
-- [ ] El master ve un indicador de estado de conexión por cada jugador (conectado/desconectado)
-- [ ] Si un jugador se desconecta, su último estado conocido permanece visible en el panel del master
-- [ ] La app muestra al jugador su estado de conexión (conectado, reconectando, desconectado)
+- [ ] Al abrir una campaña, el master ve una lista con los personajes vinculados de sus jugadores.
+- [ ] Para cada personaje se muestra una **tarjeta resumen** con:
+  - Nombre del personaje y nombre del jugador.
+  - Clase y nivel.
+  - Puntos de golpe actuales / máximos (con indicador visual: sano, herido, crítico, inconsciente).
+  - Clase de armadura (CA).
+  - Espacios de hechizo restantes por nivel (si aplica).
+  - Condiciones/estados activos (envenenado, paralizado, etc.).
+  - Recursos de clase consumidos (Furia, Ki, Canalizar divinidad, etc.).
+- [ ] Al pulsar en una tarjeta, se abre la **vista completa** de la hoja de personaje (misma vista que el jugador en Modo Jugador, pero en modo solo lectura).
+- [ ] Los datos se actualizan en **tiempo real** cuando el jugador modifica su personaje.
+- [ ] Se muestra un indicador de "última actualización" por cada personaje.
+- [ ] Si un jugador no ha estado activo recientemente, se muestra un indicador de estado (ej. "Desconectado").
 
 #### Notas Técnicas
 
-- Implementar estrategia de reconexión con backoff exponencial
-- Los cambios locales durante la desconexión se encolan y envían al reconectar
-- Timeout de desconexión configurable antes de marcar al jugador como "desconectado"
+- Utilizar **Supabase Realtime** (suscripciones a cambios en la base de datos) para recibir actualizaciones en vivo.
+- Enviar solo deltas (cambios parciales) para optimizar el ancho de banda.
+- Los datos privados del jugador (notas personales) **no** se comparten con el master.
+- La vista de hoja de personaje del master es **solo lectura**: el master no puede modificar los personajes.
+- Priorizar baja latencia (< 2 segundos para reflejar cambios).
 
 ---
 
-## Flujo General del Modo Master
+### HU-10.9: Sincronización de Datos con Supabase
 
-```
-Master crea sala → Genera código → Jugadores se unen con código
-                                          ↓
-                            Jugadores seleccionan personaje
-                                          ↓
-                         Panel del Master muestra personajes
-                                          ↓
-                    ┌─────────────────────────────────────────┐
-                    │           SESIÓN EN VIVO                │
-                    │                                         │
-                    │  · Monitorización de PG, CA, hechizos   │
-                    │  · Gestión de iniciativa en combate      │
-                    │  · Aplicar daño/curación                │
-                    │  · Enviar mensajes a jugadores          │
-                    │  · Notas privadas del master            │
-                    │                                         │
-                    │  Cambios del jugador → Master en vivo   │
-                    │  Acciones del master → Jugador en vivo  │
-                    │                                         │
-                    └─────────────────────────────────────────┘
-                                          ↓
-                    Master cierra sala → Sesión guardada en historial
+**Como** usuario (jugador o master),
+**quiero** que mis datos se sincronicen automáticamente con la nube,
+**para** que la información esté siempre actualizada entre dispositivos y sea accesible para el Master.
+
+#### Criterios de Aceptación
+
+- [ ] Los datos del personaje del jugador se sincronizan con Supabase cuando:
+  - Se crea o modifica un personaje compartido con una campaña de Master.
+  - Se producen cambios en PG, espacios de hechizo, inventario, condiciones, recursos de clase, etc.
+- [ ] La sincronización funciona en segundo plano sin bloquear la interfaz del usuario.
+- [ ] Si no hay conexión a internet, los cambios se almacenan localmente y se sincronizan cuando se recupere la conexión (offline-first).
+- [ ] Los conflictos de sincronización se resuelven con la estrategia **"last write wins"** (la última escritura prevalece).
+- [ ] Se muestra un indicador sutil del estado de sincronización (sincronizado ✓, sincronizando ↻, pendiente ⏳).
+
+#### Notas Técnicas
+
+- Implementar una cola de sincronización local para manejar el modo offline.
+- Utilizar Supabase JS Client con suscripciones Realtime para push/pull de datos.
+- Esquema Supabase principal:
+
+```text
+auth.users
+  └── profiles (id, nombre, codigo_jugador, es_premium, modo_actual)
+
+personajes (id, usuario_id, datos_personaje JSONB, actualizado_en)
+  └── sincronizado con la app local del jugador
+
+campanas_master (id, master_id, nombre, descripcion, imagen, creado_en)
+  └── campana_jugadores (campana_id, jugador_id, personaje_id, unido_en)
 ```
 
+- Row Level Security (RLS):
+  - Un jugador solo puede leer/escribir sus propios personajes.
+  - Un master puede leer (no escribir) los personajes vinculados a sus campañas.
+  - Un master solo puede gestionar sus propias campañas.
+
 ---
 
-## Datos Compartidos en Tiempo Real
+## Modelo de Datos (Referencia)
 
-### Información visible para el Master
+```text
+Profile {
+  id: UUID                     // auth.users.id
+  nombre: string               // Nombre del usuario
+  codigo_jugador: string       // Código único compartible (ej. "A7K3MX")
+  es_premium: boolean          // Si tiene suscripción premium activa
+  modo_actual: "jugador" | "master"  // Último modo seleccionado
+  creado_en: datetime
+  actualizado_en: datetime
+}
 
-| Dato                          | Actualización |
-| ----------------------------- | ------------- |
-| Puntos de golpe (actual/máx)  | Tiempo real   |
-| Clase de armadura              | Tiempo real   |
-| Espacios de hechizo restantes | Tiempo real   |
-| Nivel y clase                  | Tiempo real   |
-| Condiciones activas            | Tiempo real   |
-| Estadísticas base              | Bajo demanda  |
-| Inventario                     | Bajo demanda  |
-| Hechizos conocidos/preparados  | Bajo demanda  |
-| Habilidades y competencias     | Bajo demanda  |
+CampanaMaster {
+  id: UUID
+  master_id: UUID              // Referencia al perfil del master
+  nombre: string
+  descripcion: string | null
+  imagen: string | null
+  creado_en: datetime
+  actualizado_en: datetime
+}
 
-### Información NO compartida
+CampanaJugador {
+  campana_id: UUID             // Referencia a CampanaMaster
+  jugador_id: UUID             // Referencia al perfil del jugador
+  personaje_id: UUID | null    // Personaje que el jugador comparte
+  unido_en: datetime
+}
 
-| Dato                        | Razón                      |
-| --------------------------- | -------------------------- |
-| Notas privadas del jugador  | Privacidad del jugador     |
-| Trasfondo secreto           | A discreción del jugador   |
-| Notas del master            | Privacidad del master      |
+PersonajeSincronizado {
+  id: UUID
+  usuario_id: UUID             // Dueño del personaje
+  datos: JSONB                 // Snapshot completo del personaje
+  actualizado_en: datetime
+}
+```
 
 ---
 
 ## Prioridad de Implementación
 
-| Fase | Funcionalidad                     | Prioridad |
-| ---- | --------------------------------- | --------- |
-| 1    | Crear/unirse a sala               | Alta      |
-| 1    | Panel de monitorización básico    | Alta      |
-| 2    | Vista detallada de personaje      | Alta      |
-| 2    | Gestión de iniciativa             | Alta      |
-| 3    | Aplicar daño/curación             | Media     |
-| 3    | Mensajes/notificaciones           | Media     |
-| 4    | Notas del master                  | Media     |
-| 4    | Historial de sesiones             | Baja      |
-| 5    | Reconexión avanzada               | Media     |
+| Historia | Prioridad | Complejidad |
+|----------|-----------|-------------|
+| HU-10.1 Selección de modo | 🔴 Alta | Baja |
+| HU-10.2 Suscripción premium | 🔴 Alta | Alta |
+| HU-10.3 Pantalla principal master | 🔴 Alta | Media |
+| HU-10.4 Crear/gestionar campañas | 🔴 Alta | Media |
+| HU-10.5 Identificador de jugador | 🔴 Alta | Baja |
+| HU-10.6 Añadir jugadores | 🔴 Alta | Media |
+| HU-10.7 Selección de personaje | 🟡 Media | Media |
+| HU-10.8 Vista tiempo real | 🔴 Alta | Alta |
+| HU-10.9 Sincronización Supabase | 🔴 Alta | Alta |
 
 ---
 
-## Consideraciones Técnicas Generales
+## Dependencias
 
-- **Protocolo de comunicación**: WebSockets o Firebase Realtime Database para sincronización en tiempo real
-- **Autenticación de sala**: El código de sala debe ser temporal y expirable
-- **Escalabilidad**: Diseñar para salas de 2-8 jugadores simultáneos (tamaño típico de una mesa de D&D)
-- **Offline-first**: Los datos del personaje deben funcionar sin conexión; el modo master requiere conexión
-- **Seguridad**: Validar que solo el master puede realizar acciones de master; los jugadores solo pueden modificar su propio personaje
-- **Batería**: Optimizar la frecuencia de sincronización para no drenar la batería durante sesiones largas (3-5 horas típicas)
+- **HU-01**: Gestión de partidas (estructura base de campañas).
+- **HU-03**: Hoja de personaje (vista que se replica para el master en solo lectura).
+- **HU-04**: Estadísticas y habilidades (datos visibles en el panel del master).
+- **HU-06**: Hechizos (espacios de hechizo visibles en el panel del master).
+- **HU-08**: Vida y combate (PG y condiciones visibles en el panel del master).
+- **HU-12**: Recursos de clase (estados de recursos visibles en el panel del master).
+- **HU-14**: Ajustes (cambio de modo entre Jugador y Master).
+
+---
+
+## Wireframe Conceptual
+
+```
+┌─────────────────────────────────────────────┐
+│           ¿Cómo quieres usar la app?        │
+│                                             │
+│   ┌─────────────┐     ┌─────────────┐       │
+│   │  ⚔️ Jugador  │     │  👑 Master  │       │
+│   │             │     │  ★ Premium  │       │
+│   │ Crea y      │     │ Dirige      │       │
+│   │ gestiona    │     │ campañas y  │       │
+│   │ tus         │     │ monitoriza  │       │
+│   │ personajes  │     │ jugadores   │       │
+│   └─────────────┘     └─────────────┘       │
+└─────────────────────────────────────────────┘
+
+┌─ Panel del Master ──────────────────────────┐
+│ Campaña: "La Maldición de Strahd"           │
+│ Jugadores: 4                                │
+│                                             │
+│ ┌──────────────────┐ ┌──────────────────┐   │
+│ │ 🛡️ Thorin         │ │ 🧙 Elara          │   │
+│ │ Guerrero Nv.5    │ │ Maga Nv.5        │   │
+│ │ PG: 38/45 ██░░  │ │ PG: 22/22 ████  │   │
+│ │ CA: 18           │ │ CA: 12           │   │
+│ │ Hechizos: —      │ │ Hechizos: 2/4    │   │
+│ │                  │ │ Nv1: ●●○○        │   │
+│ └──────────────────┘ └──────────────────┘   │
+│                                             │
+│ ┌──────────────────┐ ┌──────────────────┐   │
+│ │ 🗡️ Kael           │ │ ✝️ Seren          │   │
+│ │ Pícaro Nv.5      │ │ Clérigo Nv.5     │   │
+│ │ PG: 8/30 █░░░   │ │ PG: 35/35 ████  │   │
+│ │ CA: 15           │ │ CA: 18           │   │
+│ │ Att. furtivo: ✓  │ │ Canal Div: 1/2   │   │
+│ │ ⚠️ Envenenado     │ │ Hechizos: 1/4    │   │
+│ └──────────────────┘ └──────────────────┘   │
+│                                             │
+│ [+ Añadir Jugador]                          │
+└─────────────────────────────────────────────┘
+```

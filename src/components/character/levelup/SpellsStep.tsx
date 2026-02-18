@@ -1,0 +1,912 @@
+import React from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  Platform,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/hooks";
+import {
+  getCantripsForClass,
+  getSpellsForClassUpToLevel,
+  getSpellById,
+  type SrdSpell,
+} from "@/data/srd/spells";
+import { getSpellDescription } from "@/data/srd/spellDescriptions";
+import { SPELL_LEVEL_NAMES, type SpellLevel } from "@/types/spell";
+import { type Character } from "@/types/character";
+import type { LevelUpSummary } from "@/data/srd/leveling";
+
+interface SpellsStepProps {
+  summary: LevelUpSummary;
+  character: Character;
+  newLevel: number;
+  newCantrips: string[];
+  setNewCantrips: React.Dispatch<React.SetStateAction<string[]>>;
+  newSpells: string[];
+  setNewSpells: React.Dispatch<React.SetStateAction<string[]>>;
+  newSpellbook: string[];
+  setNewSpellbook: React.Dispatch<React.SetStateAction<string[]>>;
+  swapOldSpell: string;
+  setSwapOldSpell: React.Dispatch<React.SetStateAction<string>>;
+  swapNewSpell: string;
+  setSwapNewSpell: React.Dispatch<React.SetStateAction<string>>;
+  wantsToSwap: boolean;
+  setWantsToSwap: React.Dispatch<React.SetStateAction<boolean>>;
+  spellSearch: string;
+  setSpellSearch: React.Dispatch<React.SetStateAction<string>>;
+  expandedSpellIds: Set<string>;
+  setExpandedSpellIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  getMagicState: () => any;
+}
+
+export default function SpellsStep({
+  summary,
+  character,
+  newLevel,
+  newCantrips,
+  setNewCantrips,
+  newSpells,
+  setNewSpells,
+  newSpellbook,
+  setNewSpellbook,
+  swapOldSpell,
+  setSwapOldSpell,
+  swapNewSpell,
+  setSwapNewSpell,
+  wantsToSwap,
+  setWantsToSwap,
+  spellSearch,
+  setSpellSearch,
+  expandedSpellIds,
+  setExpandedSpellIds,
+  getMagicState,
+}: SpellsStepProps) {
+  const { colors } = useTheme();
+
+  if (!summary?.spellLearning || !character) return null;
+  const sl = summary.spellLearning;
+  const classId = character.clase as any;
+  const magicState = getMagicState();
+  const alreadyKnown = new Set([
+    ...(magicState?.knownSpellIds ?? []),
+    ...(magicState?.spellbookIds ?? []),
+  ]);
+
+  const prepLabel: Record<string, string> = {
+    known: "Aprendes hechizos automáticamente",
+    prepared: "Preparas hechizos de tu lista de clase",
+    spellbook: "Anotas hechizos en tu libro de conjuros",
+    pact: "Aprendes hechizos de pacto",
+    none: "",
+  };
+
+  // ── Helpers ──
+
+  const toggleSpell = (
+    id: string,
+    list: string[],
+    setList: React.Dispatch<React.SetStateAction<string[]>>,
+    max: number,
+  ) => {
+    if (list.includes(id)) {
+      setList(list.filter((s) => s !== id));
+    } else if (list.length < max) {
+      setList([...list, id]);
+    }
+  };
+
+  const matchesSearch = (spell: SrdSpell) => {
+    if (!spellSearch.trim()) return true;
+    const q = spellSearch.toLowerCase();
+    return (
+      spell.nombre.toLowerCase().includes(q) ||
+      spell.escuela.toLowerCase().includes(q)
+    );
+  };
+
+  // IDs already chosen in another section (prevent duplicates across sections)
+  const allChosenIds = new Set([
+    ...newCantrips,
+    ...newSpells,
+    ...newSpellbook,
+    ...(swapNewSpell ? [swapNewSpell] : []),
+  ]);
+
+  const renderSpellCard = (
+    spell: SrdSpell,
+    selected: boolean,
+    onPress: () => void,
+    disabled: boolean,
+  ) => {
+    const bgColor = selected ? "rgba(59, 130, 246, 0.12)" : colors.bgCard;
+    const cardBorderColor = selected ? colors.accentBlue : colors.borderSubtle;
+    const isExpanded = expandedSpellIds.has(spell.id);
+    const desc = getSpellDescription(spell.id);
+
+    const toggleExpand = () => {
+      setExpandedSpellIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(spell.id)) next.delete(spell.id);
+        else next.add(spell.id);
+        return next;
+      });
+    };
+
+    return (
+      <View
+        key={spell.id}
+        style={{
+          backgroundColor: bgColor,
+          borderRadius: 12,
+          borderWidth: selected ? 2 : 1,
+          borderColor: cardBorderColor,
+          marginBottom: 8,
+          opacity: disabled && !selected ? 0.45 : 1,
+        }}
+      >
+        <TouchableOpacity
+          onPress={disabled && !selected ? undefined : onPress}
+          activeOpacity={0.7}
+          style={{
+            padding: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          {/* Check indicator */}
+          <View
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: 12,
+              borderWidth: 2,
+              borderColor: selected
+                ? colors.accentBlue
+                : colors.textMuted + "44",
+              backgroundColor: selected ? colors.accentBlue : "transparent",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {selected && (
+              <Ionicons name="checkmark" size={14} color="#fff" />
+            )}
+          </View>
+          {/* Spell info */}
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                color: selected ? colors.accentBlue : colors.textPrimary,
+                fontSize: 14,
+                fontWeight: "700",
+              }}
+            >
+              {spell.nombre}
+            </Text>
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontSize: 12,
+                fontWeight: "500",
+                marginTop: 2,
+              }}
+            >
+              {spell.escuela}
+              {spell.nivel > 0
+                ? ` — ${SPELL_LEVEL_NAMES[spell.nivel as SpellLevel]}`
+                : " — Truco"}
+              {desc ? `  ·  ⏱ ${desc.tiempo}` : ""}
+            </Text>
+          </View>
+          {/* Expand/collapse */}
+          {desc && (
+            <TouchableOpacity
+              onPress={toggleExpand}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ padding: 4 }}
+            >
+              <Ionicons
+                name={isExpanded ? "chevron-up" : "information-circle-outline"}
+                size={18}
+                color={colors.textMuted}
+              />
+            </TouchableOpacity>
+          )}
+        </TouchableOpacity>
+
+        {/* Expanded description */}
+        {isExpanded && desc && (
+          <View
+            style={{
+              paddingHorizontal: 12,
+              paddingBottom: 12,
+              paddingTop: 0,
+              borderTopWidth: 1,
+              borderTopColor: colors.borderSubtle,
+              marginHorizontal: 8,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 6,
+                marginTop: 8,
+                marginBottom: 6,
+              }}
+            >
+              {desc.alcance ? (
+                <Text style={{ color: colors.textMuted, fontSize: 11 }}>
+                  📏 {desc.alcance}
+                </Text>
+              ) : null}
+              {desc.duracion ? (
+                <Text style={{ color: colors.textMuted, fontSize: 11 }}>
+                  · ⏳ {desc.duracion}
+                </Text>
+              ) : null}
+              {desc.componentes ? (
+                <Text style={{ color: colors.textMuted, fontSize: 11 }}>
+                  · 🧩 {desc.componentes}
+                </Text>
+              ) : null}
+            </View>
+            <Text
+              style={{
+                color: colors.textSecondary,
+                fontSize: 12,
+                lineHeight: 18,
+              }}
+            >
+              {desc.descripcion}
+            </Text>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  // Helper to build spell cards for a list, avoiding deep nesting
+  const buildSpellCards = (
+    spellsInLevel: SrdSpell[],
+    selected: string[],
+    setSelected: React.Dispatch<React.SetStateAction<string[]>>,
+    max: number,
+  ) =>
+    spellsInLevel.map((spell) =>
+      renderSpellCard(
+        spell,
+        selected.includes(spell.id),
+        () => toggleSpell(spell.id, selected, setSelected, max),
+        selected.length >= max && !selected.includes(spell.id),
+      ),
+    );
+
+  // ── Section: Selectable spell list ──
+  const renderSpellSection = (opts: {
+    title: string;
+    subtitle: string;
+    spells: SrdSpell[];
+    selected: string[];
+    setSelected: React.Dispatch<React.SetStateAction<string[]>>;
+    max: number;
+    accentColor: string;
+    excludeIds?: Set<string>;
+  }) => {
+    const { title, subtitle, spells, selected, setSelected, max, accentColor, excludeIds } = opts;
+    const filteredSpells = spells.filter(
+      (s) => matchesSearch(s) && !alreadyKnown.has(s.id) && !(excludeIds?.has(s.id)),
+    );
+
+    // Group by level for non-cantrip sections
+    const grouped = new Map<number, SrdSpell[]>();
+    for (const s of filteredSpells) {
+      const key = s.nivel;
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key)!.push(s);
+    }
+    const sortedLevels = Array.from(grouped.keys()).sort((a, b) => a - b);
+
+    const levelCards = sortedLevels.map((lvl) => ({
+      lvl,
+      cards: buildSpellCards(grouped.get(lvl)!, selected, setSelected, max),
+    }));
+
+    return (
+      <View style={{ marginBottom: 20 }}>
+        {/* Section header */}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 4,
+          }}
+        >
+          <Text
+            style={{
+              color: colors.textSecondary,
+              fontSize: 12,
+              fontWeight: "700",
+              textTransform: "uppercase",
+              letterSpacing: 1,
+            }}
+          >
+            {title}
+          </Text>
+          <View
+            style={{
+              backgroundColor:
+                selected.length === max
+                  ? "rgba(34, 197, 94, 0.15)"
+                  : "rgba(59, 130, 246, 0.12)",
+              paddingHorizontal: 10,
+              paddingVertical: 3,
+              borderRadius: 10,
+            }}
+          >
+            <Text
+              style={{
+                color:
+                  selected.length === max
+                    ? colors.accentGreen
+                    : colors.accentBlue,
+                fontSize: 12,
+                fontWeight: "700",
+              }}
+            >
+              {selected.length}/{max}
+            </Text>
+          </View>
+        </View>
+        {subtitle ? (
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontSize: 13,
+              fontWeight: "500",
+              marginBottom: 10,
+              lineHeight: 18,
+            }}
+          >
+            {subtitle}
+          </Text>
+        ) : null}
+
+        {/* Spell list grouped by level */}
+        {levelCards.map(({ lvl, cards }) => (
+          <View key={`lvl-${lvl}`}>
+            {sortedLevels.length > 1 && (
+              <Text
+                style={{
+                  color: accentColor,
+                  fontSize: 11,
+                  fontWeight: "700",
+                  textTransform: "uppercase",
+                  letterSpacing: 0.8,
+                  marginTop: 8,
+                  marginBottom: 6,
+                  paddingLeft: 4,
+                }}
+              >
+                {lvl === 0 ? "Trucos" : SPELL_LEVEL_NAMES[lvl as SpellLevel]}
+              </Text>
+            )}
+            {cards}
+          </View>
+        ))}
+
+        {filteredSpells.length === 0 && (
+          <Text
+            style={{
+              color: colors.textMuted,
+              fontSize: 13,
+              fontWeight: "500",
+              textAlign: "center",
+              paddingVertical: 16,
+            }}
+          >
+            No se encontraron hechizos
+          </Text>
+        )}
+      </View>
+    );
+  };
+
+  // ── Available spell lists ──
+  const availableCantrips = getCantripsForClass(classId);
+  const availableSpells = getSpellsForClassUpToLevel(classId, sl.maxSpellLevel);
+
+  // Exclude IDs already selected in other sections
+  const cantripExclude = new Set([...newSpells, ...newSpellbook]);
+  const spellExclude = new Set([...newCantrips, ...newSpellbook]);
+  const bookExclude = new Set([...newCantrips, ...newSpells]);
+
+  return (
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 20 }}
+    >
+      {/* Header */}
+      <View style={{ alignItems: "center", marginBottom: 20 }}>
+        <View
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: 32,
+            backgroundColor: "rgba(59, 130, 246, 0.1)",
+            borderWidth: 1,
+            borderColor: "rgba(59, 130, 246, 0.2)",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 12,
+          }}
+        >
+          <Ionicons name="sparkles" size={28} color={colors.accentBlue} />
+        </View>
+        <Text
+          style={{
+            color: colors.textPrimary,
+            fontSize: 18,
+            fontWeight: "700",
+            textAlign: "center",
+          }}
+        >
+          Hechizos Nuevos
+        </Text>
+        <Text
+          style={{
+            color: colors.textSecondary,
+            fontSize: 14,
+            fontWeight: "500",
+            textAlign: "center",
+            marginTop: 6,
+            lineHeight: 20,
+            paddingHorizontal: 20,
+          }}
+        >
+          {prepLabel[sl.preparationType] ?? ""}
+        </Text>
+      </View>
+
+      {/* Spell level info badge */}
+      {sl.gainsNewSpellLevel && (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "rgba(251, 191, 36, 0.12)",
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: "rgba(251, 191, 36, 0.3)",
+            padding: 12,
+            marginBottom: 16,
+            gap: 10,
+          }}
+        >
+          <Ionicons name="star" size={18} color={colors.accentGold} />
+          <Text
+            style={{
+              color: colors.textPrimary,
+              fontSize: 14,
+              fontWeight: "600",
+              flex: 1,
+            }}
+          >
+            ¡Desbloqueas hechizos de{" "}
+            {SPELL_LEVEL_NAMES[sl.maxSpellLevel as SpellLevel]}!
+          </Text>
+        </View>
+      )}
+
+      {/* Max spell level info */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: colors.borderSubtle,
+          borderRadius: 10,
+          padding: 10,
+          marginBottom: 16,
+          gap: 8,
+        }}
+      >
+        <Ionicons
+          name="information-circle-outline"
+          size={16}
+          color={colors.textMuted}
+        />
+        <Text
+          style={{
+            color: colors.textMuted,
+            fontSize: 13,
+            fontWeight: "500",
+            flex: 1,
+          }}
+        >
+          Nivel máximo de hechizo disponible:{" "}
+          {SPELL_LEVEL_NAMES[sl.maxSpellLevel as SpellLevel]}
+        </Text>
+      </View>
+
+      {/* Search filter */}
+      <View
+        style={{
+          backgroundColor: colors.borderSubtle,
+          borderRadius: 12,
+          borderWidth: 1,
+          borderColor: spellSearch
+            ? "rgba(59, 130, 246, 0.4)"
+            : colors.borderSeparator,
+          paddingHorizontal: 14,
+          paddingVertical: Platform.OS === "ios" ? 10 : 4,
+          marginBottom: 16,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8,
+        }}
+      >
+        <Ionicons
+          name="search-outline"
+          size={16}
+          color={colors.textMuted}
+        />
+        <TextInput
+          value={spellSearch}
+          onChangeText={setSpellSearch}
+          placeholder="Buscar hechizo..."
+          placeholderTextColor={colors.textMuted}
+          autoCapitalize="none"
+          style={{
+            color: colors.textPrimary,
+            fontSize: 14,
+            fontWeight: "500",
+            flex: 1,
+            paddingVertical: Platform.OS === "ios" ? 0 : 6,
+          }}
+        />
+        {spellSearch.length > 0 && (
+          <TouchableOpacity onPress={() => setSpellSearch("")}>
+            <Ionicons
+              name="close-circle"
+              size={18}
+              color={colors.textMuted}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* ── New Cantrips ── */}
+      {sl.newCantrips > 0 &&
+        renderSpellSection({
+          title: "Trucos Nuevos",
+          subtitle: "",
+          spells: availableCantrips,
+          selected: newCantrips,
+          setSelected: setNewCantrips,
+          max: sl.newCantrips,
+          accentColor: colors.accentBlue,
+          excludeIds: cantripExclude,
+        })}
+
+      {/* ── New Spells Known ── */}
+      {sl.newSpellsKnown > 0 &&
+        renderSpellSection({
+          title: "Hechizos Nuevos",
+          subtitle: `Elige hechizos de hasta ${SPELL_LEVEL_NAMES[sl.maxSpellLevel as SpellLevel]}.`,
+          spells: availableSpells,
+          selected: newSpells,
+          setSelected: setNewSpells,
+          max: sl.newSpellsKnown,
+          accentColor: colors.accentBlue,
+          excludeIds: spellExclude,
+        })}
+
+      {/* ── New Spellbook Spells (Wizard only) ── */}
+      {sl.newSpellbookSpells > 0 &&
+        renderSpellSection({
+          title: "Libro de Conjuros",
+          subtitle: "Añade hechizos de mago a tu libro de conjuros.",
+          spells: availableSpells,
+          selected: newSpellbook,
+          setSelected: setNewSpellbook,
+          max: sl.newSpellbookSpells,
+          accentColor: colors.accentPurple,
+          excludeIds: bookExclude,
+        })}
+
+      {/* ── Spell Swap ── */}
+      {sl.canSwapSpell && (
+        <View style={{ marginBottom: 12 }}>
+          <TouchableOpacity
+            onPress={() => {
+              setWantsToSwap(!wantsToSwap);
+              if (wantsToSwap) {
+                setSwapOldSpell("");
+                setSwapNewSpell("");
+              }
+            }}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: wantsToSwap
+                ? "rgba(251, 146, 60, 0.12)"
+                : colors.borderSubtle,
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: wantsToSwap
+                ? "rgba(251, 146, 60, 0.4)"
+                : colors.borderSeparator,
+              padding: 14,
+              gap: 10,
+            }}
+          >
+            <Ionicons
+              name={wantsToSwap ? "swap-horizontal" : "swap-horizontal-outline"}
+              size={20}
+              color={wantsToSwap ? colors.accentOrange : colors.textMuted}
+            />
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  color: colors.textPrimary,
+                  fontSize: 14,
+                  fontWeight: "700",
+                }}
+              >
+                Intercambiar un hechizo
+              </Text>
+              <Text
+                style={{
+                  color: colors.textMuted,
+                  fontSize: 12,
+                  fontWeight: "500",
+                  marginTop: 2,
+                }}
+              >
+                Reemplaza un hechizo conocido por otro
+              </Text>
+            </View>
+            <View
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                borderWidth: 2,
+                borderColor: wantsToSwap
+                  ? colors.accentOrange
+                  : colors.textMuted + "44",
+                backgroundColor: wantsToSwap
+                  ? colors.accentOrange
+                  : "transparent",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {wantsToSwap && (
+                <Ionicons name="checkmark" size={14} color="#fff" />
+              )}
+            </View>
+          </TouchableOpacity>
+
+          {wantsToSwap && (
+            <View style={{ marginTop: 12, gap: 8 }}>
+              {/* Select spell to forget */}
+              <Text
+                style={{
+                  color: colors.accentDanger,
+                  fontSize: 12,
+                  fontWeight: "700",
+                  textTransform: "uppercase",
+                  letterSpacing: 0.8,
+                  marginBottom: 4,
+                }}
+              >
+                Hechizo a olvidar
+              </Text>
+              {(magicState?.knownSpellIds ?? [] as string[])
+                .filter((id: string) => {
+                  // Only show non-cantrip spells that can be swapped
+                  const sp = getSpellById(id);
+                  return sp ? sp.nivel > 0 : true;
+                })
+                .map((id: string) => {
+                  const sp = getSpellById(id);
+                  const isSelected = swapOldSpell === id;
+                  return (
+                    <TouchableOpacity
+                      key={`swap-old-${id}`}
+                      onPress={() => setSwapOldSpell(isSelected ? "" : id)}
+                      activeOpacity={0.7}
+                      style={{
+                        backgroundColor: isSelected
+                          ? "rgba(239, 68, 68, 0.12)"
+                          : colors.bgCard,
+                        borderRadius: 12,
+                        borderWidth: isSelected ? 2 : 1,
+                        borderColor: isSelected
+                          ? colors.accentDanger
+                          : colors.borderSubtle,
+                        padding: 12,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 10,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: 10,
+                          borderWidth: 2,
+                          borderColor: isSelected
+                            ? colors.accentDanger
+                            : colors.textMuted + "44",
+                          backgroundColor: isSelected
+                            ? colors.accentDanger
+                            : "transparent",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {isSelected && (
+                          <Ionicons name="close" size={12} color="#fff" />
+                        )}
+                      </View>
+                      <Text
+                        style={{
+                          color: isSelected
+                            ? colors.accentDanger
+                            : colors.textPrimary,
+                          fontSize: 14,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {sp?.nombre ?? id}
+                      </Text>
+                      {sp && (
+                        <Text
+                          style={{
+                            color: colors.textMuted,
+                            fontSize: 12,
+                            fontWeight: "500",
+                          }}
+                        >
+                          {sp.escuela} — {SPELL_LEVEL_NAMES[sp.nivel as SpellLevel]}
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+
+              {(magicState?.knownSpellIds ?? [] as string[]).filter((id: string) => {
+                const sp = getSpellById(id);
+                return sp ? sp.nivel > 0 : true;
+              }).length === 0 && (
+                <Text
+                  style={{
+                    color: colors.textMuted,
+                    fontSize: 13,
+                    textAlign: "center",
+                    paddingVertical: 12,
+                  }}
+                >
+                  No tienes hechizos conocidos para intercambiar
+                </Text>
+              )}
+
+              <View style={{ alignItems: "center", marginVertical: 4 }}>
+                <Ionicons
+                  name="arrow-down"
+                  size={18}
+                  color={colors.textMuted}
+                />
+              </View>
+
+              {/* Select new spell */}
+              <Text
+                style={{
+                  color: colors.accentGreen,
+                  fontSize: 12,
+                  fontWeight: "700",
+                  textTransform: "uppercase",
+                  letterSpacing: 0.8,
+                  marginBottom: 4,
+                }}
+              >
+                Hechizo nuevo
+              </Text>
+              {availableSpells
+                .filter(
+                  (s) =>
+                    matchesSearch(s) &&
+                    !alreadyKnown.has(s.id) &&
+                    !allChosenIds.has(s.id),
+                )
+                .map((spell) => {
+                  const isSelected = swapNewSpell === spell.id;
+                  return (
+                    <TouchableOpacity
+                      key={`swap-new-${spell.id}`}
+                      onPress={() =>
+                        setSwapNewSpell(isSelected ? "" : spell.id)
+                      }
+                      activeOpacity={0.7}
+                      style={{
+                        backgroundColor: isSelected
+                          ? "rgba(34, 197, 94, 0.12)"
+                          : colors.bgCard,
+                        borderRadius: 12,
+                        borderWidth: isSelected ? 2 : 1,
+                        borderColor: isSelected
+                          ? colors.accentGreen
+                          : colors.borderSubtle,
+                        padding: 12,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 10,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: 10,
+                          borderWidth: 2,
+                          borderColor: isSelected
+                            ? colors.accentGreen
+                            : colors.textMuted + "44",
+                          backgroundColor: isSelected
+                            ? colors.accentGreen
+                            : "transparent",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {isSelected && (
+                          <Ionicons
+                            name="checkmark"
+                            size={12}
+                            color="#fff"
+                          />
+                        )}
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text
+                          style={{
+                            color: isSelected
+                              ? colors.accentGreen
+                              : colors.textPrimary,
+                            fontSize: 14,
+                            fontWeight: "600",
+                          }}
+                        >
+                          {spell.nombre}
+                        </Text>
+                        <Text
+                          style={{
+                            color: colors.textMuted,
+                            fontSize: 12,
+                            fontWeight: "500",
+                            marginTop: 1,
+                          }}
+                        >
+                          {spell.escuela} —{" "}
+                          {SPELL_LEVEL_NAMES[spell.nivel as SpellLevel]}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+            </View>
+          )}
+        </View>
+      )}
+    </ScrollView>
+  );
+}

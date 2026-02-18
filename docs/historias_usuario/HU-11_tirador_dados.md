@@ -160,7 +160,7 @@ D&D gira en torno a las tiradas de dados. La aplicación debe ofrecer un tirador
 - Al compartir, el resultado se envía a la sala del master con el nombre del personaje, la fórmula y el resultado completo.
 - El master ve la tirada en su panel de monitorización.
 - La tirada compartida es de solo lectura para el master.
-- Solo funciona si el jugador está conectado a una sala activa (HU-10).
+- Solo funciona si el jugador está conectado a una sala activa.
 
 ---
 
@@ -210,7 +210,6 @@ TiradaDados {
 - **HU-07**: Inventario (bonificadores de ataque y daño de armas).
 - **HU-06**: Hechizos (bonificador de ataque con conjuros).
 - **HU-08**: Vida y combate (tiradas de iniciativa, salvaciones contra muerte).
-- **HU-10**: Modo master (para compartir tiradas en sala).
 
 ---
 

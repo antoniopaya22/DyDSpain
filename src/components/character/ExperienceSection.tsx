@@ -28,7 +28,7 @@ import {
   formatXP,
   getLevelForXP,
 } from "@/data/srd/leveling";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme, usePulseAnimation } from "@/hooks";
 
 if (
   Platform.OS === "android" &&
@@ -58,8 +58,11 @@ export default function ExperienceSection({
 
   // Animations
   const progressAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  const { scale: pulseAnim, glowOpacity: glowAnim } = usePulseAnimation({
+    active: canLevelUpCheck(character?.experiencia ?? 0, character?.nivel ?? 1),
+    glow: true,
+    glowDuration: 3000,
+  });
 
   if (!character) return null;
 
@@ -81,52 +84,6 @@ export default function ExperienceSection({
     }).start();
   }, [progress, progressAnim]);
 
-  // Pulse animation for level up button
-  useEffect(() => {
-    if (canLevel) {
-      const pulse = Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.05,
-            duration: 1000,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 1000,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ]),
-      );
-      pulse.start();
-
-      // Glow
-      const glow = Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, {
-            toValue: 1,
-            duration: 1500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: false,
-          }),
-          Animated.timing(glowAnim, {
-            toValue: 0,
-            duration: 1500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: false,
-          }),
-        ]),
-      );
-      glow.start();
-
-      return () => {
-        pulse.stop();
-        glow.stop();
-      };
-    }
-  }, [canLevel, pulseAnim, glowAnim]);
 
   const handleAddXP = async (amount: number) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);

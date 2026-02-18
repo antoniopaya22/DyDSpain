@@ -25,7 +25,7 @@ import {
   TextInputProps,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 // ─── Props ───────────────────────────────────────────────────────────
 
@@ -178,19 +178,23 @@ export default function SearchBar({
   return (
     <Animated.View
       style={[
-        styles.container,
-        {
-          opacity: entranceAnim,
-          borderColor: borderColorInterp,
-          backgroundColor: bgColorInterp,
-          borderRadius: preset.borderRadius,
-          paddingHorizontal: preset.paddingH,
-          paddingVertical: preset.paddingV,
-        },
+        { opacity: entranceAnim },
         disabled && styles.disabled,
         customStyle,
       ]}
     >
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            borderColor: borderColorInterp,
+            backgroundColor: bgColorInterp,
+            borderRadius: preset.borderRadius,
+            paddingHorizontal: preset.paddingH,
+            paddingVertical: preset.paddingV,
+          },
+        ]}
+      >
       {/* Search icon */}
       <Animated.View style={{ opacity: focusAnim.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }) }}>
         <Ionicons
@@ -251,6 +255,7 @@ export default function SearchBar({
           </View>
         </TouchableOpacity>
       )}
+      </Animated.View>
     </Animated.View>
   );
 }

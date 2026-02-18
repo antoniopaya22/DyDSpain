@@ -1,0 +1,99 @@
+/**
+ * HitDiceSection - Hit Dice tracker and usage
+ *
+ * Shows remaining hit dice as visual tiles and a "Use" button.
+ * Extracted from CombatTab.tsx
+ */
+
+import { View, Text, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useCharacterStore } from "@/stores/characterStore";
+import { useTheme } from "@/hooks";
+
+interface HitDiceSectionProps {
+  onShowToast: (message: string) => void;
+}
+
+export function HitDiceSection({ onShowToast }: HitDiceSectionProps) {
+  const { colors } = useTheme();
+  const { character, useHitDie } = useCharacterStore();
+
+  if (!character) return null;
+
+  const { hitDice, hp } = character;
+
+  const handleUseHitDie = async () => {
+    const result = await useHitDie();
+    if (result) {
+      onShowToast(`Dado de golpe: +${result.healed} PG`);
+    } else {
+      onShowToast("No quedan dados de golpe");
+    }
+  };
+
+  return (
+    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+      <View className="flex-row items-center justify-between mb-3">
+        <View className="flex-row items-center">
+          <Ionicons name="dice-outline" size={20} color={colors.accentPurple} />
+          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
+            Dados de Golpe
+          </Text>
+        </View>
+        <Text className="text-dark-500 dark:text-dark-300 text-xs">
+          {hitDice.die}
+        </Text>
+      </View>
+
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center">
+          {Array.from({ length: hitDice.total }).map((_, i) => (
+            <View
+              key={i}
+              className="h-8 w-8 rounded-lg mx-0.5 items-center justify-center border"
+              style={{
+                backgroundColor:
+                  i < hitDice.remaining
+                    ? `${colors.accentPurple}20`
+                    : colors.bgPrimary,
+                borderColor:
+                  i < hitDice.remaining
+                    ? `${colors.accentPurple}66`
+                    : colors.borderDefault,
+              }}
+            >
+              <Ionicons
+                name="dice"
+                size={16}
+                color={
+                  i < hitDice.remaining
+                    ? colors.accentPurple
+                    : colors.borderDefault
+                }
+              />
+            </View>
+          ))}
+        </View>
+
+        <TouchableOpacity
+          className={`rounded-lg px-4 py-2 ${
+            hitDice.remaining > 0 && hp.current < hp.max
+              ? "bg-purple-600/80 active:bg-purple-700"
+              : "bg-gray-300 dark:bg-dark-600 opacity-50"
+          }`}
+          onPress={handleUseHitDie}
+          disabled={hitDice.remaining <= 0 || hp.current >= hp.max}
+        >
+          <Text className="text-dark-900 dark:text-white text-sm font-semibold">
+            Usar
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <Text className="text-dark-400 text-[10px] mt-2">
+        {hitDice.remaining}/{hitDice.total} disponibles · Clic en "Usar" para
+        tirar {hitDice.die} + mod. CON
+      </Text>
+    </View>
+  );
+}

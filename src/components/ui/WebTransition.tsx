@@ -24,6 +24,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -42,7 +44,7 @@ export interface WebTransitionProps {
   onError?: (error: Error) => void;
   /** Custom icon (default: 'globe-outline') */
   icon?: keyof typeof Ionicons.glyphMap;
-  /** Accent color for the transition (default: '#60a5fa') */
+  /** Accent color for the transition (defaults to theme's accentLightBlue) */
   accentColor?: string;
 }
 
@@ -58,8 +60,10 @@ export default function WebTransition({
   onDismiss,
   onError,
   icon = "globe-outline",
-  accentColor = "#60a5fa",
+  accentColor: accentColorProp,
 }: WebTransitionProps) {
+  const { colors } = useTheme();
+  const accentColor = accentColorProp ?? colors.accentLightBlue;
   // Animation refs
   const backdropAnim = useRef(new Animated.Value(0)).current;
   const contentFade = useRef(new Animated.Value(0)).current;
@@ -357,7 +361,11 @@ export default function WebTransition({
       {/* Backdrop */}
       <Animated.View style={[styles.backdrop, { opacity: backdropAnim }]}>
         <LinearGradient
-          colors={["rgba(13,13,26,0.95)", "rgba(20,20,37,0.97)", "rgba(26,26,46,0.95)"]}
+          colors={[
+            withAlpha(colors.bgSecondary, 0.95),
+            withAlpha(colors.bgSecondary, 0.97),
+            withAlpha(colors.bgPrimary, 0.95),
+          ]}
           style={StyleSheet.absoluteFill}
         />
       </Animated.View>
@@ -412,6 +420,7 @@ export default function WebTransition({
               style={[
                 styles.iconBg,
                 {
+                  backgroundColor: withAlpha(accentColor, 0.08),
                   borderColor: `${accentColor}40`,
                   transform: [
                     { rotate: spin },
@@ -426,16 +435,16 @@ export default function WebTransition({
 
           {/* Text */}
           <Animated.View style={[styles.textArea, { opacity: textFade }]}>
-            <Text style={styles.title}>Abriendo enlace externo</Text>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>Abriendo enlace externo</Text>
 
-            <View style={styles.urlContainer}>
+            <View style={[styles.urlContainer, { backgroundColor: colors.bgSubtle, borderColor: colors.borderSubtle }]}>
               <Ionicons
                 name="link-outline"
                 size={14}
-                color="#555577"
+                color={colors.textMuted}
                 style={{ marginRight: 6, marginTop: 1 }}
               />
-              <Text style={styles.urlText} numberOfLines={1}>
+              <Text style={[styles.urlText, { color: colors.textSecondary }]} numberOfLines={1}>
                 {displayUrl}
               </Text>
             </View>
@@ -447,7 +456,7 @@ export default function WebTransition({
 
           {/* Progress bar */}
           <View style={styles.progressContainer}>
-            <View style={styles.progressTrack}>
+            <View style={[styles.progressTrack, { backgroundColor: colors.borderSubtle }]}>
               <Animated.View
                 style={[
                   styles.progressBar,
@@ -463,20 +472,20 @@ export default function WebTransition({
 
           {/* Cancel button */}
           <TouchableOpacity
-            style={styles.cancelButton}
+            style={[styles.cancelButton, { backgroundColor: colors.bgSubtle, borderColor: colors.borderSubtle }]}
             onPress={handleCancel}
             activeOpacity={0.7}
           >
-            <Ionicons name="close-circle-outline" size={16} color="#555577" />
-            <Text style={styles.cancelText}>Cancelar</Text>
+            <Ionicons name="close-circle-outline" size={16} color={colors.textMuted} />
+            <Text style={[styles.cancelText, { color: colors.textMuted }]}>Cancelar</Text>
           </TouchableOpacity>
         </Animated.View>
 
         {/* Bottom decoration */}
         <Animated.View style={[styles.bottomDeco, { opacity: textFade }]}>
-          <View style={styles.decoLine} />
-          <Ionicons name="shield-half-outline" size={14} color="#2a2a44" />
-          <View style={styles.decoLine} />
+          <View style={[styles.decoLine, { backgroundColor: colors.borderDefault }]} />
+          <Ionicons name="shield-half-outline" size={14} color={colors.borderDefault} />
+          <View style={[styles.decoLine, { backgroundColor: colors.borderDefault }]} />
         </Animated.View>
       </View>
     </Modal>
@@ -531,7 +540,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(96,165,250,0.08)",
     borderWidth: 1.5,
     alignItems: "center",
     justifyContent: "center",
@@ -543,7 +551,6 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   title: {
-    color: "#e4e4f0",
     fontSize: 20,
     fontWeight: "800",
     letterSpacing: -0.3,
@@ -553,9 +560,7 @@ const styles = StyleSheet.create({
   urlContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -563,7 +568,6 @@ const styles = StyleSheet.create({
     maxWidth: SCREEN_WIDTH - 100,
   },
   urlText: {
-    color: "#8c8cb3",
     fontSize: 13,
     fontWeight: "500",
     flex: 1,
@@ -581,7 +585,6 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 4,
-    backgroundColor: "rgba(255,255,255,0.06)",
     borderRadius: 2,
     overflow: "hidden",
   },
@@ -601,12 +604,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
   },
   cancelText: {
-    color: "#555577",
     fontSize: 13,
     fontWeight: "600",
     marginLeft: 6,
@@ -622,7 +622,6 @@ const styles = StyleSheet.create({
   decoLine: {
     width: 40,
     height: 1,
-    backgroundColor: "#2a2a44",
     marginHorizontal: 10,
   },
 });

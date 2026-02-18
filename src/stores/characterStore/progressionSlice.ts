@@ -1,0 +1,301 @@
+/**
+ * Progression Slice — XP, level-up, reset.
+ * Contains the complex levelUp orchestration and resetToLevel1 logic.
+ */
+
+import type {
+  Character,
+  AbilityKey,
+} from "@/types/character";
+import { calcModifier, calcProficiencyBonus } from "@/types/character";
+import { now } from "@/utils/providers";
+import { getClassData, calcLevel1HP } from "@/data/srd/classes";
+import { getSubraceData } from "@/data/srd/races";
+import {
+  MAX_LEVEL,
+  canLevelUp,
+  getLevelUpSummary,
+} from "@/data/srd/leveling";
+import { STORAGE_KEYS } from "@/utils/storage";
+import {
+  hitDieSides,
+  createDefaultMagicState,
+  createDefaultClassResources,
+  safeSetItem,
+} from "./helpers";
+import type { CharacterStore, ProgressionActions, LevelUpOptions } from "./types";
+import {
+  applyHPGain,
+  applyASI,
+  buildNewTraits,
+  buildSubclassTraits,
+  buildLevelRecord,
+  applyMagicProgression,
+} from "./levelUpHelpers";
+
+type SetState = (partial: Partial<CharacterStore>) => void;
+type GetState = () => CharacterStore;
+
+export function createProgressionSlice(
+  set: SetState,
+  get: GetState,
+): ProgressionActions {
+  return {
+    addExperience: async (amount: number) => {
+      const { character } = get();
+      if (!character || amount <= 0) return;
+
+      const newXP = character.experiencia + amount;
+      const updatedChar: Character = {
+        ...character,
+        experiencia: newXP,
+        actualizadoEn: now(),
+      };
+      set({ character: updatedChar });
+      await safeSetItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+    },
+
+    removeExperience: async (amount: number) => {
+      const { character } = get();
+      if (!character || amount <= 0) return;
+
+      const newXP = Math.max(0, character.experiencia - amount);
+      const updatedChar: Character = {
+        ...character,
+        experiencia: newXP,
+        actualizadoEn: now(),
+      };
+      set({ character: updatedChar });
+      await safeSetItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+    },
+
+    setExperience: async (amount: number) => {
+      const { character } = get();
+      if (!character) return;
+
+      const newXP = Math.max(0, amount);
+      const updatedChar: Character = {
+        ...character,
+        experiencia: newXP,
+        actualizadoEn: now(),
+      };
+      set({ character: updatedChar });
+      await safeSetItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+    },
+
+    canLevelUp: () => {
+      const { character } = get();
+      if (!character) return false;
+      return canLevelUp(character.experiencia, character.nivel);
+    },
+
+    getLevelUpPreview: () => {
+      const { character } = get();
+      if (!character || character.nivel >= MAX_LEVEL) return null;
+      return getLevelUpSummary(character.clase, character.nivel + 1);
+    },
+
+    levelUp: async (options: LevelUpOptions) => {
+      const { character, magicState } = get();
+      if (!character || character.nivel >= MAX_LEVEL) return null;
+
+      const newLevel = character.nivel + 1;
+      const summary = getLevelUpSummary(character.clase, newLevel);
+      const dieSides = hitDieSides(character.hitDice.die);
+
+      // ── Calcular PG ganados ──
+      const { hpGained, conMod } = applyHPGain(character, options, dieSides);
+
+      // ── Aplicar mejoras de característica (ASI) ──
+      const { updatedScores, retroactiveHP } = applyASI(
+        character.abilityScores,
+        summary,
+        options,
+        conMod,
+        character.nivel,
+      );
+
+      // ── Nuevo HP máximo ──
+      const newMaxHP = character.hp.max + hpGained + retroactiveHP;
+      const newCurrentHP = character.hp.current + hpGained + retroactiveHP;
+
+      // ── Registro de nivel ──
+      const levelRecord = buildLevelRecord(newLevel, hpGained, options, summary);
+
+      // ── Nuevos rasgos (clase + subclase) ──
+      const newTraits = [
+        ...buildNewTraits(character, summary, newLevel, options),
+        ...buildSubclassTraits(character, newLevel, options),
+      ];
+
+      // ── Actualizar personaje ──
+      const updatedChar: Character = {
+        ...character,
+        nivel: newLevel,
+        abilityScores: updatedScores,
+        subclase: options.subclassChosen ?? character.subclase,
+        hp: { ...character.hp, max: newMaxHP, current: newCurrentHP },
+        hitDice: {
+          ...character.hitDice,
+          total: newLevel,
+          remaining: character.hitDice.remaining + 1,
+        },
+        proficiencyBonus: calcProficiencyBonus(newLevel),
+        traits: [...character.traits, ...newTraits],
+        levelHistory: [...character.levelHistory, levelRecord],
+        actualizadoEn: now(),
+      };
+
+      set({ character: updatedChar });
+
+      // ── Recalcular recursos de clase ──
+      const newClassResources = createDefaultClassResources(updatedChar);
+      const { classResources: oldClassResources } = get();
+      if (oldClassResources) {
+        for (const [id, newRes] of Object.entries(newClassResources.resources)) {
+          const oldRes = oldClassResources.resources[id];
+          if (oldRes) {
+            const maxIncrease = newRes.max - oldRes.max;
+            newRes.current = Math.min(
+              newRes.max,
+              oldRes.current + Math.max(0, maxIncrease),
+            );
+          }
+        }
+      }
+      set({ classResources: newClassResources });
+
+      // ── Persistir ──
+      await safeSetItem(STORAGE_KEYS.CLASS_RESOURCES(updatedChar.id), newClassResources);
+      await safeSetItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+
+      // ── Actualizar estado mágico ──
+      const updatedMagic = applyMagicProgression(updatedChar, magicState, options);
+      if (updatedMagic) {
+        set({ magicState: updatedMagic });
+        await safeSetItem(STORAGE_KEYS.MAGIC_STATE(character.id), updatedMagic);
+      }
+
+      return summary;
+    },
+
+    resetToLevel1: async () => {
+      const { character } = get();
+      if (!character || character.nivel <= 1) return;
+
+      const classData = getClassData(character.clase);
+
+      // ── Reset ability scores: remove all improvements ──
+      const resetAbilityScores = { ...character.abilityScores };
+      const abilityKeys: AbilityKey[] = [
+        "fue",
+        "des",
+        "con",
+        "int",
+        "sab",
+        "car",
+      ];
+      for (const key of abilityKeys) {
+        const detail = { ...resetAbilityScores[key] };
+        detail.improvement = 0;
+        detail.total =
+          detail.override !== null
+            ? detail.override
+            : Math.min(20, detail.base + detail.racial + detail.misc);
+        detail.modifier = calcModifier(detail.total);
+        resetAbilityScores[key] = detail;
+      }
+
+      // ── Recalculate HP at level 1 ──
+      const conMod = resetAbilityScores.con.modifier;
+      const subraceData = character.subraza
+        ? getSubraceData(character.raza, character.subraza)
+        : null;
+      const hpBonusPerLevel = subraceData?.hpBonusPerLevel ?? 0;
+      const level1HP =
+        calcLevel1HP(character.clase, conMod) + hpBonusPerLevel;
+
+      // ── Restore only level-1 spells ──
+      const level1Record = character.levelHistory.find(
+        (r) => r.level === 1,
+      );
+      const level1Spells = level1Record?.spellsLearned ?? [];
+
+      // ── Keep only race, background, and level-1 class traits ──
+      const traitsToKeep = character.traits.filter(
+        (t) =>
+          t.origen === "raza" ||
+          t.origen === "trasfondo" ||
+          t.origen === "dote" ||
+          t.origen === "manual",
+      );
+      const level1TraitNames = new Set(
+        level1Record?.traitsGained ??
+          classData.level1Features.map((f) => f.nombre),
+      );
+      const level1ClassTraits = character.traits.filter(
+        (t) => t.origen === "clase" && level1TraitNames.has(t.nombre),
+      );
+      const finalTraits = [...traitsToKeep, ...level1ClassTraits];
+
+      // ── Build reset character ──
+      const timestamp = now();
+      const updatedChar: Character = {
+        ...character,
+        nivel: 1,
+        experiencia: 0,
+        subclase: null,
+        abilityScores: resetAbilityScores,
+        hp: { max: level1HP, current: level1HP, temp: 0 },
+        hitDice: { die: classData.hitDie, total: 1, remaining: 1 },
+        deathSaves: { successes: 0, failures: 0 },
+        conditions: [],
+        concentration: null,
+        combatLog: [],
+        proficiencyBonus: calcProficiencyBonus(1),
+        traits: finalTraits,
+        levelHistory: level1Record
+          ? [{ ...level1Record, hpGained: level1HP }]
+          : [
+              {
+                level: 1,
+                date: timestamp,
+                hpGained: level1HP,
+                hpMethod: "fixed" as const,
+              },
+            ],
+        knownSpellIds: [...level1Spells],
+        preparedSpellIds: level1Spells.filter(
+          (id) =>
+            !level1Spells.some(
+              (s) =>
+                s === id &&
+                character.knownSpellIds.indexOf(s) === -1,
+            ),
+        ),
+        spellbookIds:
+          character.clase === "mago" ? [...level1Spells] : [],
+        actualizadoEn: timestamp,
+      };
+
+      set({ character: updatedChar });
+      await safeSetItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+
+      // ── Reset magic state ──
+      const newMagicState = createDefaultMagicState(updatedChar);
+      set({ magicState: newMagicState });
+      await safeSetItem(
+        STORAGE_KEYS.MAGIC_STATE(character.id),
+        newMagicState,
+      );
+
+      // ── Reset class resources ──
+      const newClassResources = createDefaultClassResources(updatedChar);
+      set({ classResources: newClassResources });
+      await safeSetItem(
+        STORAGE_KEYS.CLASS_RESOURCES(character.id),
+        newClassResources,
+      );
+    },
+  };
+}

@@ -10,7 +10,7 @@ import {
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { ConfirmDialog } from "@/components/ui";
-import { useDialog } from "@/hooks/useDialog";
+import { useTheme, useDialog } from "@/hooks";
 import {
   useCreationStore,
   TOTAL_STEPS,
@@ -27,7 +27,6 @@ import {
   calcModifier,
   type AbilityKey,
 } from "@/types/character";
-import { useTheme } from "@/hooks/useTheme";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 11;
@@ -108,9 +107,13 @@ export default function SummaryStep() {
       return;
     }
 
+    const isRecreation = !!draft?.recreatingCharacterId;
+
     showConfirm(
-      "Crear Personaje",
-      "¿Estás seguro de que quieres crear este personaje? Podrás editar sus datos desde la hoja de personaje después.",
+      isRecreation ? "Recrear Personaje" : "Crear Personaje",
+      isRecreation
+        ? "¿Estás seguro de que quieres recrear este personaje con las nuevas opciones? Se reemplazarán las estadísticas, habilidades, hechizos y equipamiento anteriores."
+        : "¿Estás seguro de que quieres crear este personaje? Podrás editar sus datos desde la hoja de personaje después.",
       async () => {
         setCreating(true);
         try {
@@ -138,12 +141,15 @@ export default function SummaryStep() {
           await setItem(STORAGE_KEYS.CHARACTER(character.id), character);
           console.log("[SummaryStep] Personaje guardado en storage");
 
-          const inventory = createDefaultInventory(
-            character.inventoryId,
-            character.id,
-          );
-          await setItem(STORAGE_KEYS.INVENTORY(character.id), inventory);
-          console.log("[SummaryStep] Inventario creado");
+          if (!isRecreation) {
+            // Only create a new inventory for brand new characters
+            const inventory = createDefaultInventory(
+              character.inventoryId,
+              character.id,
+            );
+            await setItem(STORAGE_KEYS.INVENTORY(character.id), inventory);
+            console.log("[SummaryStep] Inventario creado");
+          }
 
           await linkCharacter(campaignId!, character.id);
           console.log("[SummaryStep] Personaje vinculado a campaña");
@@ -156,8 +162,10 @@ export default function SummaryStep() {
           // Show success dialog BEFORE discarding the draft to prevent
           // a re-render (draft→null) that could interfere with the dialog
           showSuccess(
-            "¡Personaje Creado!",
-            `${charName} ha sido creado exitosamente. ¡Buena aventura!`,
+            isRecreation ? "¡Personaje Recreado!" : "¡Personaje Creado!",
+            isRecreation
+              ? `${charName} ha sido recreado con las nuevas opciones. ¡Buena aventura!`
+              : `${charName} ha sido creado exitosamente. ¡Buena aventura!`,
             async () => {
               console.log("[SummaryStep] OK pulsado, navegando...");
               // Clean up draft and reload campaigns
@@ -185,7 +193,7 @@ export default function SummaryStep() {
           setCreating(false);
         }
       },
-      { confirmText: "¡Crear!", cancelText: "Revisar", type: "confirm" },
+      { confirmText: isRecreation ? "¡Recrear!" : "¡Crear!", cancelText: "Revisar", type: "confirm" },
     );
   };
 
@@ -857,7 +865,7 @@ export default function SummaryStep() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e", // overridden by themed.container
+    backgroundColor: "#272519", // overridden by themed.container
   },
   centerContent: {
     alignItems: "center",
@@ -867,7 +875,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingText: {
-    color: "#8c8cb3", // overridden by themed.loadingText
+    color: "#AAA37B", // overridden by themed.loadingText
     fontSize: 16,
     marginTop: 16,
   },
@@ -886,24 +894,24 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#1e1e38", // overridden by themed.backButton
+    backgroundColor: "#2E2C1E", // overridden by themed.backButton
     alignItems: "center",
     justifyContent: "center",
   },
   stepText: {
-    color: "#8c8cb3", // overridden by themed.stepText
+    color: "#AAA37B", // overridden by themed.stepText
     fontSize: 14,
     fontWeight: "600",
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#1e1e38", // overridden by themed.progressBar
+    backgroundColor: "#2E2C1E", // overridden by themed.progressBar
     borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 3,
   },
   titleSection: {
@@ -915,7 +923,7 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(198,40,40,0.15)",
+    backgroundColor: "rgba(143,61,56,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
@@ -928,7 +936,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#8c8cb3", // overridden by themed.subtitle
+    color: "#AAA37B", // overridden by themed.subtitle
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -947,10 +955,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   checklistCard: {
-    backgroundColor: "#23233d", // overridden by themed.card
+    backgroundColor: "#323021", // overridden by themed.card
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c", // overridden by themed.card
+    borderColor: "#514D35", // overridden by themed.card
     overflow: "hidden",
   },
   checklistRow: {
@@ -959,11 +967,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#2d2d52", // overridden inline
+    borderBottomColor: "#423E2B", // overridden inline
   },
   checklistText: {
     flex: 1,
-    color: "#8c8cb3", // overridden inline
+    color: "#AAA37B", // overridden inline
     fontSize: 15,
     marginLeft: 12,
   },
@@ -972,10 +980,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   summaryCard: {
-    backgroundColor: "#23233d", // overridden by themed.card
+    backgroundColor: "#323021", // overridden by themed.card
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c", // overridden by themed.card
+    borderColor: "#514D35", // overridden by themed.card
     padding: 14,
   },
   summaryRow: {
@@ -984,10 +992,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#2d2d52", // overridden inline
+    borderBottomColor: "#423E2B", // overridden inline
   },
   summaryLabel: {
-    color: "#8c8cb3", // overridden by themed.textSecondary
+    color: "#AAA37B", // overridden by themed.textSecondary
     fontSize: 14,
     fontWeight: "600",
   },
@@ -1007,16 +1015,16 @@ const styles = StyleSheet.create({
   },
   scoreCard: {
     width: "30%",
-    backgroundColor: "#23233d", // overridden by themed.card
+    backgroundColor: "#323021", // overridden by themed.card
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c", // overridden by themed.card
+    borderColor: "#514D35", // overridden by themed.card
     padding: 12,
     alignItems: "center",
     marginBottom: 10,
   },
   scoreAbbr: {
-    color: "#fbbf24", // overridden inline
+    color: "#CDC9B2", // overridden inline
     fontSize: 12,
     fontWeight: "bold",
     marginBottom: 4,
@@ -1027,7 +1035,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   scoreMod: {
-    color: "#8c8cb3", // overridden by themed.textSecondary
+    color: "#AAA37B", // overridden by themed.textSecondary
     fontSize: 14,
     fontWeight: "600",
     marginTop: 2,
@@ -1035,10 +1043,10 @@ const styles = StyleSheet.create({
   hpPreview: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#23233d", // overridden by themed.card
+    backgroundColor: "#323021", // overridden by themed.card
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c", // overridden by themed.card
+    borderColor: "#514D35", // overridden by themed.card
     padding: 14,
   },
   hpIcon: {
@@ -1054,7 +1062,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   hpLabel: {
-    color: "#8c8cb3", // overridden by themed.textSecondary
+    color: "#AAA37B", // overridden by themed.textSecondary
     fontSize: 13,
   },
   hpValue: {
@@ -1063,13 +1071,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   hitDieBadge: {
-    backgroundColor: "#2d2d52", // overridden inline
+    backgroundColor: "#423E2B", // overridden inline
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
   hitDieText: {
-    color: "#b3b3cc", // overridden by themed.textSecondary
+    color: "#D4D1BD", // overridden by themed.textSecondary
     fontSize: 13,
     fontWeight: "600",
   },
@@ -1081,7 +1089,7 @@ const styles = StyleSheet.create({
   skillBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#23233d", // overridden inline
+    backgroundColor: "#323021", // overridden inline
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -1097,10 +1105,10 @@ const styles = StyleSheet.create({
   personalityRow: {
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#2d2d52", // overridden inline
+    borderBottomColor: "#423E2B", // overridden inline
   },
   personalityLabel: {
-    color: "#fbbf24", // overridden inline
+    color: "#CDC9B2", // overridden inline
     fontSize: 13,
     fontWeight: "700",
     marginBottom: 4,
@@ -1111,7 +1119,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   emptyNote: {
-    color: "#666699", // overridden by themed.textMuted
+    color: "#807953", // overridden by themed.textMuted
     fontSize: 14,
     fontStyle: "italic",
     paddingVertical: 8,
@@ -1145,10 +1153,10 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#3a3a5c", // overridden by themed.footer
+    borderTopColor: "#514D35", // overridden by themed.footer
   },
   createButton: {
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 12,
     paddingVertical: 18,
     flexDirection: "row",
@@ -1156,7 +1164,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   createButtonDisabled: {
-    backgroundColor: "#2d2d44", // overridden by themed.nextButtonDisabled
+    backgroundColor: "#423E2B", // overridden by themed.nextButtonDisabled
     opacity: 0.5,
   },
   createButtonText: {

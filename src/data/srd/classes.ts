@@ -1496,3 +1496,36 @@ export const SPELLCASTING_DESCRIPTIONS: Partial<Record<ClassId, string>> = {
   paladin:
     "El Carisma es tu aptitud mágica. Obtienes conjuros a nivel 2. Preparas conjuros cada día.",
 };
+
+// ─── Constantes derivadas (fuente única de verdad) ───────────────────
+
+/**
+ * Tipo de lanzador por clase, derivado de CLASSES.
+ * Antes hardcodeado en constants/spells.ts — ahora esta es la fuente canónica.
+ */
+export const CLASS_CASTER_TYPE_FROM_CLASSES = Object.fromEntries(
+  Object.entries(CLASSES).map(([id, c]) => [id, c.casterType]),
+) as Record<ClassId, CasterType>;
+
+/**
+ * Característica de lanzamiento por clase, derivada de CLASSES.
+ * Antes hardcodeado en constants/spells.ts — ahora esta es la fuente canónica.
+ */
+export const SPELLCASTING_ABILITY_FROM_CLASSES = Object.fromEntries(
+  Object.entries(CLASSES)
+    .filter(([, c]) => c.spellcastingAbility !== null)
+    .map(([id, c]) => [id, c.spellcastingAbility]),
+) as Partial<Record<ClassId, AbilityKey>>;
+
+/**
+ * Tipo de preparación de conjuros por clase, derivado de CLASSES.
+ */
+export const CLASS_SPELL_PREPARATION_FROM_CLASSES = Object.fromEntries(
+  Object.entries(CLASSES).map(([id, c]) => {
+    if (c.casterType === "none") return [id, "none"] as const;
+    if (c.preparesSpells) {
+      return [id, id === "mago" ? "spellbook" : "prepared"] as const;
+    }
+    return [id, "known"] as const;
+  }),
+) as Record<ClassId, "known" | "prepared" | "spellbook" | "none">;

@@ -198,6 +198,6 @@ export {
   getPredefinedTags,
   filterNotes,
   sortNotes,
-  getNotPreview,
+  getNotePreview,
   getNextSessionNumber,
 } from "./notes";

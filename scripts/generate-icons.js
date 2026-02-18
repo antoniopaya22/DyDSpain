@@ -1,15 +1,15 @@
 /**
  * generate-icons.js
  *
- * Generates SVG icon assets for the D&D Español app.
+ * Generates SVG icon assets for the D&D EspaÃ±ol app.
  * These SVGs can be converted to PNG using any SVG-to-PNG tool
  * (e.g., sharp, Inkscape CLI, or online converters).
  *
  * Generated files:
- *   - assets/icon.svg          (1024×1024 — app icon)
- *   - assets/adaptive-icon.svg (1024×1024 — Android adaptive icon foreground)
- *   - assets/splash-icon.svg   (512×512  — splash screen logo)
- *   - assets/favicon.svg       (48×48    — web favicon)
+ *   - assets/icon.svg          (1024Ã—1024 â€” app icon)
+ *   - assets/adaptive-icon.svg (1024Ã—1024 â€” Android adaptive icon foreground)
+ *   - assets/splash-icon.svg   (512Ã—512  â€” splash screen logo)
+ *   - assets/favicon.svg       (48Ã—48    â€” web favicon)
  *
  * Usage:
  *   node scripts/generate-icons.js
@@ -23,7 +23,7 @@
 const fs = require("fs");
 const path = require("path");
 
-// ─── D20 Geometry ────────────────────────────────────────────────────
+// â”€â”€â”€ D20 Geometry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function getD20Geometry(cx, cy, radius) {
   const r = radius;
@@ -72,11 +72,11 @@ function ptsStr(points) {
   return points.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
 }
 
-// ─── Rune characters ─────────────────────────────────────────────────
+// â”€â”€â”€ Rune characters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const RUNES = "ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃ";
+const RUNES = "áš áš¢áš¦áš¨áš±áš²áš·áš¹ášºáš¾á›á›ƒ";
 
-// ─── SVG Generators ──────────────────────────────────────────────────
+// â”€â”€â”€ SVG Generators â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function generateAppIcon(size) {
   const cx = size / 2;
@@ -126,26 +126,26 @@ function generateAppIcon(size) {
   <defs>
     <!-- Background gradient -->
     <radialGradient id="bgGrad" cx="50%" cy="45%" r="65%">
-      <stop offset="0%" stop-color="#1a1a2e" />
+      <stop offset="0%" stop-color="#272519" />
       <stop offset="60%" stop-color="#111122" />
-      <stop offset="100%" stop-color="#0d0d1a" />
+      <stop offset="100%" stop-color="#17160F" />
     </radialGradient>
 
     <!-- Icon background shape gradient -->
     <radialGradient id="bgShapeGrad" cx="50%" cy="40%" r="55%">
-      <stop offset="0%" stop-color="#1e1e38" />
-      <stop offset="100%" stop-color="#0d0d1a" />
+      <stop offset="0%" stop-color="#2E2C1E" />
+      <stop offset="100%" stop-color="#17160F" />
     </radialGradient>
 
     <!-- Die face gradients -->
     <linearGradient id="faceHL" x1="50%" y1="0%" x2="50%" y2="100%">
       <stop offset="0%" stop-color="#ef5350" stop-opacity="0.95"/>
-      <stop offset="55%" stop-color="#c62828"/>
+      <stop offset="55%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000"/>
     </linearGradient>
     <linearGradient id="faceMain" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#d32f2f"/>
-      <stop offset="50%" stop-color="#c62828"/>
+      <stop offset="50%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#8e0000"/>
     </linearGradient>
     <linearGradient id="faceSH" x1="50%" y1="0%" x2="50%" y2="100%">
@@ -154,7 +154,7 @@ function generateAppIcon(size) {
     </linearGradient>
     <radialGradient id="centerGrad" cx="50%" cy="42%" r="60%">
       <stop offset="0%" stop-color="#ef5350" stop-opacity="0.35"/>
-      <stop offset="45%" stop-color="#c62828"/>
+      <stop offset="45%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000" stop-opacity="0.95"/>
     </radialGradient>
     <linearGradient id="edgeShine" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -165,13 +165,13 @@ function generateAppIcon(size) {
 
     <!-- Glow gradients -->
     <radialGradient id="outerGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#c62828" stop-opacity="0.25"/>
-      <stop offset="65%" stop-color="#c62828" stop-opacity="0.1"/>
-      <stop offset="100%" stop-color="#c62828" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#8f3d38" stop-opacity="0.25"/>
+      <stop offset="65%" stop-color="#8f3d38" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#8f3d38" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="runeGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#CDC9B2" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#CDC9B2" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
@@ -179,7 +179,7 @@ function generateAppIcon(size) {
   <rect width="${size}" height="${size}" rx="${size * 0.18}" fill="url(#bgGrad)"/>
 
   <!-- Subtle border -->
-  <rect x="${bgPad * 0.3}" y="${bgPad * 0.3}" width="${size - bgPad * 0.6}" height="${size - bgPad * 0.6}" rx="${size * 0.17}" fill="none" stroke="#fbbf24" stroke-width="${size * 0.002}" stroke-opacity="0.15"/>
+  <rect x="${bgPad * 0.3}" y="${bgPad * 0.3}" width="${size - bgPad * 0.6}" height="${size - bgPad * 0.6}" rx="${size * 0.17}" fill="none" stroke="#CDC9B2" stroke-width="${size * 0.002}" stroke-opacity="0.15"/>
 
   <!-- Outer die glow -->
   <circle cx="${cx}" cy="${cy}" r="${runicR + size * 0.06}" fill="url(#outerGlow)"/>
@@ -188,14 +188,14 @@ function generateAppIcon(size) {
   <circle cx="${cx}" cy="${cy}" r="${runicR + size * 0.015}" fill="url(#runeGlow)"/>
 
   <!-- Runic ring circles -->
-  <circle cx="${cx}" cy="${cy}" r="${runicR}" fill="none" stroke="#fbbf24" stroke-width="${size * 0.004}" stroke-opacity="0.45"/>
-  <circle cx="${cx}" cy="${cy}" r="${runicR - size * 0.028}" fill="none" stroke="#fbbf24" stroke-width="${size * 0.002}" stroke-opacity="0.25"/>
+  <circle cx="${cx}" cy="${cy}" r="${runicR}" fill="none" stroke="#CDC9B2" stroke-width="${size * 0.004}" stroke-opacity="0.45"/>
+  <circle cx="${cx}" cy="${cy}" r="${runicR - size * 0.028}" fill="none" stroke="#CDC9B2" stroke-width="${size * 0.002}" stroke-opacity="0.25"/>
 
   <!-- Rune characters -->
   ${runePositions
     .map(
       (r) =>
-        `<text x="${r.x.toFixed(1)}" y="${(r.y + size * 0.015).toFixed(1)}" text-anchor="middle" font-size="${size * 0.035}" font-family="serif" fill="#fbbf24" fill-opacity="0.55">${r.char}</text>`
+        `<text x="${r.x.toFixed(1)}" y="${(r.y + size * 0.015).toFixed(1)}" text-anchor="middle" font-size="${size * 0.035}" font-family="serif" fill="#CDC9B2" fill-opacity="0.55">${r.char}</text>`
     )
     .join("\n  ")}
 
@@ -203,15 +203,15 @@ function generateAppIcon(size) {
   ${ticks
     .map(
       (t) =>
-        `<line x1="${t.x1.toFixed(1)}" y1="${t.y1.toFixed(1)}" x2="${t.x2.toFixed(1)}" y2="${t.y2.toFixed(1)}" stroke="#fbbf24" stroke-width="${t.major ? size * 0.006 : size * 0.003}" stroke-opacity="${t.major ? 0.6 : 0.35}"/>`
+        `<line x1="${t.x1.toFixed(1)}" y1="${t.y1.toFixed(1)}" x2="${t.x2.toFixed(1)}" y2="${t.y2.toFixed(1)}" stroke="#CDC9B2" stroke-width="${t.major ? size * 0.006 : size * 0.003}" stroke-opacity="${t.major ? 0.6 : 0.35}"/>`
     )
     .join("\n  ")}
 
   <!-- Cardinal diamonds -->
-  ${diamonds.map((d) => `<polygon points="${d}" fill="#fbbf24" fill-opacity="0.5"/>`).join("\n  ")}
+  ${diamonds.map((d) => `<polygon points="${d}" fill="#CDC9B2" fill-opacity="0.5"/>`).join("\n  ")}
 
   <!-- Die border glow -->
-  <circle cx="${cx}" cy="${cy}" r="${dieRadius + size * 0.015}" fill="none" stroke="#c62828" stroke-width="${size * 0.005}" stroke-opacity="0.3"/>
+  <circle cx="${cx}" cy="${cy}" r="${dieRadius + size * 0.015}" fill="none" stroke="#8f3d38" stroke-width="${size * 0.005}" stroke-opacity="0.3"/>
 
   <!-- Outer triangular faces -->
   ${geo.outerFaces
@@ -255,12 +255,12 @@ function generateAppIcon(size) {
   <circle cx="${geo.outerPoints[0].x.toFixed(1)}" cy="${geo.outerPoints[0].y.toFixed(1)}" r="${size * 0.008}" fill="#ffffff" fill-opacity="0.5"/>
 
   <!-- "D&D" label at bottom -->
-  <text x="${cx}" y="${cy + runicR + size * 0.085}" text-anchor="middle" font-size="${size * 0.055}" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#fbbf24" fill-opacity="0.9" letter-spacing="${size * 0.008}">D&amp;D</text>
-  <text x="${cx}" y="${cy + runicR + size * 0.12}" text-anchor="middle" font-size="${size * 0.028}" font-weight="700" font-family="Arial, Helvetica, sans-serif" fill="#fbbf24" fill-opacity="0.5" letter-spacing="${size * 0.012}">ESPAÑOL</text>
+  <text x="${cx}" y="${cy + runicR + size * 0.085}" text-anchor="middle" font-size="${size * 0.055}" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#CDC9B2" fill-opacity="0.9" letter-spacing="${size * 0.008}">D&amp;D</text>
+  <text x="${cx}" y="${cy + runicR + size * 0.12}" text-anchor="middle" font-size="${size * 0.028}" font-weight="700" font-family="Arial, Helvetica, sans-serif" fill="#CDC9B2" fill-opacity="0.5" letter-spacing="${size * 0.012}">ESPAÃ‘OL</text>
 
   <!-- Sparkle accents -->
-  <polygon points="${cx + dieRadius + size * 0.04},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.05},${cy - dieRadius - size * 0.015} ${cx + dieRadius + size * 0.06},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.05},${cy - dieRadius + size * 0.035}" fill="#fbbf24" fill-opacity="0.7"/>
-  <circle cx="${cx - dieRadius - size * 0.025}" cy="${cy + dieRadius - size * 0.04}" r="${size * 0.007}" fill="#fbbf24" fill-opacity="0.5"/>
+  <polygon points="${cx + dieRadius + size * 0.04},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.05},${cy - dieRadius - size * 0.015} ${cx + dieRadius + size * 0.06},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.05},${cy - dieRadius + size * 0.035}" fill="#CDC9B2" fill-opacity="0.7"/>
+  <circle cx="${cx - dieRadius - size * 0.025}" cy="${cy + dieRadius - size * 0.04}" r="${size * 0.007}" fill="#CDC9B2" fill-opacity="0.5"/>
 </svg>`;
 }
 
@@ -286,17 +286,17 @@ function generateSplashIcon(size) {
 <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
   <defs>
     <radialGradient id="splashBg" cx="50%" cy="40%" r="70%">
-      <stop offset="0%" stop-color="#1a1a2e"/>
-      <stop offset="100%" stop-color="#0d0d1a"/>
+      <stop offset="0%" stop-color="#272519"/>
+      <stop offset="100%" stop-color="#17160F"/>
     </radialGradient>
     <linearGradient id="sFaceHL" x1="50%" y1="0%" x2="50%" y2="100%">
       <stop offset="0%" stop-color="#ef5350" stop-opacity="0.95"/>
-      <stop offset="55%" stop-color="#c62828"/>
+      <stop offset="55%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000"/>
     </linearGradient>
     <linearGradient id="sFaceMain" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#d32f2f"/>
-      <stop offset="50%" stop-color="#c62828"/>
+      <stop offset="50%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#8e0000"/>
     </linearGradient>
     <linearGradient id="sFaceSH" x1="50%" y1="0%" x2="50%" y2="100%">
@@ -305,7 +305,7 @@ function generateSplashIcon(size) {
     </linearGradient>
     <radialGradient id="sCenterGrad" cx="50%" cy="42%" r="60%">
       <stop offset="0%" stop-color="#ef5350" stop-opacity="0.35"/>
-      <stop offset="45%" stop-color="#c62828"/>
+      <stop offset="45%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000" stop-opacity="0.95"/>
     </radialGradient>
     <linearGradient id="sEdgeShine" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -314,12 +314,12 @@ function generateSplashIcon(size) {
       <stop offset="100%" stop-color="#000000" stop-opacity="0.18"/>
     </linearGradient>
     <radialGradient id="sOuterGlow" cx="50%" cy="42%" r="40%">
-      <stop offset="0%" stop-color="#c62828" stop-opacity="0.2"/>
-      <stop offset="100%" stop-color="#c62828" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#8f3d38" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#8f3d38" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="sRuneGlow" cx="50%" cy="42%" r="35%">
-      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.12"/>
-      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#CDC9B2" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#CDC9B2" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
@@ -331,19 +331,19 @@ function generateSplashIcon(size) {
 
   <!-- Runic ring -->
   <circle cx="${cx}" cy="${cy}" r="${runicR + size * 0.01}" fill="url(#sRuneGlow)"/>
-  <circle cx="${cx}" cy="${cy}" r="${runicR}" fill="none" stroke="#fbbf24" stroke-width="${size * 0.003}" stroke-opacity="0.4"/>
-  <circle cx="${cx}" cy="${cy}" r="${runicR - size * 0.022}" fill="none" stroke="#fbbf24" stroke-width="${size * 0.002}" stroke-opacity="0.2"/>
+  <circle cx="${cx}" cy="${cy}" r="${runicR}" fill="none" stroke="#CDC9B2" stroke-width="${size * 0.003}" stroke-opacity="0.4"/>
+  <circle cx="${cx}" cy="${cy}" r="${runicR - size * 0.022}" fill="none" stroke="#CDC9B2" stroke-width="${size * 0.002}" stroke-opacity="0.2"/>
 
   <!-- Rune characters -->
   ${runePositions
     .map(
       (r) =>
-        `<text x="${r.x.toFixed(1)}" y="${(r.y + size * 0.012).toFixed(1)}" text-anchor="middle" font-size="${size * 0.028}" font-family="serif" fill="#fbbf24" fill-opacity="0.5">${r.char}</text>`
+        `<text x="${r.x.toFixed(1)}" y="${(r.y + size * 0.012).toFixed(1)}" text-anchor="middle" font-size="${size * 0.028}" font-family="serif" fill="#CDC9B2" fill-opacity="0.5">${r.char}</text>`
     )
     .join("\n  ")}
 
   <!-- Die border glow -->
-  <circle cx="${cx}" cy="${cy}" r="${dieRadius + size * 0.012}" fill="none" stroke="#c62828" stroke-width="${size * 0.004}" stroke-opacity="0.3"/>
+  <circle cx="${cx}" cy="${cy}" r="${dieRadius + size * 0.012}" fill="none" stroke="#8f3d38" stroke-width="${size * 0.004}" stroke-opacity="0.3"/>
 
   <!-- Outer faces -->
   ${geo.outerFaces
@@ -385,21 +385,21 @@ function generateSplashIcon(size) {
   <circle cx="${geo.outerPoints[0].x.toFixed(1)}" cy="${geo.outerPoints[0].y.toFixed(1)}" r="${size * 0.006}" fill="#ffffff" fill-opacity="0.5"/>
 
   <!-- Brand text below -->
-  <text x="${cx}" y="${cy + runicR + size * 0.1}" text-anchor="middle" font-size="${size * 0.065}" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#fbbf24" fill-opacity="0.9" letter-spacing="${size * 0.01}">D&amp;D ESPAÑOL</text>
+  <text x="${cx}" y="${cy + runicR + size * 0.1}" text-anchor="middle" font-size="${size * 0.065}" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#CDC9B2" fill-opacity="0.9" letter-spacing="${size * 0.01}">D&amp;D ESPAÃ‘OL</text>
 
   <!-- Subtitle -->
-  <text x="${cx}" y="${cy + runicR + size * 0.145}" text-anchor="middle" font-size="${size * 0.03}" font-weight="700" font-family="Arial, Helvetica, sans-serif" fill="#fbbf24" fill-opacity="0.45" letter-spacing="${size * 0.015}">5ª EDICIÓN</text>
+  <text x="${cx}" y="${cy + runicR + size * 0.145}" text-anchor="middle" font-size="${size * 0.03}" font-weight="700" font-family="Arial, Helvetica, sans-serif" fill="#CDC9B2" fill-opacity="0.45" letter-spacing="${size * 0.015}">5Âª EDICIÃ“N</text>
 
   <!-- Decorative lines around text -->
-  <line x1="${cx - size * 0.22}" y1="${cy + runicR + size * 0.065}" x2="${cx - size * 0.05}" y2="${cy + runicR + size * 0.065}" stroke="#fbbf24" stroke-width="${size * 0.002}" stroke-opacity="0.25"/>
-  <line x1="${cx + size * 0.05}" y1="${cy + runicR + size * 0.065}" x2="${cx + size * 0.22}" y2="${cy + runicR + size * 0.065}" stroke="#fbbf24" stroke-width="${size * 0.002}" stroke-opacity="0.25"/>
+  <line x1="${cx - size * 0.22}" y1="${cy + runicR + size * 0.065}" x2="${cx - size * 0.05}" y2="${cy + runicR + size * 0.065}" stroke="#CDC9B2" stroke-width="${size * 0.002}" stroke-opacity="0.25"/>
+  <line x1="${cx + size * 0.05}" y1="${cy + runicR + size * 0.065}" x2="${cx + size * 0.22}" y2="${cy + runicR + size * 0.065}" stroke="#CDC9B2" stroke-width="${size * 0.002}" stroke-opacity="0.25"/>
 
   <!-- Small diamonds flanking subtitle -->
-  <polygon points="${cx - size * 0.12},${cy + runicR + size * 0.138} ${cx - size * 0.115},${cy + runicR + size * 0.133} ${cx - size * 0.11},${cy + runicR + size * 0.138} ${cx - size * 0.115},${cy + runicR + size * 0.143}" fill="#fbbf24" fill-opacity="0.4"/>
-  <polygon points="${cx + size * 0.12},${cy + runicR + size * 0.138} ${cx + size * 0.115},${cy + runicR + size * 0.133} ${cx + size * 0.11},${cy + runicR + size * 0.138} ${cx + size * 0.115},${cy + runicR + size * 0.143}" fill="#fbbf24" fill-opacity="0.4"/>
+  <polygon points="${cx - size * 0.12},${cy + runicR + size * 0.138} ${cx - size * 0.115},${cy + runicR + size * 0.133} ${cx - size * 0.11},${cy + runicR + size * 0.138} ${cx - size * 0.115},${cy + runicR + size * 0.143}" fill="#CDC9B2" fill-opacity="0.4"/>
+  <polygon points="${cx + size * 0.12},${cy + runicR + size * 0.138} ${cx + size * 0.115},${cy + runicR + size * 0.133} ${cx + size * 0.11},${cy + runicR + size * 0.138} ${cx + size * 0.115},${cy + runicR + size * 0.143}" fill="#CDC9B2" fill-opacity="0.4"/>
 
   <!-- Sparkle accents -->
-  <polygon points="${cx + dieRadius + size * 0.03},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.04},${cy - dieRadius - size * 0.012} ${cx + dieRadius + size * 0.05},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.04},${cy - dieRadius + size * 0.032}" fill="#fbbf24" fill-opacity="0.65"/>
+  <polygon points="${cx + dieRadius + size * 0.03},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.04},${cy - dieRadius - size * 0.012} ${cx + dieRadius + size * 0.05},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.04},${cy - dieRadius + size * 0.032}" fill="#CDC9B2" fill-opacity="0.65"/>
 </svg>`;
 }
 
@@ -415,12 +415,12 @@ function generateFavicon(size) {
   <defs>
     <linearGradient id="fFaceHL" x1="50%" y1="0%" x2="50%" y2="100%">
       <stop offset="0%" stop-color="#ef5350"/>
-      <stop offset="55%" stop-color="#c62828"/>
+      <stop offset="55%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000"/>
     </linearGradient>
     <linearGradient id="fFaceMain" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#d32f2f"/>
-      <stop offset="50%" stop-color="#c62828"/>
+      <stop offset="50%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#8e0000"/>
     </linearGradient>
     <linearGradient id="fFaceSH" x1="50%" y1="0%" x2="50%" y2="100%">
@@ -429,16 +429,16 @@ function generateFavicon(size) {
     </linearGradient>
     <radialGradient id="fCenterGrad" cx="50%" cy="42%" r="60%">
       <stop offset="0%" stop-color="#ef5350" stop-opacity="0.35"/>
-      <stop offset="45%" stop-color="#c62828"/>
+      <stop offset="45%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000"/>
     </radialGradient>
   </defs>
 
   <!-- Background -->
-  <rect width="${size}" height="${size}" rx="${size * 0.15}" fill="#0d0d1a"/>
+  <rect width="${size}" height="${size}" rx="${size * 0.15}" fill="#17160F"/>
 
   <!-- Border -->
-  <rect x="1" y="1" width="${size - 2}" height="${size - 2}" rx="${size * 0.14}" fill="none" stroke="#fbbf24" stroke-width="0.5" stroke-opacity="0.3"/>
+  <rect x="1" y="1" width="${size - 2}" height="${size - 2}" rx="${size * 0.14}" fill="none" stroke="#CDC9B2" stroke-width="0.5" stroke-opacity="0.3"/>
 
   <!-- Outer faces -->
   ${geo.outerFaces
@@ -488,12 +488,12 @@ function generateAdaptiveIcon(size) {
   <defs>
     <linearGradient id="aFaceHL" x1="50%" y1="0%" x2="50%" y2="100%">
       <stop offset="0%" stop-color="#ef5350" stop-opacity="0.95"/>
-      <stop offset="55%" stop-color="#c62828"/>
+      <stop offset="55%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000"/>
     </linearGradient>
     <linearGradient id="aFaceMain" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#d32f2f"/>
-      <stop offset="50%" stop-color="#c62828"/>
+      <stop offset="50%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#8e0000"/>
     </linearGradient>
     <linearGradient id="aFaceSH" x1="50%" y1="0%" x2="50%" y2="100%">
@@ -502,7 +502,7 @@ function generateAdaptiveIcon(size) {
     </linearGradient>
     <radialGradient id="aCenterGrad" cx="50%" cy="42%" r="60%">
       <stop offset="0%" stop-color="#ef5350" stop-opacity="0.35"/>
-      <stop offset="45%" stop-color="#c62828"/>
+      <stop offset="45%" stop-color="#8f3d38"/>
       <stop offset="100%" stop-color="#7f0000" stop-opacity="0.95"/>
     </radialGradient>
     <linearGradient id="aEdgeShine" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -511,12 +511,12 @@ function generateAdaptiveIcon(size) {
       <stop offset="100%" stop-color="#000000" stop-opacity="0.18"/>
     </linearGradient>
     <radialGradient id="aOuterGlow" cx="50%" cy="50%" r="40%">
-      <stop offset="0%" stop-color="#c62828" stop-opacity="0.2"/>
-      <stop offset="100%" stop-color="#c62828" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#8f3d38" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#8f3d38" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="aRuneGlow" cx="50%" cy="50%" r="35%">
-      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.12"/>
-      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#CDC9B2" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#CDC9B2" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
@@ -528,19 +528,19 @@ function generateAdaptiveIcon(size) {
   <circle cx="${cx}" cy="${cy}" r="${runicR + size * 0.01}" fill="url(#aRuneGlow)"/>
 
   <!-- Runic ring -->
-  <circle cx="${cx}" cy="${cy}" r="${runicR}" fill="none" stroke="#fbbf24" stroke-width="${size * 0.003}" stroke-opacity="0.4"/>
-  <circle cx="${cx}" cy="${cy}" r="${runicR - size * 0.02}" fill="none" stroke="#fbbf24" stroke-width="${size * 0.0015}" stroke-opacity="0.2"/>
+  <circle cx="${cx}" cy="${cy}" r="${runicR}" fill="none" stroke="#CDC9B2" stroke-width="${size * 0.003}" stroke-opacity="0.4"/>
+  <circle cx="${cx}" cy="${cy}" r="${runicR - size * 0.02}" fill="none" stroke="#CDC9B2" stroke-width="${size * 0.0015}" stroke-opacity="0.2"/>
 
   <!-- Rune chars -->
   ${runePositions
     .map(
       (r) =>
-        `<text x="${r.x.toFixed(1)}" y="${(r.y + size * 0.012).toFixed(1)}" text-anchor="middle" font-size="${size * 0.025}" font-family="serif" fill="#fbbf24" fill-opacity="0.5">${r.char}</text>`
+        `<text x="${r.x.toFixed(1)}" y="${(r.y + size * 0.012).toFixed(1)}" text-anchor="middle" font-size="${size * 0.025}" font-family="serif" fill="#CDC9B2" fill-opacity="0.5">${r.char}</text>`
     )
     .join("\n  ")}
 
   <!-- Die border glow -->
-  <circle cx="${cx}" cy="${cy}" r="${dieRadius + size * 0.012}" fill="none" stroke="#c62828" stroke-width="${size * 0.004}" stroke-opacity="0.3"/>
+  <circle cx="${cx}" cy="${cy}" r="${dieRadius + size * 0.012}" fill="none" stroke="#8f3d38" stroke-width="${size * 0.004}" stroke-opacity="0.3"/>
 
   <!-- Outer faces -->
   ${geo.outerFaces
@@ -582,11 +582,11 @@ function generateAdaptiveIcon(size) {
   <circle cx="${geo.outerPoints[0].x.toFixed(1)}" cy="${geo.outerPoints[0].y.toFixed(1)}" r="${size * 0.006}" fill="#ffffff" fill-opacity="0.5"/>
 
   <!-- Sparkle accents -->
-  <polygon points="${cx + dieRadius + size * 0.03},${cy - dieRadius + size * 0.008} ${cx + dieRadius + size * 0.038},${cy - dieRadius - size * 0.01} ${cx + dieRadius + size * 0.046},${cy - dieRadius + size * 0.008} ${cx + dieRadius + size * 0.038},${cy - dieRadius + size * 0.026}" fill="#fbbf24" fill-opacity="0.65"/>
+  <polygon points="${cx + dieRadius + size * 0.03},${cy - dieRadius + size * 0.008} ${cx + dieRadius + size * 0.038},${cy - dieRadius - size * 0.01} ${cx + dieRadius + size * 0.046},${cy - dieRadius + size * 0.008} ${cx + dieRadius + size * 0.038},${cy - dieRadius + size * 0.026}" fill="#CDC9B2" fill-opacity="0.65"/>
 </svg>`;
 }
 
-// ─── Main ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const assetsDir = path.join(__dirname, "..", "assets");
 
@@ -602,16 +602,16 @@ const files = [
   { name: "favicon.svg", content: generateFavicon(48) },
 ];
 
-console.log("🎲 Generating D&D Español icon assets...\n");
+console.log("ðŸŽ² Generating D&D EspaÃ±ol icon assets...\n");
 
 for (const file of files) {
   const filePath = path.join(assetsDir, file.name);
   fs.writeFileSync(filePath, file.content, "utf8");
-  console.log(`  ✅ ${file.name} (${(file.content.length / 1024).toFixed(1)} KB)`);
+  console.log(`  âœ… ${file.name} (${(file.content.length / 1024).toFixed(1)} KB)`);
 }
 
-console.log("\n🎉 Done! SVG icons generated in assets/");
-console.log("\n📋 To convert to PNG, you can use one of these methods:");
+console.log("\nðŸŽ‰ Done! SVG icons generated in assets/");
+console.log("\nðŸ“‹ To convert to PNG, you can use one of these methods:");
 console.log("  1. Online: https://svgtopng.com/");
 console.log("  2. Inkscape CLI:");
 console.log('     inkscape assets/icon.svg -o assets/icon.png -w 1024 -h 1024');

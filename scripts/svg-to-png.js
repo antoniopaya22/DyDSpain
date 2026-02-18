@@ -22,7 +22,7 @@ const conversions = [
     output: "icon.png",
     width: 1024,
     height: 1024,
-    background: { r: 13, g: 13, b: 26, alpha: 1 }, // #0d0d1a
+    background: { r: 23, g: 22, b: 15, alpha: 1 }, // #17160F
   },
   {
     input: "adaptive-icon.svg",

@@ -16,7 +16,7 @@ import {
   type BackgroundData,
 } from "@/data/srd";
 import type { BackgroundId } from "@/types/character";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 5;
@@ -333,7 +333,7 @@ export default function BackgroundStep() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#272519",
   },
   scroll: {
     flex: 1,
@@ -353,24 +353,24 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     alignItems: "center",
     justifyContent: "center",
   },
   stepText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     fontWeight: "600",
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 3,
   },
   titleSection: {
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(198,40,40,0.15)",
+    backgroundColor: "rgba(143,61,56,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -405,16 +405,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   bgCard: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
     padding: 14,
     marginBottom: 8,
   },
   bgCardSelected: {
-    borderColor: "#c62828",
-    backgroundColor: "rgba(198,40,40,0.08)",
+    borderColor: "#8f3d38",
+    backgroundColor: "rgba(143,61,56,0.08)",
   },
   bgCardRow: {
     flexDirection: "row",
@@ -424,13 +424,13 @@ const styles = StyleSheet.create({
     height: 48,
     width: 48,
     borderRadius: 12,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
   },
   bgIconSelected: {
-    backgroundColor: "rgba(198,40,40,0.2)",
+    backgroundColor: "rgba(143,61,56,0.2)",
   },
   bgIconText: {
     fontSize: 24,
@@ -445,20 +445,20 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   bgSkills: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 13,
   },
   detailsCard: {
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     marginTop: -4,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   detailsDescription: {
-    color: "#b3b3cc",
+    color: "#D4D1BD",
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 14,
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   detailLabel: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 13,
     fontWeight: "700",
     minWidth: 110,
@@ -480,12 +480,12 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   featureBox: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 10,
     padding: 12,
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   featureHeader: {
     flexDirection: "row",
@@ -493,13 +493,13 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   featureName: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 14,
     fontWeight: "bold",
     marginLeft: 6,
   },
   featureDesc: {
-    color: "#b3b3cc",
+    color: "#D4D1BD",
     fontSize: 13,
     lineHeight: 18,
   },
@@ -508,10 +508,10 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#3a3a5c",
+    borderTopColor: "#514D35",
   },
   nextButton: {
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: "row",
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nextButtonDisabled: {
-    backgroundColor: "#2d2d44",
+    backgroundColor: "#423E2B",
     opacity: 0.5,
   },
   nextButtonText: {

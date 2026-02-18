@@ -20,28 +20,21 @@ import type {
   Personality,
   Appearance,
   Character,
-  AbilityScoresDetailed,
-  AbilityScoreDetail,
-  SkillProficiencies,
-  SkillProficiency,
   SavingThrowProficiencies,
-  HitPoints,
-  HitDicePool,
-  DeathSaves,
-  SpeedInfo,
-  Proficiencies,
-  CombatLogEntry,
 } from "@/types/character";
-import {
-  calcModifier,
-  calcProficiencyBonus,
-  SKILLS,
-} from "@/types/character";
+import { calcProficiencyBonus } from "@/types/character";
 import { STORAGE_KEYS, setItem, getItem, removeItem } from "@/utils/storage";
 import { getRaceData, getSubraceData, getTotalRacialBonuses } from "@/data/srd/races";
 import { getClassData, calcLevel1HP } from "@/data/srd/classes";
 import { getBackgroundData } from "@/data/srd/backgrounds";
 import { createDefaultInventory } from "@/types/item";
+import {
+  buildAbilityScoresDetailed,
+  buildSkillProficiencies,
+  buildCharacterTraits,
+  buildProficiencies,
+  buildInitialSpells,
+} from "./characterBuilderHelpers";
 
 // ─── Constantes ──────────────────────────────────────────────────────
 
@@ -139,6 +132,10 @@ interface CreationActions {
   /** Bonificadores libres de raza (semielfo) */
   setFreeAbilityBonuses: (bonuses: AbilityKey[]) => void;
 
+  // ── Re-creación ──
+  /** Crea un borrador pre-rellenado a partir de un personaje existente para re-creación */
+  startRecreation: (character: Character) => Promise<void>;
+
   // ── Validación ──
   /** Valida si un paso está completo */
   isStepValid: (step: number) => boolean;
@@ -181,7 +178,12 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       lastSaved: new Date().toISOString(),
     };
     set({ draft: newDraft, isDirty: true, error: null });
-    await setItem(STORAGE_KEYS.CREATION_DRAFT(campaignId), newDraft);
+    try {
+      await setItem(STORAGE_KEYS.CREATION_DRAFT(campaignId), newDraft);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`[CreationStore] startCreation: ${message}`);
+    }
   },
 
   loadDraft: async (campaignId: string) => {
@@ -404,6 +406,48 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     });
   },
 
+  startRecreation: async (character: Character) => {
+    // Build a draft pre-populated with the character's immutable creation data.
+    // Ability scores, skills, spells, and equipment are left blank so the user
+    // can re-select them through the wizard starting at step 4.
+    const newDraft: CharacterCreationDraft = {
+      currentStep: 4, // Start at abilities step
+      campaignId: character.campaignId,
+
+      // Pre-filled: choices the user should NOT re-make
+      nombre: character.nombre,
+      raza: character.raza,
+      subraza: character.subraza ?? undefined,
+      clase: character.clase,
+      trasfondo: character.trasfondo,
+      alineamiento: character.alineamiento,
+      personality: character.personality,
+      appearance: character.appearance,
+
+      // Blank: choices the user WILL re-make
+      abilityScoreMethod: undefined,
+      abilityScoresBase: undefined,
+      skillChoices: undefined,
+      spellChoices: undefined,
+      equipmentChoices: undefined,
+      freeAbilityBonuses: undefined,
+
+      // Re-creation metadata
+      recreatingCharacterId: character.id,
+      recreatingInventoryId: character.inventoryId,
+
+      lastSaved: new Date().toISOString(),
+    };
+
+    set({ draft: newDraft, isDirty: true, error: null });
+    try {
+      await setItem(STORAGE_KEYS.CREATION_DRAFT(character.campaignId), newDraft);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`[CreationStore] startRecreation: ${message}`);
+    }
+  },
+
   // ── Validación ─────────────────────────────────────────────────────
 
   isStepValid: (step: number) => {
@@ -489,7 +533,6 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     const { draft } = get();
     if (!draft) return null;
 
-    // Validar que los datos mínimos estén presentes
     if (
       !draft.nombre ||
       !draft.raza ||
@@ -501,8 +544,8 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       return null;
     }
 
-    const characterId = randomUUID();
-    const inventoryId = randomUUID();
+    const characterId = draft.recreatingCharacterId ?? randomUUID();
+    const inventoryId = draft.recreatingInventoryId ?? randomUUID();
     const now = new Date().toISOString();
 
     const raceData = getRaceData(draft.raza);
@@ -512,68 +555,24 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     const classData = getClassData(draft.clase);
     const backgroundData = getBackgroundData(draft.trasfondo);
 
-    // ── Calcular bonificadores raciales ──
+    // ── Puntuaciones de característica ──
     const racialBonuses = getTotalRacialBonuses(draft.raza, draft.subraza ?? null);
-
-    // ── Calcular bonificadores libres (ej: semielfo elige 2 × +1) ──
-    const freeBonuses: Partial<Record<AbilityKey, number>> = {};
-    if (draft.freeAbilityBonuses && draft.freeAbilityBonuses.length > 0) {
-      for (const key of draft.freeAbilityBonuses) {
-        freeBonuses[key] = (freeBonuses[key] ?? 0) + 1;
-      }
-    }
-
-    // ── Construir puntuaciones de característica detalladas ──
-    const baseScores = draft.abilityScoresBase;
-    const abilityKeys: AbilityKey[] = ["fue", "des", "con", "int", "sab", "car"];
-
-    const abilityScores: AbilityScoresDetailed = {} as AbilityScoresDetailed;
-    for (const key of abilityKeys) {
-      const base = baseScores[key];
-      const racial = (racialBonuses[key] ?? 0) + (freeBonuses[key] ?? 0);
-      const total = base + racial;
-      const detail: AbilityScoreDetail = {
-        base,
-        racial,
-        improvement: 0,
-        misc: 0,
-        override: null,
-        total,
-        modifier: calcModifier(total),
-      };
-      abilityScores[key] = detail;
-    }
+    const abilityScores = buildAbilityScoresDetailed(
+      draft.abilityScoresBase,
+      racialBonuses,
+      draft.freeAbilityBonuses,
+    );
 
     // ── Competencias de habilidades ──
-    const skillProficiencies: SkillProficiencies = {} as SkillProficiencies;
-    const allSkillKeys = Object.keys(SKILLS) as SkillKey[];
-    for (const sk of allSkillKeys) {
-      skillProficiencies[sk] = { level: "none" };
-    }
-
-    // Habilidades del trasfondo
-    for (const sk of backgroundData.skillProficiencies) {
-      skillProficiencies[sk] = { level: "proficient", source: "trasfondo" };
-    }
-
-    // Habilidades de la raza
-    if (raceData.skillProficiencies) {
-      for (const sk of raceData.skillProficiencies) {
-        skillProficiencies[sk] = { level: "proficient", source: "raza" };
-      }
-    }
-
-    // Habilidades elegidas por el jugador (clase + raza si aplica)
-    if (draft.skillChoices) {
-      for (const sk of draft.skillChoices) {
-        if (skillProficiencies[sk].level === "none") {
-          skillProficiencies[sk] = { level: "proficient", source: "clase" };
-        }
-      }
-    }
+    const skillProficiencies = buildSkillProficiencies({
+      backgroundSkills: backgroundData.skillProficiencies,
+      raceSkills: raceData.skillProficiencies,
+      playerChoices: draft.skillChoices,
+    });
 
     // ── Tiradas de salvación ──
-    const savingThrows: SavingThrowProficiencies = {} as SavingThrowProficiencies;
+    const abilityKeys: AbilityKey[] = ["fue", "des", "con", "int", "sab", "car"];
+    const savingThrows = {} as SavingThrowProficiencies;
     for (const key of abilityKeys) {
       savingThrows[key] = {
         proficient: classData.savingThrows.includes(key),
@@ -586,131 +585,41 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     const hpBonusPerLevel = subraceData?.hpBonusPerLevel ?? 0;
     const maxHP = calcLevel1HP(draft.clase, conMod) + hpBonusPerLevel;
 
-    const hp: HitPoints = {
-      max: maxHP,
-      current: maxHP,
-      temp: 0,
-    };
-
-    // ── Dados de golpe ──
-    const hitDice: HitDicePool = {
-      die: classData.hitDie,
-      total: 1,
-      remaining: 1,
-    };
-
-    // ── Salvaciones de muerte ──
-    const deathSaves: DeathSaves = {
-      successes: 0,
-      failures: 0,
-    };
-
-    // ── Velocidad ──
-    const speed: SpeedInfo = {
-      walk: raceData.speed,
-    };
-
     // ── Competencias generales ──
-    const proficiencies: Proficiencies = {
-      armors: [...classData.armorProficiencies],
-      weapons: [
-        ...classData.weaponProficiencies,
-        ...(raceData.weaponProficiencies ?? []),
-        ...(subraceData?.weaponProficiencies ?? []),
-      ],
-      tools: [
-        ...classData.toolProficiencies,
-        ...(backgroundData.toolProficiencies ?? []),
-        ...(subraceData?.toolProficiencies ?? []),
-      ],
-      languages: [
-        ...raceData.languages,
-      ],
-    };
-
-    // ── Rasgos ──
-    const traits: Character["traits"] = [];
-
-    // Rasgos de raza
-    for (const trait of raceData.traits) {
-      traits.push({
-        id: randomUUID(),
-        nombre: trait.nombre,
-        descripcion: trait.descripcion,
-        origen: "raza",
-        maxUses: null,
-        currentUses: null,
-        recharge: null,
-      });
-    }
-
-    // Rasgos de subraza
-    if (subraceData) {
-      for (const trait of subraceData.traits) {
-        traits.push({
-          id: randomUUID(),
-          nombre: trait.nombre,
-          descripcion: trait.descripcion,
-          origen: "raza",
-          maxUses: null,
-          currentUses: null,
-          recharge: null,
-        });
-      }
-    }
-
-    // Rasgos de clase (nivel 1)
-    for (const feature of classData.level1Features) {
-      traits.push({
-        id: randomUUID(),
-        nombre: feature.nombre,
-        descripcion: feature.descripcion,
-        origen: "clase",
-        maxUses: null,
-        currentUses: null,
-        recharge: null,
-      });
-    }
-
-    // Rasgo de trasfondo
-    traits.push({
-      id: randomUUID(),
-      nombre: backgroundData.featureName,
-      descripcion: backgroundData.featureDescription,
-      origen: "trasfondo",
-      maxUses: null,
-      currentUses: null,
-      recharge: null,
+    const proficiencies = buildProficiencies({
+      classArmors: classData.armorProficiencies,
+      classWeapons: classData.weaponProficiencies,
+      classTools: classData.toolProficiencies,
+      raceWeapons: raceData.weaponProficiencies,
+      raceLanguages: raceData.languages,
+      subraceWeapons: subraceData?.weaponProficiencies,
+      subraceTools: subraceData?.toolProficiencies,
+      backgroundTools: backgroundData.toolProficiencies,
     });
 
-    // ── Personalidad ──
+    // ── Rasgos ──
+    const traits = buildCharacterTraits({
+      raceTraits: raceData.traits,
+      subraceTraits: subraceData?.traits,
+      classLevel1Features: classData.level1Features,
+      backgroundFeatureName: backgroundData.featureName,
+      backgroundFeatureDescription: backgroundData.featureDescription,
+    });
+
+    // ── Personalidad y apariencia ──
     const personality: Personality = draft.personality ?? {
       traits: [],
       ideals: "",
       bonds: "",
       flaws: "",
     };
-
-    // ── Apariencia ──
     const appearance: Appearance = draft.appearance ?? {};
 
     // ── Hechizos ──
-    const knownSpellIds: string[] = [];
-    const preparedSpellIds: string[] = [];
-    const spellbookIds: string[] = [];
-
-    if (draft.spellChoices) {
-      knownSpellIds.push(
-        ...(draft.spellChoices.cantrips ?? []),
-        ...(draft.spellChoices.spells ?? [])
-      );
-      // Para magos, también llenar el libro de hechizos
-      if (draft.clase === "mago" && draft.spellChoices.spellbook) {
-        spellbookIds.push(...draft.spellChoices.spellbook);
-      }
-      // Los conjuros conocidos se preparan automáticamente a nivel 1 para la mayoría de clases
-      preparedSpellIds.push(...(draft.spellChoices.spells ?? []));
-    }
+    const { knownSpellIds, preparedSpellIds, spellbookIds } = buildInitialSpells(
+      draft.spellChoices,
+      draft.clase,
+    );
 
     // ── Historial de nivel ──
     const levelHistory: Character["levelHistory"] = [
@@ -723,14 +632,10 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       },
     ];
 
-    // ── Combate log vacío ──
-    const combatLog: CombatLogEntry[] = [];
-
     // ── Ensamblar personaje ──
     const character: Character = {
       id: characterId,
       campaignId: draft.campaignId,
-
       nombre: draft.nombre.trim(),
       raza: draft.raza,
       subraza: draft.subraza ?? null,
@@ -740,36 +645,27 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       experiencia: 0,
       trasfondo: draft.trasfondo,
       alineamiento: draft.alineamiento,
-
       abilityScores,
       skillProficiencies,
       savingThrows,
-
-      hp,
-      hitDice,
-      deathSaves,
-      speed,
+      hp: { max: maxHP, current: maxHP, temp: 0 },
+      hitDice: { die: classData.hitDie, total: 1, remaining: 1 },
+      deathSaves: { successes: 0, failures: 0 },
+      speed: { walk: raceData.speed },
       damageModifiers: [],
       conditions: [],
       concentration: null,
-      combatLog,
-
+      combatLog: [],
       proficiencies,
       proficiencyBonus: calcProficiencyBonus(1),
-
       traits,
-
       personality,
       appearance,
-
       levelHistory,
-
       knownSpellIds,
       preparedSpellIds,
       spellbookIds,
-
       inventoryId,
-
       creadoEn: now,
       actualizadoEn: now,
     };
@@ -884,4 +780,19 @@ export function getRequiredSkillCount(
   }
 
   return count;
+}
+
+// ─── Standalone helpers for cross-store usage ────────────────────────
+
+/**
+ * Removes the creation draft for a given campaign.
+ * Exposed as a standalone function so other stores (e.g. campaignStore)
+ * can delete a draft without coupling to STORAGE_KEYS.CREATION_DRAFT.
+ */
+export async function deleteCreationDraft(campaignId: string): Promise<void> {
+  try {
+    await removeItem(STORAGE_KEYS.CREATION_DRAFT(campaignId));
+  } catch {
+    // Draft may not exist — safe to ignore
+  }
 }

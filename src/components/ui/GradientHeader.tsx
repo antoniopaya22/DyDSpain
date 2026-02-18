@@ -22,7 +22,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { IconButton } from "./AnimatedPressable";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 // ─── Props ───────────────────────────────────────────────────────────
 
@@ -539,7 +539,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -4,
     right: -4,
-    backgroundColor: "#c62828", // badge bg — overridden inline via colors.accentRed
+    backgroundColor: "#8f3d38", // badge bg — overridden inline via colors.accentRed
     borderRadius: 10,
     minWidth: 18,
     height: 18,

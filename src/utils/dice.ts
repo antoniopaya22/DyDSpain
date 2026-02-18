@@ -3,6 +3,8 @@
  * Funciones para tirar dados, calcular modificadores y formatear resultados.
  */
 
+import { random, now } from "./providers";
+
 // ─── Tipos ───────────────────────────────────────────────────────────
 
 /** Tipos de dados estándar de D&D */
@@ -103,7 +105,7 @@ export const DIE_MAX_VALUES: Record<DieType, number> = {
  * @param max - Valor máximo (incluido)
  */
 export function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(random() * (max - min + 1)) + min;
 }
 
 // ─── Tiradas básicas ─────────────────────────────────────────────────
@@ -115,6 +117,29 @@ export function randomInt(min: number, max: number): number {
  */
 export function rollDie(die: DieType): number {
   return randomInt(1, DIE_MAX_VALUES[die]);
+}
+
+/**
+ * Tira un dado dado su número de caras (versión numérica).
+ * Útil cuando se trabaja con caras como `number` en lugar de `DieType`.
+ * @param sides - Número de caras del dado
+ * @returns Valor obtenido (entre 1 y sides)
+ */
+export function rollDieRaw(sides: number): number {
+  return randomInt(1, sides);
+}
+
+/**
+ * Convierte un número de caras a su tipo de dado estándar.
+ * @param sides - Número de caras (4, 6, 8, 10, 12, 20, 100)
+ * @returns El DieType correspondiente, o "d20" por defecto
+ */
+export function parseDieType(sides: number): DieType {
+  const map: Record<number, DieType> = {
+    4: "d4", 6: "d6", 8: "d8", 10: "d10",
+    12: "d12", 20: "d20", 100: "d100",
+  };
+  return map[sides] || "d20";
 }
 
 /**
@@ -174,7 +199,7 @@ export function roll(
     total,
     isCritical,
     isFumble,
-    timestamp: new Date().toISOString(),
+    timestamp: now(),
   };
 }
 
@@ -189,18 +214,24 @@ export function rollD20(modifier: number = 0): RollResult {
   return roll(1, "d20", modifier);
 }
 
+/** Tipo interno de ventaja para tiradas d20 */
+type AdvantageKind = "advantage" | "disadvantage";
+
 /**
- * Realiza una tirada con ventaja (tira 2d20 y toma el mayor).
+ * Realiza una tirada con ventaja o desventaja (tira 2d20 y toma el mayor/menor).
+ * @param mode - "advantage" (mayor) o "disadvantage" (menor)
  * @param modifier - Modificador a sumar al resultado
  * @returns Resultado de la tirada con ambos valores
  */
-export function rollWithAdvantage(modifier: number = 0): RollResult & {
-  allRolls: [number, number];
-  chosenRoll: number;
-} {
+function rollWithAdvantageMode(
+  mode: AdvantageKind,
+  modifier: number = 0,
+): RollResult & { allRolls: [number, number]; chosenRoll: number } {
   const roll1 = rollDie("d20");
   const roll2 = rollDie("d20");
-  const chosenRoll = Math.max(roll1, roll2);
+
+  const isAdvantage = mode === "advantage";
+  const chosenRoll = isAdvantage ? Math.max(roll1, roll2) : Math.min(roll1, roll2);
   const total = chosenRoll + modifier;
 
   const isCritical = chosenRoll === 20;
@@ -213,8 +244,11 @@ export function rollWithAdvantage(modifier: number = 0): RollResult & {
         ? `${modifier}`
         : "";
 
+  const notation = isAdvantage ? "kh1" : "kl1";
+  const label = isAdvantage ? "ventaja" : "desventaja";
+
   return {
-    expression: `2d20kh1${modStr} (ventaja)`,
+    expression: `2d20${notation}${modStr} (${label})`,
     rolls: [
       { die: "d20", value: roll1 },
       { die: "d20", value: roll2 },
@@ -224,51 +258,26 @@ export function rollWithAdvantage(modifier: number = 0): RollResult & {
     total: Math.max(0, total),
     isCritical,
     isFumble,
-    timestamp: new Date().toISOString(),
+    timestamp: now(),
     allRolls: [roll1, roll2],
     chosenRoll,
   };
 }
 
 /**
+ * Realiza una tirada con ventaja (tira 2d20 y toma el mayor).
+ * @param modifier - Modificador a sumar al resultado
+ */
+export function rollWithAdvantage(modifier: number = 0) {
+  return rollWithAdvantageMode("advantage", modifier);
+}
+
+/**
  * Realiza una tirada con desventaja (tira 2d20 y toma el menor).
  * @param modifier - Modificador a sumar al resultado
- * @returns Resultado de la tirada con ambos valores
  */
-export function rollWithDisadvantage(modifier: number = 0): RollResult & {
-  allRolls: [number, number];
-  chosenRoll: number;
-} {
-  const roll1 = rollDie("d20");
-  const roll2 = rollDie("d20");
-  const chosenRoll = Math.min(roll1, roll2);
-  const total = chosenRoll + modifier;
-
-  const isCritical = chosenRoll === 20;
-  const isFumble = chosenRoll === 1;
-
-  const modStr =
-    modifier > 0
-      ? `+${modifier}`
-      : modifier < 0
-        ? `${modifier}`
-        : "";
-
-  return {
-    expression: `2d20kl1${modStr} (desventaja)`,
-    rolls: [
-      { die: "d20", value: roll1 },
-      { die: "d20", value: roll2 },
-    ],
-    modifier,
-    subtotal: chosenRoll,
-    total: Math.max(0, total),
-    isCritical,
-    isFumble,
-    timestamp: new Date().toISOString(),
-    allRolls: [roll1, roll2],
-    chosenRoll,
-  };
+export function rollWithDisadvantage(modifier: number = 0) {
+  return rollWithAdvantageMode("disadvantage", modifier);
 }
 
 /**
@@ -452,6 +461,195 @@ export function evaluateDiceExpression(expression: string): RollResult | null {
   if (!parsed) return null;
 
   return roll(parsed.count, parsed.die, parsed.modifier);
+}
+
+// ─── Fórmulas avanzadas de dados ────────────────────────────────────
+// Parser y executor de fórmulas complejas como "2d6+1d4+3", "4d6kh3",
+// con soporte para ventaja/desventaja en tiradas de 1d20.
+// ═════════════════════════════════════════════════════════════════════
+
+/** Modo de ventaja/desventaja */
+export type AdvantageMode = "normal" | "ventaja" | "desventaja";
+
+/** Resultado individual de un dado con indicador de descarte */
+export interface DieRollResultEx {
+  die: DieType;
+  value: number;
+  discarded?: boolean;
+}
+
+/** Fórmula de dados parseada (soporta múltiples grupos y keep-highest/lowest) */
+export interface ParsedFormula {
+  groups: {
+    count: number;
+    sides: number;
+    keepHighest?: number;
+    keepLowest?: number;
+  }[];
+  modifier: number;
+}
+
+/**
+ * Parsea una fórmula de dados compleja.
+ * Soporta múltiples grupos de dados, keep-highest/lowest, y modificadores.
+ *
+ * Ejemplos válidos: "2d6+3", "4d6kh3", "1d8+1d4-2", "d20+5"
+ *
+ * @param formula - Fórmula a parsear
+ * @returns La fórmula parseada, o null si es inválida
+ */
+export function parseFormula(formula: string): ParsedFormula | null {
+  const cleaned = formula.replace(/\s+/g, "").toLowerCase();
+  if (!cleaned) return null;
+
+  const groups: ParsedFormula["groups"] = [];
+  let modifier = 0;
+
+  // Split by + or -, keeping the sign
+  const tokens = cleaned.match(/[+-]?[^+-]+/g);
+  if (!tokens) return null;
+
+  for (const token of tokens) {
+    const sign = token.startsWith("-") ? -1 : 1;
+    const abs = token.replace(/^[+-]/, "");
+
+    // Check if it's a dice expression: NdX, NdXkhY, NdXklY
+    const diceMatch = abs.match(/^(\d*)d(\d+)(?:kh(\d+)|kl(\d+))?$/);
+    if (diceMatch) {
+      const count = parseInt(diceMatch[1] || "1", 10);
+      const sides = parseInt(diceMatch[2], 10);
+      const keepHighest = diceMatch[3] ? parseInt(diceMatch[3], 10) : undefined;
+      const keepLowest = diceMatch[4] ? parseInt(diceMatch[4], 10) : undefined;
+
+      if (sides <= 0 || count <= 0 || count > 100 || sides > 1000) return null;
+      if (keepHighest && keepHighest > count) return null;
+      if (keepLowest && keepLowest > count) return null;
+
+      groups.push({
+        count: count * sign,
+        sides,
+        keepHighest,
+        keepLowest,
+      });
+    } else {
+      // It's a flat modifier
+      const num = parseInt(abs, 10);
+      if (isNaN(num)) return null;
+      modifier += num * sign;
+    }
+  }
+
+  if (groups.length === 0 && modifier === 0) return null;
+
+  return { groups, modifier };
+}
+
+/**
+ * Ejecuta una fórmula parseada, aplicando ventaja/desventaja y un modificador extra.
+ *
+ * @param parsed - Fórmula previamente parseada con `parseFormula`
+ * @param advantageMode - Modo de ventaja/desventaja (solo aplica a tiradas de 1d20)
+ * @param extraModifier - Modificador adicional (ej: de habilidad)
+ * @returns Resultado con dados individuales, subtotal, total, y flags de crítico/pifia
+ */
+export function executeFormula(
+  parsed: ParsedFormula,
+  advantageMode: AdvantageMode,
+  extraModifier: number,
+): {
+  rolls: DieRollResultEx[];
+  subtotal: number;
+  total: number;
+  isCritical: boolean;
+  isFumble: boolean;
+} {
+  const allRolls: DieRollResultEx[] = [];
+  let subtotal = 0;
+
+  // Check if it's a single d20 roll (for advantage/disadvantage)
+  const isSingleD20 =
+    parsed.groups.length === 1 &&
+    Math.abs(parsed.groups[0].count) === 1 &&
+    parsed.groups[0].sides === 20 &&
+    !parsed.groups[0].keepHighest &&
+    !parsed.groups[0].keepLowest;
+
+  if (isSingleD20 && advantageMode !== "normal") {
+    const roll1 = rollDieRaw(20);
+    const roll2 = rollDieRaw(20);
+    const sign = parsed.groups[0].count > 0 ? 1 : -1;
+
+    let chosen: number;
+    let discardedValue: number;
+
+    if (advantageMode === "ventaja") {
+      chosen = Math.max(roll1, roll2);
+      discardedValue = Math.min(roll1, roll2);
+    } else {
+      chosen = Math.min(roll1, roll2);
+      discardedValue = Math.max(roll1, roll2);
+    }
+
+    allRolls.push({ die: "d20", value: chosen, discarded: false });
+    allRolls.push({ die: "d20", value: discardedValue, discarded: true });
+
+    subtotal = chosen * sign;
+  } else {
+    for (const group of parsed.groups) {
+      const sign = group.count > 0 ? 1 : -1;
+      const absCount = Math.abs(group.count);
+      const dieType = parseDieType(group.sides);
+
+      const rolledValues: { value: number; index: number }[] = [];
+      for (let i = 0; i < absCount; i++) {
+        const value = rollDieRaw(group.sides);
+        rolledValues.push({ value, index: i });
+      }
+
+      if (group.keepHighest || group.keepLowest) {
+        const sorted = [...rolledValues].sort((a, b) => b.value - a.value);
+        const keepCount = group.keepHighest || group.keepLowest || absCount;
+
+        let kept: Set<number>;
+        if (group.keepHighest) {
+          kept = new Set(sorted.slice(0, keepCount).map((r) => r.index));
+        } else {
+          kept = new Set(
+            sorted.slice(sorted.length - keepCount).map((r) => r.index),
+          );
+        }
+
+        for (const rv of rolledValues) {
+          const isKept = kept.has(rv.index);
+          allRolls.push({ die: dieType, value: rv.value, discarded: !isKept });
+          if (isKept) {
+            subtotal += rv.value * sign;
+          }
+        }
+      } else {
+        for (const rv of rolledValues) {
+          allRolls.push({ die: dieType, value: rv.value, discarded: false });
+          subtotal += rv.value * sign;
+        }
+      }
+    }
+  }
+
+  const totalModifier = parsed.modifier + extraModifier;
+  const total = subtotal + totalModifier;
+
+  // Check for critical/fumble (only on d20 single rolls)
+  const mainD20Roll = allRolls.find((r) => r.die === "d20" && !r.discarded);
+  const isCritical = isSingleD20 && mainD20Roll?.value === 20;
+  const isFumble = isSingleD20 && mainD20Roll?.value === 1;
+
+  return {
+    rolls: allRolls,
+    subtotal,
+    total,
+    isCritical,
+    isFumble,
+  };
 }
 
 // ─── Funciones de formato ────────────────────────────────────────────

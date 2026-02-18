@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import { getClassData, getBackgroundData } from "@/data/srd";
 import type { EquipmentChoice } from "@/data/srd";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 8;
@@ -279,7 +279,7 @@ export default function EquipmentStep() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#272519",
   },
   scroll: {
     flex: 1,
@@ -299,24 +299,24 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     alignItems: "center",
     justifyContent: "center",
   },
   stepText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     fontWeight: "600",
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 3,
   },
   titleSection: {
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(198,40,40,0.15)",
+    backgroundColor: "rgba(143,61,56,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -363,22 +363,22 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   choiceLabel: {
-    color: "#fbbf24",
+    color: "#CDC9B2",
     fontSize: 15,
     fontWeight: "bold",
     marginBottom: 10,
   },
   optionCard: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   optionCardSelected: {
-    borderColor: "#c62828",
-    backgroundColor: "rgba(198,40,40,0.08)",
+    borderColor: "#8f3d38",
+    backgroundColor: "rgba(143,61,56,0.08)",
   },
   optionRow: {
     flexDirection: "row",
@@ -389,19 +389,19 @@ const styles = StyleSheet.create({
     width: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: "#666699",
+    borderColor: "#807953",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
   },
   radioSelected: {
-    borderColor: "#c62828",
+    borderColor: "#8f3d38",
   },
   radioInner: {
     height: 12,
     width: 12,
     borderRadius: 6,
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
   },
   optionInfo: {
     flex: 1,
@@ -416,16 +416,16 @@ const styles = StyleSheet.create({
     color: "#ffffff", // overridden by themed.optionLabelSelected
   },
   optionItems: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 13,
     lineHeight: 18,
   },
   includedCard: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 12,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   includedRow: {
     flexDirection: "row",
@@ -442,11 +442,11 @@ const styles = StyleSheet.create({
   hintBox: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: "rgba(251,191,36,0.1)",
+    backgroundColor: "rgba(178,172,136,0.1)",
     borderRadius: 10,
     padding: 14,
     borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.2)",
+    borderColor: "rgba(178,172,136,0.2)",
   },
   hintText: {
     color: "#d9d9e6",
@@ -460,10 +460,10 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#3a3a5c",
+    borderTopColor: "#514D35",
   },
   nextButton: {
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: "row",
@@ -471,7 +471,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nextButtonDisabled: {
-    backgroundColor: "#2d2d44",
+    backgroundColor: "#423E2B",
     opacity: 0.5,
   },
   nextButtonText: {

@@ -15,7 +15,7 @@ Este directorio contiene todas las historias de usuario de la aplicación **D&D 
 | HU-07 | [Inventario y Equipamiento](./HU-07_inventario_equipamiento.md) | Objetos, armas, armaduras, equipo y gestión de carga |
 | HU-08 | [Vida y Combate](./HU-08_vida_combate.md) | Puntos de golpe, clase de armadura, tiradas de salvación, descansos |
 | HU-09 | [Notas](./HU-09_notas.md) | Sistema de notas libres por personaje y por partida |
-| HU-10 | [Modo Master (DM)](./HU-10_modo_master.md) | Sala en vivo para el Director de Juego con visión de los personajes |
+| HU-10 | [Modo Master (DM)](./HU-10_modo_master.md) | Selección de modo Jugador/Master, campañas del DM, seguimiento en tiempo real vía Supabase (Premium) |
 | HU-11 | [Tirador de Dados](./HU-11_tirador_dados.md) | Tirador de dados integrado con fórmulas, presets, ventaja/desventaja e historial |
 | HU-12 | [Recursos y Habilidades de Clase](./HU-12_recursos_clase.md) | Gestión de recursos limitados por clase (Furia, Ki, Inspiración, etc.) |
 | HU-13 | [Compendio SRD](./HU-13_compendio_srd.md) | Consulta de referencia del SRD 5.1: razas, clases, trasfondos, conjuros, equipamiento y dotes |
@@ -32,34 +32,34 @@ Este directorio contiene todas las historias de usuario de la aplicación **D&D 
 ## Mapa de Dependencias
 
 ```
-HU-01 Partidas ──────────────────────────────────────────────────┐
-  │                                                               │
-  ▼                                                               │
-HU-02 Creación ──► HU-04 Estadísticas ──► HU-05 Subir Nivel     │
-  │                   │                       │    │              │
-  │                   │                       │    ▼              │
-  │                   │                       │  HU-15 Dotes      │
-  │                   │                       │    │              │
-  │                   ▼                       ▼    ▼              │
-  │               HU-08 Vida/Combate ◄── HU-12 Recursos Clase    │
-  │                   │                                           │
-  ▼                   ▼                                           │
-HU-06 Hechizos ◄─────┘                                           │
-  │                                                               │
-  ▼                                                               │
-HU-07 Inventario                                                  │
-  │                                                               │
-  ▼                                                               │
-HU-03 Hoja Personaje ──► HU-09 Notas                             │
-  │                                                               │
-  ▼                                                               │
-HU-11 Tirador Dados                                               │
-  │                                                               │
-  ▼                                                               │
-HU-10 Modo Master ◄──────────────────────────────────────────────┘
+HU-01 Partidas
   │
   ▼
-HU-13 Compendio SRD ◄── HU-14 Ajustes App
+HU-02 Creación ──► HU-04 Estadísticas ──► HU-05 Subir Nivel
+  │                   │                       │    │
+  │                   │                       │    ▼
+  │                   │                       │  HU-15 Dotes
+  │                   │                       │    │
+  │                   ▼                       ▼    ▼
+  │               HU-08 Vida/Combate ◄── HU-12 Recursos Clase
+  │                   │
+  ▼                   ▼
+HU-06 Hechizos ◄─────┘
+  │
+  ▼
+HU-07 Inventario
+  │
+  ▼
+HU-03 Hoja Personaje ──► HU-09 Notas
+  │
+  ▼
+HU-11 Tirador Dados
+  │
+  ▼
+HU-13 Compendio SRD ◄── HU-14 Ajustes App ──► HU-10 Modo Master (Premium)
+                                                  │
+                                                  ▼
+                                          HU-01 + HU-03 + Supabase
 ```
 
 ## Resumen de Prioridades por Módulo
@@ -75,7 +75,7 @@ HU-13 Compendio SRD ◄── HU-14 Ajustes App
 | HU-07 Inventario y Equipamiento | 🔴 Alta | MVP |
 | HU-08 Vida y Combate | 🔴 Alta | MVP |
 | HU-09 Notas | 🟡 Media | MVP |
-| HU-10 Modo Master (DM) | 🟡 Media | Post-MVP |
+| HU-10 Modo Master (DM) | 🔴 Alta | Post-MVP (Premium) |
 | HU-11 Tirador de Dados | 🔴 Alta | MVP |
 | HU-12 Recursos de Clase | 🔴 Alta | MVP |
 | HU-13 Compendio SRD | 🟡 Media | MVP |
@@ -89,6 +89,7 @@ HU-13 Compendio SRD ◄── HU-14 Ajustes App
 | **React Native** | Framework principal |
 | **Expo** | Toolchain y build |
 | **NativeWind** | Estilos (Tailwind CSS para React Native) |
+| **Supabase** | Base de datos en la nube, autenticación y sincronización en tiempo real (Modo Master) |
 
 ## Referencia
 

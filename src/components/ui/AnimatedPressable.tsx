@@ -16,7 +16,7 @@ import {
   Text,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 
 interface AnimatedPressableProps {
   onPress?: () => void;
@@ -148,8 +148,8 @@ function getVariantStyles(
       glow: colors.accentDanger,
     },
     gold: {
-      bg: "rgba(212,160,23,0.15)",
-      border: "rgba(212,160,23,0.3)",
+      bg: "rgba(151,143,98,0.15)",
+      border: "rgba(151,143,98,0.3)",
       text: colors.accentGold,
       glow: colors.accentGold,
     },

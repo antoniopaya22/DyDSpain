@@ -10,7 +10,7 @@
  * - Optional pulse animation
  *
  * Usage:
- *   <D20Icon size={64} color="#c62828" />
+ *   <D20Icon size={64} color="#8f3d38" />
  *   <D20Icon size={48} variant="gold" animated />
  */
 
@@ -28,6 +28,7 @@ import Svg, {
   Path,
   Rect,
 } from "react-native-svg";
+import { getD20Geometry, pointsToString } from "@/utils/d20Geometry";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -62,17 +63,17 @@ interface D20IconProps {
 
 const VARIANT_COLORS: Record<D20Variant, { primary: string; highlight: string; shadow: string; glow: string; numberColor: string }> = {
   red: {
-    primary: "#c62828",
+    primary: "#8f3d38",
     highlight: "#ef5350",
     shadow: "#7f0000",
-    glow: "rgba(198, 40, 40, 0.4)",
+    glow: "rgba(143, 61, 56, 0.4)",
     numberColor: "#ffffff",
   },
   gold: {
-    primary: "#d4a017",
+    primary: "#978F62",
     highlight: "#fcd34d",
     shadow: "#92400e",
-    glow: "rgba(251, 191, 36, 0.4)",
+    glow: "rgba(178, 172, 136, 0.4)",
     numberColor: "#3b1a08",
   },
   silver: {
@@ -104,77 +105,13 @@ const VARIANT_COLORS: Record<D20Variant, { primary: string; highlight: string; s
     numberColor: "#ffffff",
   },
   dark: {
-    primary: "#2d2d52",
-    highlight: "#4a4a7a",
-    shadow: "#14142a",
-    glow: "rgba(45, 45, 82, 0.5)",
-    numberColor: "#fbbf24",
+    primary: "#423E2B",
+    highlight: "#6C6746",
+    shadow: "#1F1D14",
+    glow: "rgba(66, 62, 43, 0.5)",
+    numberColor: "#CDC9B2",
   },
 };
-
-// ─── D20 Geometry ────────────────────────────────────────────────────
-// Points defining the visible faces of a D20 viewed from slightly above center.
-// The die is inscribed in a circle of radius ~45 within a 100×100 viewBox.
-
-function getD20Geometry(cx: number, cy: number, radius: number) {
-  // We create a stylized front-facing view of a D20.
-  // A real icosahedron from this angle shows ~5-6 triangular faces.
-  // We'll draw the 5 visible front faces plus the center face.
-
-  const r = radius;
-  const r2 = r * 0.58; // inner ring radius
-
-  // Outer vertices (pentagon shape for the outer rim)
-  const outerPoints = [];
-  for (let i = 0; i < 5; i++) {
-    const angle = (Math.PI * 2 * i) / 5 - Math.PI / 2;
-    outerPoints.push({
-      x: cx + r * Math.cos(angle),
-      y: cy + r * Math.sin(angle),
-    });
-  }
-
-  // Inner vertices (rotated pentagon, smaller)
-  const innerPoints = [];
-  for (let i = 0; i < 5; i++) {
-    const angle = (Math.PI * 2 * i) / 5 - Math.PI / 2 + Math.PI / 5;
-    innerPoints.push({
-      x: cx + r2 * Math.cos(angle),
-      y: cy + r2 * Math.sin(angle),
-    });
-  }
-
-  // Build triangular faces
-  // Outer triangles: each connects two adjacent outer vertices and one inner vertex
-  const outerFaces = [];
-  for (let i = 0; i < 5; i++) {
-    const next = (i + 1) % 5;
-    outerFaces.push({
-      points: [outerPoints[i], outerPoints[next], innerPoints[i]],
-      // Shade varies by face position (top face brighter, bottom darker)
-      shade: i === 0 ? 0.85 : i === 1 ? 0.7 : i === 4 ? 0.75 : i === 2 ? 0.5 : 0.55,
-    });
-  }
-
-  // Inner triangles: each connects two adjacent inner vertices and one outer vertex
-  const innerFaces = [];
-  for (let i = 0; i < 5; i++) {
-    const next = (i + 1) % 5;
-    innerFaces.push({
-      points: [innerPoints[i], innerPoints[next], outerPoints[next]],
-      shade: i === 0 ? 0.6 : i === 1 ? 0.45 : i === 4 ? 0.55 : i === 2 ? 0.35 : 0.4,
-    });
-  }
-
-  // Center pentagon (the "20" face)
-  const centerFace = innerPoints;
-
-  return { outerPoints, innerPoints, outerFaces, innerFaces, centerFace };
-}
-
-function pointsToString(points: { x: number; y: number }[]): string {
-  return points.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
-}
 
 // ─── Component ───────────────────────────────────────────────────────
 

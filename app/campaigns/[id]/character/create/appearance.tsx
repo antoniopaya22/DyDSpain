@@ -11,7 +11,7 @@ import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import type { Appearance } from "@/types/character";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 10;
@@ -353,7 +353,7 @@ export default function AppearanceStep() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#272519",
   },
   scroll: {
     flex: 1,
@@ -373,24 +373,24 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 20,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     alignItems: "center",
     justifyContent: "center",
   },
   stepText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 14,
     fontWeight: "600",
   },
   progressBar: {
     height: 6,
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 3,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 3,
   },
   titleSection: {
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(198,40,40,0.15)",
+    backgroundColor: "rgba(143,61,56,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 15,
     textAlign: "center",
     lineHeight: 22,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   fieldHint: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 13,
     lineHeight: 18,
     marginBottom: 10,
@@ -454,10 +454,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    backgroundColor: "#1e1e38",
+    backgroundColor: "#2E2C1E",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
     paddingHorizontal: 16,
     paddingVertical: 12,
     color: "#ffffff",
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
   },
   charCount: {
-    color: "#666699",
+    color: "#807953",
     fontSize: 12,
     textAlign: "right",
     marginTop: 4,
@@ -481,19 +481,19 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   quickChip: {
-    backgroundColor: "#23233d",
+    backgroundColor: "#323021",
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 7,
     borderWidth: 1,
-    borderColor: "#3a3a5c",
+    borderColor: "#514D35",
   },
   quickChipSelected: {
-    borderColor: "#c62828",
-    backgroundColor: "rgba(198,40,40,0.2)",
+    borderColor: "#8f3d38",
+    backgroundColor: "rgba(143,61,56,0.2)",
   },
   quickChipText: {
-    color: "#8c8cb3",
+    color: "#AAA37B",
     fontSize: 13,
     fontWeight: "600",
   },
@@ -503,11 +503,11 @@ const styles = StyleSheet.create({
   hintBox: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: "rgba(251,191,36,0.1)",
+    backgroundColor: "rgba(178,172,136,0.1)",
     borderRadius: 10,
     padding: 14,
     borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.2)",
+    borderColor: "rgba(178,172,136,0.2)",
   },
   hintText: {
     color: "#d9d9e6",
@@ -521,10 +521,10 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#3a3a5c",
+    borderTopColor: "#514D35",
   },
   nextButton: {
-    backgroundColor: "#c62828",
+    backgroundColor: "#8f3d38",
     borderRadius: 12,
     paddingVertical: 16,
     flexDirection: "row",

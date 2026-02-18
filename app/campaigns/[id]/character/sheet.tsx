@@ -25,13 +25,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useCharacterStore } from "@/stores/characterStore";
 import { useCampaignStore } from "@/stores/campaignStore";
 
-import OverviewTab from "@/components/character/OverviewTab";
-import CombatTab from "@/components/character/CombatTab";
-import AbilitiesTab from "@/components/character/AbilitiesTab";
-import InventoryTab from "@/components/character/InventoryTab";
-import NotesTab from "@/components/character/NotesTab";
-import DiceFAB from "@/components/dice/DiceFAB";
-import { useTheme } from "@/hooks/useTheme";
+import {
+  OverviewTab,
+  CombatTab,
+  AbilitiesTab,
+  InventoryTab,
+  NotesTab,
+} from "@/components/character";
+import { DiceFAB } from "@/components/dice";
+import { useTheme } from "@/hooks";
 import type { ThemeColors } from "@/utils/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -646,7 +648,7 @@ export default function CharacterSheetScreen() {
               {character.hp.temp > 0 && (
                 <View style={sheetStyles.headerHpTempBadge}>
                   <Ionicons name="shield" size={8} color={colors.accentBlue} />
-                  <Text style={sheetStyles.headerHpTempText}>
+                  <Text style={[sheetStyles.headerHpTempText, { color: colors.accentBlue }]}>
                     +{character.hp.temp}
                   </Text>
                 </View>
@@ -805,7 +807,7 @@ const sheetStyles = StyleSheet.create({
   errorButton: {
     borderRadius: 12,
     overflow: "hidden",
-    shadowColor: "#c62828", // overridden inline via colors.accentRed
+    shadowColor: "#8f3d38", // overridden inline via colors.accentRed
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -909,7 +911,7 @@ const sheetStyles = StyleSheet.create({
     gap: 2,
   },
   headerHpTempText: {
-    color: "#3b82f6", // overridden inline via colors.accentBlue
+    color: "transparent", // themed inline via colors.accentBlue
     fontSize: 9,
     fontWeight: "700",
   },
