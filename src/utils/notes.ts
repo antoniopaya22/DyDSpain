@@ -15,6 +15,7 @@ import {
   PREDEFINED_TAG_ICONS,
   PREDEFINED_TAG_COLORS,
 } from "@/constants/notes";
+import { now } from "./providers";
 
 /**
  * Crea una nota vacía por defecto con los campos mínimos.
@@ -24,7 +25,7 @@ export function createDefaultNote(
   personajeId: string,
   partidaId: string
 ): Note {
-  const now = new Date().toISOString();
+  const timestamp = now();
   return {
     id,
     personajeId,
@@ -39,8 +40,8 @@ export function createDefaultNote(
     visibleParaMaster: false,
     enviadaPorMaster: false,
     masterRemitenteId: null,
-    fechaCreacion: now,
-    fechaModificacion: now,
+    fechaCreacion: timestamp,
+    fechaModificacion: timestamp,
   };
 }
 
@@ -51,13 +52,13 @@ export function createQuickNote(
   id: string,
   input: QuickNoteInput
 ): Note {
-  const now = new Date();
-  const formattedDate = now.toLocaleDateString("es-ES", {
+  const currentDate = new Date();
+  const formattedDate = currentDate.toLocaleDateString("es-ES", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
-  const formattedTime = now.toLocaleTimeString("es-ES", {
+  const formattedTime = currentDate.toLocaleTimeString("es-ES", {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -76,8 +77,8 @@ export function createQuickNote(
     visibleParaMaster: false,
     enviadaPorMaster: false,
     masterRemitenteId: null,
-    fechaCreacion: now.toISOString(),
-    fechaModificacion: now.toISOString(),
+    fechaCreacion: currentDate.toISOString(),
+    fechaModificacion: currentDate.toISOString(),
   };
 }
 

@@ -4,6 +4,7 @@
  */
 
 import type { BackgroundId, SkillKey } from "@/types/character";
+import { random } from "@/utils/providers";
 
 // ─── Tipos de datos de trasfondo ─────────────────────────────────────
 
@@ -931,7 +932,7 @@ export function getBackgroundSkills(backgroundId: BackgroundId): SkillKey[] {
  */
 export function getRandomPersonalityTrait(backgroundId: BackgroundId): string {
   const traits = BACKGROUNDS[backgroundId].personality.traits;
-  return traits[Math.floor(Math.random() * traits.length)];
+  return traits[Math.floor(random() * traits.length)];
 }
 
 /**
@@ -939,7 +940,7 @@ export function getRandomPersonalityTrait(backgroundId: BackgroundId): string {
  */
 export function getRandomIdeal(backgroundId: BackgroundId): string {
   const ideals = BACKGROUNDS[backgroundId].personality.ideals;
-  return ideals[Math.floor(Math.random() * ideals.length)];
+  return ideals[Math.floor(random() * ideals.length)];
 }
 
 /**
@@ -947,7 +948,7 @@ export function getRandomIdeal(backgroundId: BackgroundId): string {
  */
 export function getRandomBond(backgroundId: BackgroundId): string {
   const bonds = BACKGROUNDS[backgroundId].personality.bonds;
-  return bonds[Math.floor(Math.random() * bonds.length)];
+  return bonds[Math.floor(random() * bonds.length)];
 }
 
 /**
@@ -955,7 +956,7 @@ export function getRandomBond(backgroundId: BackgroundId): string {
  */
 export function getRandomFlaw(backgroundId: BackgroundId): string {
   const flaws = BACKGROUNDS[backgroundId].personality.flaws;
-  return flaws[Math.floor(Math.random() * flaws.length)];
+  return flaws[Math.floor(random() * flaws.length)];
 }
 
 /**
