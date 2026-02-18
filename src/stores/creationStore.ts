@@ -35,6 +35,7 @@ import {
   buildProficiencies,
   buildInitialSpells,
 } from "./characterBuilderHelpers";
+import { now } from "@/utils/providers";
 
 // ─── Constantes ──────────────────────────────────────────────────────
 
@@ -175,7 +176,7 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     const newDraft: CharacterCreationDraft = {
       currentStep: 1,
       campaignId,
-      lastSaved: new Date().toISOString(),
+      lastSaved: now(),
     };
     set({ draft: newDraft, isDirty: true, error: null });
     try {
@@ -214,7 +215,7 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     try {
       const updatedDraft = {
         ...draft,
-        lastSaved: new Date().toISOString(),
+        lastSaved: now(),
       };
       await setItem(
         STORAGE_KEYS.CREATION_DRAFT(draft.campaignId),
@@ -436,7 +437,7 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       recreatingCharacterId: character.id,
       recreatingInventoryId: character.inventoryId,
 
-      lastSaved: new Date().toISOString(),
+      lastSaved: now(),
     };
 
     set({ draft: newDraft, isDirty: true, error: null });
@@ -546,7 +547,7 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
 
     const characterId = draft.recreatingCharacterId ?? randomUUID();
     const inventoryId = draft.recreatingInventoryId ?? randomUUID();
-    const now = new Date().toISOString();
+    const timestamp = now();
 
     const raceData = getRaceData(draft.raza);
     const subraceData = draft.subraza
@@ -625,7 +626,7 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     const levelHistory: Character["levelHistory"] = [
       {
         level: 1,
-        date: now,
+        date: timestamp,
         hpGained: maxHP,
         hpMethod: "fixed",
         spellsLearned: knownSpellIds.length > 0 ? [...knownSpellIds] : undefined,
@@ -666,8 +667,8 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       preparedSpellIds,
       spellbookIds,
       inventoryId,
-      creadoEn: now,
-      actualizadoEn: now,
+      creadoEn: timestamp,
+      actualizadoEn: timestamp,
     };
 
     return character;
