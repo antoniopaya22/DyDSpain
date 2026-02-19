@@ -51,11 +51,12 @@ export default function CharacterNameStep() {
   );
 
   // Sincronizar el nombre local con el store
+  const draftNombre = draft?.nombre;
   useEffect(() => {
-    if (initialized && nombre !== draft?.nombre) {
+    if (initialized && nombre !== draftNombre) {
       setNombre(nombre);
     }
-  }, [nombre, initialized]);
+  }, [nombre, initialized, draftNombre, setNombre]);
 
   const isValid = nombre.trim().length >= 1;
 

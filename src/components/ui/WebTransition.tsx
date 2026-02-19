@@ -79,6 +79,7 @@ export default function WebTransition({
   const dotAnim = useRef(new Animated.Value(0)).current;
 
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const ring2Timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasOpened = useRef(false);
 
   // ── Cleanup ──
@@ -86,6 +87,9 @@ export default function WebTransition({
     return () => {
       if (openTimer.current) {
         clearTimeout(openTimer.current);
+      }
+      if (ring2Timer.current) {
+        clearTimeout(ring2Timer.current);
       }
     };
   }, []);
@@ -183,7 +187,7 @@ export default function WebTransition({
       ring1.start();
 
       // Delayed second ring for stagger effect
-      setTimeout(() => {
+      ring2Timer.current = setTimeout(() => {
         const ring2 = Animated.loop(
           Animated.parallel([
             Animated.timing(ringScale2, {
@@ -251,6 +255,10 @@ export default function WebTransition({
       if (openTimer.current) {
         clearTimeout(openTimer.current);
         openTimer.current = null;
+      }
+      if (ring2Timer.current) {
+        clearTimeout(ring2Timer.current);
+        ring2Timer.current = null;
       }
     }
   }, [visible]);

@@ -31,12 +31,8 @@ export default function CombatTab() {
   const {
     toastProps,
     showSuccess: toastSuccess,
-    showInfo: toastInfo,
+    showInfo: showToast,
   } = useToast();
-
-  const showToast = (message: string) => {
-    toastInfo(message);
-  };
 
   const {
     character,

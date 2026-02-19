@@ -12,8 +12,6 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  Dimensions,
-  ScrollView,
   Animated,
   Easing,
   StyleSheet,
@@ -34,9 +32,6 @@ import {
 } from "@/components/character";
 import { DiceFAB } from "@/components/dice";
 import { useTheme } from "@/hooks";
-import type { ThemeColors } from "@/utils/theme";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 // ─── Tab definitions ─────────────────────────────────────────────────
 
@@ -53,13 +48,6 @@ interface TabDef {
 function getTabs(colors: import("@/utils/theme").ThemeColors): TabDef[] {
   return [
     {
-      id: "overview",
-      label: "General",
-      icon: "person-outline",
-      iconActive: "person",
-      color: colors.accentGold,
-    },
-    {
       id: "combat",
       label: "Combate",
       icon: "heart-outline",
@@ -72,6 +60,13 @@ function getTabs(colors: import("@/utils/theme").ThemeColors): TabDef[] {
       icon: "star-outline",
       iconActive: "star",
       color: colors.accentDanger,
+    },
+    {
+      id: "overview",
+      label: "General",
+      icon: "shield-half-sharp",
+      iconActive: "shield",
+      color: colors.accentRed,
     },
     {
       id: "inventory",
@@ -132,97 +127,208 @@ function getHpBarGradient(
   return [colors.accentDanger, "#dc2626"];
 }
 
-// ─── Animated Tab Button ─────────────────────────────────────────────
+// ─── Center Tab Index ────────────────────────────────────────────────
 
-function TabButton({
+const CENTER_TAB_INDEX = 2; // "General" sits in the middle
+
+// ─── Press animation helpers ─────────────────────────────────────────
+
+function usePressScale() {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const onPressIn = () =>
+    Animated.timing(scaleAnim, {
+      toValue: 0.88,
+      duration: 80,
+      useNativeDriver: true,
+    }).start();
+  const onPressOut = () =>
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 5,
+      tension: 200,
+      useNativeDriver: true,
+    }).start();
+  return { scaleAnim, onPressIn, onPressOut };
+}
+
+function useActiveGlow(isActive: boolean) {
+  const glowAnim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
+  useEffect(() => {
+    Animated.timing(glowAnim, {
+      toValue: isActive ? 1 : 0,
+      duration: 250,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [isActive, glowAnim]);
+  return glowAnim;
+}
+
+// ─── Center Tab (General) ────────────────────────────────────────────
+
+function CenterTabButton({
   tab,
   isActive,
   onPress,
   inactiveColor,
-}: {
+  bgColor,
+}: Readonly<{
   tab: TabDef;
   isActive: boolean;
   onPress: () => void;
   inactiveColor: string;
-}) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const bgAnim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
+  bgColor: string;
+}>) {
+  const { scaleAnim, onPressIn, onPressOut } = usePressScale();
+  const glowAnim = useActiveGlow(isActive);
 
-  useEffect(() => {
-    Animated.timing(bgAnim, {
-      toValue: isActive ? 1 : 0,
-      duration: 220,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: false,
-    }).start();
-  }, [isActive, bgAnim]);
-
-  const bgColor = bgAnim.interpolate({
+  const pillBg = glowAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["transparent", `${tab.color}18`],
-  });
-
-  const borderColor = bgAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["transparent", `${tab.color}50`],
+    outputRange: [`${tab.color}00`, `${tab.color}20`],
   });
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      onPressIn={() =>
-        Animated.timing(scaleAnim, {
-          toValue: 0.92,
-          duration: 80,
-          useNativeDriver: true,
-        }).start()
-      }
-      onPressOut={() =>
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          friction: 5,
-          tension: 200,
-          useNativeDriver: true,
-        }).start()
-      }
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
       activeOpacity={1}
-      style={sheetStyles.tabTouchable}
+      style={sheetStyles.centerTabTouchable}
     >
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <Animated.View
+        style={[
+          sheetStyles.centerTabOuter,
+          {
+            transform: [{ scale: scaleAnim }],
+            backgroundColor: bgColor,
+            borderColor: isActive ? `${tab.color}40` : `${inactiveColor}15`,
+            shadowColor: isActive ? tab.color : "#000",
+            shadowOpacity: isActive ? 0.35 : 0.1,
+            elevation: isActive ? 8 : 3,
+          },
+        ]}
+      >
         <Animated.View
+          style={[sheetStyles.centerTabInner, { backgroundColor: pillBg }]}
+        >
+          <Ionicons
+            name={isActive ? tab.iconActive : tab.icon}
+            size={26}
+            color={isActive ? tab.color : inactiveColor}
+          />
+        </Animated.View>
+      </Animated.View>
+      <Text
+        style={[
+          sheetStyles.bottomTabLabel,
+          {
+            color: isActive ? tab.color : inactiveColor,
+            fontWeight: isActive ? "700" : "500",
+            marginTop: 4,
+          },
+        ]}
+      >
+        {tab.label}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+// ─── Side Tab Button ─────────────────────────────────────────────────
+
+function SideTabButton({
+  tab,
+  isActive,
+  onPress,
+  inactiveColor,
+}: Readonly<{
+  tab: TabDef;
+  isActive: boolean;
+  onPress: () => void;
+  inactiveColor: string;
+}>) {
+  const { scaleAnim, onPressIn, onPressOut } = usePressScale();
+  const glowAnim = useActiveGlow(isActive);
+
+  const activeBg = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [`${tab.color}00`, `${tab.color}18`],
+  });
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      activeOpacity={1}
+      style={sheetStyles.bottomTabTouchable}
+    >
+      <Animated.View
+        style={[
+          sheetStyles.bottomTabItem,
+          { transform: [{ scale: scaleAnim }] },
+        ]}
+      >
+        <Animated.View
+          style={[sheetStyles.bottomTabPill, { backgroundColor: activeBg }]}
+        >
+          <Ionicons
+            name={isActive ? tab.iconActive : tab.icon}
+            size={21}
+            color={isActive ? tab.color : inactiveColor}
+          />
+        </Animated.View>
+        <Text
           style={[
-            sheetStyles.tabButton,
+            sheetStyles.bottomTabLabel,
             {
-              backgroundColor: bgColor,
-              borderColor: borderColor,
+              color: isActive ? tab.color : inactiveColor,
+              fontWeight: isActive ? "700" : "400",
             },
           ]}
         >
-          {/* Active indicator dot */}
-          {isActive && (
-            <View
-              style={[sheetStyles.tabActiveDot, { backgroundColor: tab.color }]}
-            />
-          )}
-          <Ionicons
-            name={isActive ? tab.iconActive : tab.icon}
-            size={19}
-            color={isActive ? tab.color : inactiveColor}
-          />
-          <Text
-            style={[
-              sheetStyles.tabLabel,
-              {
-                color: isActive ? tab.color : inactiveColor,
-                fontWeight: isActive ? "700" : "500",
-              },
-            ]}
-          >
-            {tab.label}
-          </Text>
-        </Animated.View>
+          {tab.label}
+        </Text>
       </Animated.View>
     </TouchableOpacity>
+  );
+}
+
+// ─── Tab Button Dispatcher ───────────────────────────────────────────
+
+function BottomTabButton({
+  tab,
+  isActive,
+  isCenter,
+  onPress,
+  inactiveColor,
+  bgColor,
+}: Readonly<{
+  tab: TabDef;
+  isActive: boolean;
+  isCenter: boolean;
+  onPress: () => void;
+  inactiveColor: string;
+  bgColor: string;
+}>) {
+  if (isCenter) {
+    return (
+      <CenterTabButton
+        tab={tab}
+        isActive={isActive}
+        onPress={onPress}
+        inactiveColor={inactiveColor}
+        bgColor={bgColor}
+      />
+    );
+  }
+  return (
+    <SideTabButton
+      tab={tab}
+      isActive={isActive}
+      onPress={onPress}
+      inactiveColor={inactiveColor}
+    />
   );
 }
 
@@ -234,13 +340,13 @@ function StatBadge({
   color,
   delay = 0,
   labelColor,
-}: {
+}: Readonly<{
   label: string;
   value: string | number;
   color?: string;
   delay?: number;
   labelColor: string;
-}) {
+}>) {
   const { colors: sbColors } = useTheme();
   const resolvedColor = color ?? sbColors.textSecondary;
   const entranceAnim = useRef(new Animated.Value(0)).current;
@@ -294,21 +400,22 @@ export default function CharacterSheetScreen() {
     clearCharacter,
     getArmorClass,
   } = useCharacterStore();
-  const { getCampaignById } = useCampaignStore();
+  const { getCampaignById, setActiveCampaign, touchCampaign } =
+    useCampaignStore();
 
-  const validTabs: TabId[] = [
+  const validTabs = new Set<TabId>([
     "overview",
     "combat",
     "spells",
     "inventory",
     "notes",
-  ];
-  const resolvedTab = tab && validTabs.includes(tab) ? tab : "overview";
+  ]);
+  const resolvedTab = tab && validTabs.has(tab) ? tab : "overview";
   const [activeTab, setActiveTab] = useState<TabId>(resolvedTab);
 
   // Sync activeTab when the `tab` query parameter changes (e.g. navigating back with a different tab)
   useEffect(() => {
-    if (tab && validTabs.includes(tab)) {
+    if (tab && validTabs.has(tab)) {
       setActiveTab(tab);
     }
   }, [tab]);
@@ -317,18 +424,22 @@ export default function CharacterSheetScreen() {
   const hpBarWidth = useRef(new Animated.Value(0)).current;
   const headerEntrance = useRef(new Animated.Value(0)).current;
 
-  // Load character data on focus
+  // Load character data on focus & ensure campaign is marked active
   useFocusEffect(
     useCallback(() => {
-      const campaign = getCampaignById(campaignId!);
-      if (campaign?.personajeId) {
-        loadCharacter(campaign.personajeId);
+      const campaign = getCampaignById(campaignId);
+      if (campaign) {
+        setActiveCampaign(campaign.id);
+        touchCampaign(campaign.id);
+        if (campaign.personajeId) {
+          loadCharacter(campaign.personajeId);
+        }
       }
 
       return () => {
         // Optionally clear on blur - keeping data for performance
       };
-    }, [campaignId, getCampaignById, loadCharacter]),
+    }, [campaignId, getCampaignById, loadCharacter, setActiveCampaign, touchCampaign]),
   );
 
   // Animate header and HP bar when character loads
@@ -519,10 +630,6 @@ export default function CharacterSheetScreen() {
     character.hp.max,
     colors,
   );
-  const hpPct =
-    character.hp.max > 0
-      ? Math.min(100, (character.hp.current / character.hp.max) * 100)
-      : 0;
 
   // ── Render active tab content ──
   const renderTabContent = () => {
@@ -707,25 +814,6 @@ export default function CharacterSheetScreen() {
           </View>
         </Animated.View>
 
-        {/* ── Tab Bar ── */}
-        <View style={sheetStyles.tabBarContainer}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={sheetStyles.tabBarContent}
-          >
-            {TABS.map((tab) => (
-              <TabButton
-                key={tab.id}
-                tab={tab}
-                isActive={activeTab === tab.id}
-                onPress={() => setActiveTab(tab.id)}
-                inactiveColor={colors.statsLabel}
-              />
-            ))}
-          </ScrollView>
-        </View>
-
         {/* Bottom border gradient */}
         <View style={sheetStyles.headerBorder}>
           <LinearGradient
@@ -743,7 +831,30 @@ export default function CharacterSheetScreen() {
       </View>
 
       {/* ── Dice FAB (HU-11.1) ── */}
-      <DiceFAB characterName={character.nombre} bottom={24} right={20} />
+      <DiceFAB characterName={character.nombre} bottom={92} right={20} />
+
+      {/* ── Bottom Tab Bar ── */}
+      <View
+        style={[
+          sheetStyles.bottomTabBar,
+          {
+            backgroundColor: colors.bgElevated,
+            borderTopColor: colors.borderSubtle,
+          },
+        ]}
+      >
+        {TABS.map((t, idx) => (
+          <BottomTabButton
+            key={t.id}
+            tab={t}
+            isActive={activeTab === t.id}
+            isCenter={idx === CENTER_TAB_INDEX}
+            onPress={() => setActiveTab(t.id)}
+            inactiveColor={colors.statsLabel}
+            bgColor={colors.bgElevated}
+          />
+        ))}
+      </View>
     </View>
   );
 }
@@ -952,40 +1063,59 @@ const sheetStyles = StyleSheet.create({
     borderRadius: 4,
   },
 
-  // ── Tab Bar ──
-  tabBarContainer: {
-    marginTop: 6,
-  },
-  tabBarContent: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    gap: 4,
-  },
-  tabTouchable: {
-    marginHorizontal: 2,
-  },
-  tabButton: {
+  // ── Bottom Tab Bar ──
+  bottomTabBar: {
     flexDirection: "row",
+    alignItems: "flex-end",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingBottom: Platform.OS === "ios" ? 22 : 8,
+    paddingTop: 6,
+    paddingHorizontal: 4,
+  } as const,
+  bottomTabTouchable: {
+    flex: 1,
     alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    gap: 6,
-    position: "relative",
-  },
-  tabActiveDot: {
-    position: "absolute",
-    top: 4,
-    right: 4,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-  },
-  tabLabel: {
-    fontSize: 11,
-    letterSpacing: 0.2,
-  },
+  } as const,
+  bottomTabItem: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 4,
+  } as const,
+  bottomTabPill: {
+    width: 44,
+    height: 30,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  } as const,
+  bottomTabLabel: {
+    fontSize: 10,
+    letterSpacing: 0.3,
+    marginTop: 3,
+  } as const,
+  // ── Center (General) Tab ──
+  centerTabTouchable: {
+    flex: 1,
+    alignItems: "center",
+    marginTop: -18,
+  } as const,
+  centerTabOuter: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 8,
+  } as const,
+  centerTabInner: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  } as const,
 
   // ── Header Border ──
   headerBorder: {

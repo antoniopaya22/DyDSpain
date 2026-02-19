@@ -82,6 +82,10 @@ export type { ScreenContainerProps } from "./ScreenContainer";
 export { default as PageHeader } from "./PageHeader";
 export type { PageHeaderProps } from "./PageHeader";
 
+// ─── App Header (shared header for main screens) ────────────────────
+export { default as AppHeader } from "./AppHeader";
+export type { AppHeaderProps } from "./AppHeader";
+
 // ─── Collapsible Section / Card ──────────────────────────────────────
 export { default as CollapsibleSection } from "./CollapsibleSection";
 export { CollapsibleCard } from "./CollapsibleSection";

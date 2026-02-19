@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  Platform,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,10 +16,10 @@ import {
   ConfirmDialog,
   Toast,
   SearchBar,
-  InlineDndLogo,
   TorchGlow,
   D20Watermark,
   FloatingParticles,
+  AppHeader,
 } from "@/components/ui";
 import { useTheme, useDialog, useToast } from "@/hooks";
 import { getItem, STORAGE_KEYS } from "@/utils/storage";
@@ -105,7 +104,12 @@ export default function HomeScreen() {
   };
 
   const handlePressCampaign = (campaign: Campaign) => {
-    router.push(`/campaigns/${campaign.id}`);
+    if (campaign.personajeId) {
+      // Skip intermediate page — go straight to the character sheet
+      router.push(`/campaigns/${campaign.id}/character/sheet`);
+    } else {
+      router.push(`/campaigns/${campaign.id}`);
+    }
   };
 
   const renderCampaignCard = ({
@@ -218,75 +222,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Header */}
-      <View style={styles.header}>
-        <LinearGradient
-          colors={colors.gradientHeader}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-
-        <View style={styles.headerTop}>
-          <View style={styles.headerBrand}>
-            <InlineDndLogo />
-          </View>
-
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={[
-                styles.headerButton,
-                {
-                  backgroundColor: colors.headerButtonBg,
-                  borderColor: colors.headerButtonBorder,
-                },
-              ]}
-              onPress={() => router.push("/compendium")}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name="book-outline"
-                size={20}
-                color={colors.sectionDescColor}
-              />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.headerButton,
-                {
-                  backgroundColor: colors.headerButtonBg,
-                  borderColor: colors.headerButtonBorder,
-                },
-              ]}
-              onPress={() => router.push("/settings")}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name="settings-outline"
-                size={20}
-                color={colors.sectionDescColor}
-              />
-            </TouchableOpacity>
-
-            {campaigns.length > 0 && (
-              <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => router.push("/campaigns/new")}
-                activeOpacity={0.85}
-              >
-                <LinearGradient
-                  colors={["#d32f2f", colors.accentRed, "#a51c1c"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.addButtonGradient}
-                >
-                  <Ionicons name="add" size={26} color="white" />
-                </LinearGradient>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-
+      <AppHeader showBack>
         {campaigns.length > 0 && (
           <SearchBar
             value={searchQuery}
@@ -296,22 +232,7 @@ export default function HomeScreen() {
             style={{ marginTop: 10 }}
           />
         )}
-
-        <View style={styles.headerBorder}>
-          <LinearGradient
-            colors={[
-              "transparent",
-              colors.borderDefault + "66",
-              colors.borderDefault,
-              colors.borderDefault + "66",
-              "transparent",
-            ]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={{ height: 1, width: "100%" }}
-          />
-        </View>
-      </View>
+      </AppHeader>
 
       {/* Campaign list */}
       <FlatList
@@ -331,6 +252,22 @@ export default function HomeScreen() {
         initialNumToRender={8}
       />
 
+      {/* FAB — New campaign */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push("/campaigns/new")}
+        activeOpacity={0.85}
+      >
+        <LinearGradient
+          colors={["#d32f2f", colors.accentRed, "#a51c1c"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fabGradient}
+        >
+          <Ionicons name="add" size={28} color="white" />
+        </LinearGradient>
+      </TouchableOpacity>
+
       <ConfirmDialog {...dialogProps} />
       <Toast {...toastProps} />
     </View>
@@ -344,39 +281,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ── Header ──
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === "ios" ? 58 : 48,
-    paddingBottom: 14,
-    position: "relative",
-  },
-  headerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  headerBrand: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  headerActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  headerButton: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-  },
-  addButton: {
-    height: 46,
-    width: 46,
-    borderRadius: 23,
+  // ── FAB ──
+  fab: {
+    position: "absolute",
+    bottom: 32,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     overflow: "hidden",
     shadowColor: "#8f3d38",
     shadowOffset: { width: 0, height: 4 },
@@ -384,17 +296,10 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-  addButtonGradient: {
+  fabGradient: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  headerBorder: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 1,
   },
 
   // ── List ──

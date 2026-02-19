@@ -106,7 +106,7 @@ export function createRestSlice(
           0,
           COMBAT_LOG_MAX,
         ),
-        actualizadoEn: new Date().toISOString(),
+        actualizadoEn: now(),
       };
 
       set({

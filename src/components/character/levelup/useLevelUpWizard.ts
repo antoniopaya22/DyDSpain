@@ -29,6 +29,9 @@ import {
 } from "@/types/character";
 import { Ionicons } from "@expo/vector-icons";
 
+// Re-export so existing consumers keep working
+export { ABILITY_COLORS, ABILITY_KEYS } from "@/constants/abilities";
+
 // ─── Public types ────────────────────────────────────────────────────
 
 export type StepId =
@@ -45,24 +48,6 @@ export interface StepDef {
   title: string;
   icon: keyof typeof Ionicons.glyphMap;
 }
-
-export const ABILITY_KEYS: AbilityKey[] = [
-  "fue",
-  "des",
-  "con",
-  "int",
-  "sab",
-  "car",
-];
-
-export const ABILITY_COLORS: Record<AbilityKey, string> = {
-  fue: "#dc2626",
-  des: "#16a34a",
-  con: "#f59e0b",
-  int: "#3b82f6",
-  sab: "#8b5cf6",
-  car: "#ec4899",
-};
 
 // ─── Hook ────────────────────────────────────────────────────────────
 
@@ -122,6 +107,9 @@ export function useLevelUpWizard(
 
   // ── Processing ──
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // ── HP roll interval ref (cleanup on unmount) ──
+  const hpRollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ── Animations ──
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -379,20 +367,31 @@ export function useLevelUpWizard(
     setIsRolling(true);
     setHpRolled(null);
 
+    // Clear any previous interval
+    if (hpRollIntervalRef.current) clearInterval(hpRollIntervalRef.current);
+
     let count = 0;
     const maxCount = 12;
-    const interval = setInterval(() => {
+    hpRollIntervalRef.current = setInterval(() => {
       const fakeRoll = Math.floor(Math.random() * dieSides) + 1;
       setHpRolled(fakeRoll);
       count++;
       if (count >= maxCount) {
-        clearInterval(interval);
+        if (hpRollIntervalRef.current) clearInterval(hpRollIntervalRef.current);
+        hpRollIntervalRef.current = null;
         const finalRoll = Math.floor(Math.random() * dieSides) + 1;
         setHpRolled(finalRoll);
         setIsRolling(false);
       }
     }, 80);
   };
+
+  // Cleanup HP roll interval on unmount
+  useEffect(() => {
+    return () => {
+      if (hpRollIntervalRef.current) clearInterval(hpRollIntervalRef.current);
+    };
+  }, []);
 
   // ── Confirm ──
   const handleConfirm = async () => {

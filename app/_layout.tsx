@@ -1,7 +1,7 @@
 import "../global.css";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { View, Text, StyleSheet, Animated, Easing } from "react-native";
@@ -9,6 +9,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useAuthStore } from "@/stores/authStore";
 import { useTheme } from "@/hooks";
 import { DARK_THEME } from "@/utils/theme";
 
@@ -157,8 +158,35 @@ function ErrorScreen({ error }: { error: Error | null }) {
 function InnerLayout() {
   const { colors, isDark } = useTheme();
   const { loaded, loadSettings } = useSettingsStore();
+  const { initialize, initialized, session } = useAuthStore();
   const { setColorScheme } = useColorScheme();
   const [appReady, setAppReady] = useState(false);
+  const router = useRouter();
+  const segments = useSegments();
+
+  // Initialize auth (restore session + listen)
+  useEffect(() => {
+    const unsubscribe = initialize();
+    return unsubscribe;
+  }, [initialize]);
+
+  // ── Auth-based route protection ──
+  // Redirect to login when not authenticated,
+  // or away from login when already authenticated.
+  useEffect(() => {
+    if (!initialized || !appReady) return;
+
+    const firstSegment = segments[0] ?? "";
+    const onLoginScreen = firstSegment === "login";
+
+    if (!session && !onLoginScreen) {
+      // Not authenticated → go to login
+      router.replace("/login");
+    } else if (session && onLoginScreen) {
+      // Authenticated → leave login screen
+      router.replace("/mode-select");
+    }
+  }, [session, initialized, appReady, segments, router]);
 
   // Load settings on mount so the theme is available immediately
   useEffect(() => {
@@ -195,10 +223,10 @@ function InnerLayout() {
   }, [isDark, setColorScheme]);
 
   useEffect(() => {
-    if (appReady) {
+    if (appReady && initialized) {
       SplashScreen.hideAsync().catch(() => {});
     }
-  }, [appReady]);
+  }, [appReady, initialized]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bgPrimary }]}>
@@ -215,10 +243,20 @@ function InnerLayout() {
           animationDuration: 250,
         }}
       >
+        <Stack.Screen name="login" options={{ animation: "fade" }} />
+        <Stack.Screen name="mode-select" options={{ animation: "fade" }} />
         <Stack.Screen name="index" />
         <Stack.Screen name="campaigns" />
+        <Stack.Screen name="master" />
         <Stack.Screen
           name="settings"
+          options={{
+            animation: "slide_from_bottom",
+            animationDuration: 300,
+          }}
+        />
+        <Stack.Screen
+          name="account"
           options={{
             animation: "slide_from_bottom",
             animationDuration: 300,

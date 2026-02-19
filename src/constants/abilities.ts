@@ -2,6 +2,28 @@
  * Shared ability-related constants, extracted from AbilitiesTab.
  */
 
+import type { AbilityKey } from "@/types/character";
+
+/** Color per ability score for UI badges and indicators */
+export const ABILITY_COLORS: Record<AbilityKey, string> = {
+  fue: "#dc2626",
+  des: "#16a34a",
+  con: "#f59e0b",
+  int: "#3b82f6",
+  sab: "#8b5cf6",
+  car: "#ec4899",
+};
+
+/** Canonical order of ability scores */
+export const ABILITY_KEYS: AbilityKey[] = [
+  "fue",
+  "des",
+  "con",
+  "int",
+  "sab",
+  "car",
+];
+
 /** Color per spell level for UI badges and indicators */
 export const SPELL_LEVEL_COLORS: Record<number, string> = {
   0: "#9ca3af",

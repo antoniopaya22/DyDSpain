@@ -11,3 +11,5 @@ export { useWebTransition } from "./useWebTransition";
 export { useTheme } from "./useTheme";
 export { useEntranceAnimation } from "./useEntranceAnimation";
 export { usePulseAnimation } from "./usePulseAnimation";
+export { useRealtimeCharacters } from "./useRealtimeCharacters";
+export { useCharacterSync } from "./useCharacterSync";

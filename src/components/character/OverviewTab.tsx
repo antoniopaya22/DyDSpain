@@ -36,6 +36,7 @@ import LevelUpModal from "./LevelUpModal";
 import { useTheme } from "@/hooks";
 import { CollapsibleSection, InfoBadge } from "@/components/ui";
 import { TraitCard } from "./TraitCard";
+import { ABILITY_COLORS, ABILITY_KEYS } from "@/constants/abilities";
 
 if (
   Platform.OS === "android" &&
@@ -44,16 +45,7 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const ABILITY_COLORS: Record<AbilityKey, string> = {
-  fue: "#dc2626",
-  des: "#16a34a",
-  con: "#ea580c",
-  int: "#2563eb",
-  sab: "#9333ea",
-  car: "#db2777",
-};
-
-const ABILITY_ORDER: AbilityKey[] = ["fue", "des", "con", "int", "sab", "car"];
+const ABILITY_ORDER: AbilityKey[] = ABILITY_KEYS;
 
 export default function OverviewTab() {
   const { isDark, colors } = useTheme();

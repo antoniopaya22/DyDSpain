@@ -9,6 +9,29 @@ export type {
   UpdateCampaignInput,
 } from "./campaign";
 
+// ─── Master Mode types (HU-10) ──────────────────────────────────────
+export type {
+  AppMode,
+  Profile,
+  MasterCampaign,
+  CampaignPlayer,
+  SyncedCharacter,
+  CreateMasterCampaignInput,
+  UpdateMasterCampaignInput,
+  LobbyPlayer,
+  MasterCampaignWithPlayers,
+  CharacterSummary,
+} from "./master";
+
+// ─── Supabase DB types ──────────────────────────────────────────────
+export type {
+  Database,
+  ProfileRow,
+  CampanaMasterRow,
+  CampanaJugadorRow,
+  PersonajeRow,
+} from "./supabase";
+
 // ─── Character types (HU-02, HU-03, HU-04, HU-08) ──────────────────
 export type {
   AbilityKey,
@@ -49,8 +72,9 @@ export type {
   ConcentrationState,
   Character,
   CharacterCreationDraft,
-  WeaponProperty,
 } from "./character";
+
+export type { WeaponProperty } from "./item";
 
 export {
   ABILITY_NAMES,

@@ -265,14 +265,7 @@ export function createProgressionSlice(
               },
             ],
         knownSpellIds: [...level1Spells],
-        preparedSpellIds: level1Spells.filter(
-          (id) =>
-            !level1Spells.some(
-              (s) =>
-                s === id &&
-                character.knownSpellIds.indexOf(s) === -1,
-            ),
-        ),
+        preparedSpellIds: [...level1Spells],
         spellbookIds:
           character.clase === "mago" ? [...level1Spells] : [],
         actualizadoEn: timestamp,

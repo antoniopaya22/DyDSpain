@@ -287,32 +287,8 @@ export function useUnidadesActuales(): UnitSystem {
   return useSettingsStore((state) => state.settings.unidades);
 }
 
-/**
- * Convierte pies a la unidad configurada.
- * Si el sistema es métrico, convierte a metros.
- * Si es imperial, devuelve pies tal cual.
- */
-export function convertirDistancia(pies: number, unidades: UnitSystem): { valor: number; unidad: string } {
-  if (unidades === "metrico") {
-    // Conversión estándar D&D: 5 pies = 1.5 m
-    const metros = (pies / 5) * 1.5;
-    return { valor: parseFloat(metros.toFixed(1)), unidad: "m" };
-  }
-  return { valor: pies, unidad: "pies" };
-}
-
-/**
- * Convierte libras a la unidad configurada.
- * Si el sistema es métrico, convierte a kg.
- * Si es imperial, devuelve libras tal cual.
- */
-export function convertirPeso(libras: number, unidades: UnitSystem): { valor: number; unidad: string } {
-  if (unidades === "metrico") {
-    const kg = libras * 0.45;
-    return { valor: parseFloat(kg.toFixed(1)), unidad: "kg" };
-  }
-  return { valor: libras, unidad: "lb" };
-}
+// Re-export unit conversion utilities (moved to @/utils/units)
+export { convertirDistancia, convertirPeso } from "@/utils/units";
 
 // ─── Constantes de la app para "Acerca de" (HU-14.7) ────────────────
 

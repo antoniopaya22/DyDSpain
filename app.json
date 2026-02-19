@@ -47,13 +47,19 @@
           "imageWidth": 200
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
       "router": {},
+      "supabaseUrl": "https://dvodghbjmtydijbrgsmj.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2b2RnaGJqbXR5ZGlqYnJnc21qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyMzU0MjAsImV4cCI6MjA4NjgxMTQyMH0.8S4E_HtT8mzQM4IhcPawQwQcTzWe0aG-LUH75sDjhg8",
+      "googleWebClientId": "95171325486-4a8fb1h67a63280l06isgrrhbfjg8s5j.apps.googleusercontent.com",
+      "googleAndroidClientId": "YOUR_GOOGLE_ANDROID_CLIENT_ID_HERE",
+      "googleIosClientId": "YOUR_GOOGLE_IOS_CLIENT_ID_HERE",
       "eas": {
         "projectId": "def83db2-33fa-4d05-86ba-ee8615d66277"
       }
