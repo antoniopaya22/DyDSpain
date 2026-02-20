@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "D&D Español",
-    "slug": "dyd-espanol",
+    "name": "DyMEs",
+    "slug": "dymes",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "dyd-espanol",
+    "scheme": "dymes",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -15,9 +15,9 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dydespanol.app",
+      "bundleIdentifier": "com.dymes.app",
       "infoPlist": {
-        "CFBundleDisplayName": "D&D Español"
+        "CFBundleDisplayName": "DyMEs"
       }
     },
     "android": {
@@ -25,14 +25,14 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#17160F"
       },
-      "package": "com.dydespanol.app"
+      "package": "com.dymes.app"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/favicon.png",
-      "name": "D&D Español — 5ª Edición",
-      "shortName": "D&D Español",
+      "name": "DyMEs — 5ª Edición",
+      "shortName": "DyMEs",
       "description": "Gestiona tus partidas y personajes de D&D 5e en español",
       "themeColor": "#17160F",
       "backgroundColor": "#17160F"

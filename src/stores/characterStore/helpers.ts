@@ -5,13 +5,17 @@
  */
 
 import { randomUUID } from "expo-crypto";
-import type { Character, CombatLogEntry, AbilityKey } from "@/types/character";
-import { calcModifier } from "@/types/character";
+import type { Character, CombatLogEntry } from "@/types/character";
 import { getSpellSlots, getPactMagicSlots } from "@/types/spell";
 import { STORAGE_KEYS, setItem } from "@/utils/storage";
-import { rollDieRaw } from "@/utils/dice";
 import { now } from "@/utils/providers";
 import { getClassResourcesForLevel } from "./classResourceStrategies";
+
+export { rollDieRaw as rollDie } from "@/utils/dice";
+
+// Re-export so existing consumers of helpers.ts keep working
+export { UNLIMITED_RESOURCE } from "./classResourceTypes";
+export type { ClassResourceInfo, ClassResourcesState } from "./classResourceTypes";
 
 // ─── Safe Persistence ────────────────────────────────────────────────
 
@@ -38,9 +42,6 @@ export async function safeSetItem<T>(
 
 /** Maximum number of entries in the combat log */
 export const COMBAT_LOG_MAX = 100;
-
-/** Represents an unlimited resource (e.g., Barbarian rage at level 20) */
-export const UNLIMITED_RESOURCE = 999;
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -73,18 +74,6 @@ export interface InternalMagicState {
   metamagicChosen?: string[];
 }
 
-export interface ClassResourceInfo {
-  id: string;
-  nombre: string;
-  max: number;
-  current: number;
-  recovery: "short_rest" | "long_rest";
-}
-
-export interface ClassResourcesState {
-  resources: Record<string, ClassResourceInfo>;
-}
-
 // ─── Helper Functions ────────────────────────────────────────────────
 
 /** Creates a combat log entry with auto-generated id and timestamp */
@@ -104,8 +93,7 @@ export function createCombatLogEntry(
   };
 }
 
-/** Roll a single die with the given number of sides (delegates to @/utils/dice) */
-export const rollDie = rollDieRaw;
+
 
 /** Convert a hit die string (e.g. "d8") to its number of sides */
 export function hitDieSides(die: string): number {
@@ -123,8 +111,8 @@ export function createDefaultMagicState(character: Character): InternalMagicStat
   if (slotsData) {
     for (const [level, total] of Object.entries(slotsData)) {
       const lvl = Number(level);
-      if (lvl > 0 && (total as number) > 0) {
-        spellSlots[lvl] = { total: total as number, used: 0 };
+      if (lvl > 0 && total > 0) {
+        spellSlots[lvl] = { total, used: 0 };
       }
     }
   }

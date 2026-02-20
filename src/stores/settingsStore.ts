@@ -293,13 +293,13 @@ export { convertirDistancia, convertirPeso } from "@/utils/units";
 // ─── Constantes de la app para "Acerca de" (HU-14.7) ────────────────
 
 export const APP_INFO = {
-  nombre: "D&D Español",
-  nombreCompleto: "Dungeons & Dragons 5e - Español",
+  nombre: "DyMEs",
+  nombreCompleto: "DyMEs — Dungeons & Dragons 5e",
   version: "1.0.0",
   descripcion:
     "Aplicación de gestión de personajes y partidas de D&D 5e en español. " +
     "Todo el contenido del SRD 5.1 disponible offline.",
-  desarrollador: "DyD Esp Team",
+  desarrollador: "DyMEs Team",
   licenciaSRD:
     "Este producto contiene material del Systems Reference Document 5.1 " +
     '("SRD 5.1") de Wizards of the Coast LLC, disponible bajo la ' +

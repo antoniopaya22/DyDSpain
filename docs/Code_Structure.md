@@ -1,4 +1,4 @@
-# Estructura del Código — D&D Español
+# Estructura del Código — DyMEs
 
 Guía completa de la organización del código para desarrolladores que quieran continuar o contribuir al proyecto.
 
@@ -386,7 +386,7 @@ src/data/srd/
 
 | Archivo | Propósito |
 |---|---|
-| `app.json` | Expo 54. nombre "D&D Español", bundle ID `com.dydespanol.app`, solo portrait, splash oscuro (#17160F), new architecture habilitada |
+| `app.json` | Expo 54. nombre "DyMEs", bundle ID `com.dymes.app`, solo portrait, splash oscuro (#17160F), new architecture habilitada |
 | `eas.json` | EAS Build: `preview` (APK), `production` (app-bundle). CLI ≥18.0.1 |
 | `metro.config.js` | Config estándar de Expo Metro + `withNativeWind` (entry: `./global.css`) |
 | `babel.config.js` | `babel-preset-expo` + `nativewind/babel` |

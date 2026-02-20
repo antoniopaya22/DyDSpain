@@ -1,7 +1,7 @@
 {
-  "name": "dyd-espanol",
+  "name": "dymes",
   "version": "1.0.0",
-  "description": "Aplicación de D&D 5e en Español - Gestión de personajes y partidas",
+  "description": "DyMEs - Gestión de personajes y partidas de D&D 5e en español",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",

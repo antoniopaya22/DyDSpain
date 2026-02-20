@@ -1,5 +1,5 @@
 /**
- * Barrel export de todos los tipos de la aplicación D&D Español
+ * Barrel export de todos los tipos de la aplicación DyMEs
  */
 
 // ─── Campaign types (HU-01) ─────────────────────────────────────────

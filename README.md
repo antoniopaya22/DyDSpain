@@ -1,4 +1,4 @@
-# D&D Español — Companion App para D&D 5e
+# DyMEs — Companion App para D&D 5e
 
 Aplicación móvil de acompañamiento para **Dungeons & Dragons 5ª Edición**, completamente en español. Basada en el SRD 5.1, permite gestionar partidas, crear personajes paso a paso, llevar hojas de personaje completas, lanzar dados y consultar un compendio de reglas.
 

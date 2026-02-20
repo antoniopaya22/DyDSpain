@@ -8,7 +8,7 @@
  * Google OAuth flow:
  *  1. supabase.auth.signInWithOAuth generates the authorization URL
  *  2. We open it with WebBrowser.openAuthSessionAsync
- *  3. Supabase redirects back to the custom scheme (dyd-espanol://)
+ *  3. Supabase redirects back to the custom scheme (dymes://)
  *  4. We extract the tokens from the URL fragment and set the session
  */
 
@@ -36,7 +36,7 @@ function getRedirectUri(): string {
   }
   // makeRedirectUri() without arguments auto-detects:
   //  - Expo Go → exp://192.168.x.x:8081/--/
-  //  - Dev build / standalone → dyd-espanol://
+  //  - Dev build / standalone → dymes://
   return makeRedirectUri();
 }
 const REDIRECT_URI = getRedirectUri();

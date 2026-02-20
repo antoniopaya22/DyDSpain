@@ -1,7 +1,7 @@
 /**
  * generate-icons.js
  *
- * Generates SVG icon assets for the D&D EspaÃ±ol app.
+ * Generates SVG icon assets for the DyMEs app.
  * These SVGs can be converted to PNG using any SVG-to-PNG tool
  * (e.g., sharp, Inkscape CLI, or online converters).
  *
@@ -254,9 +254,9 @@ function generateAppIcon(size) {
   <!-- Top vertex sparkle -->
   <circle cx="${geo.outerPoints[0].x.toFixed(1)}" cy="${geo.outerPoints[0].y.toFixed(1)}" r="${size * 0.008}" fill="#ffffff" fill-opacity="0.5"/>
 
-  <!-- "D&D" label at bottom -->
-  <text x="${cx}" y="${cy + runicR + size * 0.085}" text-anchor="middle" font-size="${size * 0.055}" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#CDC9B2" fill-opacity="0.9" letter-spacing="${size * 0.008}">D&amp;D</text>
-  <text x="${cx}" y="${cy + runicR + size * 0.12}" text-anchor="middle" font-size="${size * 0.028}" font-weight="700" font-family="Arial, Helvetica, sans-serif" fill="#CDC9B2" fill-opacity="0.5" letter-spacing="${size * 0.012}">ESPAÃ‘OL</text>
+  <!-- "DyMEs" label at bottom -->
+  <text x="${cx}" y="${cy + runicR + size * 0.085}" text-anchor="middle" font-size="${size * 0.055}" font-weight="900" font-family="Arial, Helvetica, sans-serif" fill="#CDC9B2" fill-opacity="0.9" letter-spacing="${size * 0.008}">DyMEs</text>
+  <text x="${cx}" y="${cy + runicR + size * 0.12}" text-anchor="middle" font-size="${size * 0.028}" font-weight="700" font-family="Arial, Helvetica, sans-serif" fill="#CDC9B2" fill-opacity="0.5" letter-spacing="${size * 0.012}">5ª EDICIÓN</text>
 
   <!-- Sparkle accents -->
   <polygon points="${cx + dieRadius + size * 0.04},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.05},${cy - dieRadius - size * 0.015} ${cx + dieRadius + size * 0.06},${cy - dieRadius + size * 0.01} ${cx + dieRadius + size * 0.05},${cy - dieRadius + size * 0.035}" fill="#CDC9B2" fill-opacity="0.7"/>
@@ -602,7 +602,7 @@ const files = [
   { name: "favicon.svg", content: generateFavicon(48) },
 ];
 
-console.log("ðŸŽ² Generating D&D EspaÃ±ol icon assets...\n");
+console.log("ð² Generating DyMEs icon assets...\n");
 
 for (const file of files) {
   const filePath = path.join(assetsDir, file.name);

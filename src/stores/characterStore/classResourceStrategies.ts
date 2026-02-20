@@ -4,7 +4,7 @@
  * New classes can be supported by adding entries to CLASS_RESOURCE_REGISTRY.
  */
 
-import { UNLIMITED_RESOURCE, type ClassResourceInfo } from "./helpers";
+import { UNLIMITED_RESOURCE, type ClassResourceInfo } from "./classResourceTypes";
 import { RAGE_USES } from "@/data/srd/leveling";
 
 type ClassResourceFactory = (level: number) => Record<string, ClassResourceInfo>;

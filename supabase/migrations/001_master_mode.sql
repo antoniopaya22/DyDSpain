@@ -1,5 +1,5 @@
 -- ============================================================
--- D&D Español — Supabase Schema Migration
+-- DyMEs — Supabase Schema Migration
 -- Master Mode (HU-10) + Data Sync (HU-10.9)
 -- ============================================================
 -- Run this migration against your Supabase project via the
@@ -144,6 +144,44 @@ CREATE TRIGGER trg_campanas_jugador_updated
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- ═════════════════════════════════════════════════════════════
+-- Helper functions (SECURITY DEFINER — bypass RLS to avoid
+-- infinite recursion between campanas_master ↔ campana_jugadores)
+-- ═════════════════════════════════════════════════════════════
+
+-- Returns TRUE when the current user is the master of the given campaign.
+-- Used by campana_jugadores RLS without triggering campanas_master RLS.
+CREATE OR REPLACE FUNCTION public.is_campaign_master(campaign_id UUID)
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.campanas_master
+    WHERE id = campaign_id AND master_id = auth.uid()
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- Returns TRUE when the current user is a player in the given campaign.
+-- Used by campanas_master RLS without triggering campana_jugadores RLS.
+CREATE OR REPLACE FUNCTION public.is_campaign_player(campaign_id UUID)
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.campana_jugadores
+    WHERE campana_id = campaign_id AND jugador_id = auth.uid()
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- Returns TRUE when the current user is the master of the campaign that
+-- owns the given personaje (via campana_jugadores). Used by personajes RLS.
+CREATE OR REPLACE FUNCTION public.is_master_of_personaje(p_id UUID)
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.campana_jugadores cj
+    JOIN public.campanas_master cm ON cm.id = cj.campana_id
+    WHERE cj.personaje_id = p_id
+      AND cm.master_id = auth.uid()
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- ═════════════════════════════════════════════════════════════
 -- Row Level Security (RLS)
 -- ═════════════════════════════════════════════════════════════
 
@@ -173,17 +211,10 @@ CREATE POLICY "Owner full access to personajes"
   USING (auth.uid() = usuario_id);
 
 -- Master can read characters linked to their campaigns
+-- Uses SECURITY DEFINER helper to avoid cross-table RLS recursion.
 CREATE POLICY "Master can read linked personajes"
   ON public.personajes FOR SELECT
-  USING (
-    id IN (
-      SELECT cj.personaje_id
-      FROM public.campana_jugadores cj
-      JOIN public.campanas_master cm ON cm.id = cj.campana_id
-      WHERE cm.master_id = auth.uid()
-        AND cj.personaje_id IS NOT NULL
-    )
-  );
+  USING (public.is_master_of_personaje(id));
 
 -- ── Campañas Master ──
 ALTER TABLE public.campanas_master ENABLE ROW LEVEL SECURITY;
@@ -192,28 +223,20 @@ CREATE POLICY "Master full access to own campaigns"
   ON public.campanas_master FOR ALL
   USING (auth.uid() = master_id);
 
--- Players can read campaigns they belong to
+-- Players can read campaigns they belong to.
+-- Uses SECURITY DEFINER helper to avoid recursion with campana_jugadores.
 CREATE POLICY "Players can read joined campaigns"
   ON public.campanas_master FOR SELECT
-  USING (
-    id IN (
-      SELECT campana_id FROM public.campana_jugadores
-      WHERE jugador_id = auth.uid()
-    )
-  );
+  USING (public.is_campaign_player(id));
 
 -- ── Campaña-Jugadores ──
 ALTER TABLE public.campana_jugadores ENABLE ROW LEVEL SECURITY;
 
--- Master can manage players in their campaigns
+-- Master can manage players in their campaigns.
+-- Uses SECURITY DEFINER helper to avoid recursion with campanas_master.
 CREATE POLICY "Master manages campaign players"
   ON public.campana_jugadores FOR ALL
-  USING (
-    campana_id IN (
-      SELECT id FROM public.campanas_master
-      WHERE master_id = auth.uid()
-    )
-  );
+  USING (public.is_campaign_master(campana_id));
 
 -- Players can read and update their own membership
 CREATE POLICY "Players can read own membership"

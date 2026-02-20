@@ -136,7 +136,7 @@ export default function LoginScreen() {
           </View>
 
           <Text style={[styles.title, { color: colors.accentRed }]}>
-            D&D Español
+            DyMEs
           </Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Gestiona tus partidas y personajes

@@ -13,7 +13,7 @@
  * @example
  * <PageHeader
  *   title="Ajustes"
- *   label="D&D Español"
+ *   label="DyMEs"
  *   onBack={() => router.back()}
  * />
  */
@@ -37,7 +37,7 @@ import { useTheme } from "@/hooks";
 export interface PageHeaderProps {
   /** Main screen title */
   title: string;
-  /** Small top label (defaults to "D&D Español") */
+  /** Small top label (defaults to "DyMEs") */
   label?: string;
   /** Called when the back button is pressed */
   onBack: () => void;
@@ -55,7 +55,7 @@ export interface PageHeaderProps {
 
 export default function PageHeader({
   title,
-  label = "D&D Español",
+  label = "DyMEs",
   onBack,
   subtitle,
   rightAction,

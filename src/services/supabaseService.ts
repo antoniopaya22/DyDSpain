@@ -60,7 +60,6 @@ export async function fetchMasterCampaigns(
       error.code === "42P01" ||
       error.code === "PGRST204" ||
       error.message?.includes("does not exist") ||
-      error.message?.includes("relation") ||
       error.message?.includes("Not Found");
 
     if (isTableMissing) {

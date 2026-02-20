@@ -1,6 +1,6 @@
-# Historias de Usuario — D&D Español
+# Historias de Usuario — DyMEs
 
-Este directorio contiene todas las historias de usuario de la aplicación **D&D Español** (DyD Esp), organizadas por módulo funcional.
+Este directorio contiene todas las historias de usuario de la aplicación **DyMEs**, organizadas por módulo funcional.
 
 ## Índice de Documentos
 

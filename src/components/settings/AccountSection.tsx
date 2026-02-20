@@ -77,7 +77,7 @@ export function AccountSection() {
     if (!playerCode) return;
     try {
       await Share.share({
-        message: `Mi código de jugador en D&D Español: ${playerCode}`,
+        message: `Mi código de jugador en DyMEs: ${playerCode}`,
       });
     } catch {
       // User cancelled

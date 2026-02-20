@@ -8,7 +8,7 @@ import { random, now } from "./providers";
 // ─── Tipos ───────────────────────────────────────────────────────────
 
 /** Tipos de dados estándar de D&D */
-export type DieType = "d4" | "d6" | "d8" | "d10" | "d12" | "d20" | "d100";
+export type DieType = "d3" | "d4" | "d6" | "d8" | "d10" | "d12" | "d20" | "d100";
 
 /** Resultado de una tirada individual */
 export interface DieRollResult {
@@ -87,6 +87,7 @@ export interface DeathSaveRollResult {
 
 /** Número máximo de cada tipo de dado */
 export const DIE_MAX_VALUES: Record<DieType, number> = {
+  d3: 3,
   d4: 4,
   d6: 6,
   d8: 8,
@@ -136,7 +137,7 @@ export function rollDieRaw(sides: number): number {
  */
 export function parseDieType(sides: number): DieType {
   const map: Record<number, DieType> = {
-    4: "d4", 6: "d6", 8: "d8", 10: "d10",
+    3: "d3", 4: "d4", 6: "d6", 8: "d8", 10: "d10",
     12: "d12", 20: "d20", 100: "d100",
   };
   return map[sides] || "d20";

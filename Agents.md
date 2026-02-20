@@ -6,7 +6,7 @@ Instrucciones de contexto para agentes de IA (GitHub Copilot, Cursor, etc.) que 
 
 ## Proyecto
 
-**D&D Español** — Aplicación móvil y web para gestionar personajes y partidas de Dungeons & Dragons 5ª Edición, completamente en español.
+**DyMEs** — Aplicación móvil y web para gestionar personajes y partidas de Dungeons & Dragons 5ª Edición, completamente en español.
 
 ## Stack
 

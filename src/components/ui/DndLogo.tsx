@@ -556,7 +556,7 @@ export default function DndLogo({
                     { fontSize: preset.labelFontSize },
                   ]}
                 >
-                  D&D
+                  DyMEs
                 </Text>
                 <Text
                   style={[
@@ -564,7 +564,7 @@ export default function DndLogo({
                     { fontSize: preset.subtitleSize },
                   ]}
                 >
-                  ESPAÑOL
+                  5ª EDICIÓN
                 </Text>
               </View>
 
@@ -595,7 +595,7 @@ export default function DndLogo({
               <Text
                 style={[styles.labelTitle, { fontSize: preset.labelFontSize }]}
               >
-                D&D
+                DyMEs
               </Text>
               <Text
                 style={[
@@ -603,7 +603,7 @@ export default function DndLogo({
                   { fontSize: preset.subtitleSize },
                 ]}
               >
-                ESPAÑOL
+                5ª EDICIÓN
               </Text>
             </View>
           )}
@@ -658,7 +658,7 @@ export function InlineDndLogo({ style }: InlineLogoProps) {
             },
           ]}
         >
-          D&D Español
+          DyMEs
         </Text>
         <View style={styles.inlineSubRow}>
           {/* Tiny decorative line before subtitle */}
