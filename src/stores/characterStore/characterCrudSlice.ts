@@ -7,6 +7,8 @@ import type {
   Character,
   AbilityKey,
   SkillKey,
+  Personality,
+  Appearance,
 } from "@/types/character";
 import {
   calcModifier,
@@ -265,6 +267,38 @@ export function createCharacterCrudSlice(
       }
 
       return baseAC;
+    },
+
+    updatePersonality: async (personality: Personality) => {
+      const { character } = get();
+      if (!character) return;
+      const updated = { ...character, personality, actualizadoEn: now() };
+      await setItem(STORAGE_KEYS.CHARACTER(character.id), updated);
+      set({ character: updated });
+    },
+
+    updateAppearance: async (appearance: Appearance) => {
+      const { character } = get();
+      if (!character) return;
+      const updated = { ...character, appearance, actualizadoEn: now() };
+      await setItem(STORAGE_KEYS.CHARACTER(character.id), updated);
+      set({ character: updated });
+    },
+
+    updateAlignment: async (alineamiento: Character["alineamiento"]) => {
+      const { character } = get();
+      if (!character) return;
+      const updated = { ...character, alineamiento, actualizadoEn: now() };
+      await setItem(STORAGE_KEYS.CHARACTER(character.id), updated);
+      set({ character: updated });
+    },
+
+    updateName: async (nombre: string) => {
+      const { character } = get();
+      if (!character) return;
+      const updated = { ...character, nombre, actualizadoEn: now() };
+      await setItem(STORAGE_KEYS.CHARACTER(character.id), updated);
+      set({ character: updated });
     },
   };
 }

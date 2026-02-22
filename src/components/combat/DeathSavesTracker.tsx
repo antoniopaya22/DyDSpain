@@ -9,6 +9,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 import type { DialogType } from "@/components/ui/ConfirmDialog";
 
 /** D&D 5e: 3 death saves needed to stabilize or die */
@@ -71,21 +72,21 @@ export function DeathSavesTracker({
   };
 
   return (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-red-500/30 p-4 mb-4">
+    <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: withAlpha(colors.accentDanger, 0.3) }}>
       <View className="flex-row items-center mb-3">
         <Ionicons
           name="skull-outline"
           size={20}
           color={colors.accentDanger}
         />
-        <Text className="text-red-400 text-sm font-semibold ml-2 uppercase tracking-wider">
+        <Text className="text-sm font-semibold ml-2 uppercase tracking-wider" style={{ color: colors.accentDanger }}>
           Salvaciones de Muerte
         </Text>
       </View>
 
       {/* Successes */}
       <View className="flex-row items-center mb-3">
-        <Text className="text-green-600 dark:text-green-400 text-sm font-medium w-16">
+        <Text className="text-sm font-medium w-16" style={{ color: colors.accentGreen }}>
           Éxitos
         </Text>
         <View className="flex-row flex-1 justify-center">
@@ -111,10 +112,11 @@ export function DeathSavesTracker({
           ))}
         </View>
         <TouchableOpacity
-          className="bg-green-600/80 rounded-lg px-3 py-2 active:bg-green-700"
+          className="rounded-lg px-3 py-2"
+          style={{ backgroundColor: withAlpha(colors.accentGreen, 0.8) }}
           onPress={handleDeathSuccess}
         >
-          <Text className="text-dark-900 dark:text-white text-xs font-bold">
+          <Text className="text-xs font-bold" style={{ color: '#fff' }}>
             +1
           </Text>
         </TouchableOpacity>
@@ -122,7 +124,7 @@ export function DeathSavesTracker({
 
       {/* Failures */}
       <View className="flex-row items-center mb-3">
-        <Text className="text-red-400 text-sm font-medium w-16">Fallos</Text>
+        <Text className="text-sm font-medium w-16" style={{ color: colors.accentDanger }}>Fallos</Text>
         <View className="flex-row flex-1 justify-center">
           {DEATH_SAVE_INDICES.map((i) => (
             <View
@@ -146,17 +148,19 @@ export function DeathSavesTracker({
           ))}
         </View>
         <TouchableOpacity
-          className="bg-red-600/80 rounded-lg px-3 py-2 active:bg-red-700"
+          className="rounded-lg px-3 py-2"
+          style={{ backgroundColor: withAlpha(colors.accentDanger, 0.8) }}
           onPress={handleDeathFailure}
         >
-          <Text className="text-dark-900 dark:text-white text-xs font-bold">
+          <Text className="text-xs font-bold" style={{ color: '#fff' }}>
             +1
           </Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity
-        className="bg-gray-200 dark:bg-dark-700 rounded-lg py-2 items-center active:bg-gray-300 dark:active:bg-dark-600"
+        className="rounded-lg py-2 items-center"
+        style={{ backgroundColor: colors.bgSecondary }}
         onPress={() => {
           onShowConfirm(
             "Reiniciar Salvaciones",
@@ -170,7 +174,7 @@ export function DeathSavesTracker({
           );
         }}
       >
-        <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold">
+        <Text className="text-xs font-semibold" style={{ color: colors.textSecondary }}>
           Reiniciar
         </Text>
       </TouchableOpacity>

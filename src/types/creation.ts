@@ -15,7 +15,91 @@ import type {
   Alignment,
   Appearance,
   AbilityKey,
+  Size,
+  DamageType,
 } from "./character";
+
+// ─── Datos de raza personalizada ─────────────────────────────────────
+
+/** Rasgo personalizado para una raza custom */
+export interface CustomRaceTrait {
+  nombre: string;
+  descripcion: string;
+}
+
+/** Conjuro innato personalizado para una raza custom */
+export interface CustomRacialSpell {
+  /** Nombre del conjuro (libre, no necesita coincidir con la base de datos) */
+  nombre: string;
+  /** Nivel mínimo del personaje para desbloquearlo */
+  minLevel: number;
+  /** Si es un truco (cantrip) */
+  isCantrip: boolean;
+}
+
+/** Datos completos de una raza personalizada */
+export interface CustomRaceConfig {
+  /** Nombre de la raza custom */
+  nombre: string;
+  /** Descripción libre */
+  descripcion: string;
+  /** Bonificadores de característica (+1, +2, etc.) */
+  abilityBonuses: Partial<Record<AbilityKey, number>>;
+  /** Tamaño de la criatura */
+  size: Size;
+  /** Velocidad base en pies */
+  speed: number;
+  /** Velocidad de vuelo en pies (0 = sin vuelo) */
+  flySpeed?: number;
+  /** Velocidad de nado en pies (0 = sin nado) */
+  swimSpeed?: number;
+  /** Velocidad de trepar en pies (0 = sin trepar) */
+  climbSpeed?: number;
+  /** Si tiene visión en la oscuridad */
+  darkvision: boolean;
+  /** Alcance de visión en la oscuridad (si aplica) */
+  darkvisionRange?: number;
+  /** Rasgos raciales */
+  traits: CustomRaceTrait[];
+  /** Idiomas conocidos */
+  languages: string[];
+  /** Resistencias a tipos de daño */
+  damageResistances?: DamageType[];
+  /** Competencias con armas */
+  weaponProficiencies?: string[];
+  /** Competencias con armaduras */
+  armorProficiencies?: string[];
+  /** Competencias con herramientas */
+  toolProficiencies?: string[];
+  /** Competencias en habilidades (fijas) */
+  skillProficiencies?: SkillKey[];
+  /** Conjuros innatos */
+  racialSpells?: CustomRacialSpell[];
+}
+
+// ─── Datos de trasfondo personalizado ─────────────────────────────────
+
+/** Datos completos de un trasfondo personalizado */
+export interface CustomBackgroundConfig {
+  /** Nombre del trasfondo custom */
+  nombre: string;
+  /** Descripción libre */
+  descripcion: string;
+  /** Competencias en habilidades que otorga (exactamente 2) */
+  skillProficiencies: SkillKey[];
+  /** Competencias con herramientas que otorga */
+  toolProficiencies: string[];
+  /** Número de idiomas adicionales que otorga */
+  extraLanguages: number;
+  /** Equipo inicial */
+  equipment: string[];
+  /** Monedas de oro iniciales */
+  startingGold: number;
+  /** Nombre del rasgo especial del trasfondo */
+  featureName: string;
+  /** Descripción del rasgo especial */
+  featureDescription: string;
+}
 
 // ─── Estado parcial para el wizard de creación (HU-02) ───────────────
 
@@ -29,10 +113,14 @@ export interface CharacterCreationDraft {
   nombre?: string;
   raza?: RaceId;
   subraza?: SubraceId;
+  /** Datos de la raza personalizada (solo cuando raza === "personalizada") */
+  customRaceData?: CustomRaceConfig;
   clase?: ClassId;
   abilityScoreMethod?: AbilityScoreMethod;
   abilityScoresBase?: AbilityScores;
   trasfondo?: BackgroundId;
+  /** Datos del trasfondo personalizado (solo cuando trasfondo === "personalizada") */
+  customBackgroundData?: CustomBackgroundConfig;
   skillChoices?: SkillKey[];
   spellChoices?: {
     cantrips: string[];

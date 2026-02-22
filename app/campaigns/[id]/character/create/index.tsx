@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import { ConfirmDialog } from "@/components/ui";
 import { useTheme, useDialog } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 
 const CURRENT_STEP = 1;
 
@@ -94,7 +95,8 @@ export default function CharacterNameStep() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-50 dark:bg-dark-800"
+      className="flex-1"
+      style={{ backgroundColor: colors.bgPrimary }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View className="flex-1">
@@ -102,13 +104,14 @@ export default function CharacterNameStep() {
         <View className="px-5 pt-16 pb-4">
           <View className="flex-row items-center justify-between mb-4">
             <TouchableOpacity
-              className="h-10 w-10 rounded-full bg-gray-100 dark:bg-surface items-center justify-center active:bg-gray-50 dark:active:bg-surface-light"
+              className="h-10 w-10 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.headerButtonBg }}
               onPress={handleCancel}
             >
               <Ionicons name="close" size={22} color={colors.textPrimary} />
             </TouchableOpacity>
 
-            <Text className="text-dark-500 dark:text-dark-300 text-sm font-semibold">
+            <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
               Paso {CURRENT_STEP} de {TOTAL_STEPS}
             </Text>
 
@@ -117,7 +120,7 @@ export default function CharacterNameStep() {
           </View>
 
           {/* Barra de progreso */}
-          <View className="h-1.5 bg-gray-100 dark:bg-surface rounded-full overflow-hidden">
+          <View className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: colors.bgInput }}>
             <View
               className="h-full bg-primary-500 rounded-full"
               style={{ width: `${progressPercent}%` }}
@@ -136,10 +139,10 @@ export default function CharacterNameStep() {
               />
             </View>
 
-            <Text className="text-dark-900 dark:text-white text-2xl font-bold text-center mb-2">
+            <Text className="text-2xl font-bold text-center mb-2" style={{ color: colors.textPrimary }}>
               ¿Cómo se llama tu personaje?
             </Text>
-            <Text className="text-dark-500 dark:text-dark-300 text-base text-center leading-6 px-4">
+            <Text className="text-base text-center leading-6 px-4" style={{ color: colors.textSecondary }}>
               Elige un nombre que identifique a tu héroe en la partida. Podrás
               cambiarlo más adelante.
             </Text>
@@ -148,7 +151,8 @@ export default function CharacterNameStep() {
           {/* Campo de nombre */}
           <View className="mb-6">
             <TextInput
-              className="bg-gray-100 dark:bg-surface rounded-xl px-5 py-4 text-dark-900 dark:text-white text-xl text-center border border-dark-100 dark:border-surface-border font-semibold"
+              className="rounded-xl px-5 py-4 text-xl text-center border font-semibold"
+              style={{ backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
               placeholder="Nombre del personaje"
               placeholderTextColor={colors.textMuted}
               value={nombre}
@@ -159,14 +163,14 @@ export default function CharacterNameStep() {
               returnKeyType="done"
               onSubmitEditing={handleNext}
             />
-            <Text className="text-dark-400 text-xs mt-2 text-center">
+            <Text className="text-xs mt-2 text-center" style={{ color: colors.textMuted }}>
               Máximo 50 caracteres · Se admiten tildes y caracteres especiales
             </Text>
           </View>
 
           {/* Sugerencias */}
           <View className="mb-8">
-            <Text className="text-dark-400 text-xs font-semibold uppercase tracking-wider mb-3 text-center">
+            <Text className="text-xs font-semibold uppercase tracking-wider mb-3 text-center" style={{ color: colors.textMuted }}>
               Ideas de nombre
             </Text>
             <View className="flex-row flex-wrap justify-center">
@@ -182,10 +186,11 @@ export default function CharacterNameStep() {
               ].map((suggestion) => (
                 <TouchableOpacity
                   key={suggestion}
-                  className="bg-white dark:bg-surface-card border border-dark-100 dark:border-surface-border rounded-full px-4 py-2 m-1 active:bg-gray-50 dark:active:bg-surface-light"
+                  className="border rounded-full px-4 py-2 m-1"
+                  style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}
                   onPress={() => setNombreLocal(suggestion)}
                 >
-                  <Text className="text-dark-600 dark:text-dark-200 text-sm">
+                  <Text className="text-sm" style={{ color: colors.textSecondary }}>
                     {suggestion}
                   </Text>
                 </TouchableOpacity>
@@ -195,13 +200,13 @@ export default function CharacterNameStep() {
         </View>
 
         {/* Footer con botones de navegación */}
-        <View className="px-5 pb-10 pt-4 border-t border-dark-100 dark:border-surface-border">
+        <View className="px-5 pb-10 pt-4 border-t" style={{ borderTopColor: colors.borderDefault }}>
           <TouchableOpacity
-            className={`rounded-xl py-4 items-center flex-row justify-center ${
-              isValid
-                ? "bg-primary-500 active:bg-primary-600"
-                : "bg-gray-300 dark:bg-dark-600 opacity-50"
-            }`}
+            className="rounded-xl py-4 items-center flex-row justify-center"
+            style={{
+              backgroundColor: isValid ? colors.accentRed : colors.bgSecondary,
+              opacity: isValid ? 1 : 0.5,
+            }}
             onPress={handleNext}
             disabled={!isValid}
           >

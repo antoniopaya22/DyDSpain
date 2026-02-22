@@ -13,3 +13,4 @@ export { useEntranceAnimation } from "./useEntranceAnimation";
 export { usePulseAnimation } from "./usePulseAnimation";
 export { useRealtimeCharacters } from "./useRealtimeCharacters";
 export { useCharacterSync } from "./useCharacterSync";
+export { useScrollToTop } from "./useScrollToTop";

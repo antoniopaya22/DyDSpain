@@ -13,6 +13,7 @@ import {
   type NoteSortOptions,
 } from "@/types/notes";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 
 const PREDEFINED_TAGS = getPredefinedTags();
 
@@ -46,10 +47,14 @@ export function NoteFilterBar({
   return (
     <View>
       {/* Search bar */}
-      <View className="flex-row items-center bg-gray-100 dark:bg-surface rounded-xl px-3 py-2 border border-dark-100 dark:border-surface-border mb-3">
+      <View
+        className="flex-row items-center rounded-xl px-3 py-2 border mb-3"
+        style={{ backgroundColor: colors.bgInput, borderColor: colors.borderDefault }}
+      >
         <Ionicons name="search" size={18} color={colors.textMuted} />
         <TextInput
-          className="flex-1 text-dark-900 dark:text-white text-sm ml-2.5"
+          className="flex-1 text-sm ml-2.5"
+          style={{ color: colors.textPrimary }}
           placeholder="Buscar notas..."
           placeholderTextColor={colors.textMuted}
           value={searchQuery}
@@ -91,11 +96,12 @@ export function NoteFilterBar({
           </View>
 
           <TouchableOpacity
-            className="flex-row items-center bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-1.5 border border-dark-100 dark:border-surface-border active:bg-gray-300 dark:active:bg-dark-600"
+            className="flex-row items-center rounded-lg px-2.5 py-1.5 border"
+            style={{ backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }}
             onPress={onToggleSortOptions}
           >
             <Ionicons name="swap-vertical" size={14} color={colors.textMuted} />
-            <Text className="text-dark-500 dark:text-dark-300 text-[10px] ml-1">
+            <Text className="text-[10px] ml-1" style={{ color: colors.textSecondary }}>
               Ordenar
             </Text>
           </TouchableOpacity>
@@ -103,7 +109,10 @@ export function NoteFilterBar({
 
         {/* Sort options dropdown */}
         {showSortOptions && (
-          <View className="bg-parchment-card dark:bg-surface-card rounded-lg border border-dark-100 dark:border-surface-border p-2 mb-2">
+          <View
+            className="rounded-lg border p-2 mb-2"
+            style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}
+          >
             {(
               [
                 {
@@ -120,9 +129,12 @@ export function NoteFilterBar({
             ).map((option) => (
               <TouchableOpacity
                 key={option.field}
-                className={`flex-row items-center justify-between py-2 px-2 rounded-lg ${
-                  sortOptions.field === option.field ? "bg-primary-500/10" : ""
-                }`}
+                className="flex-row items-center justify-between py-2 px-2 rounded-lg"
+                style={
+                  sortOptions.field === option.field
+                    ? { backgroundColor: withAlpha(colors.accentRed, 0.1) }
+                    : undefined
+                }
                 onPress={() => {
                   if (sortOptions.field === option.field) {
                     onSortChange({
@@ -137,10 +149,14 @@ export function NoteFilterBar({
               >
                 <Text
                   className={`text-xs ${
-                    sortOptions.field === option.field
-                      ? "text-primary-400 font-semibold"
-                      : "text-dark-500 dark:text-dark-300"
+                    sortOptions.field === option.field ? "font-semibold" : ""
                   }`}
+                  style={{
+                    color:
+                      sortOptions.field === option.field
+                        ? colors.accentRed
+                        : colors.textSecondary,
+                  }}
                 >
                   {option.label}
                 </Text>
@@ -169,18 +185,17 @@ export function NoteFilterBar({
             return (
               <TouchableOpacity
                 key={tag.id}
-                className={`flex-row items-center rounded-full px-3 py-1.5 mr-2 border ${
-                  isActive
-                    ? "border-opacity-50"
-                    : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
-                }`}
+                className="flex-row items-center rounded-full px-3 py-1.5 mr-2 border"
                 style={
                   isActive
                     ? {
                         backgroundColor: `${tag.color}20`,
                         borderColor: `${tag.color}50`,
                       }
-                    : undefined
+                    : {
+                        backgroundColor: colors.bgSecondary,
+                        borderColor: colors.borderDefault,
+                      }
                 }
                 onPress={() => onTagFilterChange(isActive ? null : tag.id)}
               >
@@ -211,19 +226,26 @@ function FilterChip({
   isActive: boolean;
   onPress: () => void;
 }) {
+  const { colors } = useTheme();
+
   return (
     <TouchableOpacity
-      className={`rounded-full px-3 py-1.5 mr-2 border ${
-        isActive
-          ? "bg-primary-500/20 border-primary-500/50"
-          : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
-      }`}
+      className="rounded-full px-3 py-1.5 mr-2 border"
+      style={{
+        backgroundColor: isActive
+          ? withAlpha(colors.accentRed, 0.2)
+          : colors.bgSecondary,
+        borderColor: isActive
+          ? withAlpha(colors.accentRed, 0.5)
+          : colors.borderDefault,
+      }}
       onPress={onPress}
     >
       <Text
-        className={`text-[10px] font-semibold ${
-          isActive ? "text-primary-400" : "text-dark-500 dark:text-dark-300"
-        }`}
+        className="text-[10px] font-semibold"
+        style={{
+          color: isActive ? colors.accentRed : colors.textSecondary,
+        }}
       >
         {label}
       </Text>

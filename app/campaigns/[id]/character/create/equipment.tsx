@@ -11,12 +11,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import { getClassData, getBackgroundData } from "@/data/srd";
 import type { EquipmentChoice } from "@/data/srd";
-import { useTheme } from "@/hooks";
+import { useTheme, useScrollToTop } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 8;
 
 export default function EquipmentStep() {
+  const scrollRef = useScrollToTop();
   const { colors, isDark } = useTheme();
   const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
@@ -79,6 +80,7 @@ export default function EquipmentStep() {
   return (
     <View style={[styles.container, themed.container]}>
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
       >

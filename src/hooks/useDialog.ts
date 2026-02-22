@@ -14,6 +14,7 @@
  */
 
 import { useState, useCallback, useRef } from "react";
+import type { ReactNode } from "react";
 import type { DialogType, DialogButton, ConfirmDialogProps } from "@/components/ui/ConfirmDialog";
 
 // Re-export sibling hooks for backward compatibility
@@ -32,6 +33,7 @@ interface DialogState {
   iconColor?: string;
   dismissOnBackdrop?: boolean;
   showCloseButton?: boolean;
+  customIconContent?: ReactNode;
 }
 
 const DEFAULT_DIALOG_STATE: DialogState = {
@@ -44,6 +46,7 @@ const DEFAULT_DIALOG_STATE: DialogState = {
   iconColor: undefined,
   dismissOnBackdrop: true,
   showCloseButton: false,
+  customIconContent: undefined,
 };
 
 // ─── useDialog Hook ──────────────────────────────────────────────────
@@ -72,6 +75,7 @@ export function useDialog() {
       iconColor?: string;
       dismissOnBackdrop?: boolean;
       showCloseButton?: boolean;
+      customIconContent?: ReactNode;
     }) => {
       return new Promise<boolean>((resolve) => {
         resolveRef.current = resolve;
@@ -99,6 +103,7 @@ export function useDialog() {
           iconColor: options.iconColor,
           dismissOnBackdrop: options.dismissOnBackdrop ?? true,
           showCloseButton: options.showCloseButton ?? false,
+          customIconContent: options.customIconContent,
         });
       });
     },
@@ -285,6 +290,7 @@ export function useDialog() {
     iconColor: dialog.iconColor,
     dismissOnBackdrop: dialog.dismissOnBackdrop,
     showCloseButton: dialog.showCloseButton,
+    customIconContent: dialog.customIconContent,
   };
 
   return {

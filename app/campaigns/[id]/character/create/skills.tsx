@@ -16,12 +16,13 @@ import {
   getRequiredSkillCount,
 } from "@/stores/creationStore";
 import { SKILLS, ABILITY_NAMES, type SkillKey } from "@/types/character";
-import { useTheme } from "@/hooks";
+import { useTheme, useScrollToTop } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 6;
 
 export default function SkillsStep() {
+  const scrollRef = useScrollToTop();
   const { colors, isDark } = useTheme();
   const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
@@ -51,13 +52,14 @@ export default function SkillsStep() {
   const classId = draft?.clase;
   const raceId = draft?.raza;
   const backgroundId = draft?.trasfondo;
+  const customBgData = draft?.customBackgroundData;
 
   // Skills already granted by race and background
-  const grantedSkills = getGrantedSkills(raceId, backgroundId);
+  const grantedSkills = getGrantedSkills(raceId, backgroundId, customBgData);
 
   // Skills available to pick from class pool (excluding granted)
   const availableClassSkills: SkillKey[] = classId
-    ? getAvailableClassSkills(classId, raceId, backgroundId)
+    ? getAvailableClassSkills(classId, raceId, backgroundId, customBgData)
     : [];
 
   // How many skills the player must choose
@@ -114,6 +116,7 @@ export default function SkillsStep() {
   return (
     <View style={[styles.container, themed.container]}>
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
       >

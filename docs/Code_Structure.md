@@ -190,7 +190,6 @@ Sub-componentes de combate.
 - `HitDiceSection` — Dados de golpe
 - `DeathSavesTracker` — Salvaciones de muerte
 - `ConditionsSection` — Condiciones activas
-- `CombatLog` — Registro de combate
 
 ### `components/compendium/`
 Tarjetas para el compendio SRD.

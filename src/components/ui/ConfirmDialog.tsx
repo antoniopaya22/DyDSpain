@@ -19,6 +19,7 @@ import {
   Dimensions,
   BackHandler,
 } from "react-native";
+import type { ReactNode } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/hooks";
@@ -63,6 +64,8 @@ export interface ConfirmDialogProps {
   dismissOnBackdrop?: boolean;
   /** Whether to show close button in top-right corner (default: false) */
   showCloseButton?: boolean;
+  /** Custom React content to replace the icon (e.g. a number) */
+  customIconContent?: ReactNode;
 }
 
 // ─── Type Config (accent colors stay consistent across themes) ───────
@@ -140,6 +143,7 @@ export default function ConfirmDialog({
   iconColor: customIconColor,
   dismissOnBackdrop = true,
   showCloseButton = false,
+  customIconContent,
 }: ConfirmDialogProps) {
   const { colors, isDark } = useTheme();
 
@@ -445,7 +449,9 @@ export default function ConfirmDialog({
                   },
                 ]}
               >
-                <Ionicons name={iconName} size={32} color={iconTint} />
+                {customIconContent ?? (
+                  <Ionicons name={iconName} size={32} color={iconTint} />
+                )}
               </View>
             </Animated.View>
 

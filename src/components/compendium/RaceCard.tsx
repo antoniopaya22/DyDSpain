@@ -81,11 +81,13 @@ export function RaceCard({ data, isExpanded, onToggle }: RaceCardProps) {
             <DetailBadge
               label="Tamaño"
               value={
-                data.size === "mediano"
-                  ? "Mediano"
-                  : data.size === "pequeno"
-                    ? "Pequeño"
-                    : "Grande"
+                data.size === "diminuto"
+                  ? "Diminuto"
+                  : data.size === "mediano"
+                    ? "Mediano"
+                    : data.size === "pequeno"
+                      ? "Pequeño"
+                      : "Grande"
               }
               color={colors.accentPurple}
             />

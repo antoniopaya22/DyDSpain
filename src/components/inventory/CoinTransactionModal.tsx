@@ -108,17 +108,18 @@ export function CoinTransactionModal({
         className="flex-1 justify-end"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="bg-gray-50 dark:bg-dark-800 rounded-t-3xl border-t border-dark-100 dark:border-surface-border">
+        <View className="rounded-t-3xl border-t" style={{ backgroundColor: colors.bgPrimary, borderColor: colors.borderDefault }}>
           {/* Header */}
           <View className="flex-row items-center justify-between px-5 pt-5 pb-3">
-            <Text className="text-dark-900 dark:text-white text-lg font-bold">
+            <Text className="text-lg font-bold" style={{ color: colors.textPrimary }}>
               Gestionar Monedas
             </Text>
             <TouchableOpacity
-              className="h-8 w-8 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center"
+              className="h-8 w-8 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.bgSecondary }}
               onPress={onClose}
             >
-              <Ionicons name="close" size={18} color="white" />
+              <Ionicons name="close" size={18} color={colors.textPrimary} />
             </TouchableOpacity>
           </View>
 
@@ -128,35 +129,27 @@ export function CoinTransactionModal({
             keyboardShouldPersistTaps="handled"
           >
             {/* Operation toggle */}
-            <View className="flex-row mb-4 bg-gray-200 dark:bg-dark-700 rounded-xl p-1">
+            <View className="flex-row mb-4 rounded-xl p-1" style={{ backgroundColor: colors.bgSecondary }}>
               <TouchableOpacity
-                className={`flex-1 rounded-lg py-2.5 items-center ${
-                  operation === "add" ? "bg-green-600/80" : "bg-transparent"
-                }`}
+                className="flex-1 rounded-lg py-2.5 items-center"
+                style={{ backgroundColor: operation === "add" ? "rgba(22, 163, 74, 0.8)" : "transparent" }}
                 onPress={() => setOperation("add")}
               >
                 <Text
-                  className={`text-sm font-semibold ${
-                    operation === "add"
-                      ? "text-dark-900 dark:text-white"
-                      : "text-dark-400"
-                  }`}
+                  className="text-sm font-semibold"
+                  style={{ color: operation === "add" ? colors.textPrimary : colors.textMuted }}
                 >
                   Añadir
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className={`flex-1 rounded-lg py-2.5 items-center ${
-                  operation === "remove" ? "bg-red-600/80" : "bg-transparent"
-                }`}
+                className="flex-1 rounded-lg py-2.5 items-center"
+                style={{ backgroundColor: operation === "remove" ? "rgba(220, 38, 38, 0.8)" : "transparent" }}
                 onPress={() => setOperation("remove")}
               >
                 <Text
-                  className={`text-sm font-semibold ${
-                    operation === "remove"
-                      ? "text-dark-900 dark:text-white"
-                      : "text-dark-400"
-                  }`}
+                  className="text-sm font-semibold"
+                  style={{ color: operation === "remove" ? colors.textPrimary : colors.textMuted }}
                 >
                   Gastar
                 </Text>
@@ -164,8 +157,8 @@ export function CoinTransactionModal({
             </View>
 
             {/* Current coins display */}
-            <View className="bg-gray-200 dark:bg-dark-700 rounded-xl p-3 mb-4 border border-dark-100 dark:border-surface-border">
-              <Text className="text-dark-400 text-[10px] uppercase tracking-wider mb-2">
+            <View className="rounded-xl p-3 mb-4 border" style={{ backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }}>
+              <Text className="text-[10px] uppercase tracking-wider mb-2" style={{ color: colors.textMuted }}>
                 Monedas actuales
               </Text>
               <View className="flex-row justify-between">
@@ -178,7 +171,7 @@ export function CoinTransactionModal({
                     >
                       {inventory.coins[type]}
                     </Text>
-                    <Text className="text-dark-300 dark:text-dark-500 text-[9px]">
+                    <Text className="text-[9px]" style={{ color: colors.textMuted }}>
                       {COIN_ABBR[type]}
                     </Text>
                   </View>
@@ -187,7 +180,7 @@ export function CoinTransactionModal({
             </View>
 
             {/* Coin inputs */}
-            <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-2">
+            <Text className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: colors.textSecondary }}>
               Cantidades a {operation === "add" ? "añadir" : "gastar"}
             </Text>
             {COIN_ORDER.map((type) => (
@@ -202,7 +195,8 @@ export function CoinTransactionModal({
                   </Text>
                 </View>
                 <TextInput
-                  className="flex-1 bg-gray-100 dark:bg-surface rounded-xl px-4 py-2.5 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border ml-3"
+                  className="flex-1 rounded-xl px-4 py-2.5 text-sm border ml-3"
+                  style={{ backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
                   placeholder="0"
                   placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
@@ -215,11 +209,12 @@ export function CoinTransactionModal({
             ))}
 
             {/* Description */}
-            <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5 mt-3">
+            <Text className="text-xs font-semibold uppercase tracking-wider mb-1.5 mt-3" style={{ color: colors.textSecondary }}>
               Descripción (opcional)
             </Text>
             <TextInput
-              className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border mb-6"
+              className="rounded-xl px-4 py-3 text-sm border mb-6"
+              style={{ backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
               placeholder="Ej: Recompensa por misión"
               placeholderTextColor={colors.textMuted}
               value={description}
@@ -229,23 +224,20 @@ export function CoinTransactionModal({
 
             {/* Submit */}
             <TouchableOpacity
-              className={`rounded-xl py-4 items-center ${
-                operation === "add"
-                  ? "bg-green-600 active:bg-green-700"
-                  : "bg-red-600 active:bg-red-700"
-              }`}
+              className="rounded-xl py-4 items-center"
+              style={{ backgroundColor: operation === "add" ? "#16a34a" : "#dc2626" }}
               onPress={handleSubmit}
             >
-              <Text className="text-dark-900 dark:text-white font-bold text-base">
+              <Text className="font-bold text-base" style={{ color: colors.textPrimary }}>
                 {operation === "add" ? "Añadir Monedas" : "Gastar Monedas"}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="mt-3 rounded-xl py-3 items-center active:bg-gray-50 dark:active:bg-surface-light"
+              className="mt-3 rounded-xl py-3 items-center"
               onPress={onClose}
             >
-              <Text className="text-dark-500 dark:text-dark-300 font-semibold text-sm">
+              <Text className="font-semibold text-sm" style={{ color: colors.textSecondary }}>
                 Cancelar
               </Text>
             </TouchableOpacity>

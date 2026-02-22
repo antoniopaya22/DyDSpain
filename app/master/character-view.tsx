@@ -8,7 +8,7 @@
  * the liveCharacters cache or directly from Supabase.
  */
 
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,8 @@ import {
   Animated,
   Easing,
   ActivityIndicator,
+  TextInput,
+  Alert,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -36,8 +38,14 @@ import {
   CONDITION_NAMES,
 } from "@/constants/character";
 import { ABILITY_COLORS, ABILITY_KEYS, SPELL_LEVEL_COLORS } from "@/constants/abilities";
+import { COIN_ABBR } from "@/constants/items";
 import type { Character, AbilityKey, SkillKey } from "@/types/character";
 import type { ThemeColors } from "@/utils/theme";
+import type { SyncedCharacterData } from "@/hooks/useCharacterSync";
+import type { InternalMagicState, SlotInfo } from "@/stores/characterStore/helpers";
+import type { ClassResourcesState, ClassResourceInfo } from "@/stores/characterStore/classResourceTypes";
+import { UNLIMITED_RESOURCE } from "@/stores/characterStore/classResourceTypes";
+import type { Inventory, InventoryItem, CoinType, Coins } from "@/types/item";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -47,8 +55,22 @@ type SectionId =
   | "combat"
   | "skills"
   | "spells"
+  | "resources"
+  | "inventory"
   | "traits"
   | "proficiencies";
+
+// ─── Coin helpers ────────────────────────────────────────────────────
+
+const COIN_COLORS: Record<CoinType, string> = {
+  mc: "#B87333",
+  mp: "#C0C0C0",
+  me: "#5B9BD5",
+  mo: "#DAA520",
+  mpl: "#E5E4E2",
+};
+
+const COIN_ORDER: CoinType[] = ["mpl", "mo", "me", "mp", "mc"];
 
 // ─── HP Helpers ──────────────────────────────────────────────────────
 
@@ -99,11 +121,18 @@ export default function MasterCharacterView() {
   const { colors } = useTheme();
 
   const [character, setCharacter] = useState<Character | null>(null);
+  const [magicState, setMagicState] = useState<InternalMagicState | null>(null);
+  const [classResources, setClassResources] = useState<ClassResourcesState | null>(null);
+  const [inventory, setInventory] = useState<Inventory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<SectionId>>(
     new Set(["basic", "abilities", "combat"]),
   );
+  const [editingCoins, setEditingCoins] = useState(false);
+  const [coinDraft, setCoinDraft] = useState<Record<CoinType, string>>({ mc: "0", mp: "0", me: "0", mo: "0", mpl: "0" });
+  const [addItemName, setAddItemName] = useState("");
+  const [addItemQty, setAddItemQty] = useState("1");
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -118,12 +147,17 @@ export default function MasterCharacterView() {
           .from("personajes")
           .select("datos")
           .eq("id", characterId)
-          .single();
+          .single<{ datos: Record<string, unknown> }>();
 
         if (dbError) throw new Error(dbError.message);
         if (!data?.datos) throw new Error("Sin datos de personaje");
 
-        setCharacter(data.datos as unknown as Character);
+        const syncedData = data.datos as unknown as SyncedCharacterData;
+        const { _magicState, _classResources, _inventory, ...charData } = syncedData;
+        setCharacter(charData as Character);
+        setMagicState(_magicState ?? null);
+        setClassResources(_classResources ?? null);
+        setInventory(_inventory ?? null);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error desconocido");
       } finally {
@@ -147,7 +181,12 @@ export default function MasterCharacterView() {
         (payload) => {
           const newData = payload.new as { datos: unknown };
           if (newData?.datos) {
-            setCharacter(newData.datos as unknown as Character);
+            const syncedData = newData.datos as unknown as SyncedCharacterData;
+            const { _magicState, _classResources, _inventory, ...charData } = syncedData;
+            setCharacter(charData as Character);
+            setMagicState(_magicState ?? null);
+            setClassResources(_classResources ?? null);
+            setInventory(_inventory ?? null);
           }
         },
       )
@@ -178,6 +217,81 @@ export default function MasterCharacterView() {
       return next;
     });
   };
+
+  // ── Supabase datos update helper ──
+  const updateDatos = useCallback(async (patch: Record<string, unknown>) => {
+    if (!characterId) return;
+    try {
+      const { data: current } = await supabase
+        .from("personajes")
+        .select("datos")
+        .eq("id", characterId)
+        .single<{ datos: Record<string, unknown> }>();
+      if (!current?.datos) return;
+      const merged = { ...current.datos, ...patch };
+      await (supabase as any)
+        .from("personajes")
+        .update({ datos: merged })
+        .eq("id", characterId);
+    } catch (err) {
+      console.error("[MasterCharView] updateDatos:", err);
+    }
+  }, [characterId]);
+
+  // ── Coin editing ──
+  const startEditingCoins = useCallback(() => {
+    if (!inventory) return;
+    setCoinDraft({
+      mc: String(inventory.coins.mc),
+      mp: String(inventory.coins.mp),
+      me: String(inventory.coins.me),
+      mo: String(inventory.coins.mo),
+      mpl: String(inventory.coins.mpl),
+    });
+    setEditingCoins(true);
+  }, [inventory]);
+
+  const saveCoins = useCallback(async () => {
+    if (!inventory) return;
+    const newCoins: Coins = {
+      mc: Math.max(0, parseInt(coinDraft.mc, 10) || 0),
+      mp: Math.max(0, parseInt(coinDraft.mp, 10) || 0),
+      me: Math.max(0, parseInt(coinDraft.me, 10) || 0),
+      mo: Math.max(0, parseInt(coinDraft.mo, 10) || 0),
+      mpl: Math.max(0, parseInt(coinDraft.mpl, 10) || 0),
+    };
+    const updatedInv = { ...inventory, coins: newCoins };
+    setInventory(updatedInv);
+    setEditingCoins(false);
+    await updateDatos({ _inventory: updatedInv });
+  }, [inventory, coinDraft, updateDatos]);
+
+  // ── Inventory item management ──
+  const handleAddItem = useCallback(async () => {
+    if (!inventory || !addItemName.trim()) return;
+    const qty = Math.max(1, parseInt(addItemQty, 10) || 1);
+    const newItem: InventoryItem = {
+      id: `master-${Date.now()}`,
+      nombre: addItemName.trim(),
+      categoria: "otro",
+      cantidad: qty,
+      peso: 0,
+      equipado: false,
+      custom: true,
+    };
+    const updatedInv = { ...inventory, items: [...inventory.items, newItem] };
+    setInventory(updatedInv);
+    setAddItemName("");
+    setAddItemQty("1");
+    await updateDatos({ _inventory: updatedInv });
+  }, [inventory, addItemName, addItemQty, updateDatos]);
+
+  const handleRemoveItem = useCallback(async (itemId: string) => {
+    if (!inventory) return;
+    const updatedInv = { ...inventory, items: inventory.items.filter(i => i.id !== itemId) };
+    setInventory(updatedInv);
+    await updateDatos({ _inventory: updatedInv });
+  }, [inventory, updateDatos]);
 
   // ── Derived data ──
   const raceData = character ? getRaceData(character.raza) : null;
@@ -292,7 +406,7 @@ export default function MasterCharacterView() {
         <View style={styles.summaryRow}>
           <View style={styles.summaryInfo}>
             <Text style={[styles.summaryName, { color: colors.textPrimary }]}>
-              {raceData?.nombre ?? character.raza}{" "}
+              {character.customRaceName ?? raceData?.nombre ?? character.raza}{" "}
               {subraceData ? `(${subraceData.nombre})` : ""}
             </Text>
             <Text style={[styles.summaryClass, { color: colors.accentGold }]}>
@@ -300,8 +414,8 @@ export default function MasterCharacterView() {
               {character.subclase ? ` — ${character.subclase}` : ""}
             </Text>
             <Text style={[styles.summaryBg, { color: colors.textMuted }]}>
-              {backgroundData?.nombre ?? character.trasfondo} ·{" "}
-              {ALIGNMENT_NAMES[character.alineamiento]}
+              {character.customBackgroundName ?? backgroundData?.nombre ?? character.trasfondo}
+              {character.alineamiento ? ` · ${ALIGNMENT_NAMES[character.alineamiento]}` : ""}
             </Text>
           </View>
 
@@ -701,6 +815,276 @@ export default function MasterCharacterView() {
           </>
         )}
 
+        {/* ═══ Spell Slots & Class Resources ═══ */}
+        {(magicState || classResources) && (
+          <>
+            <SectionHeader
+              title="Recursos"
+              icon="battery-half-outline"
+              expanded={expandedSections.has("resources")}
+              onToggle={() => toggleSection("resources")}
+              colors={colors}
+              accentColor={colors.accentAmber}
+            />
+            {expandedSections.has("resources") && (
+              <View style={[styles.sectionCard, { backgroundColor: colors.bgCard, borderColor: colors.borderSubtle }]}>
+                {/* Spell Slots */}
+                {magicState && Object.keys(magicState.spellSlots).length > 0 && (
+                  <View style={styles.resourceGroup}>
+                    <Text style={[styles.subSectionTitle, { color: colors.textSecondary }]}>
+                      Espacios de conjuro
+                    </Text>
+                    <View style={styles.slotGrid}>
+                      {Object.entries(magicState.spellSlots)
+                        .sort(([a], [b]) => Number(a) - Number(b))
+                        .map(([level, slot]) => {
+                          const s = slot as SlotInfo;
+                          if (s.total === 0) return null;
+                          const remaining = s.total - s.used;
+                          return (
+                            <View key={level} style={[styles.slotBox, { backgroundColor: `${colors.accentBlue}10`, borderColor: `${colors.accentBlue}25` }]}>
+                              <Text style={[styles.slotLevel, { color: colors.accentBlue }]}>
+                                Nv. {level}
+                              </Text>
+                              <View style={styles.slotDots}>
+                                {Array.from({ length: s.total }).map((_, i) => (
+                                  <View
+                                    key={i}
+                                    style={[
+                                      styles.slotDot,
+                                      {
+                                        backgroundColor: i < remaining ? colors.accentBlue : colors.bgSubtle,
+                                      },
+                                    ]}
+                                  />
+                                ))}
+                              </View>
+                              <Text style={[styles.slotCount, { color: remaining > 0 ? colors.textPrimary : colors.textMuted }]}>
+                                {remaining}/{s.total}
+                              </Text>
+                            </View>
+                          );
+                        })}
+                    </View>
+                  </View>
+                )}
+
+                {/* Pact Magic Slots (Warlock) */}
+                {magicState?.pactMagicSlots && (
+                  <View style={[styles.resourceGroup, { borderTopColor: colors.borderSeparator, borderTopWidth: 1, paddingTop: 12 }]}>
+                    <Text style={[styles.subSectionTitle, { color: colors.textSecondary }]}>
+                      Magia de pacto (Nv. {magicState.pactMagicSlots.slotLevel})
+                    </Text>
+                    <View style={styles.slotDots}>
+                      {Array.from({ length: magicState.pactMagicSlots.total }).map((_, i) => (
+                        <View
+                          key={i}
+                          style={[
+                            styles.slotDot,
+                            {
+                              backgroundColor:
+                                i < magicState.pactMagicSlots!.total - magicState.pactMagicSlots!.used
+                                  ? colors.accentDanger
+                                  : colors.bgSubtle,
+                            },
+                          ]}
+                        />
+                      ))}
+                    </View>
+                    <Text style={[styles.slotCount, { color: colors.textPrimary, marginTop: 4 }]}>
+                      {magicState.pactMagicSlots.total - magicState.pactMagicSlots.used}/{magicState.pactMagicSlots.total}
+                    </Text>
+                  </View>
+                )}
+
+                {/* Sorcery Points */}
+                {magicState?.sorceryPoints && (
+                  <View style={[styles.resourceGroup, { borderTopColor: colors.borderSeparator, borderTopWidth: 1, paddingTop: 12 }]}>
+                    <View style={styles.resourceRow}>
+                      <Text style={[styles.resourceName, { color: colors.textPrimary }]}>
+                        Puntos de hechicería
+                      </Text>
+                      <Text style={[styles.resourceValue, { color: colors.accentDanger }]}>
+                        {magicState.sorceryPoints.current}/{magicState.sorceryPoints.max}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {/* Class Resources (Ki, Rage, etc.) */}
+                {classResources && Object.keys(classResources.resources).length > 0 && (
+                  <View style={[styles.resourceGroup, { borderTopColor: colors.borderSeparator, borderTopWidth: 1, paddingTop: 12 }]}>
+                    <Text style={[styles.subSectionTitle, { color: colors.textSecondary }]}>
+                      Recursos de clase
+                    </Text>
+                    {Object.values(classResources.resources).map((res: ClassResourceInfo) => (
+                      <View key={res.id} style={styles.resourceRow}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.resourceName, { color: colors.textPrimary }]}>
+                            {res.nombre}
+                          </Text>
+                          <Text style={[styles.resourceRecovery, { color: colors.textMuted }]}>
+                            {getRechargeLabel(res.recovery)}
+                          </Text>
+                        </View>
+                        <Text style={[styles.resourceValue, { color: colors.accentGold }]}>
+                          {res.max >= UNLIMITED_RESOURCE ? `∞` : `${res.current}/${res.max}`}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            )}
+          </>
+        )}
+
+        {/* ═══ Inventory & Money ═══ */}
+        {inventory && (
+          <>
+            <SectionHeader
+              title="Inventario"
+              icon="bag-outline"
+              expanded={expandedSections.has("inventory")}
+              onToggle={() => toggleSection("inventory")}
+              colors={colors}
+              accentColor={colors.accentGold}
+            />
+            {expandedSections.has("inventory") && (
+              <View style={[styles.sectionCard, { backgroundColor: colors.bgCard, borderColor: colors.borderSubtle }]}>
+                {/* Money */}
+                <View style={styles.resourceGroup}>
+                  <View style={styles.coinHeader}>
+                    <Text style={[styles.subSectionTitle, { color: colors.textSecondary, marginBottom: 0 }]}>
+                      Monedas
+                    </Text>
+                    {!editingCoins ? (
+                      <TouchableOpacity onPress={startEditingCoins} hitSlop={8}>
+                        <Ionicons name="pencil-outline" size={16} color={colors.accentGold} />
+                      </TouchableOpacity>
+                    ) : (
+                      <View style={{ flexDirection: "row", gap: 8 }}>
+                        <TouchableOpacity onPress={() => setEditingCoins(false)} hitSlop={8}>
+                          <Ionicons name="close" size={18} color={colors.accentDanger} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={saveCoins} hitSlop={8}>
+                          <Ionicons name="checkmark" size={18} color={colors.accentGreen} />
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
+
+                  {!editingCoins ? (
+                    <View style={styles.coinRow}>
+                      {COIN_ORDER.map((type) => (
+                        <View key={type} style={[styles.coinBox, { backgroundColor: `${COIN_COLORS[type]}15`, borderColor: `${COIN_COLORS[type]}30` }]}>
+                          <Text style={[styles.coinValue, { color: COIN_COLORS[type] }]}>
+                            {inventory.coins[type]}
+                          </Text>
+                          <Text style={[styles.coinLabel, { color: colors.textMuted }]}>
+                            {COIN_ABBR[type]}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : (
+                    <View style={styles.coinRow}>
+                      {COIN_ORDER.map((type) => (
+                        <View key={type} style={[styles.coinEditBox, { borderColor: COIN_COLORS[type] }]}>
+                          <Text style={[styles.coinLabel, { color: COIN_COLORS[type], marginBottom: 2 }]}>
+                            {COIN_ABBR[type]}
+                          </Text>
+                          <TextInput
+                            style={[styles.coinInput, { color: colors.textPrimary, borderColor: colors.borderSubtle }]}
+                            keyboardType="numeric"
+                            value={coinDraft[type]}
+                            onChangeText={(v) => setCoinDraft(prev => ({ ...prev, [type]: v }))}
+                            selectTextOnFocus
+                          />
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </View>
+
+                {/* Items list */}
+                <View style={[styles.resourceGroup, { borderTopColor: colors.borderSeparator, borderTopWidth: 1, paddingTop: 12 }]}>
+                  <Text style={[styles.subSectionTitle, { color: colors.textSecondary }]}>
+                    Objetos ({inventory.items.length})
+                  </Text>
+
+                  {inventory.items.length === 0 ? (
+                    <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+                      Sin objetos
+                    </Text>
+                  ) : (
+                    inventory.items.map((item) => (
+                      <View
+                        key={item.id}
+                        style={[styles.inventoryItemRow, { borderBottomColor: colors.borderSeparator }]}
+                      >
+                        <View style={styles.inventoryItemInfo}>
+                          <Text style={[styles.inventoryItemName, { color: colors.textPrimary }]} numberOfLines={1}>
+                            {item.nombre}
+                          </Text>
+                          <View style={styles.inventoryItemMeta}>
+                            {item.cantidad > 1 && (
+                              <Text style={[styles.inventoryItemQty, { color: colors.textMuted }]}>
+                                x{item.cantidad}
+                              </Text>
+                            )}
+                            {item.equipado && (
+                              <View style={[styles.equippedBadge, { backgroundColor: `${colors.accentGreen}20` }]}>
+                                <Text style={[styles.equippedText, { color: colors.accentGreen }]}>Equipado</Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => handleRemoveItem(item.id)}
+                          hitSlop={8}
+                          style={styles.removeItemBtn}
+                        >
+                          <Ionicons name="trash-outline" size={16} color={colors.accentDanger} />
+                        </TouchableOpacity>
+                      </View>
+                    ))
+                  )}
+
+                  {/* Add item form */}
+                  <View style={[styles.addItemRow, { borderTopColor: colors.borderSeparator }]}>
+                    <TextInput
+                      style={[styles.addItemInput, { color: colors.textPrimary, borderColor: colors.borderSubtle, backgroundColor: colors.bgSubtle }]}
+                      placeholder="Nombre del objeto..."
+                      placeholderTextColor={colors.textMuted}
+                      value={addItemName}
+                      onChangeText={setAddItemName}
+                    />
+                    <TextInput
+                      style={[styles.addItemQtyInput, { color: colors.textPrimary, borderColor: colors.borderSubtle, backgroundColor: colors.bgSubtle }]}
+                      placeholder="x"
+                      placeholderTextColor={colors.textMuted}
+                      keyboardType="numeric"
+                      value={addItemQty}
+                      onChangeText={setAddItemQty}
+                    />
+                    <TouchableOpacity
+                      style={[
+                        styles.addItemBtn,
+                        { backgroundColor: addItemName.trim() ? colors.accentGold : colors.bgSubtle },
+                      ]}
+                      onPress={handleAddItem}
+                      disabled={!addItemName.trim()}
+                    >
+                      <Ionicons name="add" size={18} color={addItemName.trim() ? "#FFF" : colors.textMuted} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            )}
+          </>
+        )}
+
         {/* ═══ Traits ═══ */}
         {character.traits.length > 0 && (
           <>
@@ -792,10 +1176,10 @@ export default function MasterCharacterView() {
         <View style={{ height: 40 }} />
       </Animated.ScrollView>
 
-      {/* Read-only badge */}
+      {/* Master badge */}
       <View style={[styles.readOnlyBadge, { backgroundColor: colors.bgElevated, borderColor: colors.borderSubtle }]}>
-        <Ionicons name="eye-outline" size={12} color={colors.textMuted} />
-        <Text style={[styles.readOnlyText, { color: colors.textMuted }]}>Solo lectura</Text>
+        <Ionicons name="eye-outline" size={12} color={colors.accentGold} />
+        <Text style={[styles.readOnlyText, { color: colors.textMuted }]}>Vista de Master</Text>
       </View>
     </View>
   );
@@ -1139,4 +1523,130 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   readOnlyText: { fontSize: 11, fontWeight: "700" },
+
+  // Resources / Spell slots
+  resourceGroup: { marginBottom: 4 },
+  slotGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  slotBox: {
+    alignItems: "center",
+    padding: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    minWidth: 70,
+  },
+  slotLevel: { fontSize: 11, fontWeight: "800", marginBottom: 4, letterSpacing: 0.3 },
+  slotDots: {
+    flexDirection: "row",
+    gap: 4,
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+  slotDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  slotCount: { fontSize: 11, fontWeight: "700", marginTop: 4 },
+  resourceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 6,
+  },
+  resourceName: { fontSize: 14, fontWeight: "600" },
+  resourceValue: { fontSize: 16, fontWeight: "800" },
+  resourceRecovery: { fontSize: 10, fontWeight: "500", marginTop: 1 },
+
+  // Coins
+  coinHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  coinRow: {
+    flexDirection: "row",
+    gap: 6,
+    flexWrap: "wrap",
+  },
+  coinBox: {
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    minWidth: 52,
+  },
+  coinValue: { fontSize: 16, fontWeight: "800" },
+  coinLabel: { fontSize: 10, fontWeight: "700", marginTop: 2, letterSpacing: 0.5 },
+  coinEditBox: {
+    alignItems: "center",
+    flex: 1,
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 6,
+  },
+  coinInput: {
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "center",
+    borderBottomWidth: 1,
+    paddingVertical: 2,
+    minWidth: 36,
+  },
+
+  // Inventory
+  inventoryItemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+  },
+  inventoryItemInfo: { flex: 1, gap: 2 },
+  inventoryItemName: { fontSize: 14, fontWeight: "600" },
+  inventoryItemMeta: { flexDirection: "row", gap: 6, alignItems: "center" },
+  inventoryItemQty: { fontSize: 12, fontWeight: "600" },
+  equippedBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 6,
+  },
+  equippedText: { fontSize: 10, fontWeight: "700" },
+  removeItemBtn: { padding: 6 },
+  emptyText: { fontSize: 13, fontStyle: "italic", paddingVertical: 8 },
+  addItemRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    alignItems: "center",
+  },
+  addItemInput: {
+    flex: 1,
+    fontSize: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  addItemQtyInput: {
+    width: 42,
+    fontSize: 14,
+    textAlign: "center",
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  addItemBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

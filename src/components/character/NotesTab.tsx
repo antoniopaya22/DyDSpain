@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { useTheme, useDialog, useToast } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 import {
   filterNotes,
   sortNotes,
@@ -63,7 +64,7 @@ export default function NotesTab() {
   if (!character) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Text className="text-dark-500 dark:text-dark-300 text-base">
+        <Text className="text-base" style={{ color: colors.textSecondary }}>
           No se ha cargado ningún personaje
         </Text>
       </View>
@@ -130,7 +131,8 @@ export default function NotesTab() {
   const renderActionButtons = () => (
     <View className="flex-row mb-4">
       <TouchableOpacity
-        className="flex-1 bg-primary-500/15 border border-primary-500/30 rounded-card p-3 mr-2 flex-row items-center justify-center active:bg-primary-500/25"
+        className="flex-1 border rounded-card p-3 mr-2 flex-row items-center justify-center"
+        style={{ backgroundColor: withAlpha(colors.accentRed, 0.15), borderColor: withAlpha(colors.accentRed, 0.3) }}
         onPress={handleCreateNote}
       >
         <Ionicons
@@ -138,17 +140,18 @@ export default function NotesTab() {
           size={18}
           color={colors.accentRed}
         />
-        <Text className="text-primary-400 text-sm font-semibold ml-2">
+        <Text className="text-sm font-semibold ml-2" style={{ color: colors.accentRed }}>
           Nueva Nota
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        className="flex-1 bg-blue-500/15 border border-blue-500/30 rounded-card p-3 ml-2 flex-row items-center justify-center active:bg-blue-500/25"
+        className="flex-1 border rounded-card p-3 ml-2 flex-row items-center justify-center"
+        style={{ backgroundColor: withAlpha(colors.accentBlue, 0.15), borderColor: withAlpha(colors.accentBlue, 0.3) }}
         onPress={handleCreateDiaryEntry}
       >
         <Ionicons name="journal-outline" size={18} color={colors.accentBlue} />
-        <Text className="text-blue-400 text-sm font-semibold ml-2">
+        <Text className="text-sm font-semibold ml-2" style={{ color: colors.accentBlue }}>
           Diario de Sesión
         </Text>
       </TouchableOpacity>
@@ -163,38 +166,40 @@ export default function NotesTab() {
         typeFilter !== null;
 
       return (
-        <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-6 items-center mb-4">
-          <View className="h-16 w-16 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center mb-4">
+        <View className="rounded-card border p-6 items-center mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
+          <View className="h-16 w-16 rounded-full items-center justify-center mb-4" style={{ backgroundColor: colors.bgSecondary }}>
             <Ionicons
               name={hasFilters ? "search-outline" : "document-text-outline"}
               size={32}
               color={colors.textMuted}
             />
           </View>
-          <Text className="text-dark-900 dark:text-white text-base font-semibold text-center mb-1">
+          <Text className="text-base font-semibold text-center mb-1" style={{ color: colors.textPrimary }}>
             {hasFilters ? "Sin resultados" : "Sin notas"}
           </Text>
-          <Text className="text-dark-500 dark:text-dark-300 text-sm text-center leading-5 mb-4">
+          <Text className="text-sm text-center leading-5 mb-4" style={{ color: colors.textSecondary }}>
             {hasFilters
               ? "No se encontraron notas con los filtros actuales."
               : "Crea tu primera nota para empezar a registrar tu aventura."}
           </Text>
           {hasFilters ? (
             <TouchableOpacity
-              className="bg-gray-200 dark:bg-dark-700 rounded-lg px-4 py-2.5 active:bg-gray-300 dark:active:bg-dark-600"
+              className="rounded-lg px-4 py-2.5"
+              style={{ backgroundColor: colors.bgSecondary }}
               onPress={() => {
                 setSearchQuery("");
                 setActiveTagFilter(null);
                 setTypeFilter(null);
               }}
             >
-              <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold">
+              <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
                 Limpiar filtros
               </Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              className="bg-primary-500 rounded-lg px-6 py-2.5 active:bg-primary-600"
+              className="rounded-lg px-6 py-2.5"
+              style={{ backgroundColor: colors.accentRed }}
               onPress={handleCreateNote}
             >
               <Text className="text-white text-sm font-semibold">
@@ -209,7 +214,7 @@ export default function NotesTab() {
     return (
       <View className="mb-4">
         <View className="flex-row items-center justify-between mb-3">
-          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider">
+          <Text className="text-xs font-semibold uppercase tracking-wider" style={{ color: colors.textSecondary }}>
             {processedNotes.length} nota(s)
           </Text>
         </View>
@@ -234,7 +239,7 @@ export default function NotesTab() {
   };
 
   const renderStatsBar = () => (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+    <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
       <View className="flex-row justify-between">
         <StatBadge
           icon="document-text"
@@ -328,13 +333,14 @@ function StatBadge({
   value: string;
   color: string;
 }) {
+  const { colors } = useTheme();
   return (
     <View className="items-center flex-1">
       <Ionicons name={icon} size={18} color={color} />
-      <Text className="text-dark-900 dark:text-white text-lg font-bold mt-0.5">
+      <Text className="text-lg font-bold mt-0.5" style={{ color: colors.textPrimary }}>
         {value}
       </Text>
-      <Text className="text-dark-400 text-[10px] uppercase tracking-wider">
+      <Text className="text-[10px] uppercase tracking-wider" style={{ color: colors.textMuted }}>
         {label}
       </Text>
     </View>

@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 import {
   getClassAbilities,
   type ClassAbilityResource,
@@ -44,16 +45,17 @@ function StatBox({
   subValue?: string;
   color: string;
 }) {
+  const { colors } = useTheme();
   return (
-    <View className="flex-1 min-w-[100px] bg-gray-200 dark:bg-dark-700 rounded-xl p-3 mr-2 mb-2 items-center border border-dark-100 dark:border-surface-border">
-      <Text className="text-dark-400 text-[10px] uppercase tracking-wider mb-1">
+    <View className="flex-1 min-w-[100px] rounded-xl p-3 mr-2 mb-2 items-center border" style={{ backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }}>
+      <Text className="text-[10px] uppercase tracking-wider mb-1" style={{ color: colors.textMuted }}>
         {label}
       </Text>
       <Text className="text-xl font-bold" style={{ color }}>
         {value}
       </Text>
       {subValue && (
-        <Text className="text-dark-300 dark:text-dark-500 text-[10px] mt-0.5">
+        <Text className="text-[10px] mt-0.5" style={{ color: colors.textMuted }}>
           {subValue}
         </Text>
       )}
@@ -95,7 +97,7 @@ export default function ClassAbilitiesSection({
       : false;
 
     return (
-      <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+      <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
         <View className="flex-row items-center mb-3">
           <View
             className="h-10 w-10 rounded-full items-center justify-center mr-3"
@@ -104,19 +106,20 @@ export default function ClassAbilitiesSection({
             <Ionicons name={theme.icon as any} size={22} color={theme.color} />
           </View>
           <View className="flex-1">
-            <Text className="text-dark-900 dark:text-white text-base font-semibold">
+            <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
               {classData?.nombre ?? character.clase}
             </Text>
-            <Text className="text-dark-400 text-xs">
+            <Text className="text-xs" style={{ color: colors.textMuted }}>
               Nivel {character.nivel} · Habilidades de clase
             </Text>
           </View>
           {hasUsedResources && (
             <TouchableOpacity
-              className="bg-blue-600/20 rounded-lg px-3 py-1.5 active:bg-blue-600/40"
+              className="rounded-lg px-3 py-1.5 active:opacity-70"
+              style={{ backgroundColor: withAlpha('#3b82f6', 0.2) }}
               onPress={onRestoreAllResources}
             >
-              <Text className="text-blue-400 text-xs font-semibold">
+              <Text className="text-xs font-semibold" style={{ color: '#3b82f6' }}>
                 Restaurar todo
               </Text>
             </TouchableOpacity>
@@ -174,7 +177,7 @@ export default function ClassAbilitiesSection({
     return (
       <View className="mt-3">
         <View className="flex-row items-center justify-between mb-1.5">
-          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold">
+          <Text className="text-xs font-semibold" style={{ color: colors.textSecondary }}>
             {recurso.label}
           </Text>
           <Text className="text-sm font-bold" style={{ color: recurso.color }}>
@@ -184,7 +187,7 @@ export default function ClassAbilitiesSection({
 
         {/* Progress bar */}
         {!isUnlimited && (
-          <View className="h-3 bg-gray-200 dark:bg-dark-700 rounded-full overflow-hidden">
+          <View className="h-3 rounded-full overflow-hidden" style={{ backgroundColor: colors.bgSecondary }}>
             <View
               className="h-full rounded-full"
               style={{
@@ -199,41 +202,41 @@ export default function ClassAbilitiesSection({
         {storeRes && !isUnlimited && (
           <View className="flex-row items-center mt-2">
             <TouchableOpacity
-              className="flex-row items-center bg-gray-200 dark:bg-dark-700 rounded-lg px-3 py-2 mr-2 active:opacity-70"
+              className="flex-row items-center rounded-lg px-3 py-2 mr-2 active:opacity-70"
               onPress={() => onUseResource(ability.id, ability.nombre)}
               disabled={currentNum <= 0}
-              style={{ opacity: currentNum > 0 ? 1 : 0.4 }}
+              style={{ backgroundColor: colors.bgSecondary, opacity: currentNum > 0 ? 1 : 0.4 }}
             >
               <Ionicons
                 name="remove-circle-outline"
                 size={16}
                 color={recurso.color}
               />
-              <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold ml-1">
+              <Text className="text-xs font-semibold ml-1" style={{ color: colors.textSecondary }}>
                 Usar
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className="flex-row items-center bg-gray-200 dark:bg-dark-700 rounded-lg px-3 py-2 active:opacity-70"
+              className="flex-row items-center rounded-lg px-3 py-2 active:opacity-70"
               onPress={() =>
                 onRestoreResource(ability.id, ability.nombre)
               }
               disabled={currentNum >= maxNum}
-              style={{ opacity: currentNum < maxNum ? 1 : 0.4 }}
+              style={{ backgroundColor: colors.bgSecondary, opacity: currentNum < maxNum ? 1 : 0.4 }}
             >
               <Ionicons
                 name="add-circle-outline"
                 size={16}
                 color={colors.accentGreen}
               />
-              <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold ml-1">
+              <Text className="text-xs font-semibold ml-1" style={{ color: colors.textSecondary }}>
                 Restaurar
               </Text>
             </TouchableOpacity>
           </View>
         )}
 
-        <Text className="text-dark-300 dark:text-dark-500 text-[10px] mt-1">
+        <Text className="text-[10px] mt-1" style={{ color: colors.textMuted }}>
           Se recupera en: {recurso.recovery}
         </Text>
       </View>
@@ -247,9 +250,9 @@ export default function ClassAbilitiesSection({
 
     return (
       <View className="mt-2 flex-row items-center">
-        <View className="bg-gray-200 dark:bg-dark-700 rounded-lg px-3 py-1.5 flex-row items-center">
+        <View className="rounded-lg px-3 py-1.5 flex-row items-center" style={{ backgroundColor: colors.bgSecondary }}>
           <Ionicons name="trending-up" size={12} color={colors.accentAmber} />
-          <Text className="text-dark-600 dark:text-dark-200 text-xs font-medium ml-1.5">
+          <Text className="text-xs font-medium ml-1.5" style={{ color: colors.textSecondary }}>
             {ability.escala.label}:{" "}
           </Text>
           <Text
@@ -334,7 +337,8 @@ export default function ClassAbilitiesSection({
           return (
             <View
               key={ability.id}
-              className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-3"
+              className="rounded-card border p-4 mb-3"
+              style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}
             >
               <TouchableOpacity
                 className="flex-row items-center"
@@ -377,7 +381,7 @@ export default function ClassAbilitiesSection({
                 </View>
 
                 <View className="flex-1">
-                  <Text className="text-dark-900 dark:text-white text-sm font-semibold">
+                  <Text className="text-sm font-semibold" style={{ color: colors.textPrimary }}>
                     {ability.nombre}
                   </Text>
                   {ability.recurso &&
@@ -426,7 +430,7 @@ export default function ClassAbilitiesSection({
                   {ability.escala &&
                     !ability.recurso &&
                     !ability.resourceCost && (
-                      <Text className="text-dark-400 text-xs mt-0.5">
+                      <Text className="text-xs mt-0.5" style={{ color: colors.textMuted }}>
                         {ability.escala.label}: {ability.escala.value}
                       </Text>
                     )}
@@ -440,8 +444,8 @@ export default function ClassAbilitiesSection({
               </TouchableOpacity>
 
               {isExpanded && (
-                <View className="mt-3 pt-3 border-t border-dark-100 dark:border-surface-border/50">
-                  <Text className="text-dark-500 dark:text-dark-300 text-xs leading-5">
+                <View className="mt-3 pt-3 border-t" style={{ borderColor: colors.borderDefault }}>
+                  <Text className="text-xs leading-5" style={{ color: colors.textSecondary }}>
                     {ability.descripcion}
                   </Text>
                   {renderClassAbilityResource(ability)}

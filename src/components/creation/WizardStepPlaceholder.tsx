@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 
 const TOTAL_STEPS = 11;
 
@@ -66,27 +67,29 @@ export default function WizardStepPlaceholder({
   };
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-dark-800">
+    <View className="flex-1" style={{ backgroundColor: colors.bgPrimary }}>
       {/* Header con progreso */}
       <View className="px-5 pt-16 pb-4">
         <View className="flex-row items-center justify-between mb-4">
           {canGoBack ? (
             <TouchableOpacity
-              className="h-10 w-10 rounded-full bg-gray-100 dark:bg-surface items-center justify-center active:bg-gray-50 dark:active:bg-surface-light"
+              className="h-10 w-10 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.bgInput }}
               onPress={handleBack}
             >
-              <Ionicons name="arrow-back" size={22} color="white" />
+              <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              className="h-10 w-10 rounded-full bg-gray-100 dark:bg-surface items-center justify-center active:bg-gray-50 dark:active:bg-surface-light"
+              className="h-10 w-10 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.bgInput }}
               onPress={handleCancel}
             >
-              <Ionicons name="close" size={22} color="white" />
+              <Ionicons name="close" size={22} color={colors.textPrimary} />
             </TouchableOpacity>
           )}
 
-          <Text className="text-dark-500 dark:text-dark-300 text-sm font-semibold">
+          <Text className="text-sm font-semibold" style={{ color: colors.textSecondary }}>
             Paso {stepNumber} de {TOTAL_STEPS}
           </Text>
 
@@ -95,10 +98,10 @@ export default function WizardStepPlaceholder({
         </View>
 
         {/* Barra de progreso */}
-        <View className="h-1.5 bg-gray-100 dark:bg-surface rounded-full overflow-hidden">
+        <View className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: colors.bgInput }}>
           <View
-            className="h-full bg-primary-500 rounded-full"
-            style={{ width: `${progressPercent}%` }}
+            className="h-full rounded-full"
+            style={{ width: `${progressPercent}%`, backgroundColor: colors.accentRed }}
           />
         </View>
       </View>
@@ -106,31 +109,40 @@ export default function WizardStepPlaceholder({
       {/* Contenido del paso */}
       <View className="flex-1 px-5 justify-center" style={{ marginTop: -40 }}>
         <View className="items-center mb-10">
-          <View className="h-20 w-20 rounded-full bg-primary-500/15 items-center justify-center mb-5">
+          <View
+            className="h-20 w-20 rounded-full items-center justify-center mb-5"
+            style={{ backgroundColor: withAlpha(colors.accentRed, 0.15) }}
+          >
             <Ionicons name={iconName} size={40} color={resolvedIconColor} />
           </View>
 
-          <Text className="text-dark-900 dark:text-white text-2xl font-bold text-center mb-2">
+          <Text className="text-2xl font-bold text-center mb-2" style={{ color: colors.textPrimary }}>
             {title}
           </Text>
-          <Text className="text-dark-500 dark:text-dark-300 text-base text-center leading-6 px-4">
+          <Text className="text-base text-center leading-6 px-4" style={{ color: colors.textSecondary }}>
             {description}
           </Text>
         </View>
 
         {/* Badge "En desarrollo" */}
         <View className="items-center mb-8">
-          <View className="bg-gold-500/15 border border-gold-500/30 rounded-full px-5 py-2.5 flex-row items-center">
+          <View
+            className="border rounded-full px-5 py-2.5 flex-row items-center"
+            style={{
+              backgroundColor: withAlpha(colors.accentGold, 0.15),
+              borderColor: withAlpha(colors.accentGold, 0.3),
+            }}
+          >
             <Ionicons
               name="construct-outline"
               size={18}
               color={colors.accentGold}
             />
-            <Text className="text-gold-700 dark:text-gold-400 text-sm font-semibold ml-2">
+            <Text className="text-sm font-semibold ml-2" style={{ color: colors.accentGold }}>
               En desarrollo
             </Text>
           </View>
-          <Text className="text-dark-400 text-xs mt-3 text-center px-8">
+          <Text className="text-xs mt-3 text-center px-8" style={{ color: colors.textMuted }}>
             Este paso del wizard será implementado próximamente. Por ahora
             puedes navegar entre los pasos para ver la estructura.
           </Text>
@@ -138,10 +150,11 @@ export default function WizardStepPlaceholder({
       </View>
 
       {/* Footer con botones de navegación */}
-      <View className="px-5 pb-10 pt-4 border-t border-dark-100 dark:border-surface-border">
+      <View className="px-5 pb-10 pt-4 border-t" style={{ borderColor: colors.borderDefault }}>
         {nextRoute ? (
           <TouchableOpacity
-            className="rounded-xl py-4 items-center flex-row justify-center bg-primary-500 active:bg-primary-600 mb-3"
+            className="rounded-xl py-4 items-center flex-row justify-center mb-3"
+            style={{ backgroundColor: colors.accentRed }}
             onPress={handleNext}
           >
             <Text className="text-white font-bold text-base mr-2">
@@ -155,7 +168,7 @@ export default function WizardStepPlaceholder({
             onPress={handleCancel}
           >
             <Ionicons name="checkmark-circle" size={22} color="white" />
-            <Text className="text-dark-900 dark:text-white font-bold text-base ml-2">
+            <Text className="font-bold text-base ml-2" style={{ color: colors.textPrimary }}>
               Confirmar y crear personaje
             </Text>
           </TouchableOpacity>
@@ -163,10 +176,10 @@ export default function WizardStepPlaceholder({
 
         {canGoBack && (
           <TouchableOpacity
-            className="rounded-xl py-3.5 items-center active:bg-gray-50 dark:active:bg-surface-light"
+            className="rounded-xl py-3.5 items-center"
             onPress={handleBack}
           >
-            <Text className="text-dark-500 dark:text-dark-300 font-semibold text-base">
+            <Text className="font-semibold text-base" style={{ color: colors.textSecondary }}>
               Atrás
             </Text>
           </TouchableOpacity>

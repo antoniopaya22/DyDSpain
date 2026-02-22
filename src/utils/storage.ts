@@ -251,6 +251,29 @@ export async function getMultipleItems<T>(
 // ─── Utilidades de mantenimiento ─────────────────────────────────────
 
 /**
+ * Elimina los datos de usuario (campañas, personajes, inventarios, notas,
+ * borradores, hechizos, recursos de clase) pero conserva settings.
+ * Se usa al cerrar sesión para que el siguiente usuario empiece limpio.
+ */
+export async function clearUserData(): Promise<void> {
+  const keepPrefixes = ["dyd:settings"];
+  try {
+    const allKeys = await AsyncStorage.getAllKeys();
+    const keysToRemove = allKeys.filter(
+      (key) =>
+        key.startsWith("dyd:") &&
+        !keepPrefixes.some((prefix) => key.startsWith(prefix)),
+    );
+    if (keysToRemove.length > 0) {
+      await AsyncStorage.multiRemove(keysToRemove);
+    }
+  } catch (error) {
+    console.error("[Storage] Error al limpiar datos de usuario:", error);
+    throw new StorageError("No se pudieron limpiar los datos de usuario", error);
+  }
+}
+
+/**
  * Elimina TODOS los datos de la aplicación del almacenamiento.
  * ⚠️ DESTRUCTIVO: Solo usar para desarrollo o reset completo.
  */

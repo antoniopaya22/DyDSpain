@@ -16,7 +16,7 @@ import {
   type Alignment,
   type Personality,
 } from "@/types/character";
-import { useTheme } from "@/hooks";
+import { useTheme, useScrollToTop } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 9;
@@ -65,6 +65,7 @@ const ALIGNMENT_DESCRIPTIONS: Record<Alignment, string> = {
 };
 
 export default function PersonalityStep() {
+  const scrollRef = useScrollToTop();
   const { colors, isDark } = useTheme();
   const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
@@ -162,6 +163,7 @@ export default function PersonalityStep() {
   return (
     <View style={[styles.container, themed.container]}>
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"

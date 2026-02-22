@@ -10,6 +10,8 @@ import { STORAGE_KEYS, setItem, getItem } from "@/utils/storage";
 import { now } from "@/utils/providers";
 import { useCharacterStore } from "./characterStore";
 import { deleteCreationDraft } from "./creationStore";
+import { syncLocalCampaign, deleteLocalCampaignBackup } from "@/services/supabaseService";
+import { useAuthStore } from "./authStore";
 
 // ─── Tipos del store ─────────────────────────────────────────────────
 
@@ -67,6 +69,27 @@ function sortByLastAccess(campaigns: Campaign[]): Campaign[] {
   );
 }
 
+/**
+ * Sync a campaign to Supabase in the background (fire-and-forget).
+ * Silently fails if the user is not logged in or sync fails.
+ */
+function syncCampaignToCloud(campaign: Campaign): void {
+  const userId = useAuthStore.getState().user?.id;
+  if (!userId) return;
+  syncLocalCampaign(userId, campaign).catch((err) =>
+    console.warn("[CampaignStore] Cloud sync failed:", err),
+  );
+}
+
+/** Delete a campaign backup from Supabase in the background */
+function deleteCampaignFromCloud(campaignId: string): void {
+  const userId = useAuthStore.getState().user?.id;
+  if (!userId) return;
+  deleteLocalCampaignBackup(campaignId).catch((err) =>
+    console.warn("[CampaignStore] Cloud delete failed:", err),
+  );
+}
+
 // ─── Store ───────────────────────────────────────────────────────────
 
 export const useCampaignStore = create<CampaignStore>((set, get) => ({
@@ -109,6 +132,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
       const updated = sortByLastAccess([...campaigns, newCampaign]);
       await persistCampaigns(updated);
       set({ campaigns: updated, error: null });
+      syncCampaignToCloud(newCampaign);
       return newCampaign;
     } catch (err) {
       const message =
@@ -146,6 +170,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
 
       await persistCampaigns(sorted);
       set({ campaigns: sorted, error: null });
+      syncCampaignToCloud(updatedCampaign);
       return updatedCampaign;
     } catch (err) {
       const message =
@@ -175,6 +200,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
       // Actualizar la lista
       const filtered = campaigns.filter((c) => c.id !== id);
       await persistCampaigns(filtered);
+      deleteCampaignFromCloud(id);
 
       set({
         campaigns: filtered,
@@ -214,6 +240,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
       const sorted = sortByLastAccess(updatedList);
       await persistCampaigns(sorted);
       set({ campaigns: sorted, error: null });
+      syncCampaignToCloud(sorted.find((c) => c.id === campaignId)!);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Error al vincular el personaje";
@@ -238,6 +265,7 @@ export const useCampaignStore = create<CampaignStore>((set, get) => ({
       const sorted = sortByLastAccess(updatedList);
       await persistCampaigns(sorted);
       set({ campaigns: sorted, error: null });
+      syncCampaignToCloud(sorted.find((c) => c.id === campaignId)!);
     } catch (err) {
       const message =
         err instanceof Error

@@ -1,11 +1,12 @@
-/**
+﻿/**
  * Rasgos de subclase: Bárbaro
+ * PHB'24 + XGtE + TCoE
  */
 
 import type { SubclassFeatureData } from "./types";
 
 export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
-  // ── Senda del Berserker ────────────────────────────────────────────
+  // ── Senda del Berserker (PHB'24) ───────────────────────────────────
   {
     subclaseId: "senda_berserker",
     claseId: "barbaro",
@@ -17,7 +18,7 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Frenesí",
             descripcion:
-              "Al entrar en furia, puedes elegir caer en frenesí. Si lo haces, durante esa furia puedes realizar un ataque cuerpo a cuerpo extra como acción adicional en cada turno. Al finalizar, sufres un nivel de agotamiento.",
+              "Mientras estés en furia, puedes realizar un ataque cuerpo a cuerpo adicional como parte de tu acción de Atacar (una vez por turno). Si usas Ataque Temerario, puedes realizar un segundo ataque adicional. Cuando tu furia termina, sufres un nivel de agotamiento (máx. 6 niveles).",
           },
         ],
       },
@@ -27,7 +28,7 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Furia sin Límites",
             descripcion:
-              "No puedes ser hechizado ni asustado mientras estés en furia. Si estabas hechizado o asustado al entrar en furia, el efecto se suspende.",
+              "No puedes ser hechizado ni asustado mientras estés en furia. Si ya lo estabas al entrar en furia, el efecto se suspende mientras dure la furia.",
           },
         ],
       },
@@ -35,9 +36,9 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 10,
         rasgos: [
           {
-            nombre: "Presencia Intimidante",
+            nombre: "Represalia",
             descripcion:
-              "Puedes usar tu acción para asustar a alguien. Elige una criatura a 9 m que pueda verte. Debe superar una salvación de Sabiduría (CD 8 + tu bon. competencia + mod. CAR) o queda asustada hasta el final de tu siguiente turno.",
+              "Cuando recibes daño de una criatura a 1,5 m de ti, puedes usar tu reacción para realizar un ataque cuerpo a cuerpo contra esa criatura.",
           },
         ],
       },
@@ -45,116 +46,45 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Represalia",
+            nombre: "Presencia Intimidante",
             descripcion:
-              "Cuando recibes daño de una criatura a 1,5 m de ti, puedes usar tu reacción para realizar un ataque cuerpo a cuerpo contra ella.",
+              "Como acción adicional, elige una criatura a 9 m que pueda verte u oírte. Debe superar una salvación de SAB (CD = 8 + tu bon. competencia + mod. FUE) o queda asustada de ti hasta el final de tu siguiente turno. Si la criatura falla la salvación por 5 o más, queda asustada durante 1 minuto; puede repetir la salvación al final de cada turno para terminar el efecto.",
           },
         ],
       },
     ],
   },
 
-  // ── Senda del Guerrero Totémico ────────────────────────────────────
+  // ── Senda del Corazón Salvaje (PHB'24) ─────────────────────────────
   {
-    subclaseId: "senda_guerrero_totemico",
+    subclaseId: "senda_corazon_salvaje",
     claseId: "barbaro",
-    nombre: "Senda del Guerrero Totémico",
+    nombre: "Senda del Corazón Salvaje",
     niveles: [
       {
         nivel: 3,
         rasgos: [
           {
-            nombre: "Tótem Espiritual",
+            nombre: "Hablar con Animales",
             descripcion:
-              "Elige un espíritu animal como tótem. Obtienes un beneficio según el tótem elegido mientras estés en furia.",
-            elecciones: [
-              {
-                id: "totem_nivel3",
-                nombre: "Espíritu Totémico",
-                instruccion: "Elige tu espíritu totémico:",
-                tipo: "single",
-                opciones: [
-                  {
-                    id: "oso",
-                    nombre: "Oso",
-                    descripcion:
-                      "Mientras estés en furia, tienes resistencia a todos los tipos de daño excepto al psíquico.",
-                  },
-                  {
-                    id: "aguila",
-                    nombre: "Águila",
-                    descripcion:
-                      "Mientras estés en furia, las demás criaturas tienen desventaja en ataques de oportunidad contra ti, y puedes usar la acción de Carrera como acción adicional.",
-                  },
-                  {
-                    id: "lobo",
-                    nombre: "Lobo",
-                    descripcion:
-                      "Mientras estés en furia, tus aliados tienen ventaja en tiradas de ataque cuerpo a cuerpo contra criaturas a 1,5 m de ti.",
-                  },
-                ],
-              },
-            ],
+              "Puedes lanzar Hablar con Animales como ritual y como conjuro preparado. Sabiduría es tu característica de conjuración.",
           },
-        ],
-      },
-      {
-        nivel: 6,
-        rasgos: [
           {
-            nombre: "Aspecto de la Bestia",
+            nombre: "Furia de lo Salvaje",
             descripcion:
-              "Obtienes un beneficio basado en un animal totémico.",
+              "Al entrar en furia, elige uno de los siguientes efectos que dura mientras estés en furia.",
             elecciones: [
               {
-                id: "totem_nivel6",
-                nombre: "Aspecto de la Bestia",
-                instruccion: "Elige tu aspecto animal:",
+                id: "furia_salvaje_3",
+                nombre: "Furia de lo Salvaje",
+                instruccion: "Elige tu manifestación salvaje:",
                 tipo: "single",
                 opciones: [
                   {
                     id: "oso",
                     nombre: "Oso",
                     descripcion:
-                      "Tu capacidad de carga se duplica y tienes ventaja en pruebas de Fuerza para empujar, tirar, levantar o romper objetos.",
-                  },
-                  {
-                    id: "aguila",
-                    nombre: "Águila",
-                    descripcion:
-                      "Puedes ver hasta 1,5 km sin dificultad y no tienes desventaja en pruebas de Percepción por distancia.",
-                  },
-                  {
-                    id: "lobo",
-                    nombre: "Lobo",
-                    descripcion:
-                      "Puedes rastrear a otras criaturas mientras viajas a ritmo rápido y puedes moverte sigilosamente a ritmo normal.",
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        nivel: 14,
-        rasgos: [
-          {
-            nombre: "Caminante Totémico",
-            descripcion:
-              "Obtienes un beneficio basado en un animal totémico.",
-            elecciones: [
-              {
-                id: "totem_nivel14",
-                nombre: "Caminante Totémico",
-                instruccion: "Elige tu caminante totémico:",
-                tipo: "single",
-                opciones: [
-                  {
-                    id: "oso",
-                    nombre: "Oso",
-                    descripcion:
-                      "Mientras estés en furia, las criaturas a 1,5 m tienen desventaja en tiradas de ataque contra objetivos que no seas tú.",
+                      "Mientras estés en furia, tienes resistencia a todos los tipos de daño excepto al de Fuerza, Necrótico y Psíquico.",
                   },
                   {
                     id: "aguila",
@@ -166,7 +96,93 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
                     id: "lobo",
                     nombre: "Lobo",
                     descripcion:
-                      "Mientras estés en furia, puedes usar una acción adicional para derribar a una criatura Grande o menor cuando la impactes con un ataque cuerpo a cuerpo.",
+                      "Mientras estés en furia, tus aliados tienen ventaja en tiradas de ataque cuerpo a cuerpo contra cualquier criatura hostil a 1,5 m de ti.",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        nivel: 6,
+        rasgos: [
+          {
+            nombre: "Aspecto de lo Salvaje",
+            descripcion:
+              "Obtienes un beneficio permanente basado en un aspecto animal. Puedes cambiar esta elección cada vez que subes de nivel.",
+            elecciones: [
+              {
+                id: "aspecto_salvaje_6",
+                nombre: "Aspecto de lo Salvaje",
+                instruccion: "Elige tu aspecto animal:",
+                tipo: "single",
+                opciones: [
+                  {
+                    id: "buho",
+                    nombre: "Búho",
+                    descripcion:
+                      "Tienes visión en la oscuridad con un alcance de 18 m. Si ya tienes visión en la oscuridad, su alcance aumenta en 18 m.",
+                  },
+                  {
+                    id: "pantera",
+                    nombre: "Pantera",
+                    descripcion:
+                      "Tu velocidad de caminar aumenta en 3 m (10 pies) y ganas velocidad de trepar y nadar iguales a tu velocidad.",
+                  },
+                  {
+                    id: "salmon",
+                    nombre: "Salmón",
+                    descripcion:
+                      "Tu distancia de salto de longitud y salto de altura aumentan en un número de pies igual a tu bon. competencia × 3.",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        nivel: 10,
+        rasgos: [
+          {
+            nombre: "Hablar con la Naturaleza",
+            descripcion:
+              "Puedes lanzar Comunión con la Naturaleza como ritual. Cuando lo haces, una manifestación espiritual de uno de los animales que has elegido previamente te transmite la información.",
+          },
+        ],
+      },
+      {
+        nivel: 14,
+        rasgos: [
+          {
+            nombre: "Poder de lo Salvaje",
+            descripcion:
+              "Al entrar en furia, elige uno de los siguientes efectos que dura mientras estés en furia.",
+            elecciones: [
+              {
+                id: "poder_salvaje_14",
+                nombre: "Poder de lo Salvaje",
+                instruccion: "Elige tu poder animal:",
+                tipo: "single",
+                opciones: [
+                  {
+                    id: "halcon",
+                    nombre: "Halcón",
+                    descripcion:
+                      "Mientras estés en furia y uses Ataque Temerario, puedes atacar a una segunda criatura a 1,5 m del objetivo con el mismo ataque (tira por separado). El daño de Furia solo se aplica una vez.",
+                  },
+                  {
+                    id: "leon",
+                    nombre: "León",
+                    descripcion:
+                      "Mientras estés en furia, al mover al menos 3 m en línea recta hacia una criatura e impactarla, esa criatura debe superar una salvación de FUE (CD = 8 + bon. competencia + mod. FUE) o caerá Derribada.",
+                  },
+                  {
+                    id: "carnero",
+                    nombre: "Carnero",
+                    descripcion:
+                      "Mientras estés en furia, puedes causar un empuje de 9 m (30 pies) cuando impactes a una criatura Grande o menor con un ataque cuerpo a cuerpo, en vez de los 4,5 m habituales.",
                   },
                 ],
               },
@@ -177,19 +193,19 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
     ],
   },
 
-  // ── Senda del Guerrero del Alma ────────────────────────────────────
+  // ── Senda del Árbol del Mundo (PHB'24) ─────────────────────────────
   {
-    subclaseId: "senda_guerrero_alma",
+    subclaseId: "senda_arbol_mundo",
     claseId: "barbaro",
-    nombre: "Senda del Guerrero del Alma",
+    nombre: "Senda del Árbol del Mundo",
     niveles: [
       {
         nivel: 3,
         rasgos: [
           {
-            nombre: "Escudo del Alma",
+            nombre: "Vitalidad del Árbol",
             descripcion:
-              "Mientras estés en furia y no lleves armadura pesada, ganas +2 a la CA. Puedes usar un escudo y seguir obteniendo este beneficio.",
+              "Tu furia te conecta con el Árbol del Mundo. Al entrar en furia, ganas un número de puntos de golpe temporales iguales a tu mod. CON (mín. 1). Mientras estés en furia y adyacente a al menos un aliado, tú y ellos tenéis Ventaja en salvaciones de muerte.",
           },
         ],
       },
@@ -197,9 +213,9 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Sustento del Alma",
+            nombre: "Ramas del Árbol",
             descripcion:
-              "Si debes realizar una tirada de salvación de muerte al inicio de tu turno, puedes gastar una furia para que cuente como haber sacado un 20 (recuperas 1 PG).",
+              "Mientras estés en furia, puedes usar tu reacción cuando un aliado a 9 m de ti sea impactado por un ataque. Reduces el daño que ese aliado recibe en un número igual a tu bon. competencia (solo una vez por ronda). Además, puedes teletransportar al aliado a un espacio desocupado a 1,5 m de ti (el aliado debe desearlo).",
           },
         ],
       },
@@ -207,9 +223,9 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 10,
         rasgos: [
           {
-            nombre: "Núcleo Imparable",
+            nombre: "Raíces Golpeadoras",
             descripcion:
-              "Tu CAR no puede ser reducida por debajo de su valor natural mientras estés en furia, e ignoras el agotamiento mientras estés en furia.",
+              "Mientras estés en furia, el terreno a 4,5 m de ti es terreno difícil para criaturas hostiles. Cuando uses Golpe Brutal, puedes empujar al objetivo hasta 3 m en cualquier dirección (o tirarlo al suelo).",
           },
         ],
       },
@@ -217,28 +233,33 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Estallido del Alma",
+            nombre: "Viajar por el Árbol",
             descripcion:
-              "Cuando entres en furia, cada criatura de tu elección a 3 m debe superar una salvación de CAR (CD 8 + bon. competencia + mod. CAR) o ser asustada hasta el final de tu siguiente turno. Una vez uses esto, no puedes repetirlo hasta que acabes un descanso largo.",
+              "Mientras estés en furia, puedes usar una acción adicional para teletransportarte hasta 18 m a un espacio desocupado que puedas ver. Una vez al turno, cuando te teletransportes, cada criatura de tu elección en un radio de 1,5 m de tu destino debe superar una salvación de CON (CD = 8 + bon. competencia + mod. FUE) o recibir 3d6 de daño de Fuerza, mitad si supera.",
           },
         ],
       },
     ],
   },
 
-  // ── Senda del Portador Ancestral ───────────────────────────────────
+  // ── Senda del Fanático (PHB'24) ────────────────────────────────────
   {
-    subclaseId: "senda_portador_ancestral",
+    subclaseId: "senda_fanatico",
     claseId: "barbaro",
-    nombre: "Senda del Portador Ancestral",
+    nombre: "Senda del Fanático",
     niveles: [
       {
         nivel: 3,
         rasgos: [
           {
-            nombre: "Protectores Ancestrales",
+            nombre: "Furia Divina",
             descripcion:
-              "Mientras estés en furia, guerreros espectrales aparecen. La primera criatura que impactes en tu turno tiene desventaja en tiradas de ataque que no te incluyan hasta el inicio de tu siguiente turno.",
+              "Mientras estés en furia, la primera criatura que impactes en cada turno con un ataque de arma recibe 1d6 de daño Necrótico o Radiante (tú eliges al entrar en furia). Este daño aumenta a 2d6 al nivel 14.",
+          },
+          {
+            nombre: "Guerrero de los Dioses",
+            descripcion:
+              "Si un conjuro como Revivir se usa para devolverte a la vida, no requiere componentes materiales.",
           },
         ],
       },
@@ -246,9 +267,9 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Consultar con los Espíritus",
+            nombre: "Enfoque Fanático",
             descripcion:
-              "Puedes lanzar los conjuros Augurio y Hablar con los Muertos como rituales, sin componentes materiales. Sabiduría es tu característica de conjuración.",
+              "Si fallas una salvación o una prueba de característica mientras estés en furia, puedes repetir la tirada y usar el nuevo resultado. Puedes usar este rasgo un número de veces igual a tu bon. competencia, y recuperas todos los usos tras un descanso largo.",
           },
         ],
       },
@@ -256,9 +277,58 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 10,
         rasgos: [
           {
-            nombre: "Escudo Vengativo",
+            nombre: "Presencia Fanática",
             descripcion:
-              "Los espíritus ancestrales se vuelven lo bastante poderosos como para proteger a tus aliados. Mientras estés en furia, cada criatura que elijas a 9 m gana resistencia a daño contundente, cortante y perforante.",
+              "Como acción adicional, puedes soltar un grito de batalla. Hasta 10 criaturas de tu elección a 18 m que puedan oírte ganan ventaja en tiradas de ataque y salvaciones hasta el inicio de tu siguiente turno. Una vez uses este rasgo, no puedes repetirlo hasta acabar un descanso largo.",
+          },
+        ],
+      },
+      {
+        nivel: 14,
+        rasgos: [
+          {
+            nombre: "Furia de los Dioses",
+            descripcion:
+              "Mientras estés en furia, tu Furia Divina inflige 2d6 en lugar de 1d6. Además, si eres reducido a 0 PG mientras estés en furia y no mueres directamente, puedes usar tu reacción para mantener 1 PG e infligir daño Necrótico o Radiante (tú eliges) igual a 3d12 + tu nivel de bárbaro a una criatura a 18 m que puedas ver.",
+          },
+        ],
+      },
+    ],
+  },
+
+  // ── Senda del Guardián Ancestral (XGtE) ────────────────────────────
+  {
+    subclaseId: "senda_guardian_ancestral",
+    claseId: "barbaro",
+    nombre: "Senda del Guardián Ancestral",
+    niveles: [
+      {
+        nivel: 3,
+        rasgos: [
+          {
+            nombre: "Protectores Ancestrales",
+            descripcion:
+              "Mientras estés en furia, guerreros espectrales aparecen. La primera criatura que impactes en tu turno tiene desventaja en tiradas de ataque que no te incluyan hasta el inicio de tu siguiente turno. Además, cuando esa criatura impacte a un aliado, el daño se reduce en 2d6.",
+          },
+        ],
+      },
+      {
+        nivel: 6,
+        rasgos: [
+          {
+            nombre: "Escudo Espiritual",
+            descripcion:
+              "Mientras estés en furia, cuando un aliado a 9 m de ti reciba daño, puedes usar tu reacción para reducir ese daño en 2d6. A nivel 10 aumenta a 3d6, y a nivel 14 a 4d6.",
+          },
+        ],
+      },
+      {
+        nivel: 10,
+        rasgos: [
+          {
+            nombre: "Consultar con los Espíritus",
+            descripcion:
+              "Puedes lanzar Augurio o Clarividencia sin componentes materiales ni espacios de conjuro. Sabiduría es tu característica de conjuración. Una vez lances cualquiera de estos conjuros de esta forma, no puedes repetirlo hasta acabar un descanso corto o largo.",
           },
         ],
       },
@@ -268,26 +338,54 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Ancestros Vengativos",
             descripcion:
-              "Cuando usas Escudo Vengativo, si la criatura que provocó la furia ataca a uno de tus aliados protegidos, el atacante recibe daño de fuerza igual a tu mod. de CAR (mín. 1).",
+              "Mientras estés en furia, cuando uses tu reacción de Escudo Espiritual para reducir daño, la criatura atacante recibe daño de Fuerza igual al daño que redujo el escudo.",
           },
         ],
       },
     ],
   },
 
-  // ── Senda del Heraldo de la Furia ──────────────────────────────────
+  // ── Senda del Heraldo de la Tormenta (XGtE) ───────────────────────
   {
-    subclaseId: "senda_heraldo_furia",
+    subclaseId: "senda_heraldo_tormenta",
     claseId: "barbaro",
-    nombre: "Senda del Heraldo de la Furia",
+    nombre: "Senda del Heraldo de la Tormenta",
     niveles: [
       {
         nivel: 3,
         rasgos: [
           {
-            nombre: "Frenético Divino",
+            nombre: "Aura de Tormenta",
             descripcion:
-              "Mientras estés en furia, la primera criatura que impactes en cada turno recibe 1d6 de daño extra. Este daño es necrótico o radiante (elige al entrar en furia).",
+              "Mientras estés en furia, emanas un aura en un radio de 3 m. El efecto depende del entorno elegido. Puedes cambiar de entorno cada vez que subas de nivel.",
+            elecciones: [
+              {
+                id: "aura_tormenta_3",
+                nombre: "Aura de Tormenta",
+                instruccion: "Elige tu entorno de tormenta:",
+                tipo: "single",
+                opciones: [
+                  {
+                    id: "desierto",
+                    nombre: "Desierto",
+                    descripcion:
+                      "Al inicio de cada uno de tus turnos mientras estes en furia, cada criatura de tu elección en el aura recibe 2 de daño de Fuego. A nivel 5 aumenta a 3, a nivel 10 a 4, a nivel 15 a 5 y a nivel 20 a 6.",
+                  },
+                  {
+                    id: "mar",
+                    nombre: "Mar",
+                    descripcion:
+                      "Al inicio de cada uno de tus turnos mientras estés en furia, puedes elegir una criatura en el aura. Debe superar una salvación de DES (CD = 8 + bon. competencia + mod. CON) o recibe 1d6 de daño de Relámpago. A nivel 10 aumenta a 2d6, a nivel 15 a 3d6 y a nivel 20 a 4d6.",
+                  },
+                  {
+                    id: "tundra",
+                    nombre: "Tundra",
+                    descripcion:
+                      "Al inicio de cada uno de tus turnos mientras estés en furia, cada criatura de tu elección en el aura gana 2 puntos de golpe temporales (requiere que puedan verte). A nivel 5 aumenta a 3, a nivel 10 a 4, a nivel 15 a 5 y a nivel 20 a 6.",
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
@@ -295,9 +393,9 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Aura Fanática",
+            nombre: "Alma de Tormenta",
             descripcion:
-              "Mientras estés en furia, tú y cada aliado a 3 m tenéis ventaja en las tiradas de salvación contra ser hechizado o asustado. Esta aura aumenta a 6 m al nivel 10.",
+              "Ganas resistencia a un tipo de daño según tu entorno elegido. Desierto: Fuego. Mar: Relámpago. Tundra: Frío. Además, ganas un beneficio menor: Desierto: no te afecta el calor extremo y puedes prender objetos con tu toque. Mar: puedes respirar bajo el agua y velocidad de nado de 9 m. Tundra: no te afecta el frío extremo y puedes congelar agua con tu toque.",
           },
         ],
       },
@@ -305,9 +403,9 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 10,
         rasgos: [
           {
-            nombre: "Poder Celestial",
+            nombre: "Tormenta Protectora",
             descripcion:
-              "El daño extra de Frenético Divino aumenta a 1d8.",
+              "Cada criatura de tu elección en tu Aura de Tormenta gana resistencia al tipo de daño de tu entorno (Fuego, Relámpago o Frío).",
           },
         ],
       },
@@ -315,16 +413,16 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Furia Más Allá de la Muerte",
+            nombre: "Tormenta Furiosa",
             descripcion:
-              "Mientras estés en furia, caer a 0 puntos de golpe no te deja inconsciente. Sigues haciendo tiradas de salvación contra muerte y solo mueres si la furia termina con 0 PG.",
+              "Tu aura gana un efecto adicional según tu entorno. Desierto: cuando una criatura te impacta con un ataque, puedes usar tu reacción para infligir daño de Fuego igual a la mitad de tu nivel de bárbaro. Mar: cuando impactas a una criatura, puedes infligir 1d6 de daño de Relámpago adicional y la criatura debe superar una salvación de FUE o queda Derribada. Tundra: cuando activas tu aura, puedes elegir una criatura en ella; debe superar una salvación de FUE (CD = 8 + bon. competencia + mod. CON) o su velocidad se reduce a 0 hasta el inicio de tu siguiente turno.",
           },
         ],
       },
     ],
   },
 
-  // ── Senda de la Bestia ─────────────────────────────────────────────
+  // ── Senda de la Bestia (TCoE) ──────────────────────────────────────
   {
     subclaseId: "senda_bestia",
     claseId: "barbaro",
@@ -336,7 +434,7 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Forma de la Bestia",
             descripcion:
-              "Al entrar en furia, manifiestas un arma natural que cuenta como ataque cuerpo a cuerpo simple.",
+              "Al entrar en furia, manifiestas un arma natural que cuenta como ataque cuerpo a cuerpo simple. Elige una forma cada vez que enfurezcas.",
             elecciones: [
               {
                 id: "forma_bestia_3",
@@ -354,13 +452,13 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
                     id: "garras",
                     nombre: "Garras",
                     descripcion:
-                      "1d6 cortante cada una. Al atacar con garras puedes realizar un ataque extra con garras como parte de la misma acción.",
+                      "1d6 cortante cada garra. Al atacar con garras usando la acción de Atacar, puedes realizar un ataque extra con garras como parte de la misma acción.",
                   },
                   {
                     id: "cola",
                     nombre: "Cola",
                     descripcion:
-                      "1d12 perforante. Alcance de 3 m. Puedes usar tu reacción al recibir un impacto para tirar 1d8 y sumar el resultado a tu CA contra ese ataque.",
+                      "1d8 perforante. Alcance de 3 m. Puedes usar tu reacción al recibir un impacto para tirar 1d8 y sumar el resultado a tu CA contra ese ataque (puede hacer que falle).",
                   },
                 ],
               },
@@ -374,35 +472,7 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Alma Bestial",
             descripcion:
-              "Tus armas naturales cuentan como mágicas. También ganas una capacidad de movimiento.",
-            elecciones: [
-              {
-                id: "alma_bestial_6",
-                nombre: "Alma Bestial",
-                instruccion: "Elige tu capacidad de movimiento:",
-                tipo: "single",
-                opciones: [
-                  {
-                    id: "nadar",
-                    nombre: "Nadar",
-                    descripcion:
-                      "Ganas velocidad de nado igual a tu velocidad de caminar y puedes respirar bajo el agua.",
-                  },
-                  {
-                    id: "trepar",
-                    nombre: "Trepar",
-                    descripcion:
-                      "Ganas velocidad de trepar igual a tu velocidad de caminar y puedes trepar por superficies difíciles sin prueba.",
-                  },
-                  {
-                    id: "saltar",
-                    nombre: "Saltar",
-                    descripcion:
-                      "Cuando saltas, puedes sumarlo a tu movimiento sin prueba de Atletismo, incrementando la distancia en un número de pies igual a tu bon. competencia.",
-                  },
-                ],
-              },
-            ],
+              "Tus armas naturales de Forma de la Bestia cuentan como mágicas a efectos de superar resistencias. Además, ganas velocidad de nado y trepar iguales a tu velocidad de caminar.",
           },
         ],
       },
@@ -412,7 +482,7 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Furia Infecciosa",
             descripcion:
-              "Al impactar con tus armas naturales, puedes maldecir al objetivo. La próxima vez que golpee a alguien antes de tu siguiente turno, recibe 2d12 de daño psíquico. Usos iguales a tu bon. competencia por descanso largo.",
+              "Al impactar con tus armas naturales a una criatura, puedes forzarla a hacer una salvación de SAB (CD = 8 + bon. competencia + mod. CON). Si falla, recibe 2d12 de daño psíquico. Si supera, en su lugar usa su reacción para hacer un ataque cuerpo a cuerpo contra otra criatura de tu elección a su alcance. Usos iguales a tu bon. competencia por descanso largo.",
           },
         ],
       },
@@ -422,14 +492,14 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Llamada de la Cacería",
             descripcion:
-              "Cuando una criatura a 9 m reduce a 0 PG a otra criatura, puedes usar tu reacción para que esa criatura haga una salvación de SAB (CD 8 + bon. competencia + mod. CON) o cae en una furia temporal hasta el fin de su siguiente turno, recibiendo daño psíquico.",
+              "Al entrar en furia, puedes elegir un número de aliados a 9 m igual a tu mod. CON (mín. 1). Cada aliado gana 1d6 de PG temporales. Mientras tu furia dure, una vez por turno cuando un aliado elegido impacte a una criatura con un ataque, ese aliado puede sumar 1d6 al daño. Usos iguales a tu bon. competencia por descanso largo.",
           },
         ],
       },
     ],
   },
 
-  // ── Senda de la Magia Salvaje ──────────────────────────────────────
+  // ── Senda de la Magia Salvaje (TCoE) ───────────────────────────────
   {
     subclaseId: "senda_magia_salvaje",
     claseId: "barbaro",
@@ -441,12 +511,12 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Percepción Mágica",
             descripcion:
-              "Puedes lanzar Detectar Magia como ritual sin componentes materiales. Sabiduría es tu característica de conjuración.",
+              "Puedes lanzar Detectar Magia sin usar un espacio de conjuro. Sabiduría es tu característica de conjuración. Usos iguales a tu bon. competencia por descanso largo.",
           },
           {
             nombre: "Oleada de Magia Salvaje",
             descripcion:
-              "Al entrar en furia, tira en la tabla de Magia Salvaje del bárbaro para determinar un efecto mágico aleatorio que dura mientras estés en furia.",
+              "Al entrar en furia, tira en la tabla de Oleada de Magia Salvaje (d8) para determinar un efecto mágico. 1: Teletransportarte 9 m y emitir destello. 2: Cada criatura a 9 m debe superar salvación de CON o recibe 1d12 de Necrótico. 3: Escudo mágico da +1 a CA y tus aliados a 3 m también. 4: Zarcillos de espinas a 4,5 m; criatura atacante recibe 1d6 de Fuerza. 5: Arma mágica inflige 1d6 de Fuerza extra. 6: Espíritu de protección da 1d6 PG temporales a aliados a 9 m. 7: Flores/luces iluminan 3 m y criaturas hostiles tienen desventaja al atacar a tus aliados. 8: Rayo intangible; puedes usar BA para telep. 9 m y cada criatura a 1,5 m del destino recibe 1d6 de Fuerza.",
           },
         ],
       },
@@ -454,9 +524,9 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Carga Mágica",
+            nombre: "Magia Reconstituyente",
             descripcion:
-              "Puedes usar tu acción para tocar un arma simple o marcial y cargarla de energía. El siguiente impacto con ella inflige 1d6 de daño de fuerza adicional y puede teletransportar al objetivo 4,5 m a un espacio que elijas. Usos iguales a tu bon. competencia por descanso largo.",
+              "Puedes tocar a una criatura y darle un beneficio. Tirada de ataque/característica: la criatura tira 1d3 y suma a su siguiente tirada. Espacio de conjuro: recupera un espacio de conjuro de nivel no superior a tu bon. competencia (dividido entre 2, redondeado arriba). Usos iguales a tu bon. competencia por descanso largo.",
           },
         ],
       },
@@ -466,7 +536,7 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Contragolpe Inestable",
             descripcion:
-              "Cuando estés en peligro, la magia fluye a través de ti. Inmediatamente después de recibir daño o fallar una salvación mientras estés en furia, puedes tirar otra vez en la tabla de Oleada de Magia Salvaje (reemplaza el efecto anterior).",
+              "Cuando estés en furia y recibas daño o falles una salvación, puedes usar tu reacción para tirar de nuevo en la tabla de Oleada de Magia Salvaje, reemplazando el efecto actual por el nuevo.",
           },
         ],
       },
@@ -474,58 +544,9 @@ export const BARBARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Bombardeo Controlado",
+            nombre: "Oleada Controlada",
             descripcion:
-              "Cuando tiras daño de un rasgo de subclase o conjuro, puedes tirar un dado de daño adicional, elegir uno y descartarlo, usando el resto.",
-          },
-        ],
-      },
-    ],
-  },
-
-  // ── Senda del Guardián Salvaje ─────────────────────────────────────
-  {
-    subclaseId: "senda_guardian_salvaje",
-    claseId: "barbaro",
-    nombre: "Senda del Guardián Salvaje",
-    niveles: [
-      {
-        nivel: 3,
-        rasgos: [
-          {
-            nombre: "Defensor Feral",
-            descripcion:
-              "Al nivel 3, mientras estés en furia tu velocidad aumenta en 3 m y ganas trepar y nadar si no los tenías.",
-          },
-        ],
-      },
-      {
-        nivel: 6,
-        rasgos: [
-          {
-            nombre: "Vínculo Primordial",
-            descripcion:
-              "Puedes comunicarte con bestias de forma limitada. Ganas competencia en la habilidad Trato con Animales si no la tenías.",
-          },
-        ],
-      },
-      {
-        nivel: 10,
-        rasgos: [
-          {
-            nombre: "Espíritu del Mundo Natural",
-            descripcion:
-              "Los espíritus de la naturaleza te protegen. Cuando terminas un descanso largo, ganas los beneficios de uno de estos conjuros (sin componentes): Comunión con la naturaleza o Paseo por los árboles. Dura hasta que termines un descanso largo.",
-          },
-        ],
-      },
-      {
-        nivel: 14,
-        rasgos: [
-          {
-            nombre: "Forma Salvaje Furiosa",
-            descripcion:
-              "Mientras estés en furia, canalizas salvajismo. Tu movimiento no provoca ataques de oportunidad y puedes usar tu acción para asustar criaturas a 9 m (salvación de SAB CD 8 + bon. competencia + mod. CON).",
+              "Cuando tires en la tabla de Oleada de Magia Salvaje, puedes tirar dos veces y elegir cuál de los dos resultados usar. Si tiras el mismo número en ambos dados, puedes ignorar la tabla y elegir cualquier efecto de ella.",
           },
         ],
       },

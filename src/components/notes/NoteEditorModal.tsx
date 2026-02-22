@@ -167,28 +167,27 @@ export function NoteEditorModal({
       onRequestClose={handleRequestClose}
     >
       <KeyboardAvoidingView
-        className="flex-1 bg-gray-50 dark:bg-dark-800"
+        className="flex-1"
+        style={{ backgroundColor: colors.bgPrimary }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         {/* Header */}
-        <View className="flex-row items-center justify-between px-5 pt-14 pb-3 border-b border-dark-100 dark:border-surface-border">
+        <View className="flex-row items-center justify-between px-5 pt-14 pb-3 border-b" style={{ borderColor: colors.borderDefault }}>
           <TouchableOpacity
-            className="h-10 w-10 rounded-full bg-gray-100 dark:bg-surface items-center justify-center active:bg-gray-50 dark:active:bg-surface-light"
+            className="h-10 w-10 rounded-full items-center justify-center"
+            style={{ backgroundColor: colors.bgInput }}
             onPress={handleRequestClose}
           >
             <Ionicons name="close" size={22} color="white" />
           </TouchableOpacity>
 
-          <Text className="text-dark-900 dark:text-white text-base font-semibold">
+          <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
             {editingNote ? "Editar Nota" : "Nueva Nota"}
           </Text>
 
           <TouchableOpacity
-            className={`rounded-lg px-4 py-2 ${
-              title.trim()
-                ? "bg-primary-500 active:bg-primary-600"
-                : "bg-gray-300 dark:bg-dark-600 opacity-50"
-            }`}
+            className={`rounded-lg px-4 py-2 ${!title.trim() ? "opacity-50" : ""}`}
+            style={{ backgroundColor: title.trim() ? colors.accentRed : colors.bgSecondary }}
             onPress={handleSave}
             disabled={!title.trim()}
           >
@@ -202,13 +201,10 @@ export function NoteEditorModal({
           keyboardShouldPersistTaps="handled"
         >
           {/* Note type toggle */}
-          <View className="flex-row mt-4 mb-4 bg-gray-200 dark:bg-dark-700 rounded-xl p-1">
+          <View className="flex-row mt-4 mb-4 rounded-xl p-1" style={{ backgroundColor: colors.bgSecondary }}>
             <TouchableOpacity
-              className={`flex-1 rounded-lg py-2.5 items-center flex-row justify-center ${
-                noteType === "general"
-                  ? "bg-gray-50 dark:bg-surface-light"
-                  : "bg-transparent"
-              }`}
+              className="flex-1 rounded-lg py-2.5 items-center flex-row justify-center"
+              style={noteType === "general" ? { backgroundColor: colors.bgCard } : undefined}
               onPress={() => setNoteType("general")}
             >
               <Ionicons
@@ -221,21 +217,15 @@ export function NoteEditorModal({
                 }
               />
               <Text
-                className={`text-sm font-medium ml-1.5 ${
-                  noteType === "general"
-                    ? "text-dark-900 dark:text-white"
-                    : "text-dark-400"
-                }`}
+                className="text-sm font-medium ml-1.5"
+                style={{ color: noteType === "general" ? colors.textPrimary : colors.textMuted }}
               >
                 General
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className={`flex-1 rounded-lg py-2.5 items-center flex-row justify-center ${
-                noteType === "diario"
-                  ? "bg-gray-50 dark:bg-surface-light"
-                  : "bg-transparent"
-              }`}
+              className="flex-1 rounded-lg py-2.5 items-center flex-row justify-center"
+              style={noteType === "diario" ? { backgroundColor: colors.bgCard } : undefined}
               onPress={() => setNoteType("diario")}
             >
               <Ionicons
@@ -246,9 +236,8 @@ export function NoteEditorModal({
                 }
               />
               <Text
-                className={`text-sm font-medium ml-1.5 ${
-                  noteType === "diario" ? "text-blue-400" : "text-dark-400"
-                }`}
+                className="text-sm font-medium ml-1.5"
+                style={{ color: noteType === "diario" ? colors.accentBlue : colors.textMuted }}
               >
                 Diario
               </Text>
@@ -259,11 +248,12 @@ export function NoteEditorModal({
           {noteType === "diario" && (
             <View className="flex-row mb-4">
               <View className="flex-1 mr-2">
-                <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+                <Text className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: colors.textSecondary }}>
                   Nº Sesión
                 </Text>
                 <TextInput
-                  className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border"
+                  className="rounded-xl px-4 py-3 text-sm border"
+                  style={{ backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
                   placeholder={String(getNextSessionNumber(notes))}
                   placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
@@ -272,11 +262,12 @@ export function NoteEditorModal({
                 />
               </View>
               <View className="flex-1 ml-2">
-                <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+                <Text className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: colors.textSecondary }}>
                   Fecha de sesión
                 </Text>
                 <TextInput
-                  className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border"
+                  className="rounded-xl px-4 py-3 text-sm border"
+                  style={{ backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
                   placeholder="YYYY-MM-DD"
                   placeholderTextColor={colors.textMuted}
                   value={sessionDate}
@@ -287,11 +278,12 @@ export function NoteEditorModal({
           )}
 
           {/* Title */}
-          <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
-            Título <Text className="text-primary-500">*</Text>
+          <Text className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: colors.textSecondary }}>
+            Título <Text style={{ color: colors.accentRed }}>*</Text>
           </Text>
           <TextInput
-            className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-base border border-dark-100 dark:border-surface-border mb-4"
+            className="rounded-xl px-4 py-3 text-base border mb-4"
+            style={{ backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
             placeholder="Título de la nota"
             placeholderTextColor={colors.textMuted}
             value={title}
@@ -301,11 +293,12 @@ export function NoteEditorModal({
           />
 
           {/* Content */}
-          <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1.5">
+          <Text className="text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: colors.textSecondary }}>
             Contenido
           </Text>
           <TextInput
-            className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border mb-4 min-h-[200px]"
+            className="rounded-xl px-4 py-3 text-sm border mb-4 min-h-[200px]"
+            style={{ backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
             placeholder="Escribe el contenido de tu nota aquí..."
             placeholderTextColor={colors.textMuted}
             multiline
@@ -317,7 +310,7 @@ export function NoteEditorModal({
           />
 
           {/* Tags */}
-          <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider mb-2">
+          <Text className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: colors.textSecondary }}>
             Etiquetas
           </Text>
           <View className="flex-row flex-wrap mb-4">
@@ -326,18 +319,14 @@ export function NoteEditorModal({
               return (
                 <TouchableOpacity
                   key={tag.id}
-                  className={`flex-row items-center rounded-full px-3 py-2 mr-2 mb-2 border ${
-                    isSelected
-                      ? "border-opacity-50"
-                      : "border-dark-100 dark:border-surface-border"
-                  }`}
+                  className="flex-row items-center rounded-full px-3 py-2 mr-2 mb-2 border"
                   style={
                     isSelected
                       ? {
                           backgroundColor: `${tag.color}20`,
                           borderColor: `${tag.color}50`,
                         }
-                      : { backgroundColor: colors.bgSecondary }
+                      : { backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }
                   }
                   onPress={() => handleToggleTag(tag.id)}
                 >
@@ -365,7 +354,7 @@ export function NoteEditorModal({
 
           {/* Character count */}
           <View className="flex-row justify-end mb-4">
-            <Text className="text-dark-300 dark:text-dark-500 text-[10px]">
+            <Text className="text-[10px]" style={{ color: colors.textMuted }}>
               {content.length}/5000 caracteres
             </Text>
           </View>

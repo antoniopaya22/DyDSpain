@@ -13,7 +13,7 @@ import { getClassData, isSpellcaster, hasSpellsAtLevel1 } from "@/data/srd";
 import { getCantripsForClass, getSpellsForClass } from "@/data/srd/spells";
 import { getSpellDescription } from "@/data/srd/spellDescriptions";
 import type { ClassId } from "@/types/character";
-import { useTheme } from "@/hooks";
+import { useTheme, useScrollToTop } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 7;
@@ -49,6 +49,7 @@ function buildSpellList(
 }
 
 export default function SpellsStep() {
+  const scrollRef = useScrollToTop();
   const { colors, isDark } = useTheme();
   const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
@@ -170,6 +171,7 @@ export default function SpellsStep() {
   return (
     <View style={[styles.container, themed.container]}>
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
       >

@@ -52,6 +52,8 @@ export interface CollapsibleSectionProps {
   isExpanded: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  /** Optional element rendered to the right of the title (before chevron) */
+  rightElement?: React.ReactNode;
 }
 
 export default function CollapsibleSection({
@@ -60,19 +62,24 @@ export default function CollapsibleSection({
   isExpanded,
   onToggle,
   children,
+  rightElement,
 }: CollapsibleSectionProps) {
   const { colors } = useTheme();
 
   return (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border mb-4 overflow-hidden">
+    <View
+      className="rounded-card border mb-4 overflow-hidden"
+      style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}
+    >
       <TouchableOpacity
-        className="flex-row items-center p-4 active:bg-gray-50 dark:active:bg-surface-light"
+        className="flex-row items-center p-4"
         onPress={onToggle}
       >
         <Ionicons name={icon} size={20} color={colors.accentGold} />
-        <Text className="text-dark-900 dark:text-white text-base font-semibold flex-1 ml-3">
+        <Text className="text-base font-semibold flex-1 ml-3" style={{ color: colors.textPrimary }}>
           {title}
         </Text>
+        {rightElement}
         <Ionicons
           name={isExpanded ? "chevron-up" : "chevron-down"}
           size={20}
@@ -80,7 +87,7 @@ export default function CollapsibleSection({
         />
       </TouchableOpacity>
       {isExpanded && (
-        <View className="px-4 pb-4 border-t border-dark-100 dark:border-surface-border/50 pt-3">
+        <View className="px-4 pb-4 border-t pt-3" style={{ borderColor: colors.borderDefault }}>
           {children}
         </View>
       )}

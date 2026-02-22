@@ -9,6 +9,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 
 interface HitDiceSectionProps {
   onShowToast: (message: string) => void;
@@ -32,15 +33,15 @@ export function HitDiceSection({ onShowToast }: HitDiceSectionProps) {
   };
 
   return (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+    <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center">
           <Ionicons name="dice-outline" size={20} color={colors.accentPurple} />
-          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
+          <Text className="text-xs font-semibold uppercase tracking-wider ml-2" style={{ color: colors.textSecondary }}>
             Dados de Golpe
           </Text>
         </View>
-        <Text className="text-dark-500 dark:text-dark-300 text-xs">
+        <Text className="text-xs" style={{ color: colors.textSecondary }}>
           {hitDice.die}
         </Text>
       </View>
@@ -78,19 +79,25 @@ export function HitDiceSection({ onShowToast }: HitDiceSectionProps) {
         <TouchableOpacity
           className={`rounded-lg px-4 py-2 ${
             hitDice.remaining > 0 && hp.current < hp.max
-              ? "bg-purple-600/80 active:bg-purple-700"
-              : "bg-gray-300 dark:bg-dark-600 opacity-50"
+              ? ""
+              : "opacity-50"
           }`}
+          style={{
+            backgroundColor:
+              hitDice.remaining > 0 && hp.current < hp.max
+                ? withAlpha(colors.accentPurple, 0.8)
+                : colors.bgSecondary,
+          }}
           onPress={handleUseHitDie}
           disabled={hitDice.remaining <= 0 || hp.current >= hp.max}
         >
-          <Text className="text-dark-900 dark:text-white text-sm font-semibold">
+          <Text className="text-sm font-semibold" style={{ color: colors.textPrimary }}>
             Usar
           </Text>
         </TouchableOpacity>
       </View>
 
-      <Text className="text-dark-400 text-[10px] mt-2">
+      <Text className="text-[10px] mt-2" style={{ color: colors.textMuted }}>
         {hitDice.remaining}/{hitDice.total} disponibles · Clic en "Usar" para
         tirar {hitDice.die} + mod. CON
       </Text>

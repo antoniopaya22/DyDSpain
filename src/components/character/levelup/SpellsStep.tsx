@@ -38,6 +38,10 @@ interface SpellsStepProps {
   setWantsToSwap: React.Dispatch<React.SetStateAction<boolean>>;
   spellSearch: string;
   setSpellSearch: React.Dispatch<React.SetStateAction<string>>;
+  customCantripName: string;
+  setCustomCantripName: React.Dispatch<React.SetStateAction<string>>;
+  customSpellName: string;
+  setCustomSpellName: React.Dispatch<React.SetStateAction<string>>;
   expandedSpellIds: Set<string>;
   setExpandedSpellIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   getMagicState: () => any;
@@ -61,6 +65,10 @@ export default function SpellsStep({
   setWantsToSwap,
   spellSearch,
   setSpellSearch,
+  customCantripName,
+  setCustomCantripName,
+  customSpellName,
+  setCustomSpellName,
   expandedSpellIds,
   setExpandedSpellIds,
   getMagicState,
@@ -85,6 +93,26 @@ export default function SpellsStep({
   };
 
   // ── Helpers ──
+
+  const addCustomCantrip = () => {
+    const name = customCantripName.trim();
+    if (!name) return;
+    const customId = `custom:truco:${name}`;
+    if (newCantrips.includes(customId) || alreadyKnown.has(customId)) return;
+    if (sl.newCantrips > 0 && newCantrips.length >= sl.newCantrips) return;
+    setNewCantrips((prev) => [...prev, customId]);
+    setCustomCantripName("");
+  };
+
+  const addCustomSpell = () => {
+    const name = customSpellName.trim();
+    if (!name) return;
+    const customId = `custom:${name}`;
+    if (newSpells.includes(customId) || alreadyKnown.has(customId)) return;
+    if (sl.newSpellsKnown > 0 && newSpells.length >= sl.newSpellsKnown) return;
+    setNewSpells((prev) => [...prev, customId]);
+    setCustomSpellName("");
+  };
 
   const toggleSpell = (
     id: string,
@@ -594,6 +622,113 @@ export default function SpellsStep({
           excludeIds: cantripExclude,
         })}
 
+      {/* ── Custom cantrips already added ── */}
+      {newCantrips.filter((id) => id.startsWith("custom:")).length > 0 && (
+        <View style={{ marginBottom: 8 }}>
+          {newCantrips
+            .filter((id) => id.startsWith("custom:"))
+            .map((id) => {
+              const name = id.replace(/^custom:truco:/, "").replace(/^custom:/, "");
+              return (
+                <View
+                  key={id}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: "rgba(59, 130, 246, 0.12)",
+                    borderRadius: 12,
+                    borderWidth: 2,
+                    borderColor: colors.accentBlue,
+                    padding: 12,
+                    marginBottom: 8,
+                    gap: 10,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 12,
+                      backgroundColor: colors.accentBlue,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Ionicons name="checkmark" size={14} color="#fff" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: colors.accentBlue, fontSize: 14, fontWeight: "700" }}>
+                      {name}
+                    </Text>
+                    <Text style={{ color: colors.textMuted, fontSize: 12, fontWeight: "500", marginTop: 2 }}>
+                      Personalizado — Truco
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setNewCantrips((prev) => prev.filter((s) => s !== id))}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Ionicons name="close-circle" size={20} color={colors.textMuted} />
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
+        </View>
+      )}
+
+      {/* ── Add custom cantrip ── */}
+      {sl.newCantrips > 0 && newCantrips.length < sl.newCantrips && (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: colors.bgCard,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: customCantripName.trim()
+              ? "rgba(59, 130, 246, 0.4)"
+              : colors.borderSubtle,
+            paddingHorizontal: 12,
+            paddingVertical: Platform.OS === "ios" ? 8 : 4,
+            marginBottom: 20,
+            gap: 8,
+          }}
+        >
+          <Ionicons name="create-outline" size={16} color={colors.textMuted} />
+          <TextInput
+            value={customCantripName}
+            onChangeText={setCustomCantripName}
+            placeholder="Añadir truco personalizado..."
+            placeholderTextColor={colors.textMuted}
+            autoCapitalize="sentences"
+            onSubmitEditing={addCustomCantrip}
+            returnKeyType="done"
+            style={{
+              color: colors.textPrimary,
+              fontSize: 14,
+              fontWeight: "500",
+              flex: 1,
+              paddingVertical: Platform.OS === "ios" ? 0 : 6,
+            }}
+          />
+          {customCantripName.trim().length > 0 && (
+            <TouchableOpacity
+              onPress={addCustomCantrip}
+              style={{
+                backgroundColor: "rgba(59, 130, 246, 0.15)",
+                borderRadius: 8,
+                paddingHorizontal: 10,
+                paddingVertical: 6,
+              }}
+            >
+              <Text style={{ color: colors.accentBlue, fontSize: 13, fontWeight: "700" }}>
+                Añadir
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
       {/* ── New Spells Known ── */}
       {sl.newSpellsKnown > 0 &&
         renderSpellSection({
@@ -606,6 +741,113 @@ export default function SpellsStep({
           accentColor: colors.accentBlue,
           excludeIds: spellExclude,
         })}
+
+      {/* ── Custom spells already added ── */}
+      {newSpells.filter((id) => id.startsWith("custom:")).length > 0 && (
+        <View style={{ marginBottom: 8 }}>
+          {newSpells
+            .filter((id) => id.startsWith("custom:"))
+            .map((id) => {
+              const name = id.replace(/^custom:/, "");
+              return (
+                <View
+                  key={id}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: "rgba(59, 130, 246, 0.12)",
+                    borderRadius: 12,
+                    borderWidth: 2,
+                    borderColor: colors.accentBlue,
+                    padding: 12,
+                    marginBottom: 8,
+                    gap: 10,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 12,
+                      backgroundColor: colors.accentBlue,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Ionicons name="checkmark" size={14} color="#fff" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: colors.accentBlue, fontSize: 14, fontWeight: "700" }}>
+                      {name}
+                    </Text>
+                    <Text style={{ color: colors.textMuted, fontSize: 12, fontWeight: "500", marginTop: 2 }}>
+                      Personalizado
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setNewSpells((prev) => prev.filter((s) => s !== id))}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Ionicons name="close-circle" size={20} color={colors.textMuted} />
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
+        </View>
+      )}
+
+      {/* ── Add custom spell ── */}
+      {sl.newSpellsKnown > 0 && newSpells.length < sl.newSpellsKnown && (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: colors.bgCard,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: customSpellName.trim()
+              ? "rgba(59, 130, 246, 0.4)"
+              : colors.borderSubtle,
+            paddingHorizontal: 12,
+            paddingVertical: Platform.OS === "ios" ? 8 : 4,
+            marginBottom: 20,
+            gap: 8,
+          }}
+        >
+          <Ionicons name="create-outline" size={16} color={colors.textMuted} />
+          <TextInput
+            value={customSpellName}
+            onChangeText={setCustomSpellName}
+            placeholder="Añadir conjuro personalizado..."
+            placeholderTextColor={colors.textMuted}
+            autoCapitalize="sentences"
+            onSubmitEditing={addCustomSpell}
+            returnKeyType="done"
+            style={{
+              color: colors.textPrimary,
+              fontSize: 14,
+              fontWeight: "500",
+              flex: 1,
+              paddingVertical: Platform.OS === "ios" ? 0 : 6,
+            }}
+          />
+          {customSpellName.trim().length > 0 && (
+            <TouchableOpacity
+              onPress={addCustomSpell}
+              style={{
+                backgroundColor: "rgba(59, 130, 246, 0.15)",
+                borderRadius: 8,
+                paddingHorizontal: 10,
+                paddingVertical: 6,
+              }}
+            >
+              <Text style={{ color: colors.accentBlue, fontSize: 13, fontWeight: "700" }}>
+                Añadir
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       {/* ── New Spellbook Spells (Wizard only) ── */}
       {sl.newSpellbookSpells > 0 &&

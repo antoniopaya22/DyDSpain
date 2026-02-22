@@ -61,6 +61,7 @@ export interface PersonajeRow {
   id: string;
   usuario_id: string;
   datos: Record<string, unknown>;
+  codigo_personaje: string;
   actualizado_en: string;
 }
 

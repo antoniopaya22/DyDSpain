@@ -14,7 +14,10 @@ import { calcModifier } from "@/types/character";
 import { now } from "@/utils/providers";
 import type { LevelUpSummary } from "@/data/srd/leveling";
 import { getSubclassOptions } from "@/data/srd/subclasses";
-import { getSubclassFeaturesForLevel } from "@/data/srd/subclassFeatures";
+import {
+  getSubclassFeaturesForLevel,
+} from "@/data/srd/subclassFeatures";
+import { getRacialSpellsUnlockedAtLevel } from "@/data/srd/races";
 import { rollDie, hitDieSides, createDefaultMagicState } from "./helpers";
 import type { InternalMagicState } from "./helpers";
 import type { LevelUpOptions } from "./types";
@@ -119,6 +122,8 @@ export function applyASI(
 
 /**
  * Builds Trait[] from class features gained at this level (NOT subclass features).
+ * Generic subclass placeholders (esSubclase === true) are excluded when detailed
+ * subclass data exists, because buildSubclassTraits produces the specific traits.
  *
  * @param character - The character leveling up.
  * @param summary   - Level-up summary containing the features list.
@@ -133,10 +138,29 @@ export function buildNewTraits(
   options: Pick<LevelUpOptions, "subclassChosen">,
 ): Trait[] {
   return summary.features
-    .filter(
-      (f) =>
-        !f.esSubclase || character.subclase || options.subclassChosen,
-    )
+    .filter((f) => {
+      if (!f.esSubclase) return true;
+
+      // Subclass placeholder — check if detailed subclass data will handle it
+      const subclassName = options.subclassChosen ?? character.subclase;
+      if (!subclassName) return false; // no subclass at all → skip placeholder
+
+      // Resolve the subclass ID and check for detailed feature data
+      const opts = getSubclassOptions(character.clase);
+      const match = opts.find((o) => o.nombre === subclassName);
+      if (match) {
+        const block = getSubclassFeaturesForLevel(
+          character.clase,
+          match.id,
+          newLevel,
+        );
+        // Detailed data exists → buildSubclassTraits handles it → exclude placeholder
+        if (block) return false;
+      }
+
+      // Custom subclass or no detailed data → keep generic placeholder as fallback
+      return true;
+    })
     .map((f) => ({
       id: `${character.clase}_${f.nombre.toLowerCase().replace(/\s+/g, "_")}_nv${newLevel}`,
       nombre: f.nombre,
@@ -348,6 +372,30 @@ export function applyMagicProgression(
     const prepIdx = newMagicState.preparedSpellIds.indexOf(oldSpell);
     if (prepIdx !== -1) {
       newMagicState.preparedSpellIds.splice(prepIdx, 1);
+    }
+  }
+
+  // Hechizos raciales desbloqueados en este nivel
+  if (character.raza === "personalizada" && character.customRaceData?.racialSpells) {
+    // Custom race: check racialSpells from the persisted config
+    for (const rs of character.customRaceData.racialSpells) {
+      if (rs.minLevel === character.nivel) {
+        const spellId = rs.nombre.toLowerCase().replace(/\s+/g, "_");
+        if (!newMagicState.knownSpellIds.includes(spellId)) {
+          newMagicState.knownSpellIds.push(spellId);
+        }
+      }
+    }
+  } else {
+    const racialSpells = getRacialSpellsUnlockedAtLevel(
+      character.raza,
+      character.subraza ?? null,
+      character.nivel,
+    );
+    for (const entry of racialSpells) {
+      if (!newMagicState.knownSpellIds.includes(entry.spellId)) {
+        newMagicState.knownSpellIds.push(entry.spellId);
+      }
     }
   }
 

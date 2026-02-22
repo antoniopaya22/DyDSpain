@@ -414,9 +414,9 @@ export default function CampaignDetailScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-gray-50 dark:bg-dark-800 items-center justify-center">
+      <View className="flex-1 items-center justify-center" style={{ backgroundColor: colors.bgPrimary }}>
         <ActivityIndicator size="large" color={colors.accentRed} />
-        <Text className="text-gray-500 dark:text-dark-300 text-base mt-4">
+        <Text className="text-base mt-4" style={{ color: colors.textSecondary }}>
           Cargando partida...
         </Text>
       </View>
@@ -425,25 +425,26 @@ export default function CampaignDetailScreen() {
 
   if (!campaign) {
     return (
-      <View className="flex-1 bg-gray-50 dark:bg-dark-800 items-center justify-center px-8">
-        <View className="h-20 w-20 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center mb-6">
+      <View className="flex-1 items-center justify-center px-8" style={{ backgroundColor: colors.bgPrimary }}>
+        <View className="h-20 w-20 rounded-full items-center justify-center mb-6" style={{ backgroundColor: colors.bgSecondary }}>
           <Ionicons
             name="alert-circle-outline"
             size={44}
             color={colors.dangerText}
           />
         </View>
-        <Text className="text-dark-900 dark:text-white text-xl font-bold text-center mb-2">
+        <Text className="text-xl font-bold text-center mb-2" style={{ color: colors.textPrimary }}>
           Partida no encontrada
         </Text>
-        <Text className="text-dark-400 dark:text-dark-300 text-base text-center mb-8">
+        <Text className="text-base text-center mb-8" style={{ color: colors.textSecondary }}>
           La partida que buscas no existe o ha sido eliminada.
         </Text>
         <TouchableOpacity
-          className="bg-primary-500 rounded-xl px-8 py-3.5 active:bg-primary-600"
+          className="rounded-xl px-8 py-3.5"
+          style={{ backgroundColor: colors.accentRed }}
           onPress={() => router.replace("/")}
         >
-          <Text className="text-white font-bold text-base">
+          <Text className="font-bold text-base" style={{ color: '#ffffff' }}>
             Volver al inicio
           </Text>
         </TouchableOpacity>
@@ -480,14 +481,15 @@ export default function CampaignDetailScreen() {
         className="flex-1 justify-end"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="bg-white dark:bg-dark-800 rounded-t-3xl border-t border-dark-100 dark:border-surface-border">
+        <View className="rounded-t-3xl border-t" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
           {/* Header */}
           <View className="flex-row items-center justify-between px-5 pt-5 pb-3">
-            <Text className="text-dark-900 dark:text-white text-lg font-bold">
+            <Text className="text-lg font-bold" style={{ color: colors.textPrimary }}>
               Editar Partida
             </Text>
             <TouchableOpacity
-              className="h-8 w-8 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center"
+              className="h-8 w-8 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.bgSecondary }}
               onPress={() => setShowEditModal(false)}
             >
               <Ionicons name="close" size={18} color={colors.textPrimary} />
@@ -500,11 +502,12 @@ export default function CampaignDetailScreen() {
             keyboardShouldPersistTaps="handled"
           >
             {/* Nombre */}
-            <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider mt-2">
-              Nombre de la partida <Text className="text-primary-500">*</Text>
+            <Text className="text-sm font-semibold mb-2 uppercase tracking-wider mt-2" style={{ color: colors.textSecondary }}>
+              Nombre de la partida <Text style={{ color: colors.accentRed }}>*</Text>
             </Text>
             <TextInput
-              className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3.5 text-dark-900 dark:text-white text-base border border-dark-100 dark:border-surface-border mb-4"
+              className="rounded-xl px-4 py-3.5 text-base border mb-4"
+              style={{ backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
               placeholder="Nombre de la partida"
               placeholderTextColor={colors.textMuted}
               value={editNombre}
@@ -513,16 +516,17 @@ export default function CampaignDetailScreen() {
               autoFocus
               returnKeyType="next"
             />
-            <Text className="text-dark-400 text-xs -mt-2 mb-4 text-right">
+            <Text className="text-xs -mt-2 mb-4 text-right" style={{ color: colors.textMuted }}>
               {editNombre.length}/100
             </Text>
 
             {/* Descripción */}
-            <Text className="text-dark-600 dark:text-dark-200 text-sm font-semibold mb-2 uppercase tracking-wider">
+            <Text className="text-sm font-semibold mb-2 uppercase tracking-wider" style={{ color: colors.textSecondary }}>
               Descripción (opcional)
             </Text>
             <TextInput
-              className="bg-gray-100 dark:bg-surface rounded-xl px-4 py-3.5 text-dark-900 dark:text-white text-base border border-dark-100 dark:border-surface-border min-h-[120px] mb-4"
+              className="rounded-xl px-4 py-3.5 text-base border min-h-[120px] mb-4"
+              style={{ backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
               placeholder="Descripción de la campaña..."
               placeholderTextColor={colors.textMuted}
               value={editDescripcion}
@@ -532,30 +536,32 @@ export default function CampaignDetailScreen() {
               maxLength={500}
               textAlignVertical="top"
             />
-            <Text className="text-dark-400 text-xs -mt-2 mb-6 text-right">
+            <Text className="text-xs -mt-2 mb-6 text-right" style={{ color: colors.textMuted }}>
               {editDescripcion.length}/500
             </Text>
 
             {/* Botón guardar */}
             <TouchableOpacity
-              className={`rounded-xl py-4 items-center ${
-                editNombre.trim() && !editSaving
-                  ? "bg-primary-500 active:bg-primary-600"
-                  : "bg-gray-300 dark:bg-dark-600 opacity-50"
-              }`}
+              className="rounded-xl py-4 items-center"
+              style={{
+                backgroundColor: editNombre.trim() && !editSaving
+                  ? colors.accentRed
+                  : colors.bgSecondary,
+                opacity: editNombre.trim() && !editSaving ? 1 : 0.5,
+              }}
               onPress={handleSaveEdit}
               disabled={!editNombre.trim() || editSaving}
             >
-              <Text className="text-white font-bold text-base">
+              <Text className="font-bold text-base" style={{ color: '#ffffff' }}>
                 {editSaving ? "Guardando..." : "Guardar Cambios"}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="mt-3 rounded-xl py-3.5 items-center active:bg-gray-100 dark:active:bg-surface-light"
+              className="mt-3 rounded-xl py-3.5 items-center"
               onPress={() => setShowEditModal(false)}
             >
-              <Text className="text-dark-400 dark:text-dark-300 font-semibold text-base">
+              <Text className="font-semibold text-base" style={{ color: colors.textSecondary }}>
                 Cancelar
               </Text>
             </TouchableOpacity>

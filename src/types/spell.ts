@@ -244,7 +244,9 @@ export type MetamagicOption =
   | "hechizo_extendido"
   | "hechizo_intensificado"
   | "hechizo_rapido"
+  | "hechizo_buscador"
   | "hechizo_sutil"
+  | "hechizo_transmutado"
   | "hechizo_duplicado";
 
 /**

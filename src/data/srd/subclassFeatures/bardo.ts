@@ -92,9 +92,9 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Inspiración de Batalla Superior",
+            nombre: "Magia de Batalla",
             descripcion:
-              "Cuando un aliado use tu dado de Inspiración Bárdica en una tirada de daño o para aumentar su CA, tirará dos dados de Inspiración Bárdica y elegirá el resultado mayor.",
+              "Cuando uses tu acción para lanzar un conjuro de bardo, puedes hacer un ataque con arma como acción bonus.",
           },
         ],
       },
@@ -169,7 +169,7 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Floritura Magistral",
             descripcion:
-              "Cada vez que uses una Floritura con Cuchillas, puedes tirar un d6 en lugar de gastar un dado de Inspiración Bárdica. Si decides gastar el dado de Inspiración Bárdica y obtienes un 9 o 10, la Floritura no consume el uso.",
+              "Cada vez que uses una Floritura con Cuchillas, puedes tirar un d6 en lugar de gastar un dado de Inspiración Bárdica.",
           },
         ],
       },
@@ -186,14 +186,14 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 3,
         rasgos: [
           {
-            nombre: "Presencia Manifiesta",
+            nombre: "Magia Seductora",
             descripcion:
-              "Como acción bonus, puedes gastar un uso de Inspiración Bárdica para proyectar una presencia cautivadora. Elige hasta un número de criaturas igual a tu modificador de Carisma (mínimo 1) que puedas ver a 18 m o menos. Cada objetivo debe superar una tirada de salvación de Sabiduría o quedará hechizado por ti durante 1 minuto.",
+              "Cuando lanzas un conjuro de la escuela de Encantamiento o Ilusión, puedes hacer que una criatura que puedas ver a 18 m o menos realice una tirada de salvación de Sabiduría contra tu CD de conjuros. Si falla, queda Hechizada o Asustada (a tu elección) durante 1 minuto. La criatura puede repetir la tirada al final de cada turno. Puedes usar este rasgo un número de veces igual a tu mod. de Carisma (mín. 1) por descanso largo.",
           },
           {
             nombre: "Manto de Inspiración",
             descripcion:
-              "Como acción bonus, puedes gastar un uso de Inspiración Bárdica para otorgar a hasta 5 aliados a 18 m o menos puntos de golpe temporales iguales al dado de Inspiración Bárdica + tu modificador de Carisma. Cada aliado puede usar su reacción para moverse hasta su velocidad sin provocar ataques de oportunidad.",
+              "Como acción bonus, puedes gastar un uso de Inspiración Bárdica para dar a un número de aliados a 18 m igual a tu mod. de Carisma (mín. 1) puntos de golpe temporales de 2d6 (suben a 2d8 a nv8, 2d10 a nv13, 2d12 a nv18). Cada aliado puede usar su reacción para moverse hasta su velocidad sin provocar ataques de oportunidad.",
           },
         ],
       },
@@ -203,7 +203,7 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Manto de la Majestad",
             descripcion:
-              "Como acción bonus, puedes lanzar Mandato sin gastar un espacio de conjuro en cada turno durante 1 minuto. Criaturas hechizadas por ti fallan automáticamente su salvación. Una vez por descanso largo.",
+              "Como acción bonus, te invistes de un manto de majestad feérica durante 1 minuto. Mientras dure, puedes lanzar Mandato como acción bonus sin gastar un espacio de conjuro. Cualquier criatura hechizada por ti falla automáticamente su salvación contra Mandato. Una vez por descanso largo.",
           },
         ],
       },
@@ -211,9 +211,9 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Belleza Irresistible",
+            nombre: "Majestad Inquebrantable",
             descripcion:
-              "Como acción, proyectas tu belleza feérica durante 1 minuto. Cualquier criatura que te ataque por primera vez en cada turno debe superar una salvación de Sabiduría o quedará hechizada hasta el final de su turno. Una vez por descanso largo.",
+              "Como acción bonus, proyectas una presencia de majestad sobrenatural durante 1 minuto. Cuando una criatura te ataque por primera vez en un turno, debe superar una salvación de Carisma contra tu CD de conjuros o el ataque falla automáticamente. Si supera la salvación, tiene desventaja en las salvaciones contra tus conjuros hasta el final de tu siguiente turno. Una vez por descanso largo.",
           },
         ],
       },
@@ -230,14 +230,14 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 3,
         rasgos: [
           {
-            nombre: "Maestro del Argumento",
+            nombre: "Lengua de Plata",
             descripcion:
-              "Ganas competencia en Persuasión y Engaño. Si ya eres competente en alguna, tu bonificador de competencia se duplica (Pericia) para esas habilidades.",
+              "Cuando hagas una prueba de Persuasión o Engaño, puedes tratar un resultado de 9 o menos en el d20 como un 10.",
           },
           {
-            nombre: "Verdad Innegable",
+            nombre: "Palabras Inquietantes",
             descripcion:
-              "Cuando una criatura tira tu dado de Inspiración Bárdica y obtiene un 1, puede volver a tirar y debe usar el nuevo resultado. Si el resultado final es inferior a 2, se considera un 2.",
+              "Como acción bonus, gasta un uso de Inspiración Bárdica y elige una criatura que puedas ver a 18 m o menos. Tira el dado de Inspiración Bárdica: el objetivo resta ese resultado a la próxima salvación que realice antes del inicio de tu siguiente turno.",
           },
         ],
       },
@@ -247,7 +247,12 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Elocuencia Imparable",
             descripcion:
-              "Cuando una criatura suma tu dado de Inspiración Bárdica a una prueba, tirada de ataque o tirada de salvación y falla, no pierde ese uso de Inspiración Bárdica.",
+              "Cuando una criatura suma tu dado de Inspiración Bárdica a una prueba de característica, tirada de ataque o tirada de salvación y aun así falla, no pierde ese uso de Inspiración Bárdica.",
+          },
+          {
+            nombre: "Discurso Universal",
+            descripcion:
+              "Como acción, elige una o más criaturas que puedas ver a 18 m o menos (hasta tu mod. de Carisma, mín. 1). Esas criaturas te entienden mágicamente, independientemente del idioma, durante 1 hora. Usos = mod. de Carisma por descanso largo.",
           },
         ],
       },
@@ -257,7 +262,7 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Palabras Universales",
             descripcion:
-              "Puedes lanzar Sugerencia sin gastar un espacio de conjuro ni concentración, afectando hasta 5 criaturas simultáneamente. Una vez por descanso largo.",
+              "Como acción, puedes lanzar Sugestión sin gastar un espacio de conjuro. Puedes elegir hasta 5 criaturas a 18 m o menos como objetivos simultáneos (una sola sugerencia para todas). Cada una debe superar su propia tirada de salvación. Puedes usar este rasgo una vez por descanso largo.",
           },
         ],
       },
@@ -274,14 +279,14 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 3,
         rasgos: [
           {
-            nombre: "Palabras del Terror",
-            descripcion:
-              "Si hablas con un humanoide a solas durante al menos 1 minuto, el objetivo debe superar una salvación de Sabiduría o quedará aterrorizado por ti o por otra criatura de tu elección. El efecto dura 1 hora.",
-          },
-          {
-            nombre: "Inspiración del Lamento",
+            nombre: "Cuchillas Psíquicas",
             descripcion:
               "Al impactar con un ataque con arma, puedes gastar un uso de Inspiración Bárdica para infligir daño psíquico adicional: 2d6 a nivel 3, 3d6 a nivel 5, 5d6 a nivel 10 y 8d6 a nivel 15. Una vez por turno.",
+          },
+          {
+            nombre: "Palabras del Terror",
+            descripcion:
+              "Si hablas con un humanoide a solas durante al menos 1 minuto, puedes intentar sembrar el terror. El objetivo debe superar una salvación de Sabiduría contra tu CD de conjuros o quedará aterrorizado por ti o por otra criatura de tu elección. El efecto dura 1 hora, salvo que la criatura sea atacada o dañada. Si supera la tirada, no sabe que intentaste asustarlo. Puedes usar este rasgo una vez por descanso corto o largo.",
           },
         ],
       },
@@ -289,9 +294,9 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Manto de Sombras",
+            nombre: "Manto de Susurros",
             descripcion:
-              "Como acción bonus, gasta un uso de Inspiración Bárdica para volverte invisible durante 1 minuto o hasta que ataques, lances un conjuro o te concentres.",
+              "Cuando un humanoide muere a 9 m o menos de ti, puedes capturar mágicamente su sombra con tu reacción. Retienes la sombra hasta que la uses o hasta un descanso largo. Como acción, puedes consumir la sombra para asumir la apariencia, voz y recuerdos superficiales de esa criatura durante 1 hora. Otra criatura solo puede desenmascararte superando una prueba de Perspicacia (Sabiduría) contra tu CD de conjuros. El disfraz termina prematuramente si lo desestimas (sin acción) o usas de nuevo este rasgo.",
           },
         ],
       },
@@ -299,9 +304,9 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Palabras Mortíferas",
+            nombre: "Tradición Sombría",
             descripcion:
-              "Al reducir un humanoide a 0 PG, capturas su sombra espiritual. Puedes asumir su apariencia, voz y recuerdos superficiales durante 1 hora. Las criaturas que la conocían deben superar una prueba de Perspicacia contra tu CD de conjuros para detectar el engaño.",
+              "Como acción, susurras mágicamente a un humanoide a 9 m o menos y lo fascinas durante 8 horas. Mientras dure el efecto, la criatura te obedece y no puede atacarte ni dañarte. Si la criatura es atacada, dañada o forzada a hacer una salvación, el efecto termina. Cuando el efecto acaba, el objetivo no recuerda haber sido dominado. Una vez por descanso largo.",
           },
         ],
       },
@@ -318,14 +323,14 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 3,
         rasgos: [
           {
-            nombre: "Notas de Creación",
+            nombre: "Mota de Potencial",
             descripcion:
-              "Cuando otorgas un dado de Inspiración Bárdica, la criatura también gana puntos de golpe temporales iguales al resultado del dado.",
+              "Cuando otorgas un dado de Inspiración Bárdica, la criatura también gana un beneficio dependiendo de cómo use el dado:\n• Prueba de característica: tira el dado dos veces y elige cuál usar.\n• Tirada de ataque: si impacta, el objetivo y cada criatura a tu elección a 1,5 m del objetivo reciben daño de trueno igual al dado de Inspiración.\n• Tirada de salvación: si falla, gana PG temporales iguales al dado de Inspiración + tu mod. de Carisma.\nLa mota desaparece si no se usa antes de que reciba otro dado de Inspiración Bárdica.",
           },
           {
-            nombre: "Objeto de Rendimiento",
+            nombre: "Rendimiento Creativo",
             descripcion:
-              "Como acción, puedes crear un objeto no mágico de hasta 1 m³ en un espacio a 3 m o menos. Debe ser algo que hayas visto antes. El objeto emite un brillo tenue y desaparece al expirar su duración.",
+              "Como acción, creas un objeto no mágico de tamaño Mediano o menor en un espacio desocupado a 3 m. El objeto debe ser algo que hayas visto e igual o menor a tu nivel × 6 m³ de valor. Emite un brillo tenue en 1,5 m. Duración: mod. de Competencia en horas. Puedes tener un solo objeto activo a la vez. Usos = mod. de Carisma (mín. 1) por descanso largo.",
           },
         ],
       },
@@ -333,9 +338,9 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Animar la Creación",
+            nombre: "Danza Animada",
             descripcion:
-              "Como acción, anima un objeto Grande o más pequeño a 9 m de ti. El objeto cobra vida durante 1 hora, obedece tus órdenes y tiene estadísticas basadas en su tamaño. Usos = mod. Carisma por descanso largo.",
+              "Como acción bonus, animas un objeto Grande o menor a 9 m. El objeto usa las estadísticas de Objeto Danzante y obedece tus órdenes. Dura 1 hora o hasta que caiga a 0 PG. El objeto actúa justo después de ti en la iniciativa. Puedes usar este rasgo una vez por descanso largo, o gastando un espacio de conjuro de nivel 3 o superior.",
           },
         ],
       },
@@ -343,33 +348,33 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Canción de la Creación",
+            nombre: "Rendimiento Creativo",
             descripcion:
-              "Puedes crear más de un objeto con Objeto de Rendimiento. Además, puedes restaurar un uso gastado de Notas de Creación como acción. Una restauración por descanso largo.",
+              "Cuando usas Rendimiento Creativo, puedes crear un objeto de tamaño Grande y el límite de valor sube a tu nivel × 18 m³. Además, puedes crear más de un objeto a la vez (máximo igual a tu mod. de Carisma, mín. 2).",
           },
         ],
       },
     ],
   },
 
-  // ── Colegio del Espíritu ───────────────────────────────────────────
+  // ── Colegio de la Danza ──────────────────────────────────────────
   {
-    subclaseId: "colegio_espiritu",
+    subclaseId: "colegio_danza",
     claseId: "bardo",
-    nombre: "Colegio del Espíritu",
+    nombre: "Colegio de la Danza",
     niveles: [
       {
         nivel: 3,
         rasgos: [
           {
-            nombre: "Cuentos de Más Allá",
+            nombre: "Gracia Deslumbrante",
             descripcion:
-              "Al otorgar un dado de Inspiración Bárdica, tiras en la tabla de Cuentos del Más Allá para determinar qué relato manifiestas. El cuento otorga un efecto especial al aliado según el resultado.",
+              "Mientras no lleves armadura y no empuñes Escudo, ganas las siguientes ventajas:\n• Tu CA es igual a 10 + mod. de Destreza + mod. de Carisma.\n• Tu velocidad aumenta en 3 m.\n• Tienes ventaja en las salvaciones de Destreza.",
           },
           {
-            nombre: "Guía Espiritual",
+            nombre: "Pirueta Inspiradora",
             descripcion:
-              "Aprendes el conjuro Hablar con los muertos sin componente material. No cuenta para el total de conjuros de bardo que conoces y puedes lanzarlo como ritual.",
+              "Cuando usas una acción bonus para otorgar un dado de Inspiración Bárdica, puedes moverte hasta la mitad de tu velocidad sin provocar ataques de oportunidad.",
           },
         ],
       },
@@ -377,9 +382,14 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Canal del Más Allá",
+            nombre: "Danza Cautivadora",
             descripcion:
-              "Cuando una criatura con tu dado de Inspiración Bárdica lo usa y falla, puedes usar tu reacción para recuperar el dado. Usos = mod. Carisma por descanso largo.",
+              "Como acción bonus, puedes empezar a danzar de forma cautivadora. Hasta el final de tu siguiente turno, siempre que una criatura a 9 m o menos te ataque, debe superar una salvación de Sabiduría contra tu CD de conjuros o su ataque tiene desventaja. Puedes usar este rasgo un número de veces igual a tu mod. de Carisma (mín. 1) por descanso largo.",
+          },
+          {
+            nombre: "Giro Tándem",
+            descripcion:
+              "Cuando un aliado a 9 m o menos que tenga tu dado de Inspiración Bárdica sea atacado, puedes usar tu reacción para consumir ese dado. Tanto tú como el aliado os podéis mover hasta la mitad de vuestra velocidad sin provocar ataques de oportunidad, y la CA de ese aliado contra el ataque provocador aumenta en el resultado del dado de Inspiración Bárdica.",
           },
         ],
       },
@@ -387,9 +397,9 @@ export const BARDO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Historias Eternas",
+            nombre: "Danza de la Victoria",
             descripcion:
-              "Con Cuentos de Más Allá, puedes otorgar el cuento a dos criaturas a la vez. Puedes tirar dos veces en la tabla y elegir qué cuento manifiestas.",
+              "Cuando un enemigo a 18 m o menos sea reducido a 0 PG, puedes usar tu reacción para ejecutar la Danza de la Victoria. Elige un número de aliados que puedas ver a 18 m o menos (hasta tu mod. de Carisma, mín. 1). Cada uno puede usar su reacción para moverse hasta la mitad de su velocidad sin provocar ataques de oportunidad; adicionalmente, cada aliado gana PG temporales iguales a tu dado de Inspiración Bárdica + tu mod. de Carisma.",
           },
         ],
       },

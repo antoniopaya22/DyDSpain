@@ -68,7 +68,6 @@ export type {
   Personality,
   Appearance,
   LevelUpRecord,
-  CombatLogEntry,
   ConcentrationState,
   Character,
   CharacterCreationDraft,

@@ -6,6 +6,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 import { SPELL_LEVEL_COLORS } from "@/constants/abilities";
 import {
   ABILITY_NAMES,
@@ -13,12 +14,6 @@ import {
   type AbilityKey,
   type Character,
 } from "@/types/character";
-import {
-  type MetamagicOption,
-  METAMAGIC_NAMES,
-  METAMAGIC_DESCRIPTIONS,
-  METAMAGIC_COSTS,
-} from "@/types/spell";
 import type { InternalMagicState } from "@/stores/characterStore/helpers";
 import { getSpellById } from "@/data/srd/spells";
 import { getSpellDescription } from "@/data/srd/spellDescriptions";
@@ -37,16 +32,17 @@ function StatBox({
   subValue?: string;
   color: string;
 }) {
+  const { colors } = useTheme();
   return (
-    <View className="flex-1 min-w-[100px] bg-gray-200 dark:bg-dark-700 rounded-xl p-3 mr-2 mb-2 items-center border border-dark-100 dark:border-surface-border">
-      <Text className="text-dark-400 text-[10px] uppercase tracking-wider mb-1">
+    <View className="flex-1 min-w-[100px] rounded-xl p-3 mr-2 mb-2 items-center border" style={{ backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }}>
+      <Text className="text-[10px] uppercase tracking-wider mb-1" style={{ color: colors.textMuted }}>
         {label}
       </Text>
       <Text className="text-xl font-bold" style={{ color }}>
         {value}
       </Text>
       {subValue && (
-        <Text className="text-dark-300 dark:text-dark-500 text-[10px] mt-0.5">
+        <Text className="text-[10px] mt-0.5" style={{ color: colors.textMuted }}>
           {subValue}
         </Text>
       )}
@@ -62,7 +58,8 @@ function SpellCard({
   isCantrip,
   inSpellbook,
   showSpellbook,
-  onCast,
+  canTogglePrepared,
+  onTogglePrepared,
 }: {
   spellId: string;
   name: string;
@@ -71,15 +68,26 @@ function SpellCard({
   isCantrip?: boolean;
   inSpellbook?: boolean;
   showSpellbook?: boolean;
-  onCast?: (level: number) => void;
+  canTogglePrepared?: boolean;
+  onTogglePrepared?: (spellId: string) => void;
 }) {
   const { colors } = useTheme();
   const [expanded, setExpanded] = useState(false);
   const color = SPELL_LEVEL_COLORS[level] ?? colors.accentBlue;
 
+  const castingTimeInfo = (() => {
+    const desc = getSpellDescription(spellId);
+    if (!desc?.tiempo) return null;
+    const t = desc.tiempo.toLowerCase();
+    if (t.includes('acción adicional')) return { icon: 'flash' as const, color: colors.accentGreen, label: 'Adicional' };
+    if (t.includes('reacción')) return { icon: 'arrow-undo' as const, color: colors.accentPurple, label: 'Reacción' };
+    return null;
+  })();
+
   return (
     <TouchableOpacity
-      className="bg-gray-200 dark:bg-dark-700 rounded-lg p-3 mb-2 border border-dark-100 dark:border-surface-border"
+      className="rounded-lg p-3 mb-2 border"
+      style={{ backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }}
       onPress={() => setExpanded(!expanded)}
       activeOpacity={0.7}
     >
@@ -98,12 +106,12 @@ function SpellCard({
         </View>
 
         <View className="flex-1">
-          <Text className="text-dark-900 dark:text-white text-sm font-semibold">
+          <Text className="text-sm font-semibold" style={{ color: colors.textPrimary }}>
             {name}
           </Text>
           <View className="flex-row items-center mt-0.5">
             {isCantrip && (
-              <Text className="text-dark-400 text-[10px] mr-2">
+              <Text className="text-[10px] mr-2" style={{ color: colors.textMuted }}>
                 Truco{(() => { const s = getSpellById(spellId); return s ? ` · ${s.escuela}` : ""; })()}
               </Text>
             )}
@@ -114,7 +122,7 @@ function SpellCard({
                   size={10}
                   color={colors.accentGreen}
                 />
-                <Text className="text-green-600 dark:text-green-400 text-[10px] ml-0.5">
+                <Text className="text-[10px] ml-0.5" style={{ color: '#22c55e' }}>
                   Preparado
                 </Text>
               </View>
@@ -122,25 +130,45 @@ function SpellCard({
             {showSpellbook && inSpellbook && (
               <View className="flex-row items-center mr-2">
                 <Ionicons name="book" size={10} color={colors.accentGold} />
-                <Text className="text-gold-700 dark:text-gold-400 text-[10px] ml-0.5">
+                <Text className="text-[10px] ml-0.5" style={{ color: colors.accentGold }}>
                   En libro
+                </Text>
+              </View>
+            )}
+            {castingTimeInfo && (
+              <View className="flex-row items-center mr-2 rounded-full px-1.5"
+                style={{ backgroundColor: withAlpha(castingTimeInfo.color, 0.15) }}>
+                <Ionicons name={castingTimeInfo.icon} size={9} color={castingTimeInfo.color} />
+                <Text className="text-[9px] font-semibold ml-0.5" style={{ color: castingTimeInfo.color }}>
+                  {castingTimeInfo.label}
                 </Text>
               </View>
             )}
           </View>
         </View>
 
-        {!isCantrip && onCast && prepared && (
+        {!isCantrip && canTogglePrepared && onTogglePrepared && (
           <TouchableOpacity
-            className="bg-primary-500/20 rounded-lg px-3 py-1.5 mr-2 active:bg-primary-500/40"
+            className="rounded-lg px-2.5 py-1.5 mr-2 active:opacity-70"
+            style={{
+              backgroundColor: prepared
+                ? withAlpha(colors.accentGreen, 0.15)
+                : withAlpha(colors.textMuted, 0.1),
+              borderWidth: 1,
+              borderColor: prepared
+                ? withAlpha(colors.accentGreen, 0.3)
+                : withAlpha(colors.textMuted, 0.2),
+            }}
             onPress={(e) => {
               e.stopPropagation?.();
-              onCast(level);
+              onTogglePrepared(spellId);
             }}
           >
-            <Text className="text-primary-400 text-xs font-semibold">
-              Lanzar
-            </Text>
+            <Ionicons
+              name={prepared ? "checkmark-circle" : "ellipse-outline"}
+              size={16}
+              color={prepared ? colors.accentGreen : colors.textMuted}
+            />
           </TouchableOpacity>
         )}
 
@@ -152,7 +180,7 @@ function SpellCard({
       </View>
 
       {expanded && (
-        <View className="mt-2 pt-2 border-t border-dark-100 dark:border-surface-border/50">
+        <View className="mt-2 pt-2 border-t" style={{ borderColor: colors.borderDefault }}>
           {(() => {
             const srdSpell = getSpellById(spellId);
             const desc = getSpellDescription(spellId);
@@ -160,11 +188,11 @@ function SpellCard({
               <View>
                 {srdSpell && (
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: desc ? 8 : 0 }}>
-                    <Text className="text-dark-500 dark:text-dark-300 text-xs">
+                    <Text className="text-xs" style={{ color: colors.textSecondary }}>
                       {srdSpell.escuela}
                     </Text>
                     {!isCantrip && (
-                      <Text className="text-dark-400 text-xs">
+                      <Text className="text-xs" style={{ color: colors.textMuted }}>
                         · Nivel {srdSpell.nivel}
                       </Text>
                     )}
@@ -175,23 +203,23 @@ function SpellCard({
                     {/* Casting properties */}
                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, marginBottom: 6 }}>
                       {desc.tiempo ? (
-                        <Text className="text-dark-400 dark:text-dark-500 text-[10px]">
+                        <Text className="text-[10px]" style={{ color: colors.textMuted }}>
                           ⏱ {desc.tiempo}
                         </Text>
                       ) : null}
                       {desc.alcance ? (
-                        <Text className="text-dark-400 dark:text-dark-500 text-[10px]">
+                        <Text className="text-[10px]" style={{ color: colors.textMuted }}>
                           · 📏 {desc.alcance}
                         </Text>
                       ) : null}
                       {desc.duracion ? (
-                        <Text className="text-dark-400 dark:text-dark-500 text-[10px]">
+                        <Text className="text-[10px]" style={{ color: colors.textMuted }}>
                           · ⏳ {desc.duracion}
                         </Text>
                       ) : null}
                     </View>
                     {desc.componentes ? (
-                      <Text className="text-dark-400 dark:text-dark-500 text-[10px] mb-1">
+                      <Text className="text-[10px] mb-1" style={{ color: colors.textMuted }}>
                         Componentes: {desc.componentes}
                       </Text>
                     ) : null}
@@ -209,7 +237,7 @@ function SpellCard({
                   </View>
                 )}
                 {!desc && !srdSpell && (
-                  <Text className="text-dark-500 dark:text-dark-300 text-xs leading-5">
+                  <Text className="text-xs leading-5" style={{ color: colors.textSecondary }}>
                     ID: {spellId}
                   </Text>
                 )}
@@ -241,19 +269,9 @@ export interface SpellcastingSectionProps {
   canCastSpell: (id: string) => boolean;
   isPrepared: (id: string) => boolean;
   isInSpellbook: (id: string) => boolean;
-  onUseSlot: (level: number) => void;
-  onRestoreSlot: (level: number) => void;
-  onRestoreAllSlots: () => void;
-  onUsePactSlot: () => void;
-  onRestoreAllPactSlots: () => Promise<void>;
-  onClearConcentration: () => void;
-  onShowToast?: (message: string) => void;
-  showConfirm: (
-    title: string,
-    message: string,
-    onConfirm: () => void,
-    options?: any,
-  ) => void;
+  onTogglePrepared?: (spellId: string) => void;
+  maxPreparedSpells?: number;
+  currentPreparedCount?: number;
 }
 
 // ─── Component ───────────────────────────────────────────────────────
@@ -275,24 +293,19 @@ export default function SpellcastingSection({
   canCastSpell,
   isPrepared,
   isInSpellbook,
-  onUseSlot,
-  onRestoreSlot,
-  onRestoreAllSlots,
-  onUsePactSlot,
-  onRestoreAllPactSlots,
-  onClearConcentration,
-  onShowToast,
-  showConfirm,
+  onTogglePrepared,
+  maxPreparedSpells,
+  currentPreparedCount,
 }: SpellcastingSectionProps) {
-  const { isDark, colors } = useTheme();
+  const { colors } = useTheme();
 
   // ── Render helpers ───────────────────────────────────────────────
 
   const renderSpellcastingInfo = () => (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+    <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
       <View className="flex-row items-center mb-3">
         <Ionicons name="flame" size={20} color={colors.accentDanger} />
-        <Text className="text-dark-900 dark:text-white text-base font-semibold ml-2">
+        <Text className="text-base font-semibold ml-2" style={{ color: colors.textPrimary }}>
           Lanzamiento de Conjuros
         </Text>
       </View>
@@ -322,14 +335,14 @@ export default function SpellcastingSection({
         />
       </View>
 
-      <View className="mt-3 pt-3 border-t border-dark-100 dark:border-surface-border/50">
+      <View className="mt-3 pt-3 border-t" style={{ borderColor: colors.borderDefault }}>
         <View className="flex-row items-center">
           <Ionicons
             name="information-circle-outline"
             size={14}
             color={colors.textMuted}
           />
-          <Text className="text-dark-400 text-xs ml-1.5">
+          <Text className="text-xs ml-1.5" style={{ color: colors.textMuted }}>
             {preparationType === "prepared"
               ? "Preparas conjuros de tu lista de clase cada día."
               : character.clase === "brujo"
@@ -344,374 +357,6 @@ export default function SpellcastingSection({
       </View>
     </View>
   );
-
-  const renderSpellSlots = () => {
-    if (!magicState) return null;
-
-    const slotEntries = Object.entries(magicState.spellSlots)
-      .filter(([_, slot]) => slot && slot.total > 0)
-      .sort(([a], [b]) => Number(a) - Number(b));
-
-    if (slotEntries.length === 0 && !magicState.pactMagicSlots) return null;
-
-    return (
-      <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center">
-            <Ionicons name="flash" size={20} color={colors.accentBlue} />
-            <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
-              Espacios de Conjuro
-            </Text>
-          </View>
-          <TouchableOpacity
-            className="bg-blue-600/20 rounded-lg px-3 py-1.5 active:bg-blue-600/40"
-            onPress={onRestoreAllSlots}
-          >
-            <Text className="text-blue-400 text-xs font-semibold">
-              Restaurar todos
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Regular spell slots */}
-        {slotEntries.map(([levelStr, slot]) => {
-          if (!slot) return null;
-          const level = Number(levelStr);
-          const available = slot.total - slot.used;
-          const color = SPELL_LEVEL_COLORS[level] ?? "#3b82f6";
-
-          return (
-            <View key={level} className="mb-3">
-              <View className="flex-row items-center justify-between mb-1.5">
-                <Text className="text-dark-600 dark:text-dark-200 text-sm font-medium">
-                  Nivel {level}
-                </Text>
-                <Text className="text-dark-400 text-xs">
-                  {available}/{slot.total} disponibles
-                </Text>
-              </View>
-
-              <View className="flex-row items-center">
-                <View className="flex-row flex-1">
-                  {Array.from({ length: slot.total }).map((_, i) => {
-                    const isAvailable = i < available;
-                    return (
-                      <TouchableOpacity
-                        key={i}
-                        className="h-9 w-9 rounded-lg mx-0.5 items-center justify-center border"
-                        style={{
-                          backgroundColor: isAvailable
-                            ? `${color}20`
-                            : colors.bgPrimary,
-                          borderColor: isAvailable
-                            ? `${color}66`
-                            : colors.borderDefault,
-                        }}
-                        onPress={() =>
-                          isAvailable
-                            ? onUseSlot(level)
-                            : onRestoreSlot(level)
-                        }
-                      >
-                        <Ionicons
-                          name={isAvailable ? "ellipse" : "ellipse-outline"}
-                          size={14}
-                          color={isAvailable ? color : colors.borderDefault}
-                        />
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-
-                <TouchableOpacity
-                  className="ml-2 bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-2 active:bg-gray-300 dark:active:bg-dark-600"
-                  onPress={() => onUseSlot(level)}
-                  disabled={available <= 0}
-                  style={{ opacity: available > 0 ? 1 : 0.4 }}
-                >
-                  <Ionicons name="remove" size={16} color={color} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className="ml-1 bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-2 active:bg-gray-300 dark:active:bg-dark-600"
-                  onPress={() => onRestoreSlot(level)}
-                  disabled={slot.used <= 0}
-                  style={{ opacity: slot.used > 0 ? 1 : 0.4 }}
-                >
-                  <Ionicons name="add" size={16} color={color} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          );
-        })}
-
-        {/* Pact Magic Slots (Warlock) */}
-        {magicState.pactMagicSlots && (
-          <View className="mt-2 pt-3 border-t border-dark-100 dark:border-surface-border/50">
-            <View className="flex-row items-center justify-between mb-1.5">
-              <View className="flex-row items-center">
-                <Ionicons
-                  name="bonfire-outline"
-                  size={16}
-                  color={colors.accentPurple}
-                />
-                <Text className="text-purple-300 text-sm font-medium ml-1.5">
-                  Magia de Pacto (Nv. {magicState.pactMagicSlots.slotLevel})
-                </Text>
-              </View>
-              <Text className="text-dark-400 text-xs">
-                {magicState.pactMagicSlots.total -
-                  magicState.pactMagicSlots.used}
-                /{magicState.pactMagicSlots.total} disponibles
-              </Text>
-            </View>
-
-            <View className="flex-row items-center">
-              <View className="flex-row flex-1">
-                {Array.from({ length: magicState.pactMagicSlots.total }).map(
-                  (_, i) => {
-                    const isAvailable =
-                      i <
-                      magicState.pactMagicSlots!.total -
-                        magicState.pactMagicSlots!.used;
-                    return (
-                      <TouchableOpacity
-                        key={i}
-                        className="h-9 w-9 rounded-lg mx-0.5 items-center justify-center border"
-                        style={{
-                          backgroundColor: isAvailable
-                            ? `${colors.accentPurple}20`
-                            : colors.bgPrimary,
-                          borderColor: isAvailable
-                            ? `${colors.accentPurple}66`
-                            : colors.borderDefault,
-                        }}
-                        onPress={isAvailable ? onUsePactSlot : undefined}
-                      >
-                        <Ionicons
-                          name={isAvailable ? "bonfire" : "bonfire-outline"}
-                          size={14}
-                          color={
-                            isAvailable
-                              ? colors.accentPurple
-                              : colors.borderDefault
-                          }
-                        />
-                      </TouchableOpacity>
-                    );
-                  },
-                )}
-              </View>
-              <TouchableOpacity
-                className="ml-2 bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-2 active:bg-gray-300 dark:active:bg-dark-600"
-                onPress={onUsePactSlot}
-                disabled={
-                  (magicState.pactMagicSlots?.used ?? 0) >=
-                  (magicState.pactMagicSlots?.total ?? 0)
-                }
-                style={{
-                  opacity:
-                    (magicState.pactMagicSlots?.used ?? 0) <
-                    (magicState.pactMagicSlots?.total ?? 0)
-                      ? 1
-                      : 0.4,
-                }}
-              >
-                <Ionicons name="remove" size={16} color={colors.accentPurple} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="ml-1 bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-2 active:bg-gray-300 dark:active:bg-dark-600"
-                onPress={async () => {
-                  await onRestoreAllPactSlots();
-                  onShowToast?.("Espacios de pacto restaurados");
-                }}
-                disabled={(magicState.pactMagicSlots?.used ?? 0) <= 0}
-                style={{
-                  opacity: (magicState.pactMagicSlots?.used ?? 0) > 0 ? 1 : 0.4,
-                }}
-              >
-                <Ionicons name="add" size={16} color={colors.accentPurple} />
-              </TouchableOpacity>
-            </View>
-
-            <Text className="text-dark-300 dark:text-dark-500 text-[10px] mt-1.5">
-              Se recuperan en descanso corto
-            </Text>
-          </View>
-        )}
-      </View>
-    );
-  };
-
-  const renderSorceryPoints = () => {
-    if (!magicState?.sorceryPoints || character.clase !== "hechicero")
-      return null;
-
-    const { max, current } = magicState.sorceryPoints;
-
-    return (
-      <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center">
-            <Ionicons name="sparkles" size={20} color="#ec4899" />
-            <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
-              Puntos de Hechicería
-            </Text>
-          </View>
-          <Text className="text-pink-400 text-lg font-bold">
-            {current}/{max}
-          </Text>
-        </View>
-
-        <View className="h-3 bg-gray-200 dark:bg-dark-700 rounded-full overflow-hidden">
-          <View
-            className="h-full rounded-full"
-            style={{
-              width: `${max > 0 ? (current / max) * 100 : 0}%`,
-              backgroundColor: "#ec4899",
-            }}
-          />
-        </View>
-
-        <Text className="text-dark-300 dark:text-dark-500 text-[10px] mt-1.5">
-          Se recuperan en descanso largo
-        </Text>
-      </View>
-    );
-  };
-
-  const renderMetamagicSection = () => {
-    if (character.clase !== "hechicero") return null;
-    const chosen = magicState?.metamagicChosen ?? [];
-    if (chosen.length === 0) return null;
-
-    return (
-      <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
-        <View className="flex-row items-center mb-3">
-          <Ionicons name="flash" size={20} color={colors.accentPurple} />
-          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
-            Metamagia
-          </Text>
-        </View>
-
-        <View style={{ gap: 8 }}>
-          {chosen.map((id) => {
-            const name = METAMAGIC_NAMES[id as MetamagicOption] ?? id;
-            const cost = METAMAGIC_COSTS[id as MetamagicOption];
-            const desc = METAMAGIC_DESCRIPTIONS[id as MetamagicOption];
-
-            return (
-              <View
-                key={id}
-                style={{
-                  backgroundColor: isDark
-                    ? "rgba(168, 85, 247, 0.08)"
-                    : "rgba(168, 85, 247, 0.05)",
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: isDark
-                    ? "rgba(168, 85, 247, 0.2)"
-                    : "rgba(168, 85, 247, 0.15)",
-                  padding: 12,
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    marginBottom: 4,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: colors.accentPurple,
-                      fontSize: 14,
-                      fontWeight: "700",
-                    }}
-                  >
-                    {name}
-                  </Text>
-                  {cost !== undefined && (
-                    <View
-                      style={{
-                        backgroundColor: "rgba(168, 85, 247, 0.15)",
-                        paddingHorizontal: 8,
-                        paddingVertical: 2,
-                        borderRadius: 8,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: colors.accentPurple,
-                          fontSize: 11,
-                          fontWeight: "700",
-                        }}
-                      >
-                        {cost} PH
-                      </Text>
-                    </View>
-                  )}
-                </View>
-                {desc && (
-                  <Text
-                    style={{
-                      color: colors.textMuted,
-                      fontSize: 12,
-                      lineHeight: 17,
-                    }}
-                  >
-                    {desc}
-                  </Text>
-                )}
-              </View>
-            );
-          })}
-        </View>
-      </View>
-    );
-  };
-
-  const renderConcentration = () => {
-    const { concentration } = character;
-    if (!concentration) return null;
-
-    return (
-      <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-purple-500/30 p-4 mb-4">
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center flex-1">
-            <Ionicons name="eye" size={20} color={colors.accentPurple} />
-            <View className="ml-3 flex-1">
-              <Text className="text-dark-400 text-[10px] uppercase tracking-wider">
-                Concentración activa
-              </Text>
-              <Text className="text-purple-300 text-sm font-semibold">
-                {concentration.spellName}
-              </Text>
-            </View>
-          </View>
-          <TouchableOpacity
-            className="bg-gray-200 dark:bg-dark-700 rounded-lg px-3 py-1.5 active:bg-gray-300 dark:active:bg-dark-600"
-            onPress={() => {
-              showConfirm(
-                "Romper Concentración",
-                `¿Dejar de concentrarte en "${concentration.spellName}"?`,
-                onClearConcentration,
-                {
-                  confirmText: "Romper",
-                  cancelText: "Cancelar",
-                  type: "danger",
-                },
-              );
-            }}
-          >
-            <Text className="text-red-400 text-xs font-semibold">Romper</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  // Cantrips are now rendered by CantripsSection in AbilitiesTab
 
   const renderSpellList = () => {
     if (levelSpells.length === 0) return null;
@@ -733,15 +378,21 @@ export default function SpellcastingSection({
             : `Nivel ${lvl}`;
 
     return (
-      <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+      <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
         <View className="flex-row items-center mb-3">
           <Ionicons name="book" size={20} color={colors.accentGold} />
-          <Text className="text-dark-900 dark:text-white text-sm font-semibold flex-1 ml-2">
+          <Text className="text-sm font-semibold flex-1 ml-2" style={{ color: colors.textPrimary }}>
             {sectionTitle}
           </Text>
-          <Text className="text-dark-400 text-xs">
-            {levelSpells.length} conjuro(s)
-          </Text>
+          {maxPreparedSpells != null && currentPreparedCount != null && (preparationType === "prepared" || preparationType === "spellbook") ? (
+            <Text className="text-xs" style={{ color: currentPreparedCount >= maxPreparedSpells ? colors.accentRed : colors.textMuted }}>
+              {currentPreparedCount}/{maxPreparedSpells} preparados
+            </Text>
+          ) : (
+            <Text className="text-xs" style={{ color: colors.textMuted }}>
+              {levelSpells.length} conjuro(s)
+            </Text>
+          )}
         </View>
 
         {sortedSpellLevels.map((lvl) => {
@@ -769,18 +420,27 @@ export default function SpellcastingSection({
                 <View style={{ flex: 1, height: 1, backgroundColor: colors.borderSubtle, marginLeft: 4 }} />
               </View>
 
-              {spellsAtLevel.map((spellId) => (
-                <SpellCard
-                  key={spellId}
-                  spellId={spellId}
-                  name={formatSpellName(spellId)}
-                  level={getSpellLevel(spellId)}
-                  prepared={canCastSpell(spellId)}
-                  inSpellbook={isInSpellbook(spellId)}
-                  showSpellbook={preparationType === "spellbook"}
-                  onCast={(castLvl) => onUseSlot(castLvl)}
-                />
-              ))}
+              {spellsAtLevel.map((spellId) => {
+                const spellLevel = getSpellLevel(spellId);
+                const isCantrip = spellLevel === 0;
+                const canToggle =
+                  !isCantrip &&
+                  (preparationType === "prepared" || preparationType === "spellbook");
+                return (
+                  <SpellCard
+                    key={spellId}
+                    spellId={spellId}
+                    name={formatSpellName(spellId)}
+                    level={spellLevel}
+                    prepared={canCastSpell(spellId)}
+                    isCantrip={isCantrip}
+                    inSpellbook={isInSpellbook(spellId)}
+                    showSpellbook={preparationType === "spellbook"}
+                    canTogglePrepared={canToggle}
+                    onTogglePrepared={onTogglePrepared}
+                  />
+                );
+              })}
             </View>
           );
         })}
@@ -792,14 +452,14 @@ export default function SpellcastingSection({
     if (levelSpells.length > 0) return null;
 
     return (
-      <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-6 mb-4 items-center">
-        <View className="h-16 w-16 rounded-full bg-gray-200 dark:bg-dark-700 items-center justify-center mb-4">
+      <View className="rounded-card border p-6 mb-4 items-center" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
+        <View className="h-16 w-16 rounded-full items-center justify-center mb-4" style={{ backgroundColor: colors.bgSecondary }}>
           <Ionicons name="book-outline" size={32} color={colors.textMuted} />
         </View>
-        <Text className="text-dark-900 dark:text-white text-base font-semibold text-center mb-1">
+        <Text className="text-base font-semibold text-center mb-1" style={{ color: colors.textPrimary }}>
           Sin conjuros
         </Text>
-        <Text className="text-dark-500 dark:text-dark-300 text-sm text-center leading-5">
+        <Text className="text-sm text-center leading-5" style={{ color: colors.textSecondary }}>
           No tienes conjuros conocidos ni preparados todavía. Los conjuros se
           seleccionan durante la creación del personaje.
         </Text>
@@ -812,10 +472,6 @@ export default function SpellcastingSection({
   return (
     <>
       {renderSpellcastingInfo()}
-      {renderSpellSlots()}
-      {renderSorceryPoints()}
-      {renderMetamagicSection()}
-      {renderConcentration()}
       {renderSpellList()}
       {renderEmptySpells()}
     </>

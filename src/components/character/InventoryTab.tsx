@@ -18,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { useTheme, useDialog, useToast } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 import {
   ITEM_CATEGORY_NAMES,
   COIN_ABBR,
@@ -90,7 +91,7 @@ export default function InventoryTab() {
   if (!character || !inventory) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Text className="text-dark-500 dark:text-dark-300 text-base">
+        <Text className="text-base" style={{ color: colors.textSecondary }}>
           No se ha cargado el inventario
         </Text>
       </View>
@@ -155,11 +156,11 @@ export default function InventoryTab() {
         : colors.accentGreen;
 
     return (
-      <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+      <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
         <View className="flex-row items-center justify-between mb-2">
           <View className="flex-row items-center">
             <Ionicons name="scale-outline" size={18} color={barColor} />
-            <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
+            <Text className="text-xs font-semibold uppercase tracking-wider ml-2" style={{ color: colors.textSecondary }}>
               Capacidad de Carga
             </Text>
           </View>
@@ -168,7 +169,7 @@ export default function InventoryTab() {
           </Text>
         </View>
 
-        <View className="h-2.5 bg-gray-200 dark:bg-dark-700 rounded-full overflow-hidden">
+        <View className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: colors.bgSecondary }}>
           <View
             className="h-full rounded-full"
             style={{
@@ -181,7 +182,7 @@ export default function InventoryTab() {
         {isOverweight && (
           <View className="flex-row items-center mt-2">
             <Ionicons name="warning" size={14} color={colors.accentDanger} />
-            <Text className="text-red-400 text-xs ml-1">
+            <Text className="text-xs ml-1" style={{ color: colors.accentDanger }}>
               ¡Sobrecargado! Velocidad reducida.
             </Text>
           </View>
@@ -190,7 +191,7 @@ export default function InventoryTab() {
         {/* Attunement info */}
         <View className="flex-row items-center mt-2">
           <Ionicons name="link-outline" size={14} color={colors.accentPurple} />
-          <Text className="text-dark-400 text-xs ml-1">
+          <Text className="text-xs ml-1" style={{ color: colors.textMuted }}>
             Sintonizaciones: {activeAttunements}/{inventory.maxAttunements}
           </Text>
         </View>
@@ -199,19 +200,20 @@ export default function InventoryTab() {
   };
 
   const renderCoins = () => (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+    <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center">
           <Ionicons name="cash-outline" size={18} color={colors.accentAmber} />
-          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
+          <Text className="text-xs font-semibold uppercase tracking-wider ml-2" style={{ color: colors.textSecondary }}>
             Monedas
           </Text>
         </View>
         <TouchableOpacity
-          className="bg-amber-600/20 rounded-lg px-3 py-1.5 active:bg-amber-600/40"
+          className="rounded-lg px-3 py-1.5"
+          style={{ backgroundColor: withAlpha(colors.accentAmber, 0.2) }}
           onPress={() => setShowCoinModal(true)}
         >
-          <Text className="text-amber-400 text-xs font-semibold">
+          <Text className="text-xs font-semibold" style={{ color: colors.accentAmber }}>
             Gestionar
           </Text>
         </TouchableOpacity>
@@ -227,23 +229,23 @@ export default function InventoryTab() {
             >
               {inventory.coins[type]}
             </Text>
-            <Text className="text-dark-300 dark:text-dark-500 text-[10px] uppercase">
+            <Text className="text-[10px] uppercase" style={{ color: colors.textMuted }}>
               {COIN_ABBR[type]}
             </Text>
           </View>
         ))}
       </View>
 
-      <View className="border-t border-dark-100 dark:border-surface-border/50 pt-2">
+      <View className="border-t pt-2" style={{ borderColor: colors.borderDefault }}>
         <View className="flex-row items-center justify-between">
-          <Text className="text-dark-400 text-xs">Total en oro</Text>
-          <Text className="text-gold-700 dark:text-gold-400 text-sm font-bold">
+          <Text className="text-xs" style={{ color: colors.textMuted }}>Total en oro</Text>
+          <Text className="text-sm font-bold" style={{ color: colors.accentGold }}>
             {totalGold.toFixed(2)} MO
           </Text>
         </View>
         <View className="flex-row items-center justify-between mt-1">
-          <Text className="text-dark-400 text-xs">Peso de monedas</Text>
-          <Text className="text-dark-500 dark:text-dark-300 text-xs">
+          <Text className="text-xs" style={{ color: colors.textMuted }}>Peso de monedas</Text>
+          <Text className="text-xs" style={{ color: colors.textSecondary }}>
             {calcCoinWeight(inventory.coins).toFixed(1)} lb
           </Text>
         </View>
@@ -277,19 +279,16 @@ export default function InventoryTab() {
         return (
           <TouchableOpacity
             key={tab.key}
-            className={`rounded-full px-4 py-2 mr-2 border ${
-              isActive
-                ? "bg-primary-500/20 border-primary-500/50"
-                : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
-            }`}
+            className="rounded-full px-4 py-2 mr-2 border"
+            style={{
+              backgroundColor: isActive ? withAlpha(colors.accentRed, 0.2) : colors.bgSecondary,
+              borderColor: isActive ? withAlpha(colors.accentRed, 0.5) : colors.borderDefault,
+            }}
             onPress={() => setFilter(tab.key)}
           >
             <Text
-              className={`text-xs font-semibold ${
-                isActive
-                  ? "text-primary-400"
-                  : "text-dark-500 dark:text-dark-300"
-              }`}
+              className="text-xs font-semibold"
+              style={{ color: isActive ? colors.accentRed : colors.textSecondary }}
             >
               {tab.label} ({tab.count})
             </Text>
@@ -302,15 +301,16 @@ export default function InventoryTab() {
   const renderItemList = () => (
     <View className="mb-4">
       <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider">
+        <Text className="text-xs font-semibold uppercase tracking-wider" style={{ color: colors.textSecondary }}>
           Objetos ({filteredItems.length})
         </Text>
         <TouchableOpacity
-          className="bg-primary-500/20 rounded-lg px-3 py-1.5 flex-row items-center active:bg-primary-500/40"
+          className="rounded-lg px-3 py-1.5 flex-row items-center"
+          style={{ backgroundColor: withAlpha(colors.accentRed, 0.2) }}
           onPress={() => setShowAddItem(true)}
         >
           <Ionicons name="add" size={16} color={colors.accentRed} />
-          <Text className="text-primary-400 text-xs font-semibold ml-1">
+          <Text className="text-xs font-semibold ml-1" style={{ color: colors.accentRed }}>
             Añadir
           </Text>
         </TouchableOpacity>
@@ -319,15 +319,16 @@ export default function InventoryTab() {
       {renderFilterTabs()}
 
       {filteredItems.length === 0 ? (
-        <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-6 items-center">
+        <View className="rounded-card border p-6 items-center" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
           <Ionicons name="bag-outline" size={32} color={colors.textMuted} />
-          <Text className="text-dark-400 text-sm mt-2">
+          <Text className="text-sm mt-2" style={{ color: colors.textMuted }}>
             {filter === "all"
               ? "Tu inventario está vacío"
               : "No hay objetos en esta categoría"}
           </Text>
           <TouchableOpacity
-            className="mt-3 bg-primary-500 rounded-lg px-4 py-2 active:bg-primary-600"
+            className="mt-3 rounded-lg px-4 py-2"
+            style={{ backgroundColor: colors.accentRed }}
             onPress={() => setShowAddItem(true)}
           >
             <Text className="text-white text-xs font-semibold">
@@ -347,6 +348,7 @@ export default function InventoryTab() {
             onToggleEquip={() => handleToggleEquip(item)}
             onUpdateQuantity={(delta) => handleUpdateQuantity(item, delta)}
             onDelete={() => handleDeleteItem(item)}
+            onUpdateItem={(updates) => updateItem(item.id, updates)}
           />
         ))
       )}

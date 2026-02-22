@@ -16,6 +16,7 @@ import {
   Easing,
   ActivityIndicator,
   TextInput,
+  Image,
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -24,9 +25,10 @@ import { useMasterStore } from "@/stores/masterStore";
 import { useRealtimeCharacters } from "@/hooks/useRealtimeCharacters";
 import { useTheme, useDialog, useToast } from "@/hooks";
 import { ConfirmDialog, Toast } from "@/components/ui";
+import { CLASS_ICONS, RACE_ICONS } from "@/data/srd";
 import type { LobbyPlayer } from "@/types/master";
 import type { PersonajeRow } from "@/types/supabase";
-import type { Character } from "@/types/character";
+import type { Character, ClassId, RaceId } from "@/types/character";
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -66,7 +68,7 @@ export default function MasterCampaignLobby() {
   const { toastProps, showSuccess, showError } = useToast();
 
   const [showAddPlayer, setShowAddPlayer] = useState(false);
-  const [playerCode, setPlayerCode] = useState("");
+  const [characterCode, setCharacterCode] = useState("");
   const [addingPlayer, setAddingPlayer] = useState(false);
 
   // Live character data cache (updated via realtime subscription)
@@ -126,12 +128,12 @@ export default function MasterCampaignLobby() {
 
   // ── Add Player ──
   const handleAddPlayer = async () => {
-    if (!playerCode.trim() || !campaignId) return;
+    if (!characterCode.trim() || !campaignId) return;
     setAddingPlayer(true);
     try {
-      const name = await addPlayer(campaignId, playerCode.trim());
+      const name = await addPlayer(campaignId, characterCode.trim());
       setShowAddPlayer(false);
-      setPlayerCode("");
+      setCharacterCode("");
       showSuccess("Jugador añadido", `${name} se ha unido a la campaña`);
     } catch (err) {
       const msg =
@@ -206,18 +208,31 @@ export default function MasterCampaignLobby() {
       >
         {/* Player header */}
         <View style={styles.playerHeader}>
-          <View
-            style={[
-              styles.playerAvatar,
-              { backgroundColor: `${colors.accentBlue}20` },
-            ]}
-          >
-            <Ionicons
-              name="person"
-              size={20}
-              color={colors.accentBlue}
+          {charData?.appearance?.avatarUri ? (
+            <Image
+              source={{ uri: charData.appearance.avatarUri }}
+              style={styles.playerAvatarImg}
             />
-          </View>
+          ) : (
+            <View
+              style={[
+                styles.playerAvatar,
+                { backgroundColor: hasCharacter ? `${colors.accentGold}18` : `${colors.accentBlue}20` },
+              ]}
+            >
+              {hasCharacter ? (
+                <Text style={styles.avatarEmoji}>
+                  {RACE_ICONS[charData!.raza as RaceId] ?? "🧝"}
+                </Text>
+              ) : (
+                <Ionicons
+                  name="person"
+                  size={20}
+                  color={colors.accentBlue}
+                />
+              )}
+            </View>
+          )}
           <View style={styles.playerHeaderInfo}>
             <Text
               style={[styles.playerName, { color: colors.textPrimary }]}
@@ -251,7 +266,7 @@ export default function MasterCampaignLobby() {
                 {nombre}
               </Text>
               <Text style={[styles.charClass, { color: colors.textSecondary }]}>
-                {clase} Nv.{nivel}
+                {CLASS_ICONS[clase as ClassId] ?? ""} {clase} Nv.{nivel}
               </Text>
             </View>
 
@@ -371,7 +386,7 @@ export default function MasterCampaignLobby() {
           Sin jugadores
         </Text>
         <Text style={[styles.emptyDesc, { color: colors.textMuted }]}>
-          Añade jugadores con su código de identificación
+          Añade jugadores con el código de su personaje
         </Text>
       </View>
     );
@@ -472,12 +487,13 @@ export default function MasterCampaignLobby() {
             ]}
           >
             <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
-              Añadir jugador
+              Añadir personaje
             </Text>
             <Text
               style={[styles.modalDesc, { color: colors.textSecondary }]}
             >
-              Introduce el código del jugador (6 caracteres)
+              Introduce el código del personaje (8 caracteres). El jugador
+              puede copiarlo desde Ajustes.
             </Text>
 
             <TextInput
@@ -489,12 +505,12 @@ export default function MasterCampaignLobby() {
                   color: colors.textPrimary,
                 },
               ]}
-              placeholder="Ej: A7K3MX"
+              placeholder="Ej: A7K3MX2B"
               placeholderTextColor={colors.searchPlaceholder}
-              value={playerCode}
-              onChangeText={(t) => setPlayerCode(t.toUpperCase())}
+              value={characterCode}
+              onChangeText={(t) => setCharacterCode(t.toUpperCase())}
               autoCapitalize="characters"
-              maxLength={6}
+              maxLength={8}
               autoFocus
             />
 
@@ -506,7 +522,7 @@ export default function MasterCampaignLobby() {
                 ]}
                 onPress={() => {
                   setShowAddPlayer(false);
-                  setPlayerCode("");
+                  setCharacterCode("");
                 }}
               >
                 <Text
@@ -524,11 +540,11 @@ export default function MasterCampaignLobby() {
                   styles.modalBtn,
                   {
                     backgroundColor: colors.accentGold,
-                    opacity: playerCode.trim().length === 6 ? 1 : 0.5,
+                    opacity: characterCode.trim().length === 8 ? 1 : 0.5,
                   },
                 ]}
                 onPress={handleAddPlayer}
-                disabled={playerCode.trim().length !== 6 || addingPlayer}
+                disabled={characterCode.trim().length !== 8 || addingPlayer}
               >
                 {addingPlayer ? (
                   <ActivityIndicator size="small" color="#FFF" />
@@ -617,11 +633,19 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   playerAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
+  },
+  playerAvatarImg: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
+  avatarEmoji: {
+    fontSize: 22,
   },
   playerHeaderInfo: {
     flex: 1,

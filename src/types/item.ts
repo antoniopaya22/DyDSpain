@@ -95,6 +95,8 @@ export interface WeaponDetails {
   damage: WeaponDamage;
   /** Daño versátil (a dos manos), si aplica */
   versatileDamage?: WeaponDamage;
+  /** Bonificador de daño adicional (ej: +1d6 fuego de una espada flamígera) */
+  bonusDamage?: WeaponDamage;
   /** Propiedades del arma */
   properties: WeaponProperty[];
   /** Alcance (para armas arrojadizas o de munición) */

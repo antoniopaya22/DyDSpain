@@ -15,6 +15,7 @@ import {
   type NoteTag,
 } from "@/types/notes";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 import { formatDate } from "@/utils/date";
 
 const PREDEFINED_TAGS = getPredefinedTags();
@@ -54,7 +55,8 @@ export function NoteCard({
   return (
     <TouchableOpacity
       key={note.id}
-      className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border mb-2 overflow-hidden"
+      className="rounded-card border mb-2 overflow-hidden"
+      style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}
       onPress={onToggleExpand}
       onLongPress={onEdit}
       activeOpacity={0.7}
@@ -95,7 +97,8 @@ export function NoteCard({
           {/* Note info */}
           <View className="flex-1">
             <Text
-              className="text-dark-900 dark:text-white text-sm font-semibold"
+              className="text-sm font-semibold"
+              style={{ color: colors.textPrimary }}
               numberOfLines={isExpanded ? undefined : 1}
             >
               {note.titulo}
@@ -103,7 +106,7 @@ export function NoteCard({
 
             {/* Session info for diary notes */}
             {note.tipo === "diario" && note.numeroSesion !== null && (
-              <Text className="text-blue-400 text-[10px] font-medium mt-0.5">
+              <Text className="text-[10px] font-medium mt-0.5" style={{ color: colors.accentBlue }}>
                 Sesión #{note.numeroSesion}
                 {note.fechaSesion ? ` · ${note.fechaSesion}` : ""}
               </Text>
@@ -112,7 +115,8 @@ export function NoteCard({
             {/* Preview (only when not expanded) */}
             {!isExpanded && note.contenido.trim().length > 0 && (
               <Text
-                className="text-dark-400 text-xs mt-0.5"
+                className="text-xs mt-0.5"
+                style={{ color: colors.textMuted }}
                 numberOfLines={2}
               >
                 {getNotePreview(note.contenido, 100)}
@@ -141,7 +145,7 @@ export function NoteCard({
             )}
 
             {/* Date */}
-            <Text className="text-dark-300 dark:text-dark-500 text-[10px] mt-1">
+            <Text className="text-[10px] mt-1" style={{ color: colors.textMuted }}>
               {formatDate(note.fechaModificacion)}
             </Text>
           </View>
@@ -158,14 +162,14 @@ export function NoteCard({
 
       {/* Expanded content */}
       {isExpanded && (
-        <View className="px-3 pb-3 border-t border-dark-100 dark:border-surface-border/50">
+        <View className="px-3 pb-3 border-t" style={{ borderColor: colors.borderDefault }}>
           {/* Full content */}
           {note.contenido.trim().length > 0 ? (
-            <Text className="text-dark-600 dark:text-dark-200 text-sm leading-6 mt-3 mb-3">
+            <Text className="text-sm leading-6 mt-3 mb-3" style={{ color: colors.textSecondary }}>
               {note.contenido}
             </Text>
           ) : (
-            <Text className="text-dark-300 dark:text-dark-500 text-sm italic mt-3 mb-3">
+            <Text className="text-sm italic mt-3 mb-3" style={{ color: colors.textMuted }}>
               Sin contenido
             </Text>
           )}
@@ -178,7 +182,7 @@ export function NoteCard({
                 size={12}
                 color={colors.accentAmber}
               />
-              <Text className="text-gold-700 dark:text-gold-400 text-[10px] ml-1">
+              <Text className="text-[10px] ml-1" style={{ color: colors.accentGold }}>
                 Visible para el Master
               </Text>
             </View>
@@ -192,27 +196,27 @@ export function NoteCard({
                 size={12}
                 color={colors.accentPurple}
               />
-              <Text className="text-purple-400 text-[10px] ml-1">
+              <Text className="text-[10px] ml-1" style={{ color: colors.accentPurple }}>
                 Enviada por el Master
               </Text>
             </View>
           )}
 
           {/* Metadata */}
-          <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-3">
+          <View className="rounded-lg p-2.5 mb-3" style={{ backgroundColor: colors.bgSecondary }}>
             <View className="flex-row items-center justify-between mb-1">
-              <Text className="text-dark-300 dark:text-dark-500 text-[10px]">
+              <Text className="text-[10px]" style={{ color: colors.textMuted }}>
                 Creada
               </Text>
-              <Text className="text-dark-400 text-[10px]">
+              <Text className="text-[10px]" style={{ color: colors.textMuted }}>
                 {formatDate(note.fechaCreacion)}
               </Text>
             </View>
             <View className="flex-row items-center justify-between">
-              <Text className="text-dark-300 dark:text-dark-500 text-[10px]">
+              <Text className="text-[10px]" style={{ color: colors.textMuted }}>
                 Modificada
               </Text>
-              <Text className="text-dark-400 text-[10px]">
+              <Text className="text-[10px]" style={{ color: colors.textMuted }}>
                 {formatDate(note.fechaModificacion)}
               </Text>
             </View>
@@ -222,11 +226,15 @@ export function NoteCard({
           <View className="flex-row items-center justify-between">
             <View className="flex-row">
               <TouchableOpacity
-                className={`flex-row items-center rounded-lg px-3 py-2 mr-2 border ${
-                  note.fijada
-                    ? "bg-amber-500/15 border-amber-500/30"
-                    : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
-                } active:opacity-70`}
+                className="flex-row items-center rounded-lg px-3 py-2 mr-2 border active:opacity-70"
+                style={{
+                  backgroundColor: note.fijada
+                    ? withAlpha(colors.accentAmber, 0.15)
+                    : colors.bgSecondary,
+                  borderColor: note.fijada
+                    ? withAlpha(colors.accentAmber, 0.3)
+                    : colors.borderDefault,
+                }}
                 onPress={onTogglePin}
               >
                 <Ionicons
@@ -247,7 +255,8 @@ export function NoteCard({
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="flex-row items-center bg-gray-200 dark:bg-dark-700 border border-dark-100 dark:border-surface-border rounded-lg px-3 py-2 mr-2 active:bg-gray-300 dark:active:bg-dark-600"
+                className="flex-row items-center border rounded-lg px-3 py-2 mr-2"
+                style={{ backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }}
                 onPress={onEdit}
               >
                 <Ionicons
@@ -255,14 +264,15 @@ export function NoteCard({
                   size={14}
                   color={colors.accentBlue}
                 />
-                <Text className="text-blue-400 text-xs font-semibold ml-1">
+                <Text className="text-xs font-semibold ml-1" style={{ color: colors.accentBlue }}>
                   Editar
                 </Text>
               </TouchableOpacity>
             </View>
 
             <TouchableOpacity
-              className="flex-row items-center bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 active:bg-red-500/25"
+              className="flex-row items-center border rounded-lg px-3 py-2"
+              style={{ backgroundColor: withAlpha(colors.accentDanger, 0.1), borderColor: withAlpha(colors.accentDanger, 0.2) }}
               onPress={onDelete}
             >
               <Ionicons
@@ -270,7 +280,7 @@ export function NoteCard({
                 size={14}
                 color={colors.accentDanger}
               />
-              <Text className="text-red-400 text-xs font-semibold ml-1">
+              <Text className="text-xs font-semibold ml-1" style={{ color: colors.accentDanger }}>
                 Eliminar
               </Text>
             </TouchableOpacity>

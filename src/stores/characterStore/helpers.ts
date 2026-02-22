@@ -1,11 +1,9 @@
 /**
  * Helpers compartidos para los slices del character store.
- * Incluye utilidades de persistencia, creación de log de combate,
- * dados y estado mágico/recursos por defecto.
+ * Incluye utilidades de persistencia, dados y estado mágico/recursos por defecto.
  */
 
-import { randomUUID } from "expo-crypto";
-import type { Character, CombatLogEntry } from "@/types/character";
+import type { Character } from "@/types/character";
 import { getSpellSlots, getPactMagicSlots } from "@/types/spell";
 import { STORAGE_KEYS, setItem } from "@/utils/storage";
 import { now } from "@/utils/providers";
@@ -38,10 +36,6 @@ export async function safeSetItem<T>(
   }
 }
 
-// ─── Constants ───────────────────────────────────────────────────────
-
-/** Maximum number of entries in the combat log */
-export const COMBAT_LOG_MAX = 100;
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -75,25 +69,6 @@ export interface InternalMagicState {
 }
 
 // ─── Helper Functions ────────────────────────────────────────────────
-
-/** Creates a combat log entry with auto-generated id and timestamp */
-export function createCombatLogEntry(
-  type: CombatLogEntry["type"],
-  amount: number,
-  hpAfter: number,
-  description?: string,
-): CombatLogEntry {
-  return {
-    id: randomUUID(),
-    timestamp: now(),
-    type,
-    amount,
-    hpAfter,
-    description,
-  };
-}
-
-
 
 /** Convert a hit die string (e.g. "d8") to its number of sides */
 export function hitDieSides(die: string): number {

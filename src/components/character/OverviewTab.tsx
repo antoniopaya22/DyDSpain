@@ -4,7 +4,7 @@
  * habilidades, tiradas de salvación, competencias y rasgos.
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, createElement } from "react";
 import {
   View,
   Text,
@@ -33,10 +33,13 @@ import { getClassData } from "@/data/srd/classes";
 import { getBackgroundData } from "@/data/srd/backgrounds";
 import ExperienceSection from "./ExperienceSection";
 import LevelUpModal from "./LevelUpModal";
-import { useTheme } from "@/hooks";
-import { CollapsibleSection, InfoBadge } from "@/components/ui";
+import PersonalityAppearanceEditor from "./PersonalityAppearanceEditor";
+import { useTheme, useDialog } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
+import { CollapsibleSection, InfoBadge, ConfirmDialog } from "@/components/ui";
 import { TraitCard } from "./TraitCard";
 import { ABILITY_COLORS, ABILITY_KEYS } from "@/constants/abilities";
+import { rollD20 } from "@/utils/dice";
 
 if (
   Platform.OS === "android" &&
@@ -50,12 +53,110 @@ const ABILITY_ORDER: AbilityKey[] = ABILITY_KEYS;
 export default function OverviewTab() {
   const { isDark, colors } = useTheme();
   const router = useRouter();
-  const { character, saveCharacter, resetToLevel1, getSavingThrowBonus, getSkillBonus } = useCharacterStore();
+  const { character, saveCharacter, resetToLevel1, getSavingThrowBonus, getSkillBonus, updatePersonality, updateAppearance, updateAlignment, updateName } = useCharacterStore();
   const { startRecreation } = useCreationStore();
   const [expandedSection, setExpandedSection] = useState<string | null>(
     "abilities",
   );
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editorTab, setEditorTab] = useState<"personality" | "appearance">("personality");
+  const { dialogProps, showDialog } = useDialog();
+
+  const handleRollD20 = useCallback(
+    (title: string, label: string, mod: number) => {
+      const modStr = formatModifier(mod);
+      showDialog({
+        type: "confirm",
+        title,
+        message: `¿Tirar 1d20 ${modStr} (${label})?`,
+        icon: "dice-outline",
+        buttons: [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "🎲 Tirar",
+            style: "default",
+            onPress: () => {
+              const result = rollD20(mod);
+              const dieValue = result.rolls[0].value;
+              let emoji = "";
+              let extra = "";
+              if (result.isCritical) {
+                emoji = " ✨";
+                extra = "\n\n¡CRÍTICO NATURAL!";
+              } else if (result.isFumble) {
+                emoji = " 💀";
+                extra = "\n\n¡PIFIA!";
+              }
+              setTimeout(() => {
+                showDialog({
+                  type: result.isCritical
+                    ? "success"
+                    : result.isFumble
+                      ? "danger"
+                      : "info",
+                  title: `${label}${emoji}`,
+                  message: `🎲 d20 [${dieValue}] ${modStr} = ${result.total}${extra}`,
+                  buttons: [{ text: "OK", style: "default" }],
+                  customIconContent: createElement(
+                    Text,
+                    {
+                      style: {
+                        fontSize: 28,
+                        fontWeight: "bold" as const,
+                        color: result.isCritical
+                          ? "#22c55e"
+                          : result.isFumble
+                            ? "#ef4444"
+                            : colors.textPrimary,
+                      },
+                    },
+                    String(result.total),
+                  ),
+                });
+              }, 350);
+            },
+          },
+        ],
+      });
+    },
+    [showDialog],
+  );
+
+  const handleAbilityRoll = useCallback(
+    (key: AbilityKey) => {
+      if (!character) return;
+      const abilityName = ABILITY_NAMES[key];
+      const mod = character.abilityScores[key].modifier;
+      handleRollD20(`Tirada de ${abilityName}`, abilityName, mod);
+    },
+    [character, handleRollD20],
+  );
+
+  const handleSavingThrowRoll = useCallback(
+    (key: AbilityKey) => {
+      if (!character) return;
+      const abilityName = ABILITY_NAMES[key];
+      const bonus = getSavingThrowBonus(key);
+      handleRollD20(`Salvación de ${abilityName}`, `Salvación ${abilityName}`, bonus);
+    },
+    [character, getSavingThrowBonus, handleRollD20],
+  );
+
+  const handleSkillRoll = useCallback(
+    (key: SkillKey) => {
+      if (!character) return;
+      const skillName = SKILLS[key].nombre;
+      const bonus = getSkillBonus(key);
+      handleRollD20(`Tirada de ${skillName}`, skillName, bonus);
+    },
+    [character, getSkillBonus, handleRollD20],
+  );
+
+  const openEditor = useCallback((tab: "personality" | "appearance") => {
+    setEditorTab(tab);
+    setShowEditor(true);
+  }, []);
 
   const handleLevelUp = useCallback(() => {
     setShowLevelUpModal(true);
@@ -92,7 +193,7 @@ export default function OverviewTab() {
   if (!character) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Text className="text-dark-500 dark:text-dark-300 text-base">
+        <Text className="text-base" style={{ color: colors.textSecondary }}>
           No se ha cargado ningún personaje
         </Text>
       </View>
@@ -102,6 +203,7 @@ export default function OverviewTab() {
   const raceData = getRaceData(character.raza);
   const classData = getClassData(character.clase);
   const backgroundData = getBackgroundData(character.trasfondo);
+  const backgroundDisplayName = character.customBackgroundName ?? backgroundData.nombre;
 
   const toggleSection = (section: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -111,9 +213,9 @@ export default function OverviewTab() {
   // ── Render helpers ──
 
   const renderBasicInfo = () => (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+    <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
       <View className="flex-row items-center mb-3">
-        <View className="h-14 w-14 rounded-xl bg-primary-500/20 items-center justify-center mr-4">
+        <View className="h-14 w-14 rounded-xl items-center justify-center mr-4" style={{ backgroundColor: withAlpha(colors.accentRed, 0.2) }}>
           <Ionicons
             name="shield-half-sharp"
             size={28}
@@ -121,11 +223,11 @@ export default function OverviewTab() {
           />
         </View>
         <View className="flex-1">
-          <Text className="text-dark-900 dark:text-white text-xl font-bold">
+          <Text className="text-xl font-bold" style={{ color: colors.textPrimary }}>
             {character.nombre}
           </Text>
-          <Text className="text-dark-500 dark:text-dark-300 text-sm">
-            {raceData.nombre}
+          <Text className="text-sm" style={{ color: colors.textSecondary }}>
+            {character.customRaceName ?? raceData.nombre}
             {character.subraza
               ? ` (${getSubraceData(character.raza, character.subraza)?.nombre ?? ""})`
               : ""}{" "}
@@ -137,14 +239,16 @@ export default function OverviewTab() {
       <View className="flex-row flex-wrap">
         <InfoBadge
           icon="book-outline"
-          label={backgroundData.nombre}
+          label={backgroundDisplayName}
           color={colors.accentGold}
         />
-        <InfoBadge
-          icon="compass-outline"
-          label={ALIGNMENT_NAMES[character.alineamiento]}
-          color={colors.accentPurple}
-        />
+        {character.alineamiento && (
+          <InfoBadge
+            icon="compass-outline"
+            label={ALIGNMENT_NAMES[character.alineamiento]}
+            color={colors.accentPurple}
+          />
+        )}
         <InfoBadge
           icon="star-outline"
           label={`XP: ${character.experiencia}`}
@@ -155,6 +259,32 @@ export default function OverviewTab() {
           label={`Competencia: +${character.proficiencyBonus}`}
           color={colors.accentBlue}
         />
+        <InfoBadge
+          icon="walk-outline"
+          label={`${character.speed.walk} pies`}
+          color={colors.accentGreen}
+        />
+        {character.speed.swim ? (
+          <InfoBadge
+            icon="water-outline"
+            label={`Nadar: ${character.speed.swim} pies`}
+            color={colors.accentLightBlue}
+          />
+        ) : null}
+        {character.speed.climb ? (
+          <InfoBadge
+            icon="trending-up-outline"
+            label={`Trepar: ${character.speed.climb} pies`}
+            color={colors.accentOrange}
+          />
+        ) : null}
+        {character.speed.fly ? (
+          <InfoBadge
+            icon="airplane-outline"
+            label={`Volar: ${character.speed.fly} pies`}
+            color={colors.accentPurple}
+          />
+        ) : null}
       </View>
     </View>
   );
@@ -171,9 +301,12 @@ export default function OverviewTab() {
           const score = character.abilityScores[key];
           const color = ABILITY_COLORS[key];
           return (
-            <View
+            <TouchableOpacity
               key={key}
-              className="w-[31%] bg-gray-200 dark:bg-dark-700 rounded-xl p-3 mb-3 items-center border border-dark-100 dark:border-surface-border"
+              activeOpacity={0.7}
+              onPress={() => handleAbilityRoll(key)}
+              className="w-[31%] rounded-xl p-3 mb-3 items-center border"
+              style={{ backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }}
             >
               <Text
                 className="text-xs font-bold uppercase tracking-wider mb-1"
@@ -181,7 +314,7 @@ export default function OverviewTab() {
               >
                 {ABILITY_ABBR[key]}
               </Text>
-              <Text className="text-dark-900 dark:text-white text-3xl font-bold">
+              <Text className="text-3xl font-bold" style={{ color: colors.textPrimary }}>
                 {score.total}
               </Text>
               <View
@@ -193,11 +326,11 @@ export default function OverviewTab() {
                 </Text>
               </View>
               {score.racial > 0 && (
-                <Text className="text-dark-400 text-[10px] mt-1">
+                <Text className="text-[10px] mt-1" style={{ color: colors.textMuted }}>
                   Base {score.base} + Racial {score.racial}
                 </Text>
               )}
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -218,7 +351,12 @@ export default function OverviewTab() {
             const bonus = getSavingThrowBonus(key);
             const color = ABILITY_COLORS[key];
             return (
-              <View key={key} className="w-1/2 pr-2 mb-2">
+              <TouchableOpacity
+                key={key}
+                activeOpacity={0.7}
+                onPress={() => handleSavingThrowRoll(key)}
+                className="w-1/2 pr-2 mb-2"
+              >
                 <View
                   className="flex-row items-center rounded-lg p-2.5 border"
                   style={{
@@ -247,7 +385,7 @@ export default function OverviewTab() {
                       />
                     )}
                   </View>
-                  <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold flex-1">
+                  <Text className="text-xs font-semibold flex-1" style={{ color: colors.textSecondary }}>
                     {ABILITY_ABBR[key]}
                   </Text>
                   <Text
@@ -259,7 +397,7 @@ export default function OverviewTab() {
                     {formatModifier(bonus)}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           })}
         </View>
@@ -288,9 +426,12 @@ export default function OverviewTab() {
           const abilityColor = ABILITY_COLORS[skill.habilidad];
 
           return (
-            <View
+            <TouchableOpacity
               key={key}
-              className="flex-row items-center py-2 border-b border-dark-100 dark:border-surface-border/50"
+              activeOpacity={0.7}
+              onPress={() => handleSkillRoll(key)}
+              className="flex-row items-center py-2 border-b"
+              style={{ borderBottomColor: withAlpha(colors.borderDefault, 0.5) }}
             >
               {/* Proficiency indicator */}
               <View className="h-5 w-5 rounded-full items-center justify-center mr-2">
@@ -307,7 +448,7 @@ export default function OverviewTab() {
                     style={{ backgroundColor: abilityColor }}
                   />
                 ) : (
-                  <View className="h-4 w-4 rounded-full border-2 border-dark-400" />
+                  <View className="h-4 w-4 rounded-full border-2" style={{ borderColor: colors.textMuted }} />
                 )}
               </View>
 
@@ -325,7 +466,7 @@ export default function OverviewTab() {
                 >
                   {skill.nombre}
                 </Text>
-                <Text className="text-dark-300 dark:text-dark-500 text-[10px]">
+                <Text className="text-[10px]" style={{ color: colors.textMuted }}>
                   {ABILITY_ABBR[skill.habilidad]}
                 </Text>
               </View>
@@ -342,7 +483,7 @@ export default function OverviewTab() {
               >
                 {formatModifier(bonus)}
               </Text>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </CollapsibleSection>
@@ -395,7 +536,7 @@ export default function OverviewTab() {
       onToggle={() => toggleSection("traits")}
     >
       {character.traits.length === 0 ? (
-        <Text className="text-dark-400 text-sm italic">
+        <Text className="text-sm italic" style={{ color: colors.textMuted }}>
           Sin rasgos especiales
         </Text>
       ) : (
@@ -412,16 +553,26 @@ export default function OverviewTab() {
       icon="heart"
       isExpanded={expandedSection === "personality"}
       onToggle={() => toggleSection("personality")}
+      rightElement={
+        <TouchableOpacity
+          onPress={() => openEditor("personality")}
+          hitSlop={8}
+          style={{ marginRight: 4 }}
+        >
+          <Ionicons name="pencil-outline" size={18} color={colors.accentGold} />
+        </TouchableOpacity>
+      }
     >
       {character.personality.traits.length > 0 && (
         <View className="mb-3">
-          <Text className="text-gold-700 dark:text-gold-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <Text className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: colors.accentGold }}>
             Rasgos de Personalidad
           </Text>
           {character.personality.traits.map((trait, idx) => (
             <Text
               key={idx}
-              className="text-dark-600 dark:text-dark-200 text-sm leading-5 mb-1"
+              className="text-sm leading-5 mb-1"
+              style={{ color: colors.textSecondary }}
             >
               • {trait}
             </Text>
@@ -430,40 +581,40 @@ export default function OverviewTab() {
       )}
       {character.personality.ideals ? (
         <View className="mb-3">
-          <Text className="text-gold-700 dark:text-gold-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <Text className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: colors.accentGold }}>
             Ideales
           </Text>
-          <Text className="text-dark-600 dark:text-dark-200 text-sm leading-5">
+          <Text className="text-sm leading-5" style={{ color: colors.textSecondary }}>
             {character.personality.ideals}
           </Text>
         </View>
       ) : null}
       {character.personality.bonds ? (
         <View className="mb-3">
-          <Text className="text-gold-700 dark:text-gold-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <Text className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: colors.accentGold }}>
             Vínculos
           </Text>
-          <Text className="text-dark-600 dark:text-dark-200 text-sm leading-5">
+          <Text className="text-sm leading-5" style={{ color: colors.textSecondary }}>
             {character.personality.bonds}
           </Text>
         </View>
       ) : null}
       {character.personality.flaws ? (
         <View className="mb-3">
-          <Text className="text-gold-700 dark:text-gold-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <Text className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: colors.accentGold }}>
             Defectos
           </Text>
-          <Text className="text-dark-600 dark:text-dark-200 text-sm leading-5">
+          <Text className="text-sm leading-5" style={{ color: colors.textSecondary }}>
             {character.personality.flaws}
           </Text>
         </View>
       ) : null}
       {character.personality.backstory ? (
         <View>
-          <Text className="text-gold-700 dark:text-gold-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <Text className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: colors.accentGold }}>
             Trasfondo
           </Text>
-          <Text className="text-dark-600 dark:text-dark-200 text-sm leading-5">
+          <Text className="text-sm leading-5" style={{ color: colors.textSecondary }}>
             {character.personality.backstory}
           </Text>
         </View>
@@ -472,48 +623,76 @@ export default function OverviewTab() {
         !character.personality.ideals &&
         !character.personality.bonds &&
         !character.personality.flaws && (
-          <Text className="text-dark-400 text-sm italic">
+          <Text className="text-sm italic" style={{ color: colors.textMuted }}>
             Sin datos de personalidad
           </Text>
         )}
     </CollapsibleSection>
   );
 
-  const renderSpeed = () => (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
-      <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider mb-3">
-        Movimiento
-      </Text>
-      <View className="flex-row flex-wrap">
-        <SpeedBadge
-          icon="walk-outline"
-          label="Caminar"
-          value={`${character.speed.walk} pies`}
-        />
-        {character.speed.swim ? (
-          <SpeedBadge
-            icon="water-outline"
-            label="Nadar"
-            value={`${character.speed.swim} pies`}
-          />
-        ) : null}
-        {character.speed.climb ? (
-          <SpeedBadge
-            icon="trending-up-outline"
-            label="Trepar"
-            value={`${character.speed.climb} pies`}
-          />
-        ) : null}
-        {character.speed.fly ? (
-          <SpeedBadge
-            icon="airplane-outline"
-            label="Volar"
-            value={`${character.speed.fly} pies`}
-          />
-        ) : null}
-      </View>
-    </View>
-  );
+  const renderAppearance = () => {
+    const a = character.appearance;
+    const hasData = a.age || a.height || a.weight || a.eyeColor || a.hairColor || a.skinColor || a.description;
+    return (
+      <CollapsibleSection
+        title="Apariencia"
+        icon="person"
+        isExpanded={expandedSection === "appearance"}
+        onToggle={() => toggleSection("appearance")}
+        rightElement={
+          <TouchableOpacity
+            onPress={() => openEditor("appearance")}
+            hitSlop={8}
+            style={{ marginRight: 4 }}
+          >
+            <Ionicons name="pencil-outline" size={18} color={colors.accentGold} />
+          </TouchableOpacity>
+        }
+      >
+        {hasData ? (
+          <View>
+            {(a.age || a.height || a.weight) && (
+              <View className="flex-row flex-wrap mb-2" style={{ gap: 8 }}>
+                {a.age ? (
+                  <InfoBadge icon="calendar-outline" label={a.age} color={colors.accentBlue} />
+                ) : null}
+                {a.height ? (
+                  <InfoBadge icon="resize-outline" label={a.height} color={colors.accentGreen} />
+                ) : null}
+                {a.weight ? (
+                  <InfoBadge icon="barbell-outline" label={a.weight} color={colors.accentOrange} />
+                ) : null}
+              </View>
+            )}
+            {(a.eyeColor || a.hairColor || a.skinColor) && (
+              <View className="flex-row flex-wrap mb-2" style={{ gap: 8 }}>
+                {a.eyeColor ? (
+                  <InfoBadge icon="eye-outline" label={`Ojos: ${a.eyeColor}`} color={colors.accentPurple} />
+                ) : null}
+                {a.hairColor ? (
+                  <InfoBadge icon="cut-outline" label={`Pelo: ${a.hairColor}`} color={colors.accentGold} />
+                ) : null}
+                {a.skinColor ? (
+                  <InfoBadge icon="hand-left-outline" label={`Piel: ${a.skinColor}`} color={colors.accentRed} />
+                ) : null}
+              </View>
+            )}
+            {a.description ? (
+              <Text className="text-sm leading-5" style={{ color: colors.textSecondary }}>
+                {a.description}
+              </Text>
+            ) : null}
+          </View>
+        ) : (
+          <Text className="text-sm italic" style={{ color: colors.textMuted }}>
+            Sin datos de apariencia — pulsa el lápiz para añadir
+          </Text>
+        )}
+      </CollapsibleSection>
+    );
+  };
+
+  const renderSpeed = () => null; // Speed info moved to renderBasicInfo
 
   return (
     <>
@@ -524,13 +703,13 @@ export default function OverviewTab() {
       >
         {renderBasicInfo()}
         <ExperienceSection onLevelUp={handleLevelUp} />
-        {renderSpeed()}
         {renderAbilityScores()}
         {renderSavingThrows()}
         {renderSkills()}
         {renderProficiencies()}
         {renderTraits()}
         {renderPersonality()}
+        {renderAppearance()}
 
         {/* Reset to Level 1 button */}
         {character.nivel > 1 && (
@@ -574,6 +753,24 @@ export default function OverviewTab() {
         onClose={() => setShowLevelUpModal(false)}
         onComplete={handleLevelUpComplete}
       />
+
+      <ConfirmDialog {...dialogProps} />
+
+      {character && (
+        <PersonalityAppearanceEditor
+          visible={showEditor}
+          onClose={() => setShowEditor(false)}
+          personality={character.personality}
+          appearance={character.appearance}
+          alignment={character.alineamiento}
+          nombre={character.nombre}
+          onSavePersonality={updatePersonality}
+          onSaveAppearance={updateAppearance}
+          onSaveAlignment={updateAlignment}
+          onSaveName={updateName}
+          initialTab={editorTab}
+        />
+      )}
     </>
   );
 }
@@ -591,11 +788,11 @@ function SpeedBadge({
 }) {
   const { colors: sbColors } = useTheme();
   return (
-    <View className="flex-row items-center bg-gray-200 dark:bg-dark-700 rounded-lg px-3 py-2 mr-2 mb-2 border border-dark-100 dark:border-surface-border">
+    <View className="flex-row items-center rounded-lg px-3 py-2 mr-2 mb-2 border" style={{ backgroundColor: sbColors.bgSecondary, borderColor: sbColors.borderDefault }}>
       <Ionicons name={icon} size={16} color={sbColors.accentGreen} />
       <View className="ml-2">
-        <Text className="text-dark-400 text-[10px] uppercase">{label}</Text>
-        <Text className="text-dark-900 dark:text-white text-sm font-bold">
+        <Text className="text-[10px] uppercase" style={{ color: sbColors.textMuted }}>{label}</Text>
+        <Text className="text-sm font-bold" style={{ color: sbColors.textPrimary }}>
           {value}
         </Text>
       </View>
@@ -617,7 +814,7 @@ function ProficiencyGroup({
     <View className="mb-3">
       <View className="flex-row items-center mb-2">
         <Ionicons name={icon} size={14} color={pgColors.textMuted} />
-        <Text className="text-dark-500 dark:text-dark-300 text-xs font-semibold uppercase tracking-wider ml-1.5">
+        <Text className="text-xs font-semibold uppercase tracking-wider ml-1.5" style={{ color: pgColors.textSecondary }}>
           {title}
         </Text>
       </View>
@@ -625,9 +822,10 @@ function ProficiencyGroup({
         {items.map((item, idx) => (
           <View
             key={idx}
-            className="bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-1.5 mr-1.5 mb-1.5 border border-dark-100 dark:border-surface-border"
+            className="rounded-lg px-2.5 py-1.5 mr-1.5 mb-1.5 border"
+            style={{ backgroundColor: pgColors.bgSecondary, borderColor: pgColors.borderDefault }}
           >
-            <Text className="text-dark-600 dark:text-dark-200 text-xs">
+            <Text className="text-xs" style={{ color: pgColors.textSecondary }}>
               {item}
             </Text>
           </View>

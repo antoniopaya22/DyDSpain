@@ -10,7 +10,7 @@ import {
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { ConfirmDialog } from "@/components/ui";
-import { useTheme, useDialog } from "@/hooks";
+import { useTheme, useDialog, useScrollToTop } from "@/hooks";
 import {
   useCreationStore,
   TOTAL_STEPS,
@@ -19,6 +19,7 @@ import {
 } from "@/stores/creationStore";
 import { useCampaignStore } from "@/stores/campaignStore";
 import { getRaceData, getClassData, getBackgroundData } from "@/data/srd";
+import { buildRaceDataFromCustom } from "@/data/srd/races";
 import {
   ABILITY_ABBR,
   ABILITY_NAMES,
@@ -38,6 +39,7 @@ function formatMod(mod: number): string {
 }
 
 export default function SummaryStep() {
+  const scrollRef = useScrollToTop();
   const { colors, isDark } = useTheme();
   const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
@@ -74,10 +76,20 @@ export default function SummaryStep() {
   const allRequiredComplete = completedSteps.length >= 9;
 
   // Draft data
-  const raceData = draft?.raza ? getRaceData(draft.raza) : null;
+  const raceData = draft?.raza
+    ? draft.raza === "personalizada" && draft.customRaceData
+      ? buildRaceDataFromCustom(draft.customRaceData)
+      : getRaceData(draft.raza)
+    : null;
   const classData = draft?.clase ? getClassData(draft.clase) : null;
   const backgroundData = draft?.trasfondo
-    ? getBackgroundData(draft.trasfondo)
+    ? draft.trasfondo === "personalizada" && draft.customBackgroundData
+      ? {
+          nombre: draft.customBackgroundData.nombre || "Personalizada",
+          skillProficiencies: draft.customBackgroundData.skillProficiencies,
+          featureName: draft.customBackgroundData.featureName,
+        }
+      : getBackgroundData(draft.trasfondo)
     : null;
 
   // Ability scores preview
@@ -89,6 +101,7 @@ export default function SummaryStep() {
           draft.raza,
           draft.subraza ?? null,
           draft.freeAbilityBonuses,
+          draft.customRaceData?.abilityBonuses,
         )
       : null;
 
@@ -126,7 +139,7 @@ export default function SummaryStep() {
             if (!draft?.clase) missing.push("Clase");
             if (!draft?.abilityScoresBase) missing.push("Estadísticas");
             if (!draft?.trasfondo) missing.push("Trasfondo");
-            if (!draft?.alineamiento) missing.push("Alineamiento");
+
             throw new Error(
               `No se pudo construir el personaje. Faltan datos: ${missing.join(", ") || "desconocido"}.`,
             );
@@ -175,9 +188,10 @@ export default function SummaryStep() {
               } catch (e) {
                 console.warn("[SummaryStep] Error limpiando draft:", e);
               }
-              // Navigate back to campaign detail with a single replace call.
-              // Absolute paths in Expo Router resolve across nested stacks.
-              router.replace(`/campaigns/${cId}`);
+              // Navigate back to campaign detail.  `navigate` bubbles up
+              // through nested Stack navigators and pops back to the
+              // existing [id]/index screen, cleaning up the wizard stacks.
+              router.navigate(`/campaigns/${cId}`);
             },
           );
 
@@ -239,6 +253,7 @@ export default function SummaryStep() {
   return (
     <View style={[styles.container, themed.container]}>
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
       >

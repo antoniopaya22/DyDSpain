@@ -17,11 +17,13 @@ import {
   StyleSheet,
   Platform,
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCharacterStore } from "@/stores/characterStore";
 import { useCampaignStore } from "@/stores/campaignStore";
+import { useAuthStore } from "@/stores/authStore";
 
 import {
   OverviewTab,
@@ -31,7 +33,7 @@ import {
   NotesTab,
 } from "@/components/character";
 import { DiceFAB } from "@/components/dice";
-import { useTheme } from "@/hooks";
+import { useTheme, useCharacterSync } from "@/hooks";
 
 // ─── Tab definitions ─────────────────────────────────────────────────
 
@@ -402,6 +404,12 @@ export default function CharacterSheetScreen() {
   } = useCharacterStore();
   const { getCampaignById, setActiveCampaign, touchCampaign } =
     useCampaignStore();
+  const isAuthenticated = !!useAuthStore((s) => s.user);
+
+  // Sync character to Supabase & get the shareable code
+  const characterCode = useCharacterSync();
+  const [codeCopied, setCodeCopied] = useState(false);
+  const codeCopyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const validTabs = new Set<TabId>([
     "overview",
@@ -469,7 +477,16 @@ export default function CharacterSheetScreen() {
 
   const handleGoBack = () => {
     clearCharacter();
+    if (codeCopyTimerRef.current) clearTimeout(codeCopyTimerRef.current);
     router.back();
+  };
+
+  const handleCopyCharacterCode = async () => {
+    if (!characterCode) return;
+    await Clipboard.setStringAsync(characterCode);
+    setCodeCopied(true);
+    if (codeCopyTimerRef.current) clearTimeout(codeCopyTimerRef.current);
+    codeCopyTimerRef.current = setTimeout(() => setCodeCopied(false), 2000);
   };
 
   // Compute themed gradient colors
@@ -812,6 +829,35 @@ export default function CharacterSheetScreen() {
               ]}
             />
           </View>
+
+          {/* Character Code Chip — shareable code for Master */}
+          {isAuthenticated && characterCode && (
+            <TouchableOpacity
+              style={[
+                sheetStyles.codeChip,
+                { backgroundColor: `${colors.accentGold}15`, borderColor: `${colors.accentGold}30` },
+              ]}
+              onPress={handleCopyCharacterCode}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={codeCopied ? "checkmark-circle" : "key-outline"}
+                size={12}
+                color={colors.accentGold}
+              />
+              <Text style={[sheetStyles.codeChipLabel, { color: colors.textMuted }]}>
+                Código:
+              </Text>
+              <Text style={[sheetStyles.codeChipValue, { color: colors.accentGold }]}>
+                {characterCode}
+              </Text>
+              <Ionicons
+                name={codeCopied ? "checkmark" : "copy-outline"}
+                size={12}
+                color={colors.accentGold}
+              />
+            </TouchableOpacity>
+          )}
         </Animated.View>
 
         {/* Bottom border gradient */}
@@ -1061,6 +1107,29 @@ const sheetStyles = StyleSheet.create({
     left: 0,
     height: 8,
     borderRadius: 4,
+  },
+
+  // ── Character Code Chip ──
+  codeChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+    gap: 5,
+    marginTop: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  codeChipLabel: {
+    fontSize: 10,
+    fontWeight: "600",
+  },
+  codeChipValue: {
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 2,
+    fontFamily: "monospace",
   },
 
   // ── Bottom Tab Bar ──

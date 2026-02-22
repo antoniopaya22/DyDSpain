@@ -9,7 +9,7 @@ import {
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { ConfirmDialog } from "@/components/ui";
-import { useTheme, useDialog } from "@/hooks";
+import { useTheme, useDialog, useScrollToTop } from "@/hooks";
 import {
   useCreationStore,
   TOTAL_STEPS,
@@ -73,6 +73,7 @@ function rollAbilityScore(): number {
 }
 
 export default function AbilitiesStep() {
+  const scrollRef = useScrollToTop();
   const { colors, isDark } = useTheme();
   const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
@@ -291,12 +292,14 @@ export default function AbilitiesStep() {
         draft.raza,
         draft.subraza ?? null,
         draft.freeAbilityBonuses,
+        draft.customRaceData?.abilityBonuses,
       )
     : currentScores;
 
   return (
     <View style={[styles.container, themed.container]}>
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
@@ -310,7 +313,7 @@ export default function AbilitiesStep() {
               <Ionicons
                 name="arrow-back"
                 size={22}
-                color={isDark ? "white" : "#272519"}
+                color={colors.textPrimary}
               />
             </TouchableOpacity>
             <Text style={[styles.stepText, themed.stepText]}>
@@ -328,7 +331,7 @@ export default function AbilitiesStep() {
         {/* Title */}
         <View style={styles.titleSection}>
           <View style={styles.iconCircle}>
-            <Ionicons name="stats-chart-outline" size={40} color="#8f3d38" />
+            <Ionicons name="stats-chart-outline" size={40} color={colors.accentRed} />
           </View>
           <Text style={[styles.title, themed.title]}>
             Puntuaciones de Característica
@@ -465,7 +468,7 @@ export default function AbilitiesStep() {
                         <Ionicons
                           name="close-circle"
                           size={16}
-                          color="#ef4444"
+                          color={colors.accentDanger}
                         />
                       </TouchableOpacity>
                     ) : (

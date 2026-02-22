@@ -51,6 +51,8 @@ export interface ProficiencyDataSources {
   classWeapons: string[];
   classTools: string[];
   raceWeapons?: string[];
+  raceArmors?: string[];
+  raceTools?: string[];
   raceLanguages: string[];
   subraceWeapons?: string[];
   subraceTools?: string[];
@@ -247,7 +249,10 @@ export function buildProficiencies(
   sources: ProficiencyDataSources,
 ): Proficiencies {
   return {
-    armors: [...sources.classArmors],
+    armors: [
+      ...sources.classArmors,
+      ...(sources.raceArmors ?? []),
+    ],
     weapons: [
       ...sources.classWeapons,
       ...(sources.raceWeapons ?? []),
@@ -257,6 +262,7 @@ export function buildProficiencies(
       ...sources.classTools,
       ...(sources.backgroundTools ?? []),
       ...(sources.subraceTools ?? []),
+      ...(sources.raceTools ?? []),
     ],
     languages: [
       ...sources.raceLanguages,
@@ -270,25 +276,43 @@ export function buildProficiencies(
  *
  * For wizards (`clase === "mago"`), the spellbook is also populated.
  * Known spells of level ≥ 1 are automatically marked as prepared.
+ * Racial cantrips/spells available at level 1 are also injected.
  *
- * @param spellChoices The spell selections made during creation (may be
- *                     `undefined` for non-caster classes).
- * @param clase        The class identifier string.
+ * @param spellChoices     The spell selections made during creation (may be
+ *                         `undefined` for non-caster classes).
+ * @param clase            The class identifier string.
+ * @param racialSpellIds   Racial spell IDs available at level 1 (cantrips and
+ *                         any level-1 racial spells). Optional.
  * @returns An {@link InitialSpellState} with the three spell-ID arrays.
  */
 export function buildInitialSpells(
   spellChoices: SpellChoices | undefined,
   clase: string,
+  racialSpellIds?: string[],
 ): InitialSpellState {
   const knownSpellIds: string[] = [];
   const preparedSpellIds: string[] = [];
   const spellbookIds: string[] = [];
 
+  // Añadir conjuros innatos raciales (trucos y hechizos de nivel 1)
+  if (racialSpellIds) {
+    for (const spellId of racialSpellIds) {
+      if (!knownSpellIds.includes(spellId)) {
+        knownSpellIds.push(spellId);
+      }
+    }
+  }
+
   if (spellChoices) {
-    knownSpellIds.push(
+    // Añadir conjuros de clase (evitando duplicados con raciales)
+    for (const spellId of [
       ...(spellChoices.cantrips ?? []),
       ...(spellChoices.spells ?? []),
-    );
+    ]) {
+      if (!knownSpellIds.includes(spellId)) {
+        knownSpellIds.push(spellId);
+      }
+    }
 
     // Para magos, también llenar el libro de hechizos
     if (clase === "mago" && spellChoices.spellbook) {

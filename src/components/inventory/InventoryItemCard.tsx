@@ -3,17 +3,87 @@
  *
  * Shows item summary with category icon, name, badges (equipped, magic).
  * Expands to show weapon/armor/magic details, notes, stats, and action buttons.
+ * For weapons, an "Edit" button opens inline editing of damage dice and properties.
  * Extracted from InventoryTab.tsx
  */
 
-import { View, Text, TouchableOpacity } from "react-native";
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   ITEM_CATEGORY_NAMES,
   ITEM_CATEGORY_ICONS,
+  WEAPON_PROPERTY_NAMES,
   type InventoryItem,
+  type WeaponType,
+  type WeaponProperty,
+  type WeaponDetails,
 } from "@/types/item";
+import type { DamageType } from "@/types/character";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
+
+// ─── Weapon editing constants ────────────────────────────────────────
+
+const WEAPON_TYPE_OPTIONS: { value: WeaponType; label: string }[] = [
+  { value: "sencilla_cuerpo", label: "Sencilla (cuerpo)" },
+  { value: "sencilla_distancia", label: "Sencilla (distancia)" },
+  { value: "marcial_cuerpo", label: "Marcial (cuerpo)" },
+  { value: "marcial_distancia", label: "Marcial (distancia)" },
+];
+
+const DAMAGE_TYPE_OPTIONS: { value: DamageType; label: string }[] = [
+  { value: "contundente", label: "Contundente" },
+  { value: "cortante", label: "Cortante" },
+  { value: "perforante", label: "Perforante" },
+  { value: "fuego", label: "Fuego" },
+  { value: "frio", label: "Frío" },
+  { value: "relampago", label: "Relámpago" },
+  { value: "trueno", label: "Trueno" },
+  { value: "acido", label: "Ácido" },
+  { value: "veneno", label: "Veneno" },
+  { value: "necrotico", label: "Necrótico" },
+  { value: "radiante", label: "Radiante" },
+  { value: "psiquico", label: "Psíquico" },
+  { value: "fuerza", label: "Fuerza" },
+];
+
+const WEAPON_PROP_OPTIONS: { value: WeaponProperty; label: string }[] = [
+  { value: "ligera", label: "Ligera" },
+  { value: "pesada", label: "Pesada" },
+  { value: "sutil", label: "Sutil" },
+  { value: "arrojadiza", label: "Arrojadiza" },
+  { value: "municion", label: "Munición" },
+  { value: "alcance", label: "Alcance" },
+  { value: "a_dos_manos", label: "A dos manos" },
+  { value: "versatil", label: "Versátil" },
+  { value: "recarga", label: "Recarga" },
+  { value: "especial", label: "Especial" },
+];
+
+const COMMON_DICE = ["1d4", "1d6", "1d8", "1d10", "1d12", "2d6"];
+
+const DAMAGE_TYPE_LABELS: Record<DamageType, string> = {
+  contundente: "Contundente",
+  cortante: "Cortante",
+  perforante: "Perforante",
+  fuego: "Fuego",
+  frio: "Frío",
+  relampago: "Relámpago",
+  trueno: "Trueno",
+  acido: "Ácido",
+  veneno: "Veneno",
+  necrotico: "Necrótico",
+  radiante: "Radiante",
+  psiquico: "Psíquico",
+  fuerza: "Fuerza",
+};
 
 interface InventoryItemCardProps {
   item: InventoryItem;
@@ -22,6 +92,7 @@ interface InventoryItemCardProps {
   onToggleEquip: () => void;
   onUpdateQuantity: (delta: number) => void;
   onDelete: () => void;
+  onUpdateItem?: (updates: Partial<InventoryItem>) => void;
 }
 
 export function InventoryItemCard({
@@ -31,22 +102,112 @@ export function InventoryItemCard({
   onToggleEquip,
   onUpdateQuantity,
   onDelete,
+  onUpdateItem,
 }: InventoryItemCardProps) {
   const { colors } = useTheme();
 
   const categoryIcon = ITEM_CATEGORY_ICONS[item.categoria] ?? "📦";
   const categoryName = ITEM_CATEGORY_NAMES[item.categoria] ?? "Otro";
 
+  // Weapon editing state
+  const [editingWeapon, setEditingWeapon] = useState(false);
+  const [editWeaponType, setEditWeaponType] = useState<WeaponType>(
+    item.weaponDetails?.weaponType ?? "sencilla_cuerpo",
+  );
+  const [editDamageDice, setEditDamageDice] = useState(
+    item.weaponDetails?.damage.dice ?? "1d6",
+  );
+  const [editDamageType, setEditDamageType] = useState<DamageType>(
+    item.weaponDetails?.damage.damageType ?? "cortante",
+  );
+  const [editWeaponProps, setEditWeaponProps] = useState<WeaponProperty[]>(
+    item.weaponDetails?.properties ?? [],
+  );
+
+  // Bonus damage editing state
+  const [editHasBonusDamage, setEditHasBonusDamage] = useState(
+    !!item.weaponDetails?.bonusDamage,
+  );
+  const [editBonusDice, setEditBonusDice] = useState(
+    item.weaponDetails?.bonusDamage?.dice ?? "1d6",
+  );
+  const [editBonusDamageType, setEditBonusDamageType] = useState<DamageType>(
+    item.weaponDetails?.bonusDamage?.damageType ?? "fuego",
+  );
+
+  const toggleEditProp = (prop: WeaponProperty) => {
+    setEditWeaponProps((prev) =>
+      prev.includes(prop) ? prev.filter((p) => p !== prop) : [...prev, prop],
+    );
+  };
+
+  const handleSaveWeapon = () => {
+    if (!onUpdateItem) return;
+    const isMelee =
+      editWeaponType === "sencilla_cuerpo" || editWeaponType === "marcial_cuerpo";
+    const weaponDetails: WeaponDetails = {
+      weaponType: editWeaponType,
+      damage: {
+        dice: editDamageDice.trim() || "1d6",
+        damageType: editDamageType,
+      },
+      properties: editWeaponProps,
+      melee: isMelee,
+      // Preserve existing range/versatile data
+      ...(item.weaponDetails?.range ? { range: item.weaponDetails.range } : {}),
+      ...(item.weaponDetails?.versatileDamage
+        ? { versatileDamage: item.weaponDetails.versatileDamage }
+        : {}),
+      ...(editHasBonusDamage
+        ? {
+            bonusDamage: {
+              dice: editBonusDice.trim() || "1d6",
+              damageType: editBonusDamageType,
+            },
+          }
+        : {}),
+    };
+    onUpdateItem({ weaponDetails });
+    setEditingWeapon(false);
+  };
+
+  const handleStartEditWeapon = () => {
+    // Sync state to current weapon data
+    if (item.weaponDetails) {
+      setEditWeaponType(item.weaponDetails.weaponType);
+      setEditDamageDice(item.weaponDetails.damage.dice);
+      setEditDamageType(item.weaponDetails.damage.damageType);
+      setEditWeaponProps([...item.weaponDetails.properties]);
+      setEditHasBonusDamage(!!item.weaponDetails.bonusDamage);
+      setEditBonusDice(item.weaponDetails.bonusDamage?.dice ?? "1d6");
+      setEditBonusDamageType(item.weaponDetails.bonusDamage?.damageType ?? "fuego");
+    }
+    setEditingWeapon(true);
+  };
+
+  const handleAddWeaponDetails = () => {
+    // Initialize editing with defaults for items without weapon details
+    setEditWeaponType("sencilla_cuerpo");
+    setEditDamageDice("1d6");
+    setEditDamageType("cortante");
+    setEditWeaponProps([]);
+    setEditHasBonusDamage(false);
+    setEditBonusDice("1d6");
+    setEditBonusDamageType("fuego");
+    setEditingWeapon(true);
+  };
+
   return (
     <TouchableOpacity
       key={item.id}
-      className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border mb-2 overflow-hidden"
+      className="rounded-card border mb-2 overflow-hidden"
+      style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}
       onPress={onToggleExpand}
       activeOpacity={0.7}
     >
       <View className="flex-row items-center p-3">
         {/* Category icon */}
-        <View className="h-10 w-10 rounded-lg bg-gray-200 dark:bg-dark-700 items-center justify-center mr-3">
+        <View className="h-10 w-10 rounded-lg items-center justify-center mr-3" style={{ backgroundColor: colors.bgSecondary }}>
           <Text className="text-base">{categoryIcon}</Text>
         </View>
 
@@ -63,17 +224,17 @@ export function InventoryItemCard({
               {item.nombre}
             </Text>
             {item.cantidad > 1 && (
-              <View className="bg-gray-300 dark:bg-dark-600 rounded-full px-2 py-0.5 ml-1">
-                <Text className="text-dark-600 dark:text-dark-200 text-[10px] font-bold">
+              <View className="rounded-full px-2 py-0.5 ml-1" style={{ backgroundColor: colors.bgSecondary }}>
+                <Text className="text-[10px] font-bold" style={{ color: colors.textSecondary }}>
                   x{item.cantidad}
                 </Text>
               </View>
             )}
           </View>
           <View className="flex-row items-center mt-0.5">
-            <Text className="text-dark-400 text-[10px]">{categoryName}</Text>
+            <Text className="text-[10px]" style={{ color: colors.textMuted }}>{categoryName}</Text>
             {item.peso > 0 && (
-              <Text className="text-dark-300 dark:text-dark-500 text-[10px] ml-2">
+              <Text className="text-[10px] ml-2" style={{ color: colors.textMuted }}>
                 {item.peso * item.cantidad} lb
               </Text>
             )}
@@ -84,7 +245,7 @@ export function InventoryItemCard({
                   size={10}
                   color={colors.accentGold}
                 />
-                <Text className="text-gold-700 dark:text-gold-400 text-[10px] ml-0.5">
+                <Text className="text-[10px] ml-0.5" style={{ color: colors.accentGold }}>
                   Equipado
                 </Text>
               </View>
@@ -96,7 +257,7 @@ export function InventoryItemCard({
                   size={10}
                   color={colors.accentPurple}
                 />
-                <Text className="text-purple-400 text-[10px] ml-0.5">
+                <Text className="text-[10px] ml-0.5" style={{ color: colors.accentPurple }}>
                   Mágico
                 </Text>
               </View>
@@ -109,11 +270,11 @@ export function InventoryItemCard({
           item.categoria === "armadura" ||
           item.categoria === "escudo") && (
           <TouchableOpacity
-            className={`h-8 w-8 rounded-full items-center justify-center ml-2 border ${
-              item.equipado
-                ? "bg-gold-500/20 border-gold-500/50"
-                : "bg-gray-200 dark:bg-dark-700 border-dark-100 dark:border-surface-border"
-            }`}
+            className="h-8 w-8 rounded-full items-center justify-center ml-2 border"
+            style={{
+              backgroundColor: item.equipado ? withAlpha(colors.accentGold, 0.2) : colors.bgSecondary,
+              borderColor: item.equipado ? withAlpha(colors.accentGold, 0.5) : colors.borderDefault,
+            }}
             onPress={onToggleEquip}
           >
             <Ionicons
@@ -134,54 +295,331 @@ export function InventoryItemCard({
 
       {/* Expanded details */}
       {isExpanded && (
-        <View className="px-3 pb-3 border-t border-dark-100 dark:border-surface-border/50 pt-2">
+        <View className="px-3 pb-3 border-t pt-2" style={{ borderColor: colors.borderDefault }}>
           {item.descripcion && (
-            <Text className="text-dark-500 dark:text-dark-300 text-xs leading-5 mb-2">
+            <Text className="text-xs leading-5 mb-2" style={{ color: colors.textSecondary }}>
               {item.descripcion}
             </Text>
           )}
 
           {/* Weapon details */}
-          {item.weaponDetails && (
-            <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-2">
-              <Text className="text-red-400 text-[10px] font-semibold uppercase tracking-wider mb-1">
-                Datos de Arma
-              </Text>
-              <Text className="text-dark-600 dark:text-dark-200 text-xs">
+          {item.categoria === "arma" && !editingWeapon && item.weaponDetails && (
+            <View className="rounded-lg p-2.5 mb-2" style={{ backgroundColor: colors.bgSecondary }}>
+              <View className="flex-row items-center justify-between mb-1">
+                <Text className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: colors.accentDanger }}>
+                  Datos de Arma
+                </Text>
+                {onUpdateItem && (
+                  <TouchableOpacity
+                    className="flex-row items-center px-2 py-0.5 rounded-full"
+                    style={{ backgroundColor: colors.bgSecondary }}
+                    onPress={handleStartEditWeapon}
+                  >
+                    <Ionicons name="pencil" size={10} color={colors.accentBlue} />
+                    <Text className="text-[10px] ml-1" style={{ color: colors.accentBlue }}>
+                      Editar
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>
                 Daño: {item.weaponDetails.damage.dice}{" "}
-                {item.weaponDetails.damage.damageType}
+                {DAMAGE_TYPE_LABELS[item.weaponDetails.damage.damageType] ?? item.weaponDetails.damage.damageType}
               </Text>
               {item.weaponDetails.versatileDamage && (
-                <Text className="text-dark-600 dark:text-dark-200 text-xs">
+                <Text className="text-xs" style={{ color: colors.textSecondary }}>
                   Versátil: {item.weaponDetails.versatileDamage.dice}{" "}
-                  {item.weaponDetails.versatileDamage.damageType}
+                  {DAMAGE_TYPE_LABELS[item.weaponDetails.versatileDamage.damageType] ?? item.weaponDetails.versatileDamage.damageType}
+                </Text>
+              )}
+              {item.weaponDetails.bonusDamage && (
+                <Text className="text-xs" style={{ color: colors.textSecondary }}>
+                  Bonificación: +{item.weaponDetails.bonusDamage.dice}{" "}
+                  {DAMAGE_TYPE_LABELS[item.weaponDetails.bonusDamage.damageType] ?? item.weaponDetails.bonusDamage.damageType}
                 </Text>
               )}
               {item.weaponDetails.range && (
-                <Text className="text-dark-600 dark:text-dark-200 text-xs">
+                <Text className="text-xs" style={{ color: colors.textSecondary }}>
                   Alcance: {item.weaponDetails.range.normal}/
                   {item.weaponDetails.range.long} pies
                 </Text>
               )}
               {item.weaponDetails.properties.length > 0 && (
-                <Text className="text-dark-500 dark:text-dark-300 text-xs mt-1">
-                  Propiedades: {item.weaponDetails.properties.join(", ")}
+                <Text className="text-xs mt-1" style={{ color: colors.textSecondary }}>
+                  Propiedades:{" "}
+                  {item.weaponDetails.properties
+                    .map((p) => WEAPON_PROPERTY_NAMES[p] ?? p)
+                    .join(", ")}
                 </Text>
               )}
             </View>
           )}
 
+          {/* Add weapon details button (for weapons without details) */}
+          {item.categoria === "arma" && !editingWeapon && !item.weaponDetails && onUpdateItem && (
+            <TouchableOpacity
+              className="flex-row items-center justify-center border rounded-lg py-2 mb-2"
+              style={{ backgroundColor: withAlpha(colors.accentDanger, 0.1), borderColor: withAlpha(colors.accentDanger, 0.3) }}
+              onPress={handleAddWeaponDetails}
+            >
+              <Ionicons name="add-circle-outline" size={14} color={colors.accentDanger} />
+              <Text className="text-xs font-semibold ml-1.5" style={{ color: colors.accentDanger }}>
+                Configurar datos de arma
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Inline weapon editor */}
+          {item.categoria === "arma" && editingWeapon && (
+            <View
+              className="rounded-lg p-3 mb-2"
+              style={{
+                borderWidth: 1,
+                borderColor: colors.accentDanger + "40",
+                backgroundColor: colors.accentDanger + "08",
+              }}
+            >
+              <Text
+                className="text-[10px] font-semibold uppercase tracking-wider mb-2"
+                style={{ color: colors.accentDanger }}
+              >
+                Editar Arma
+              </Text>
+
+              {/* Weapon type */}
+              <Text className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: colors.textSecondary }}>
+                Tipo
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
+                {WEAPON_TYPE_OPTIONS.map((opt) => {
+                  const isSel = editWeaponType === opt.value;
+                  return (
+                    <TouchableOpacity
+                      key={opt.value}
+                      className="rounded-full px-2.5 py-1 mr-1.5 border"
+                      style={{
+                        backgroundColor: isSel ? withAlpha(colors.accentRed, 0.2) : colors.bgSecondary,
+                        borderColor: isSel ? withAlpha(colors.accentRed, 0.5) : colors.borderDefault,
+                      }}
+                      onPress={() => setEditWeaponType(opt.value)}
+                    >
+                      <Text className="text-[10px] font-medium" style={{ color: isSel ? colors.accentRed : colors.textSecondary }}>
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+
+              {/* Damage dice */}
+              <Text className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: colors.textSecondary }}>
+                Dados de daño
+              </Text>
+              <View className="flex-row items-center mb-2">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-1">
+                  {COMMON_DICE.map((d) => {
+                    const isSel = editDamageDice === d;
+                    return (
+                      <TouchableOpacity
+                        key={d}
+                        className="rounded-full px-2.5 py-1 mr-1.5 border"
+                        style={{
+                          backgroundColor: isSel ? withAlpha(colors.accentRed, 0.2) : colors.bgSecondary,
+                          borderColor: isSel ? withAlpha(colors.accentRed, 0.5) : colors.borderDefault,
+                        }}
+                        onPress={() => setEditDamageDice(d)}
+                      >
+                        <Text className="text-[10px] font-bold" style={{ color: isSel ? colors.accentRed : colors.textSecondary }}>
+                          {d}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+                <TextInput
+                  className="rounded-lg px-2 py-1 text-[10px] border ml-1.5"
+                  style={{ width: 56, textAlign: "center", backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
+                  placeholder="Otro"
+                  placeholderTextColor={colors.textMuted}
+                  value={COMMON_DICE.includes(editDamageDice) ? "" : editDamageDice}
+                  onChangeText={(t) => { if (t.trim()) setEditDamageDice(t.trim()); }}
+                  maxLength={10}
+                />
+              </View>
+
+              {/* Damage type */}
+              <Text className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: colors.textSecondary }}>
+                Tipo de daño
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
+                {DAMAGE_TYPE_OPTIONS.map((opt) => {
+                  const isSel = editDamageType === opt.value;
+                  return (
+                    <TouchableOpacity
+                      key={opt.value}
+                      className="rounded-full px-2.5 py-1 mr-1.5 border"
+                      style={{
+                        backgroundColor: isSel ? withAlpha(colors.accentRed, 0.2) : colors.bgSecondary,
+                        borderColor: isSel ? withAlpha(colors.accentRed, 0.5) : colors.borderDefault,
+                      }}
+                      onPress={() => setEditDamageType(opt.value)}
+                    >
+                      <Text className="text-[10px] font-medium" style={{ color: isSel ? colors.accentRed : colors.textSecondary }}>
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+
+              {/* Properties */}
+              <Text className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: colors.textSecondary }}>
+                Propiedades
+              </Text>
+              <View className="flex-row flex-wrap mb-2">
+                {WEAPON_PROP_OPTIONS.map((opt) => {
+                  const isSel = editWeaponProps.includes(opt.value);
+                  return (
+                    <TouchableOpacity
+                      key={opt.value}
+                      className="rounded-full px-2.5 py-1 mr-1.5 mb-1.5 border"
+                      style={{
+                        backgroundColor: isSel ? withAlpha(colors.accentRed, 0.2) : colors.bgSecondary,
+                        borderColor: isSel ? withAlpha(colors.accentRed, 0.5) : colors.borderDefault,
+                      }}
+                      onPress={() => toggleEditProp(opt.value)}
+                    >
+                      <Text className="text-[10px] font-medium" style={{ color: isSel ? colors.accentRed : colors.textSecondary }}>
+                        {isSel ? "✓ " : ""}{opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* Bonus Damage Toggle */}
+              <TouchableOpacity
+                className="flex-row items-center rounded-lg px-2.5 py-1.5 mb-2 border"
+                style={{
+                  backgroundColor: editHasBonusDamage ? withAlpha(colors.accentRed, 0.15) : colors.bgSecondary,
+                  borderColor: editHasBonusDamage ? withAlpha(colors.accentRed, 0.4) : colors.borderDefault,
+                }}
+                onPress={() => setEditHasBonusDamage(!editHasBonusDamage)}
+              >
+                <Ionicons
+                  name={editHasBonusDamage ? "checkbox" : "square-outline"}
+                  size={14}
+                  color={editHasBonusDamage ? colors.accentAmber : colors.textMuted}
+                />
+                <Text
+                  className="text-[10px] font-semibold ml-1.5"
+                  style={{ color: editHasBonusDamage ? colors.accentAmber : colors.textSecondary }}
+                >
+                  Bonificador de daño adicional
+                </Text>
+              </TouchableOpacity>
+
+              {/* Bonus Damage fields */}
+              {editHasBonusDamage && (
+                <View
+                  className="rounded-lg p-2.5 mb-2"
+                  style={{
+                    borderWidth: 1,
+                    borderColor: colors.accentAmber + "30",
+                    backgroundColor: colors.accentAmber + "08",
+                  }}
+                >
+                  <Text className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: colors.textSecondary }}>
+                    Dados de bonificación
+                  </Text>
+                  <View className="flex-row items-center mb-2">
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-1">
+                      {COMMON_DICE.map((d) => {
+                        const isSel = editBonusDice === d;
+                        return (
+                          <TouchableOpacity
+                            key={d}
+                            className="rounded-full px-2.5 py-1 mr-1.5 border"
+                            style={{
+                              backgroundColor: isSel ? withAlpha(colors.accentRed, 0.2) : colors.bgSecondary,
+                              borderColor: isSel ? withAlpha(colors.accentRed, 0.5) : colors.borderDefault,
+                            }}
+                            onPress={() => setEditBonusDice(d)}
+                          >
+                            <Text className="text-[10px] font-bold" style={{ color: isSel ? colors.accentRed : colors.textSecondary }}>
+                              {d}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </ScrollView>
+                    <TextInput
+                      className="rounded-lg px-2 py-1 text-[10px] border ml-1.5"
+                      style={{ width: 56, textAlign: "center", backgroundColor: colors.bgInput, color: colors.textPrimary, borderColor: colors.borderDefault }}
+                      placeholder="Otro"
+                      placeholderTextColor={colors.textMuted}
+                      value={COMMON_DICE.includes(editBonusDice) ? "" : editBonusDice}
+                      onChangeText={(t) => { if (t.trim()) setEditBonusDice(t.trim()); }}
+                      maxLength={10}
+                    />
+                  </View>
+
+                  <Text className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: colors.textSecondary }}>
+                    Tipo de daño del bonificador
+                  </Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {DAMAGE_TYPE_OPTIONS.map((opt) => {
+                      const isSel = editBonusDamageType === opt.value;
+                      return (
+                        <TouchableOpacity
+                          key={opt.value}
+                          className="rounded-full px-2.5 py-1 mr-1.5 border"
+                          style={{
+                            backgroundColor: isSel ? withAlpha(colors.accentRed, 0.2) : colors.bgSecondary,
+                            borderColor: isSel ? withAlpha(colors.accentRed, 0.5) : colors.borderDefault,
+                          }}
+                          onPress={() => setEditBonusDamageType(opt.value)}
+                        >
+                          <Text className="text-[10px] font-medium" style={{ color: isSel ? colors.accentRed : colors.textSecondary }}>
+                            {opt.label}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              )}
+
+              {/* Save / Cancel */}
+              <View className="flex-row justify-end">
+                <TouchableOpacity
+                  className="px-3 py-1.5 rounded-lg mr-2"
+                  onPress={() => setEditingWeapon(false)}
+                >
+                  <Text className="text-xs font-semibold" style={{ color: colors.textMuted }}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="px-4 py-1.5 rounded-lg"
+                  style={{ backgroundColor: colors.accentRed }}
+                  onPress={handleSaveWeapon}
+                >
+                  <Text className="text-white text-xs font-bold">Guardar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
           {/* Armor details */}
           {item.armorDetails && (
-            <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-2">
-              <Text className="text-blue-400 text-[10px] font-semibold uppercase tracking-wider mb-1">
+            <View className="rounded-lg p-2.5 mb-2" style={{ backgroundColor: colors.bgSecondary }}>
+              <Text className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: colors.accentBlue }}>
                 Datos de Armadura
               </Text>
-              <Text className="text-dark-600 dark:text-dark-200 text-xs">
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>
                 CA base: {item.armorDetails.baseAC}
               </Text>
               {item.armorDetails.addDexModifier && (
-                <Text className="text-dark-600 dark:text-dark-200 text-xs">
+                <Text className="text-xs" style={{ color: colors.textSecondary }}>
                   + mod. DES
                   {item.armorDetails.maxDexBonus !== null
                     ? ` (máx. +${item.armorDetails.maxDexBonus})`
@@ -189,12 +627,12 @@ export function InventoryItemCard({
                 </Text>
               )}
               {item.armorDetails.strengthRequirement && (
-                <Text className="text-dark-500 dark:text-dark-300 text-xs">
+                <Text className="text-xs" style={{ color: colors.textSecondary }}>
                   Requiere FUE {item.armorDetails.strengthRequirement}
                 </Text>
               )}
               {item.armorDetails.stealthDisadvantage && (
-                <Text className="text-red-400 text-xs">
+                <Text className="text-xs" style={{ color: colors.accentDanger }}>
                   Desventaja en Sigilo
                 </Text>
               )}
@@ -203,15 +641,15 @@ export function InventoryItemCard({
 
           {/* Magic item details */}
           {item.magicDetails && (
-            <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-2">
-              <Text className="text-purple-400 text-[10px] font-semibold uppercase tracking-wider mb-1">
+            <View className="rounded-lg p-2.5 mb-2" style={{ backgroundColor: colors.bgSecondary }}>
+              <Text className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: colors.accentPurple }}>
                 Propiedades Mágicas
               </Text>
-              <Text className="text-dark-600 dark:text-dark-200 text-xs">
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>
                 Rareza: {item.magicDetails.rarity}
               </Text>
               {item.magicDetails.requiresAttunement && (
-                <Text className="text-dark-600 dark:text-dark-200 text-xs">
+                <Text className="text-xs" style={{ color: colors.textSecondary }}>
                   Requiere sintonización
                   {item.magicDetails.attunementRestriction
                     ? ` (${item.magicDetails.attunementRestriction})`
@@ -219,13 +657,13 @@ export function InventoryItemCard({
                 </Text>
               )}
               {item.magicDetails.charges && (
-                <Text className="text-dark-600 dark:text-dark-200 text-xs">
+                <Text className="text-xs" style={{ color: colors.textSecondary }}>
                   Cargas: {item.magicDetails.charges.current}/
                   {item.magicDetails.charges.max}
                 </Text>
               )}
               {item.magicDetails.magicDescription && (
-                <Text className="text-dark-500 dark:text-dark-300 text-xs mt-1">
+                <Text className="text-xs mt-1" style={{ color: colors.textSecondary }}>
                   {item.magicDetails.magicDescription}
                 </Text>
               )}
@@ -234,11 +672,11 @@ export function InventoryItemCard({
 
           {/* Notes */}
           {item.notas && (
-            <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-2.5 mb-2">
-              <Text className="text-gold-700 dark:text-gold-400 text-[10px] font-semibold uppercase tracking-wider mb-1">
+            <View className="rounded-lg p-2.5 mb-2" style={{ backgroundColor: colors.bgSecondary }}>
+              <Text className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: colors.accentGold }}>
                 Notas
               </Text>
-              <Text className="text-dark-500 dark:text-dark-300 text-xs">
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>
                 {item.notas}
               </Text>
             </View>
@@ -247,24 +685,24 @@ export function InventoryItemCard({
           {/* Item stats */}
           <View className="flex-row flex-wrap mb-2">
             {item.valor !== undefined && item.valor > 0 && (
-              <View className="flex-row items-center bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-1.5 mr-2 mb-1">
+              <View className="flex-row items-center rounded-lg px-2.5 py-1.5 mr-2 mb-1" style={{ backgroundColor: colors.bgSecondary }}>
                 <Ionicons
                   name="cash-outline"
                   size={12}
                   color={colors.accentAmber}
                 />
-                <Text className="text-dark-600 dark:text-dark-200 text-xs ml-1">
+                <Text className="text-xs ml-1" style={{ color: colors.textSecondary }}>
                   {item.valor} MO
                 </Text>
               </View>
             )}
-            <View className="flex-row items-center bg-gray-200 dark:bg-dark-700 rounded-lg px-2.5 py-1.5 mr-2 mb-1">
+            <View className="flex-row items-center rounded-lg px-2.5 py-1.5 mr-2 mb-1" style={{ backgroundColor: colors.bgSecondary }}>
               <Ionicons
                 name="scale-outline"
                 size={12}
                 color={colors.textMuted}
               />
-              <Text className="text-dark-600 dark:text-dark-200 text-xs ml-1">
+              <Text className="text-xs ml-1" style={{ color: colors.textSecondary }}>
                 {item.peso} lb c/u
               </Text>
             </View>
@@ -275,16 +713,18 @@ export function InventoryItemCard({
             {/* Quantity controls */}
             <View className="flex-row items-center">
               <TouchableOpacity
-                className="h-8 w-8 rounded-lg bg-gray-300 dark:bg-dark-600 items-center justify-center active:bg-dark-500"
+                className="h-8 w-8 rounded-lg items-center justify-center"
+                style={{ backgroundColor: colors.bgSecondary }}
                 onPress={() => onUpdateQuantity(-1)}
               >
                 <Ionicons name="remove" size={16} color={colors.textMuted} />
               </TouchableOpacity>
-              <Text className="text-dark-900 dark:text-white text-sm font-bold mx-3 min-w-[24px] text-center">
+              <Text className="text-sm font-bold mx-3 min-w-[24px] text-center" style={{ color: colors.textPrimary }}>
                 {item.cantidad}
               </Text>
               <TouchableOpacity
-                className="h-8 w-8 rounded-lg bg-gray-300 dark:bg-dark-600 items-center justify-center active:bg-dark-500"
+                className="h-8 w-8 rounded-lg items-center justify-center"
+                style={{ backgroundColor: colors.bgSecondary }}
                 onPress={() => onUpdateQuantity(1)}
               >
                 <Ionicons name="add" size={16} color={colors.textMuted} />
@@ -293,7 +733,8 @@ export function InventoryItemCard({
 
             {/* Delete */}
             <TouchableOpacity
-              className="flex-row items-center bg-red-500/15 border border-red-500/30 rounded-lg px-3 py-1.5 active:bg-red-500/30"
+              className="flex-row items-center border rounded-lg px-3 py-1.5"
+              style={{ backgroundColor: withAlpha(colors.accentDanger, 0.15), borderColor: withAlpha(colors.accentDanger, 0.3) }}
               onPress={onDelete}
             >
               <Ionicons
@@ -301,7 +742,7 @@ export function InventoryItemCard({
                 size={14}
                 color={colors.accentDanger}
               />
-              <Text className="text-red-400 text-xs font-semibold ml-1">
+              <Text className="text-xs font-semibold ml-1" style={{ color: colors.accentDanger }}>
                 Eliminar
               </Text>
             </TouchableOpacity>

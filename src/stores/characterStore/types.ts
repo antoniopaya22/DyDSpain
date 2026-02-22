@@ -11,6 +11,8 @@ import type {
   SkillKey,
   Condition,
   LevelUpRecord,
+  Personality,
+  Appearance,
 } from "@/types/character";
 import type {
   Inventory,
@@ -84,6 +86,10 @@ export interface CharacterCrudActions {
   getSavingThrowBonus: (ability: AbilityKey) => number;
   getProficiencyBonus: () => number;
   getArmorClass: () => number;
+  updatePersonality: (personality: Personality) => Promise<void>;
+  updateAppearance: (appearance: Appearance) => Promise<void>;
+  updateAlignment: (alignment: Character["alineamiento"]) => Promise<void>;
+  updateName: (nombre: string) => Promise<void>;
 }
 
 // ─── Combat State ────────────────────────────────────────────────────
@@ -133,6 +139,7 @@ export interface MagicActions {
   usePactSlot: () => Promise<boolean>;
   restoreAllPactSlots: () => Promise<void>;
   getMagicState: () => InternalMagicState | null;
+  togglePreparedSpell: (spellId: string) => Promise<boolean>;
 }
 
 // ─── Class Resources State ───────────────────────────────────────────

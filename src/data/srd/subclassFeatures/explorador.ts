@@ -84,6 +84,76 @@ export const EXPLORADOR_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           },
         ],
       },
+      {
+        nivel: 11,
+        rasgos: [
+          {
+            nombre: "Multiataque",
+            descripcion:
+              "Elige una opción de multiataque.",
+            elecciones: [
+              {
+                id: "multiataque_cazador",
+                nombre: "Multiataque",
+                instruccion: "Elige tu tipo de multiataque:",
+                tipo: "single",
+                opciones: [
+                  {
+                    id: "salva",
+                    nombre: "Salva",
+                    descripcion:
+                      "Puedes usar tu acción para hacer un ataque a distancia contra cualquier número de criaturas en un radio de 3 m de un punto que puedas ver dentro del alcance de tu arma. Debes tener munición para cada objetivo.",
+                  },
+                  {
+                    id: "ataque_giratorio",
+                    nombre: "Ataque Giratorio",
+                    descripcion:
+                      "Puedes usar tu acción para realizar un ataque cuerpo a cuerpo contra cualquier número de criaturas a 1,5 m o menos de ti, con una tirada de ataque separada para cada una.",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        nivel: 15,
+        rasgos: [
+          {
+            nombre: "Defensa Superior del Cazador",
+            descripcion:
+              "Elige una defensa superior.",
+            elecciones: [
+              {
+                id: "defensa_superior_cazador",
+                nombre: "Defensa Superior del Cazador",
+                instruccion: "Elige tu defensa superior:",
+                tipo: "single",
+                opciones: [
+                  {
+                    id: "evasion",
+                    nombre: "Evasión",
+                    descripcion:
+                      "Cuando te veas sometido a un efecto que te permita hacer una tirada de salvación de Destreza para recibir solo la mitad de daño, no recibes daño si superas la salvación, y solo la mitad si fallas.",
+                  },
+                  {
+                    id: "resistir_la_marea",
+                    nombre: "Resistir la Marea",
+                    descripcion:
+                      "Cuando una criatura te impacte con un ataque cuerpo a cuerpo, puedes usar tu reacción para obligarla a repetir el mismo ataque contra otra criatura (distinta de ella) a tu elección que esté a su alcance.",
+                  },
+                  {
+                    id: "esquiva_instintiva",
+                    nombre: "Esquiva Instintiva",
+                    descripcion:
+                      "Cuando un atacante que puedas ver te impacte con un ataque, puedes usar tu reacción para reducir el daño a la mitad.",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
 

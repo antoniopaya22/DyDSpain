@@ -22,11 +22,12 @@ import type {
   Character,
   SavingThrowProficiencies,
 } from "@/types/character";
+import type { CustomRaceConfig, CustomBackgroundConfig } from "@/types/creation";
 import { calcProficiencyBonus } from "@/types/character";
 import { STORAGE_KEYS, setItem, getItem, removeItem } from "@/utils/storage";
-import { getRaceData, getSubraceData, getTotalRacialBonuses } from "@/data/srd/races";
+import { getRaceData, getSubraceData, getTotalRacialBonuses, getRacialSpellsForLevel, buildRaceDataFromCustom } from "@/data/srd/races";
 import { getClassData, calcLevel1HP } from "@/data/srd/classes";
-import { getBackgroundData } from "@/data/srd/backgrounds";
+import { getBackgroundData, buildBackgroundDataFromCustom } from "@/data/srd/backgrounds";
 import { createDefaultInventory } from "@/types/item";
 import {
   buildAbilityScoresDetailed,
@@ -108,6 +109,8 @@ interface CreationActions {
   setNombre: (nombre: string) => void;
   /** Paso 2: Raza y subraza */
   setRaza: (raza: RaceId, subraza: SubraceId) => void;
+  /** Paso 2: Datos de raza personalizada */
+  setCustomRaceData: (data: CustomRaceConfig) => void;
   /** Paso 3: Clase */
   setClase: (clase: ClassId) => void;
   /** Paso 4: Estadísticas */
@@ -115,6 +118,8 @@ interface CreationActions {
   setAbilityScores: (scores: AbilityScores) => void;
   /** Paso 5: Trasfondo */
   setTrasfondo: (trasfondo: BackgroundId) => void;
+  /** Paso 5: Datos de trasfondo personalizado */
+  setCustomBackgroundData: (data: CustomBackgroundConfig) => void;
   /** Paso 6: Habilidades */
   setSkillChoices: (skills: SkillKey[]) => void;
   /** Paso 7: Hechizos */
@@ -291,7 +296,18 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
         subraza,
         // Limpiar elecciones que dependen de la raza
         skillChoices: undefined,
+        // Limpiar datos custom si se elige una raza estándar
+        ...(raza !== "personalizada" ? { customRaceData: undefined } : {}),
       },
+      isDirty: true,
+    });
+  },
+
+  setCustomRaceData: (data: CustomRaceConfig) => {
+    const { draft } = get();
+    if (!draft) return;
+    set({
+      draft: { ...draft, customRaceData: data },
       isDirty: true,
     });
   },
@@ -338,6 +354,24 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
         ...draft,
         trasfondo,
         // Limpiar elecciones de habilidades ya que el trasfondo otorga habilidades fijas
+        skillChoices: undefined,
+        // Limpiar datos custom si se cambia a un trasfondo SRD
+        customBackgroundData: trasfondo === "personalizada"
+          ? draft.customBackgroundData
+          : undefined,
+      },
+      isDirty: true,
+    });
+  },
+
+  setCustomBackgroundData: (data: CustomBackgroundConfig) => {
+    const { draft } = get();
+    if (!draft) return;
+    set({
+      draft: {
+        ...draft,
+        customBackgroundData: data,
+        // Limpiar skills cuando cambia el trasfondo custom
         skillChoices: undefined,
       },
       isDirty: true,
@@ -419,8 +453,10 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       nombre: character.nombre,
       raza: character.raza,
       subraza: character.subraza ?? undefined,
+      customRaceData: character.raza === "personalizada" ? character.customRaceData : undefined,
       clase: character.clase,
       trasfondo: character.trasfondo,
+      customBackgroundData: character.trasfondo === "personalizada" ? character.customBackgroundData : undefined,
       alineamiento: character.alineamiento,
       personality: character.personality,
       appearance: character.appearance,
@@ -461,6 +497,10 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
 
       case 2: // Raza
         if (!draft.raza) return false;
+        if (draft.raza === "personalizada") {
+          // Custom race needs at least a name
+          return !!draft.customRaceData && draft.customRaceData.nombre.trim().length >= 1;
+        }
         const raceData = getRaceData(draft.raza);
         // Si la raza tiene subrazas, una debe estar seleccionada
         if (raceData.subraces.length > 0 && !draft.subraza) return false;
@@ -483,7 +523,11 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
         );
 
       case 5: // Trasfondo
-        return !!draft.trasfondo;
+        if (!draft.trasfondo) return false;
+        if (draft.trasfondo === "personalizada") {
+          return !!draft.customBackgroundData && draft.customBackgroundData.nombre.trim().length >= 1;
+        }
+        return true;
 
       case 6: // Habilidades
         return !!draft.skillChoices && draft.skillChoices.length > 0;
@@ -499,8 +543,8 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       case 8: // Equipamiento
         return !!draft.equipmentChoices;
 
-      case 9: // Personalidad
-        return !!draft.personality && !!draft.alineamiento;
+      case 9: // Personalidad (opcional)
+        return true;
 
       case 10: // Apariencia (opcional, siempre válido)
         return true;
@@ -539,8 +583,7 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       !draft.raza ||
       !draft.clase ||
       !draft.abilityScoresBase ||
-      !draft.trasfondo ||
-      !draft.alineamiento
+      !draft.trasfondo
     ) {
       return null;
     }
@@ -549,15 +592,21 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     const inventoryId = draft.recreatingInventoryId ?? randomUUID();
     const timestamp = now();
 
-    const raceData = getRaceData(draft.raza);
+    const raceData = draft.raza === "personalizada" && draft.customRaceData
+      ? buildRaceDataFromCustom(draft.customRaceData)
+      : getRaceData(draft.raza);
     const subraceData = draft.subraza
       ? getSubraceData(draft.raza, draft.subraza)
       : null;
     const classData = getClassData(draft.clase);
-    const backgroundData = getBackgroundData(draft.trasfondo);
+    const backgroundData = draft.trasfondo === "personalizada" && draft.customBackgroundData
+      ? buildBackgroundDataFromCustom(draft.customBackgroundData)
+      : getBackgroundData(draft.trasfondo);
 
     // ── Puntuaciones de característica ──
-    const racialBonuses = getTotalRacialBonuses(draft.raza, draft.subraza ?? null);
+    const racialBonuses = draft.raza === "personalizada" && draft.customRaceData
+      ? draft.customRaceData.abilityBonuses
+      : getTotalRacialBonuses(draft.raza, draft.subraza ?? null);
     const abilityScores = buildAbilityScoresDetailed(
       draft.abilityScoresBase,
       racialBonuses,
@@ -592,6 +641,8 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       classWeapons: classData.weaponProficiencies,
       classTools: classData.toolProficiencies,
       raceWeapons: raceData.weaponProficiencies,
+      raceArmors: raceData.armorProficiencies,
+      raceTools: raceData.toolProficiencies,
       raceLanguages: raceData.languages,
       subraceWeapons: subraceData?.weaponProficiencies,
       subraceTools: subraceData?.toolProficiencies,
@@ -617,9 +668,22 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     const appearance: Appearance = draft.appearance ?? {};
 
     // ── Hechizos ──
+    const racialSpellsLv1 = draft.raza === "personalizada" && draft.customRaceData?.racialSpells
+      ? draft.customRaceData.racialSpells
+          .filter((s) => s.minLevel <= 1)
+          .map((s) => s.nombre.toLowerCase().replace(/\s+/g, "_"))
+      : draft.raza !== "personalizada"
+        ? getRacialSpellsForLevel(
+            draft.raza,
+            draft.subraza ?? null,
+            1,
+          ).map((s) => s.spellId)
+        : [];
+
     const { knownSpellIds, preparedSpellIds, spellbookIds } = buildInitialSpells(
       draft.spellChoices,
       draft.clase,
+      racialSpellsLv1,
     );
 
     // ── Historial de nivel ──
@@ -640,23 +704,37 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       nombre: draft.nombre.trim(),
       raza: draft.raza,
       subraza: draft.subraza ?? null,
+      customRaceName: draft.raza === "personalizada" ? draft.customRaceData?.nombre?.trim() : undefined,
+      customRaceData: draft.raza === "personalizada" ? draft.customRaceData : undefined,
       clase: draft.clase,
+      customBackgroundName: draft.trasfondo === "personalizada" ? draft.customBackgroundData?.nombre?.trim() : undefined,
+      customBackgroundData: draft.trasfondo === "personalizada" ? draft.customBackgroundData : undefined,
       subclase: null,
       nivel: 1,
       experiencia: 0,
       trasfondo: draft.trasfondo,
-      alineamiento: draft.alineamiento,
+      alineamiento: draft.alineamiento ?? "neutral",
       abilityScores,
       skillProficiencies,
       savingThrows,
       hp: { max: maxHP, current: maxHP, temp: 0 },
       hitDice: { die: classData.hitDie, total: 1, remaining: 1 },
       deathSaves: { successes: 0, failures: 0 },
-      speed: { walk: raceData.speed },
-      damageModifiers: [],
+      speed: {
+        walk: raceData.speed,
+        ...(raceData.flySpeed ? { fly: raceData.flySpeed } : {}),
+        ...(raceData.swimSpeed ? { swim: raceData.swimSpeed } : {}),
+        ...(raceData.climbSpeed ? { climb: raceData.climbSpeed } : {}),
+      },
+      damageModifiers: draft.raza === "personalizada" && draft.customRaceData?.damageResistances
+        ? draft.customRaceData.damageResistances.map((type) => ({
+            type,
+            modifier: "resistance" as const,
+            source: draft.customRaceData!.nombre || "Raza personalizada",
+          }))
+        : [],
       conditions: [],
       concentration: null,
-      combatLog: [],
       proficiencies,
       proficiencyBonus: calcProficiencyBonus(1),
       traits,
@@ -694,9 +772,12 @@ export function calcTotalScoresPreview(
   baseScores: AbilityScores,
   raceId: RaceId,
   subraceId: SubraceId,
-  freeAbilityBonuses?: AbilityKey[]
+  freeAbilityBonuses?: AbilityKey[],
+  customBonuses?: Partial<Record<AbilityKey, number>>,
 ): AbilityScores {
-  const racialBonuses = getTotalRacialBonuses(raceId, subraceId ?? null);
+  const racialBonuses = raceId === "personalizada" && customBonuses
+    ? customBonuses
+    : getTotalRacialBonuses(raceId, subraceId ?? null);
 
   // Compute free bonuses (e.g. semi-elf picks 2 × +1)
   const freeBonuses: Partial<Record<AbilityKey, number>> = {};
@@ -722,7 +803,8 @@ export function calcTotalScoresPreview(
  */
 export function getGrantedSkills(
   raceId: RaceId | undefined,
-  trasfondoId: BackgroundId | undefined
+  trasfondoId: BackgroundId | undefined,
+  customBackgroundData?: CustomBackgroundConfig,
 ): SkillKey[] {
   const granted: SkillKey[] = [];
 
@@ -734,8 +816,12 @@ export function getGrantedSkills(
   }
 
   if (trasfondoId) {
-    const bgData = getBackgroundData(trasfondoId);
-    granted.push(...bgData.skillProficiencies);
+    if (trasfondoId === "personalizada" && customBackgroundData) {
+      granted.push(...customBackgroundData.skillProficiencies);
+    } else {
+      const bgData = getBackgroundData(trasfondoId);
+      granted.push(...bgData.skillProficiencies);
+    }
   }
 
   return [...new Set(granted)];
@@ -748,10 +834,11 @@ export function getGrantedSkills(
 export function getAvailableClassSkills(
   classId: ClassId,
   raceId: RaceId | undefined,
-  trasfondoId: BackgroundId | undefined
+  trasfondoId: BackgroundId | undefined,
+  customBackgroundData?: CustomBackgroundConfig,
 ): SkillKey[] {
   const classData = getClassData(classId);
-  const granted = getGrantedSkills(raceId, trasfondoId);
+  const granted = getGrantedSkills(raceId, trasfondoId, customBackgroundData);
 
   return classData.skillChoicePool.filter(
     (skill) => !granted.includes(skill)

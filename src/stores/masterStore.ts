@@ -20,7 +20,7 @@ import {
   fetchCampaignPlayers,
   addPlayerToCampaign,
   removePlayerFromCampaign,
-  findPlayerByCode,
+  findCharacterByCode,
 } from "@/services/supabaseService";
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ interface MasterActions {
 
   // ── Players ──
   loadPlayers: (campaignId: string) => Promise<void>;
-  addPlayer: (campaignId: string, playerCode: string) => Promise<string>;
+  addPlayer: (campaignId: string, characterCode: string) => Promise<string>;
   removePlayer: (campaignId: string, playerId: string) => Promise<void>;
 
   // ── Misc ──
@@ -158,18 +158,20 @@ export const useMasterStore = create<MasterStore>((set, get) => ({
     }
   },
 
-  addPlayer: async (campaignId, playerCode) => {
+  addPlayer: async (campaignId, characterCode) => {
     set({ error: null });
     try {
-      // 1. Find player by code
-      const profile = await findPlayerByCode(playerCode);
-      if (!profile) {
+      // 1. Find character (and its owner profile) by code
+      const result = await findCharacterByCode(characterCode);
+      if (!result) {
         throw new Error(
-          `No se encontró ningún jugador con el código "${playerCode}"`,
+          `No se encontró ningún personaje con el código "${characterCode}"`,
         );
       }
 
-      // 2. Check not already in campaign
+      const { profile, ...character } = result;
+
+      // 2. Check player not already in campaign
       const existing = get().players.find(
         (p) => p.profile.id === profile.id,
       );
@@ -179,18 +181,28 @@ export const useMasterStore = create<MasterStore>((set, get) => ({
         );
       }
 
-      // 3. Add to campaign
-      const membership = await addPlayerToCampaign(campaignId, profile.id);
+      // 3. Add to campaign with character pre-assigned
+      const membership = await addPlayerToCampaign(
+        campaignId,
+        profile.id,
+        character.id,
+      );
 
       // 4. Update local state
       const newPlayer: LobbyPlayer = {
         membership,
         profile,
-        character: null,
+        character,
       };
       set((s) => ({ players: [...s.players, newPlayer] }));
 
-      return profile.nombre || profile.codigo_jugador;
+      // Return display name
+      const charData = character.datos as Record<string, unknown> | undefined;
+      const charName = (charData?.nombre as string) || "";
+      const displayName = charName
+        ? `${charName} (${profile.nombre || profile.codigo_jugador})`
+        : profile.nombre || profile.codigo_jugador;
+      return displayName;
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Error al añadir jugador";

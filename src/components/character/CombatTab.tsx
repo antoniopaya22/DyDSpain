@@ -1,10 +1,10 @@
 /**
  * CombatTab - Pestaña de combate del personaje
  * Muestra: HP tracker, clase de armadura, velocidad, salvaciones de muerte,
- * dados de golpe, condiciones activas, concentración, y log de combate.
+ * dados de golpe, condiciones activas y concentración.
  *
  * Sub-components extracted to src/components/combat/:
- *   HPTracker, DeathSavesTracker, HitDiceSection, ConditionsSection, CombatLog
+ *   HPTracker, DeathSavesTracker, HitDiceSection, ConditionsSection
  */
 
 import { View, Text, ScrollView, TouchableOpacity, TextInput } from "react-native";
@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { useTheme, useDialog, useToast } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 import { formatModifier } from "@/types/character";
 
 // Extracted sub-components
@@ -20,7 +21,8 @@ import {
   DeathSavesTracker,
   HitDiceSection,
   ConditionsSection,
-  CombatLog,
+  WeaponAttacks,
+  SpellCombatSection,
 } from "@/components/combat";
 
 // ─── Main Component ──────────────────────────────────────────────────
@@ -45,7 +47,7 @@ export default function CombatTab() {
   if (!character) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Text className="text-dark-500 dark:text-dark-300 text-base">
+        <Text className="text-base" style={{ color: colors.textSecondary }}>
           No se ha cargado ningún personaje
         </Text>
       </View>
@@ -134,40 +136,40 @@ export default function CombatTab() {
   const renderStatsRow = () => (
     <View className="flex-row mb-4">
       {/* Armor Class */}
-      <View className="flex-1 bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mr-2 items-center">
-        <View className="h-14 w-14 rounded-full bg-blue-500/15 items-center justify-center mb-1">
+      <View className="flex-1 rounded-card border p-4 mr-2 items-center" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
+        <View className="h-14 w-14 rounded-full items-center justify-center mb-1" style={{ backgroundColor: withAlpha(colors.accentBlue, 0.15) }}>
           <Ionicons name="shield" size={28} color={colors.accentBlue} />
         </View>
-        <Text className="text-dark-900 dark:text-white text-2xl font-bold">
+        <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
           {ac}
         </Text>
-        <Text className="text-dark-400 text-[10px] uppercase tracking-wider mt-0.5">
+        <Text className="text-[10px] uppercase tracking-wider mt-0.5" style={{ color: colors.textMuted }}>
           Clase de Armadura
         </Text>
       </View>
 
       {/* Initiative */}
-      <View className="flex-1 bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mx-1 items-center">
-        <View className="h-14 w-14 rounded-full bg-amber-500/15 items-center justify-center mb-1">
+      <View className="flex-1 rounded-card border p-4 mx-1 items-center" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
+        <View className="h-14 w-14 rounded-full items-center justify-center mb-1" style={{ backgroundColor: withAlpha(colors.accentAmber, 0.15) }}>
           <Ionicons name="flash" size={28} color={colors.accentAmber} />
         </View>
-        <Text className="text-dark-900 dark:text-white text-2xl font-bold">
+        <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
           {formatModifier(character.abilityScores.des.modifier)}
         </Text>
-        <Text className="text-dark-400 text-[10px] uppercase tracking-wider mt-0.5">
+        <Text className="text-[10px] uppercase tracking-wider mt-0.5" style={{ color: colors.textMuted }}>
           Iniciativa
         </Text>
       </View>
 
       {/* Speed */}
-      <View className="flex-1 bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 ml-2 items-center">
-        <View className="h-14 w-14 rounded-full bg-green-500/15 items-center justify-center mb-1">
+      <View className="flex-1 rounded-card border p-4 ml-2 items-center" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
+        <View className="h-14 w-14 rounded-full items-center justify-center mb-1" style={{ backgroundColor: withAlpha(colors.accentGreen, 0.15) }}>
           <Ionicons name="footsteps" size={28} color={colors.accentGreen} />
         </View>
-        <Text className="text-dark-900 dark:text-white text-2xl font-bold">
+        <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
           {speed.walk}
         </Text>
-        <Text className="text-dark-400 text-[10px] uppercase tracking-wider mt-0.5">
+        <Text className="text-[10px] uppercase tracking-wider mt-0.5" style={{ color: colors.textMuted }}>
           Velocidad (pies)
         </Text>
       </View>
@@ -178,21 +180,22 @@ export default function CombatTab() {
     if (!concentration) return null;
 
     return (
-      <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-purple-500/30 p-4 mb-4">
+      <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: withAlpha(colors.accentPurple, 0.3) }}>
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center flex-1">
             <Ionicons name="eye" size={20} color={colors.accentPurple} />
             <View className="ml-3 flex-1">
-              <Text className="text-dark-400 text-[10px] uppercase tracking-wider">
+              <Text className="text-[10px] uppercase tracking-wider" style={{ color: colors.textMuted }}>
                 Concentración
               </Text>
-              <Text className="text-purple-300 text-sm font-semibold">
+              <Text className="text-sm font-semibold" style={{ color: colors.accentPurple }}>
                 {concentration.spellName}
               </Text>
             </View>
           </View>
           <TouchableOpacity
-            className="bg-gray-200 dark:bg-dark-700 rounded-lg px-3 py-1.5 active:bg-gray-300 dark:active:bg-dark-600"
+            className="rounded-lg px-3 py-1.5"
+            style={{ backgroundColor: colors.bgSecondary }}
             onPress={() => {
               showConfirm(
                 "Romper Concentración",
@@ -206,7 +209,7 @@ export default function CombatTab() {
               );
             }}
           >
-            <Text className="text-red-400 text-xs font-semibold">Romper</Text>
+            <Text className="text-xs font-semibold" style={{ color: colors.accentRed }}>Romper</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -216,27 +219,29 @@ export default function CombatTab() {
   const renderRestButtons = () => (
     <View className="flex-row mb-4">
       <TouchableOpacity
-        className="flex-1 bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mr-2 items-center active:bg-gray-50 dark:active:bg-surface-light"
+        className="flex-1 rounded-card border p-4 mr-2 items-center"
+        style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}
         onPress={handleShortRest}
       >
         <Ionicons name="cafe-outline" size={24} color={colors.accentAmber} />
-        <Text className="text-dark-900 dark:text-white text-sm font-semibold mt-1">
+        <Text className="text-sm font-semibold mt-1" style={{ color: colors.textPrimary }}>
           Descanso Corto
         </Text>
-        <Text className="text-dark-400 text-[10px] mt-0.5">
+        <Text className="text-[10px] mt-0.5" style={{ color: colors.textMuted }}>
           Usa dados de golpe
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        className="flex-1 bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 ml-2 items-center active:bg-gray-50 dark:active:bg-surface-light"
+        className="flex-1 rounded-card border p-4 ml-2 items-center"
+        style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}
         onPress={handleLongRest}
       >
         <Ionicons name="moon-outline" size={24} color={colors.accentBlue} />
-        <Text className="text-dark-900 dark:text-white text-sm font-semibold mt-1">
+        <Text className="text-sm font-semibold mt-1" style={{ color: colors.textPrimary }}>
           Descanso Largo
         </Text>
-        <Text className="text-dark-400 text-[10px] mt-0.5">Recupera todo</Text>
+        <Text className="text-[10px] mt-0.5" style={{ color: colors.textMuted }}>Recupera todo</Text>
       </TouchableOpacity>
     </View>
   );
@@ -251,18 +256,19 @@ export default function CombatTab() {
       >
         <HPTracker onShowToast={showToast} />
         {renderStatsRow()}
+        <WeaponAttacks />
         <DeathSavesTracker
           onShowAlert={showAlert}
           onShowConfirm={showConfirm}
         />
         {renderConcentration()}
+        <SpellCombatSection />
         <HitDiceSection onShowToast={showToast} />
         <ConditionsSection
           onShowToast={showToast}
           onShowConfirm={showConfirm}
         />
         {renderRestButtons()}
-        <CombatLog />
       </ScrollView>
 
       {/* Custom dialog (replaces Alert.alert) */}

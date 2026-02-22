@@ -100,6 +100,10 @@ export function useLevelUpWizard(
   // ── Metamagic ──
   const [selectedMetamagic, setSelectedMetamagic] = useState<string[]>([]);
 
+  // ── Custom spells (free text) ──
+  const [customCantripName, setCustomCantripName] = useState("");
+  const [customSpellName, setCustomSpellName] = useState("");
+
   // ── Spell description expand ──
   const [expandedSpellIds, setExpandedSpellIds] = useState<Set<string>>(
     new Set(),
@@ -250,6 +254,8 @@ export function useLevelUpWizard(
       setSwapNewSpell("");
       setWantsToSwap(false);
       setSpellSearch("");
+      setCustomCantripName("");
+      setCustomSpellName("");
       setSelectedMetamagic([]);
       setExpandedSpellIds(new Set());
     }
@@ -513,6 +519,10 @@ export function useLevelUpWizard(
     setWantsToSwap,
     spellSearch,
     setSpellSearch,
+    customCantripName,
+    setCustomCantripName,
+    customSpellName,
+    setCustomSpellName,
     expandedSpellIds,
     setExpandedSpellIds,
 

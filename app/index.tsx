@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  RefreshControl,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -36,6 +37,7 @@ export default function HomeScreen() {
   const { colors, isDark } = useTheme();
   const { campaigns, loadCampaigns, deleteCampaign } = useCampaignStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
   const [campaignClassMap, setCampaignClassMap] = useState<
     Record<string, ClassId | null>
   >({});
@@ -250,6 +252,18 @@ export default function HomeScreen() {
         }}
         showsVerticalScrollIndicator={false}
         initialNumToRender={8}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true);
+              await loadCampaigns();
+              setRefreshing(false);
+            }}
+            tintColor={colors.accentGold}
+            colors={[colors.accentGold]}
+          />
+        }
       />
 
       {/* FAB — New campaign */}

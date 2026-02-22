@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import type {
   CampanaMasterRow,
   CampanaJugadorRow,
+  CampanaJugadorLocalRow,
   PersonajeRow,
   ProfileRow,
 } from "@/types/supabase";
@@ -17,6 +18,38 @@ import type {
   UpdateMasterCampaignInput,
   LobbyPlayer,
 } from "@/types/master";
+import { STORAGE_KEYS, setItem, getItem } from "@/utils/storage";
+import type { Campaign } from "@/types/campaign";
+import type { Character } from "@/types/character";
+import type { Inventory } from "@/types/item";
+import type { InternalMagicState } from "@/stores/characterStore/helpers";
+import type { ClassResourcesState } from "@/stores/characterStore/classResourceTypes";
+import type { Note } from "@/types/notes";
+
+// ═══════════════════════════════════════════════════════════════════
+// Character lookup by code
+// ═══════════════════════════════════════════════════════════════════
+
+/** Look up a character (personaje) by its short shareable code */
+export async function findCharacterByCode(
+  code: string,
+): Promise<(PersonajeRow & { profile: ProfileRow }) | null> {
+  const { data, error } = await supabase
+    .from("personajes")
+    .select("*, profile:profiles!usuario_id(*)")
+    .eq("codigo_personaje", code.toUpperCase().trim())
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") return null; // not found
+    throw error;
+  }
+  const row = data as Record<string, unknown>;
+  return {
+    ...(row as unknown as PersonajeRow),
+    profile: row.profile as ProfileRow,
+  };
+}
 
 // ═══════════════════════════════════════════════════════════════════
 // Profile
@@ -167,17 +200,21 @@ export async function fetchCampaignPlayers(
   });
 }
 
-/** Add a player to a campaign */
+/** Add a player to a campaign (optionally with a character pre-assigned) */
 export async function addPlayerToCampaign(
   campaignId: string,
   playerId: string,
+  personajeId?: string,
 ): Promise<CampanaJugadorRow> {
+  const payload: Record<string, unknown> = {
+    campana_id: campaignId,
+    jugador_id: playerId,
+  };
+  if (personajeId) payload.personaje_id = personajeId;
+
   const { data, error } = await supabase
     .from("campana_jugadores")
-    .insert({
-      campana_id: campaignId,
-      jugador_id: playerId,
-    })
+    .insert(payload)
     .select()
     .single();
 
@@ -287,4 +324,154 @@ export async function syncLocalCampaign(
   );
 
   if (error) throw error;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Fetch player campaigns from Supabase
+// ═══════════════════════════════════════════════════════════════════
+
+/** Fetch all local (player-mode) campaigns backed up by a user */
+export async function fetchUserLocalCampaigns(
+  userId: string,
+): Promise<CampanaJugadorLocalRow[]> {
+  const { data, error } = await supabase
+    .from("campanas_jugador")
+    .select("*")
+    .eq("usuario_id", userId)
+    .order("actualizado_en", { ascending: false });
+
+  if (error) {
+    // Table may not exist yet
+    const isTableMissing =
+      error.code === "42P01" ||
+      error.code === "PGRST204" ||
+      error.message?.includes("does not exist");
+    if (isTableMissing) return [];
+    throw error;
+  }
+  return (data ?? []) as CampanaJugadorLocalRow[];
+}
+
+/** Delete a player campaign backup from Supabase */
+export async function deleteLocalCampaignBackup(
+  campaignId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("campanas_jugador")
+    .delete()
+    .eq("id", campaignId);
+
+  // Ignore errors (table might not exist, row might not exist)
+  if (error) console.warn("[supabaseService] deleteLocalCampaignBackup:", error.message);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Cloud Restore — Download user data from Supabase → AsyncStorage
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * Restore the user's campaigns and characters from Supabase into AsyncStorage.
+ * Called after login when local storage is empty (first login or after sign-out).
+ * Returns the number of campaigns restored, or 0 if nothing was restored.
+ */
+export async function restoreFromCloud(userId: string): Promise<number> {
+  try {
+    // Check if local data already exists — don't overwrite
+    const existingCampaigns = await getItem<Campaign[]>(STORAGE_KEYS.CAMPAIGNS);
+    if (existingCampaigns && existingCampaigns.length > 0) {
+      console.log("[CloudRestore] Local campaigns exist, skipping restore");
+      return 0;
+    }
+
+    // 1. Fetch campaigns backed up to Supabase
+    const cloudCampaigns = await fetchUserLocalCampaigns(userId);
+
+    // 2. Fetch all characters owned by this user
+    const cloudCharacters = await fetchUserCharacters(userId);
+
+    if (cloudCampaigns.length === 0 && cloudCharacters.length === 0) {
+      console.log("[CloudRestore] No cloud data found for user");
+      return 0;
+    }
+
+    console.log(
+      `[CloudRestore] Restoring ${cloudCampaigns.length} campaigns, ${cloudCharacters.length} characters`,
+    );
+
+    // 3. Write characters to AsyncStorage
+    for (const row of cloudCharacters) {
+      const datos = row.datos as Record<string, unknown>;
+      // Extract the character base data (everything except underscore-prefixed extras)
+      const { _magicState, _classResources, _inventory, _notes, ...characterData } =
+        datos as Record<string, unknown> & {
+          _magicState?: InternalMagicState | null;
+          _classResources?: ClassResourcesState | null;
+          _inventory?: Inventory | null;
+          _notes?: Note[] | null;
+        };
+
+      const charId = row.id;
+
+      // Write character
+      await setItem(STORAGE_KEYS.CHARACTER(charId), characterData as unknown as Character);
+
+      // Write magic state if present
+      if (_magicState) {
+        await setItem(STORAGE_KEYS.MAGIC_STATE(charId), _magicState);
+      }
+
+      // Write class resources if present
+      if (_classResources) {
+        await setItem(STORAGE_KEYS.CLASS_RESOURCES(charId), _classResources);
+      }
+
+      // Write inventory if present
+      if (_inventory) {
+        await setItem(STORAGE_KEYS.INVENTORY(charId), _inventory);
+      }
+
+      // Write notes if present
+      if (_notes && _notes.length > 0) {
+        await setItem(STORAGE_KEYS.NOTES(charId), _notes);
+      }
+    }
+
+    // 4. Write campaigns to AsyncStorage
+    const localCampaigns: Campaign[] = cloudCampaigns.map((row) => ({
+      id: row.id,
+      nombre: row.nombre,
+      descripcion: row.descripcion ?? undefined,
+      imagen: row.imagen ?? undefined,
+      personajeId: row.personaje_id ?? undefined,
+      creadoEn: row.creado_en,
+      actualizadoEn: row.actualizado_en,
+    }));
+
+    // Also create campaigns for characters that don't have a campaign
+    // (orphaned characters backed up via useCharacterSync)
+    const campaignCharacterIds = new Set(
+      localCampaigns.map((c) => c.personajeId).filter(Boolean),
+    );
+    for (const row of cloudCharacters) {
+      if (!campaignCharacterIds.has(row.id)) {
+        const datos = row.datos as Record<string, unknown>;
+        const charName = (datos.nombre as string) || "Personaje";
+        localCampaigns.push({
+          id: `restored-${row.id}`,
+          nombre: `Partida de ${charName}`,
+          personajeId: row.id,
+          creadoEn: row.actualizado_en,
+          actualizadoEn: row.actualizado_en,
+        });
+      }
+    }
+
+    await setItem(STORAGE_KEYS.CAMPAIGNS, localCampaigns);
+
+    console.log(`[CloudRestore] Restored ${localCampaigns.length} campaigns successfully`);
+    return localCampaigns.length;
+  } catch (err) {
+    console.error("[CloudRestore] Failed to restore:", err);
+    return 0;
+  }
 }

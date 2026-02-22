@@ -13,26 +13,37 @@ import {
   getBackgroundList,
   getBackgroundData,
   BACKGROUND_ICONS,
+  EXPANSION_BACKGROUND_IDS,
   type BackgroundData,
 } from "@/data/srd";
 import type { BackgroundId } from "@/types/character";
-import { useTheme } from "@/hooks";
+import type { CustomBackgroundConfig } from "@/types/creation";
+import { useTheme, useScrollToTop } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
+import { withAlpha } from "@/utils/theme";
+import CustomBackgroundEditor from "@/components/creation/CustomBackgroundEditor";
 
 const CURRENT_STEP = 5;
 
 export default function BackgroundStep() {
+  const scrollRef = useScrollToTop();
   const { colors, isDark } = useTheme();
   const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
   const { id: campaignId } = useLocalSearchParams<{ id: string }>();
 
-  const { draft, setTrasfondo, saveDraft, loadDraft } = useCreationStore();
+  const { draft, setTrasfondo, setCustomBackgroundData, saveDraft, loadDraft } = useCreationStore();
 
   const [selectedBg, setSelectedBg] = useState<BackgroundId | null>(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [customData, setCustomData] = useState<CustomBackgroundConfig | undefined>(undefined);
+  const [showExpansions, setShowExpansions] = useState(
+    draft?.trasfondo ? EXPANSION_BACKGROUND_IDS.includes(draft.trasfondo) : false,
+  );
 
-  const backgrounds = getBackgroundList();
+  const allBackgrounds = getBackgroundList();
+  const backgrounds = allBackgrounds.filter((bg) => !EXPANSION_BACKGROUND_IDS.includes(bg.id));
+  const expansionBackgrounds = allBackgrounds.filter((bg) => EXPANSION_BACKGROUND_IDS.includes(bg.id));
 
   useFocusEffect(
     useCallback(() => {
@@ -42,6 +53,13 @@ export default function BackgroundStep() {
         const currentDraft = useCreationStore.getState().draft;
         if (currentDraft?.trasfondo) {
           setSelectedBg(currentDraft.trasfondo);
+          if (EXPANSION_BACKGROUND_IDS.includes(currentDraft.trasfondo)) {
+            setShowExpansions(true);
+          }
+          if (currentDraft.trasfondo === "personalizada" && currentDraft.customBackgroundData) {
+            setCustomData(currentDraft.customBackgroundData);
+            setShowDetails(true);
+          }
         }
       };
       init();
@@ -49,8 +67,15 @@ export default function BackgroundStep() {
   );
 
   const currentBgData: BackgroundData | null = selectedBg
-    ? getBackgroundData(selectedBg)
+    ? selectedBg === "personalizada"
+      ? null
+      : getBackgroundData(selectedBg)
     : null;
+
+  const isCustomValid = selectedBg === "personalizada" && customData && customData.nombre.trim().length >= 1;
+  const canProceed = selectedBg
+    ? selectedBg === "personalizada" ? !!isCustomValid : true
+    : false;
 
   const handleSelectBg = (bgId: BackgroundId) => {
     if (selectedBg === bgId) {
@@ -64,6 +89,9 @@ export default function BackgroundStep() {
   const handleNext = async () => {
     if (!selectedBg) return;
     setTrasfondo(selectedBg);
+    if (selectedBg === "personalizada" && customData) {
+      setCustomBackgroundData(customData);
+    }
     await saveDraft();
     router.push({
       pathname: "/campaigns/[id]/character/create/skills",
@@ -74,6 +102,9 @@ export default function BackgroundStep() {
   const handleBack = () => {
     if (selectedBg) {
       setTrasfondo(selectedBg);
+      if (selectedBg === "personalizada" && customData) {
+        setCustomBackgroundData(customData);
+      }
     }
     router.back();
   };
@@ -83,6 +114,7 @@ export default function BackgroundStep() {
   return (
     <View style={[styles.container, themed.container]}>
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
@@ -306,6 +338,300 @@ export default function BackgroundStep() {
               </View>
             );
           })}
+
+          {/* ── Expansiones (collapsible) ── */}
+          {expansionBackgrounds.length > 0 && (
+            <>
+              <TouchableOpacity
+                style={[
+                  styles.bgCard,
+                  themed.card,
+                  {
+                    borderColor: showExpansions
+                      ? withAlpha(colors.accentPurple, 0.4)
+                      : undefined,
+                  },
+                ]}
+                onPress={() => setShowExpansions(!showExpansions)}
+              >
+                <View style={styles.bgCardRow}>
+                  <View
+                    style={[
+                      styles.bgIcon,
+                      { backgroundColor: withAlpha(colors.accentPurple, 0.15) },
+                    ]}
+                  >
+                    <Text style={styles.bgIconText}>📦</Text>
+                  </View>
+                  <View style={styles.bgInfo}>
+                    <Text
+                      style={[styles.bgName, themed.textPrimary]}
+                    >
+                      Expansiones
+                    </Text>
+                    <Text style={[styles.bgSkills, themed.bgSkills]}>
+                      {expansionBackgrounds.length} trasfondos adicionales
+                    </Text>
+                  </View>
+                  <Ionicons
+                    name={showExpansions ? "chevron-up" : "chevron-down"}
+                    size={20}
+                    color={colors.accentPurple}
+                  />
+                </View>
+              </TouchableOpacity>
+
+              {showExpansions &&
+                expansionBackgrounds.map((bg) => {
+                  const isSelected = selectedBg === bg.id;
+                  const icon = BACKGROUND_ICONS[bg.id] ?? "📜";
+                  return (
+                    <View key={bg.id}>
+                      <TouchableOpacity
+                        style={[
+                          styles.bgCard,
+                          themed.card,
+                          { marginLeft: 16 },
+                          isSelected && {
+                            borderColor: withAlpha(colors.accentPurple, 0.4),
+                            backgroundColor: withAlpha(colors.accentPurple, 0.08),
+                          },
+                        ]}
+                        onPress={() => handleSelectBg(bg.id)}
+                      >
+                        <View style={styles.bgCardRow}>
+                          <View
+                            style={[
+                              styles.bgIcon,
+                              isSelected
+                                ? { backgroundColor: withAlpha(colors.accentPurple, 0.2) }
+                                : themed.cardAlt,
+                            ]}
+                          >
+                            <Text style={styles.bgIconText}>{icon}</Text>
+                          </View>
+                          <View style={styles.bgInfo}>
+                            <Text
+                              style={[
+                                styles.bgName,
+                                themed.textPrimary,
+                                isSelected && themed.bgNameSelected,
+                              ]}
+                            >
+                              {bg.nombre}
+                            </Text>
+                            <Text
+                              style={[styles.bgSkills, themed.bgSkills]}
+                              numberOfLines={1}
+                            >
+                              {bg.skillProficiencies
+                                .map((sk) => {
+                                  const names: Record<string, string> = {
+                                    perspicacia: "Perspicacia",
+                                    religion: "Religión",
+                                    engano: "Engaño",
+                                    juego_de_manos: "Juego de Manos",
+                                    sigilo: "Sigilo",
+                                    atletismo: "Atletismo",
+                                    intimidacion: "Intimidación",
+                                    acrobacias: "Acrobacias",
+                                    interpretacion: "Interpretación",
+                                    historia: "Historia",
+                                    persuasion: "Persuasión",
+                                    percepcion: "Percepción",
+                                    medicina: "Medicina",
+                                    naturaleza: "Naturaleza",
+                                    supervivencia: "Supervivencia",
+                                    arcanos: "Arcanos",
+                                    investigacion: "Investigación",
+                                    trato_con_animales: "Trato con Animales",
+                                  };
+                                  return names[sk] ?? sk;
+                                })
+                                .join(", ")}
+                            </Text>
+                          </View>
+                          <Ionicons
+                            name={isSelected ? "checkmark-circle" : "ellipse-outline"}
+                            size={24}
+                            color={isSelected ? colors.accentPurple : colors.textMuted}
+                          />
+                        </View>
+                      </TouchableOpacity>
+
+                      {/* Expanded details for expansion bg */}
+                      {isSelected && showDetails && currentBgData && (
+                        <View
+                          style={[
+                            styles.detailsCard,
+                            themed.detailsCard,
+                            { marginLeft: 16 },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.detailsDescription,
+                              themed.detailsDescription,
+                            ]}
+                          >
+                            {currentBgData.descripcion}
+                          </Text>
+
+                          <View style={styles.detailRow}>
+                            <Text style={[styles.detailLabel, themed.detailLabel]}>
+                              Habilidades:
+                            </Text>
+                            <Text style={[styles.detailValue, themed.detailValue]}>
+                              {currentBgData.skillProficiencies
+                                .map((sk) => {
+                                  const names: Record<string, string> = {
+                                    perspicacia: "Perspicacia",
+                                    religion: "Religión",
+                                    engano: "Engaño",
+                                    juego_de_manos: "Juego de Manos",
+                                    sigilo: "Sigilo",
+                                    atletismo: "Atletismo",
+                                    intimidacion: "Intimidación",
+                                    acrobacias: "Acrobacias",
+                                    interpretacion: "Interpretación",
+                                    historia: "Historia",
+                                    persuasion: "Persuasión",
+                                    percepcion: "Percepción",
+                                    medicina: "Medicina",
+                                    naturaleza: "Naturaleza",
+                                    supervivencia: "Supervivencia",
+                                    arcanos: "Arcanos",
+                                    investigacion: "Investigación",
+                                    trato_con_animales: "Trato con Animales",
+                                  };
+                                  return names[sk] ?? sk;
+                                })
+                                .join(", ")}
+                            </Text>
+                          </View>
+
+                          {currentBgData.toolProficiencies.length > 0 && (
+                            <View style={styles.detailRow}>
+                              <Text style={[styles.detailLabel, themed.detailLabel]}>
+                                Herramientas:
+                              </Text>
+                              <Text style={[styles.detailValue, themed.detailValue]}>
+                                {currentBgData.toolProficiencies.join(", ")}
+                              </Text>
+                            </View>
+                          )}
+
+                          {currentBgData.extraLanguages > 0 && (
+                            <View style={styles.detailRow}>
+                              <Text style={[styles.detailLabel, themed.detailLabel]}>
+                                Idiomas extra:
+                              </Text>
+                              <Text style={[styles.detailValue, themed.detailValue]}>
+                                {currentBgData.extraLanguages}
+                              </Text>
+                            </View>
+                          )}
+
+                          <View style={styles.detailRow}>
+                            <Text style={[styles.detailLabel, themed.detailLabel]}>
+                              Oro inicial:
+                            </Text>
+                            <Text style={[styles.detailValue, themed.detailValue]}>
+                              {currentBgData.startingGold} po
+                            </Text>
+                          </View>
+
+                          <View style={[styles.featureBox, themed.featureBox]}>
+                            <View style={styles.featureHeader}>
+                              <Ionicons
+                                name="star"
+                                size={16}
+                                color={colors.accentGold}
+                              />
+                              <Text style={[styles.featureName, themed.featureName]}>
+                                {currentBgData.featureName}
+                              </Text>
+                            </View>
+                            <Text style={[styles.featureDesc, themed.featureDesc]}>
+                              {currentBgData.featureDescription}
+                            </Text>
+                          </View>
+
+                          <View style={styles.detailRow}>
+                            <Text style={[styles.detailLabel, themed.detailLabel]}>
+                              Equipo:
+                            </Text>
+                            <Text style={[styles.detailValue, themed.detailValue]}>
+                              {currentBgData.equipment.join(", ")}
+                            </Text>
+                          </View>
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
+            </>
+          )}
+
+          {/* ── Personalizada ── */}
+          {(() => {
+            const isSelected = selectedBg === "personalizada";
+            return (
+              <View>
+                <TouchableOpacity
+                  style={[
+                    styles.bgCard,
+                    themed.card,
+                    isSelected && styles.bgCardSelected,
+                  ]}
+                  onPress={() => handleSelectBg("personalizada" as BackgroundId)}
+                >
+                  <View style={styles.bgCardRow}>
+                    <View
+                      style={[
+                        styles.bgIcon,
+                        themed.cardAlt,
+                        isSelected && styles.bgIconSelected,
+                      ]}
+                    >
+                      <Text style={styles.bgIconText}>✏️</Text>
+                    </View>
+                    <View style={styles.bgInfo}>
+                      <Text
+                        style={[
+                          styles.bgName,
+                          themed.textPrimary,
+                          isSelected && themed.bgNameSelected,
+                        ]}
+                      >
+                        Personalizada
+                      </Text>
+                      <Text
+                        style={[styles.bgSkills, themed.bgSkills]}
+                        numberOfLines={1}
+                      >
+                        Crea tu propio trasfondo
+                      </Text>
+                    </View>
+                    <Ionicons
+                      name={isSelected ? "checkmark-circle" : "ellipse-outline"}
+                      size={24}
+                      color={isSelected ? colors.accentRed : colors.textMuted}
+                    />
+                  </View>
+                </TouchableOpacity>
+
+                {isSelected && showDetails && (
+                  <View style={[styles.detailsCard, themed.detailsCard]}>
+                    <CustomBackgroundEditor
+                      initialData={customData}
+                      onChange={(data) => setCustomData(data)}
+                    />
+                  </View>
+                )}
+              </View>
+            );
+          })()}
         </View>
       </ScrollView>
 
@@ -314,13 +640,13 @@ export default function BackgroundStep() {
         <TouchableOpacity
           style={[
             styles.nextButton,
-            !selectedBg && [
+            !canProceed && [
               styles.nextButtonDisabled,
               themed.nextButtonDisabled,
             ],
           ]}
           onPress={handleNext}
-          disabled={!selectedBg}
+          disabled={!canProceed}
         >
           <Text style={styles.nextButtonText}>Siguiente: Habilidades</Text>
           <Ionicons name="arrow-forward" size={20} color="white" />

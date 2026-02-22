@@ -30,6 +30,8 @@ export function calcPreparedSpells(
   abilityModifier: number
 ): number {
   switch (classId) {
+    case "bardo":
+    case "hechicero":
     case "clerigo":
     case "druida":
       return Math.max(1, classLevel + abilityModifier);

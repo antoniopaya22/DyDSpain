@@ -4,16 +4,12 @@
  */
 
 import type { Character, HitPoints, DeathSaves, Condition } from "@/types/character";
-import { formatModifier } from "@/types/character";
-import { STORAGE_KEYS } from "@/utils/storage";
 import type { CharacterStore, CombatActions } from "./types";
 import { now } from "@/utils/providers";
 import {
-  createCombatLogEntry,
   rollDie,
   hitDieSides,
   updateCharacterAndPersist,
-  COMBAT_LOG_MAX,
 } from "./helpers";
 
 type SetState = (partial: Partial<CharacterStore>) => void;
@@ -51,16 +47,8 @@ export function createCombatSlice(
         temp: newTemp,
       };
 
-      const logEntry = createCombatLogEntry(
-        "damage",
-        amount,
-        newCurrent,
-        description ?? `Recibe ${amount} de daño`,
-      );
-
       await updateCharacterAndPersist(get, set, {
         hp: newHp,
-        combatLog: [logEntry, ...character.combatLog].slice(0, COMBAT_LOG_MAX),
       });
     },
 
@@ -74,16 +62,8 @@ export function createCombatSlice(
       );
       const actualHeal = newCurrent - character.hp.current;
 
-      const logEntry = createCombatLogEntry(
-        "healing",
-        actualHeal,
-        newCurrent,
-        description ?? `Cura ${actualHeal} PG`,
-      );
-
       await updateCharacterAndPersist(get, set, {
         hp: { ...character.hp, current: newCurrent },
-        combatLog: [logEntry, ...character.combatLog].slice(0, COMBAT_LOG_MAX),
       });
     },
 
@@ -93,16 +73,8 @@ export function createCombatSlice(
 
       const newTemp = Math.max(0, amount);
 
-      const logEntry = createCombatLogEntry(
-        "temp_hp",
-        newTemp,
-        character.hp.current,
-        `PG temporales: ${newTemp}`,
-      );
-
       await updateCharacterAndPersist(get, set, {
         hp: { ...character.hp, temp: newTemp },
-        combatLog: [logEntry, ...character.combatLog].slice(0, COMBAT_LOG_MAX),
       });
     },
 
@@ -143,20 +115,12 @@ export function createCombatSlice(
         character.hp.current + healed,
       );
 
-      const logEntry = createCombatLogEntry(
-        "hit_dice",
-        healed,
-        newCurrent,
-        `Usa dado de golpe (${character.hitDice.die}): ${rolled} + CON(${formatModifier(conMod)}) = ${healed} PG`,
-      );
-
       await updateCharacterAndPersist(get, set, {
         hp: { ...character.hp, current: newCurrent },
         hitDice: {
           ...character.hitDice,
           remaining: character.hitDice.remaining - 1,
         },
-        combatLog: [logEntry, ...character.combatLog].slice(0, COMBAT_LOG_MAX),
       });
 
       return { rolled, healed };
@@ -185,21 +149,11 @@ export function createCombatSlice(
       const newSuccesses = character.deathSaves.successes + 1;
       const isStable = newSuccesses >= 3;
 
-      const logEntry = createCombatLogEntry(
-        "death_save",
-        1,
-        character.hp.current,
-        isStable
-          ? "¡Estabilizado! (3 éxitos)"
-          : `Salvación de muerte: Éxito (${newSuccesses}/3)`,
-      );
-
       const patch: Partial<Character> = {
         deathSaves: {
           ...character.deathSaves,
           successes: newSuccesses,
         },
-        combatLog: [logEntry, ...character.combatLog].slice(0, COMBAT_LOG_MAX),
       };
 
       if (isStable) {
@@ -219,21 +173,11 @@ export function createCombatSlice(
       const newFailures = character.deathSaves.failures + 1;
       const isDead = newFailures >= 3;
 
-      const logEntry = createCombatLogEntry(
-        "death_save",
-        -1,
-        character.hp.current,
-        isDead
-          ? "☠️ Muerte (3 fallos)"
-          : `Salvación de muerte: Fallo (${newFailures}/3)`,
-      );
-
       await updateCharacterAndPersist(get, set, {
         deathSaves: {
           ...character.deathSaves,
           failures: newFailures,
         },
-        combatLog: [logEntry, ...character.combatLog].slice(0, COMBAT_LOG_MAX),
       });
 
       return isDead ? "dead" : "failure";

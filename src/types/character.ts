@@ -61,7 +61,7 @@ export type Alignment =
   | "neutral_malvado"
   | "caotico_malvado";
 
-export type Size = "pequeno" | "mediano" | "grande";
+export type Size = "diminuto" | "pequeno" | "mediano" | "grande";
 
 export type HitDie = "d6" | "d8" | "d10" | "d12";
 
@@ -116,7 +116,10 @@ export type RaceId =
   | "gnomo"
   | "semielfo"
   | "semiorco"
-  | "tiefling";
+  | "tiefling"
+  | "hada"
+  | "liebren"
+  | "personalizada";
 
 export type SubraceId =
   | "enano_colinas"
@@ -163,7 +166,10 @@ export type BackgroundId =
   | "sabio"
   | "marinero"
   | "soldado"
-  | "huerfano";
+  | "huerfano"
+  | "peon_brujaluz"
+  | "extraviado_feerico"
+  | "personalizada";
 
 // ─── Puntuaciones de característica ──────────────────────────────────
 
@@ -343,17 +349,6 @@ export interface LevelUpRecord {
   traitsGained?: string[];
 }
 
-// ─── Historial de combate ────────────────────────────────────────────
-
-export interface CombatLogEntry {
-  id: string;
-  timestamp: string;
-  type: "damage" | "healing" | "temp_hp" | "hit_dice" | "death_save" | "rest";
-  amount: number;
-  hpAfter: number;
-  description?: string;
-}
-
 // ─── Concentración en hechizo ────────────────────────────────────────
 
 export interface ConcentrationState {
@@ -374,12 +369,20 @@ export interface Character {
   nombre: string;
   raza: RaceId;
   subraza: SubraceId;
+  /** Nombre de la raza personalizada (solo cuando raza === "personalizada") */
+  customRaceName?: string;
+  /** Configuración completa de la raza personalizada (para consultas post-creación) */
+  customRaceData?: import("@/types/creation").CustomRaceConfig;
   clase: ClassId;
+  /** Nombre del trasfondo personalizado (solo cuando trasfondo === "personalizada") */
+  customBackgroundName?: string;
+  /** Configuración completa del trasfondo personalizado (para consultas post-creación) */
+  customBackgroundData?: import("@/types/creation").CustomBackgroundConfig;
   subclase: SubclassId | null;
   nivel: number;
   experiencia: number;
   trasfondo: BackgroundId;
-  alineamiento: Alignment;
+  alineamiento?: Alignment;
 
   // ── Estadísticas (HU-04) ──
   abilityScores: AbilityScoresDetailed;
@@ -394,7 +397,6 @@ export interface Character {
   damageModifiers: DamageModifier[];
   conditions: ActiveCondition[];
   concentration: ConcentrationState | null;
-  combatLog: CombatLogEntry[];
 
   // ── Competencias ──
   proficiencies: Proficiencies;

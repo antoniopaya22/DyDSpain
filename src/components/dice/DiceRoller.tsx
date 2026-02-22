@@ -98,6 +98,24 @@ function getDiePresets(
   return DIE_PRESET_SIDES.map((p, i) => ({ ...p, color: palette[i] }));
 }
 
+/** Map a die type string (e.g. "d6") to its theme color */
+function getDieColor(
+  die: string,
+  colors: import("@/utils/theme").ThemeColors,
+): string {
+  const map: Record<string, string> = {
+    d3: colors.accentLightBlue,
+    d4: colors.accentGreen,
+    d6: colors.accentBlue,
+    d8: colors.accentPurple,
+    d10: colors.accentAmber,
+    d12: colors.accentDanger,
+    d20: colors.accentPink,
+    d100: colors.accentIndigo,
+  };
+  return map[die] ?? colors.textPrimary;
+}
+
 /** Resolve advantage-mode colors from the active theme */
 function getAdvantageColors(
   colors: import("@/utils/theme").ThemeColors,
@@ -752,6 +770,7 @@ export default function DiceRoller({
             {rolls.map((roll, i) => {
               const isNat20 = roll.value === 20 && roll.die === "d20";
               const isNat1 = roll.value === 1 && roll.die === "d20";
+              const dieColor = getDieColor(roll.die, colors);
               return (
                 <View
                   key={i}
@@ -764,14 +783,14 @@ export default function DiceRoller({
                           ? colors.accentGold + "25"
                           : isNat1
                             ? colors.accentDanger + "25"
-                            : colors.bgElevated,
+                            : dieColor + "20",
                       borderColor: roll.discarded
                         ? colors.bgSecondary
                         : isNat20
                           ? colors.accentGold + "50"
                           : isNat1
                             ? colors.accentDanger + "50"
-                            : colors.borderDefault,
+                            : dieColor + "50",
                       opacity: roll.discarded ? 0.5 : 1,
                     },
                   ]}
@@ -786,7 +805,7 @@ export default function DiceRoller({
                             ? colors.accentGold
                             : isNat1
                               ? colors.accentDanger
-                              : colors.textPrimary,
+                              : dieColor,
                         textDecorationLine: roll.discarded
                           ? "line-through"
                           : "none",

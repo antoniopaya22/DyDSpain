@@ -185,10 +185,15 @@ export function calcWeaponDamageModifier(
 
 export function formatWeaponDamage(
   damage: WeaponDamage,
-  modifier: number
+  modifier: number,
+  bonusDamage?: WeaponDamage,
 ): string {
   const modStr = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-  return `${damage.dice}${modStr} ${damage.damageType}`;
+  let result = `${damage.dice}${modStr} ${damage.damageType}`;
+  if (bonusDamage) {
+    result += ` +${bonusDamage.dice} ${bonusDamage.damageType}`;
+  }
+  return result;
 }
 
 // ─── Factoría ────────────────────────────────────────────────────────

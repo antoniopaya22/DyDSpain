@@ -193,7 +193,7 @@ export default function ConfirmStep({
 
   // Spells learned — resolve IDs to display names
   const resolveSpellName = (id: string) =>
-    getSpellById(id)?.nombre ?? id;
+    getSpellById(id)?.nombre ?? id.replace(/^custom:(truco:)?/, "");
 
   if (newCantrips.length > 0) {
     changes.push({

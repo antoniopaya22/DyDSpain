@@ -10,6 +10,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 import { CONDITION_NAMES, type Condition } from "@/types/character";
 import { ALL_CONDITIONS } from "@/utils/combat";
 import type { DialogType } from "@/components/ui/ConfirmDialog";
@@ -48,7 +49,7 @@ export function ConditionsSection({
   };
 
   return (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
+    <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center">
           <Ionicons
@@ -56,14 +57,14 @@ export function ConditionsSection({
             size={20}
             color={colors.accentAmber}
           />
-          <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider ml-2">
+          <Text className="text-xs font-semibold uppercase tracking-wider ml-2" style={{ color: colors.textSecondary }}>
             Condiciones
           </Text>
         </View>
         <View className="flex-row">
           {conditions.length > 0 && (
             <TouchableOpacity
-              className="mr-2 px-2 py-1 rounded-md active:bg-gray-300 dark:active:bg-dark-600"
+              className="mr-2 px-2 py-1 rounded-md"
               onPress={() => {
                 onShowConfirm(
                   "Limpiar condiciones",
@@ -77,13 +78,14 @@ export function ConditionsSection({
                 );
               }}
             >
-              <Text className="text-red-400 text-xs font-semibold">
+              <Text className="text-xs font-semibold" style={{ color: colors.accentDanger }}>
                 Limpiar
               </Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity
-            className="bg-amber-600/80 rounded-lg px-3 py-1 active:bg-amber-700"
+            className="rounded-lg px-3 py-1"
+            style={{ backgroundColor: withAlpha(colors.accentAmber, 0.8) }}
             onPress={() => setShowPicker(!showPicker)}
           >
             <Ionicons name="add" size={18} color="white" />
@@ -93,7 +95,7 @@ export function ConditionsSection({
 
       {/* Active conditions */}
       {conditions.length === 0 ? (
-        <Text className="text-dark-400 text-sm italic">
+        <Text className="text-sm italic" style={{ color: colors.textMuted }}>
           Sin condiciones activas
         </Text>
       ) : (
@@ -101,10 +103,11 @@ export function ConditionsSection({
           {conditions.map((c) => (
             <TouchableOpacity
               key={c.condition}
-              className="flex-row items-center bg-amber-500/15 border border-amber-500/30 rounded-full px-3 py-1.5 mr-2 mb-2"
+              className="flex-row items-center border rounded-full px-3 py-1.5 mr-2 mb-2"
+              style={{ backgroundColor: withAlpha(colors.accentAmber, 0.15), borderColor: withAlpha(colors.accentAmber, 0.3) }}
               onPress={() => removeCondition(c.condition)}
             >
-              <Text className="text-amber-400 text-xs font-semibold">
+              <Text className="text-xs font-semibold" style={{ color: colors.accentAmber }}>
                 {CONDITION_NAMES[c.condition]}
               </Text>
               <Ionicons
@@ -120,8 +123,8 @@ export function ConditionsSection({
 
       {/* Condition Picker */}
       {showPicker && (
-        <View className="mt-3 pt-3 border-t border-dark-100 dark:border-surface-border/50">
-          <Text className="text-dark-500 dark:text-dark-300 text-xs mb-2">
+        <View className="mt-3 pt-3 border-t" style={{ borderColor: colors.borderDefault }}>
+          <Text className="text-xs mb-2" style={{ color: colors.textSecondary }}>
             Pulsa para añadir una condición:
           </Text>
           <View className="flex-row flex-wrap">
@@ -130,10 +133,11 @@ export function ConditionsSection({
             ).map((c) => (
               <TouchableOpacity
                 key={c}
-                className="bg-gray-200 dark:bg-dark-700 border border-dark-100 dark:border-surface-border rounded-full px-3 py-1.5 mr-2 mb-2 active:bg-gray-300 dark:active:bg-dark-600"
+                className="border rounded-full px-3 py-1.5 mr-2 mb-2"
+                style={{ backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }}
                 onPress={() => handleAddCondition(c)}
               >
-                <Text className="text-dark-600 dark:text-dark-200 text-xs">
+                <Text className="text-xs" style={{ color: colors.textSecondary }}>
                   {CONDITION_NAMES[c]}
                 </Text>
               </TouchableOpacity>

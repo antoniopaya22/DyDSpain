@@ -7,6 +7,7 @@ export {
   RACES,
   DRAGON_LINEAGES,
   RACE_ICONS,
+  EXPANSION_RACE_IDS,
   AVAILABLE_LANGUAGES,
   getRaceData,
   getSubraceData,
@@ -14,9 +15,11 @@ export {
   getAllRaceTraits,
   getRaceList,
   hasSubraces,
+  getRacialSpellsForLevel,
+  getRacialSpellsUnlockedAtLevel,
 } from "./races";
 
-export type { RaceData, SubraceData, RaceTrait, DragonLineage } from "./races";
+export type { RaceData, SubraceData, RaceTrait, DragonLineage, RacialSpellcasting, RacialSpellEntry } from "./races";
 
 // ─── Clases ──────────────────────────────────────────────────────────
 export {
@@ -39,6 +42,7 @@ export type { ClassData, ClassFeature, EquipmentChoice } from "./classes";
 export {
   BACKGROUNDS,
   BACKGROUND_ICONS,
+  EXPANSION_BACKGROUND_IDS,
   getBackgroundData,
   getBackgroundList,
   getBackgroundSkills,
@@ -47,6 +51,7 @@ export {
   getRandomBond,
   getRandomFlaw,
   generateRandomPersonality,
+  buildBackgroundDataFromCustom,
 } from "./backgrounds";
 
 export type { BackgroundData, BackgroundPersonality } from "./backgrounds";

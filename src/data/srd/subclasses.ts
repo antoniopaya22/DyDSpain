@@ -28,57 +28,57 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       id: "senda_berserker",
       nombre: "Senda del Berserker",
       descripcion:
-        "Canalizas tu furia en un frenesí violento e imparable. Tu rabia te permite atacar sin cesar, pero conlleva un precio de agotamiento.",
+        "Canalizas tu furia en un frenesí violento e imparable. Tu rabia incontrolable te permite atacar sin cesar y aterrorizar al enemigo.",
       fuente: "PHB",
     },
     {
-      id: "senda_guerrero_totemico",
-      nombre: "Senda del Guerrero Totémico",
+      id: "senda_corazon_salvaje",
+      nombre: "Senda del Corazón Salvaje",
       descripcion:
-        "Tu furia te conecta con espíritus animales que te otorgan poderes sobrenaturales según el tótem elegido: Oso, Águila o Lobo.",
+        "Tu furia te conecta con espíritus animales que te otorgan poderes sobrenaturales: la resistencia del oso, el vuelo del águila o la ferocidad del lobo.",
       fuente: "PHB",
     },
     {
-      id: "senda_guerrero_alma",
-      nombre: "Senda del Guerrero del Alma",
+      id: "senda_arbol_mundo",
+      nombre: "Senda del Árbol del Mundo",
       descripcion:
-        "Tu furia se alimenta de la energía divina. Puedes canalizar tu furia como poder sagrado para dañar enemigos y proteger aliados.",
+        "Tu furia te conecta al Árbol del Mundo, el puente cósmico entre los planos. Proteges aliados, teletransportas combatientes y golpeas con raíces ancestrales.",
+      fuente: "PHB",
+    },
+    {
+      id: "senda_fanatico",
+      nombre: "Senda del Fanático",
+      descripcion:
+        "Tu furia se alimenta de energía divina. Canalizas poder sagrado para infligir daño necrótico o radiante y luchar más allá de la muerte misma.",
+      fuente: "PHB",
+    },
+    {
+      id: "senda_guardian_ancestral",
+      nombre: "Senda del Guardián Ancestral",
+      descripcion:
+        "Invocas a los espíritus de tus antepasados guerreros que luchan a tu lado, protegen a tus aliados y devuelven el daño a tus enemigos.",
       fuente: "XGtE",
     },
     {
-      id: "senda_portador_ancestral",
-      nombre: "Senda del Portador del Ancestral",
+      id: "senda_heraldo_tormenta",
+      nombre: "Senda del Heraldo de la Tormenta",
       descripcion:
-        "Invocas a los espíritus de tus antepasados guerreros que luchan a tu lado, protegen a tus aliados y asedian a tus enemigos.",
-      fuente: "XGtE",
-    },
-    {
-      id: "senda_heraldo_furia",
-      nombre: "Senda del Heraldo de Furia",
-      descripcion:
-        "Tu furia genera un aura elemental de tormenta que daña a tus enemigos cercanos. Elige entre Desierto, Mar o Tundra.",
+        "Tu furia genera un aura elemental que daña a tus enemigos cercanos. Elige entre el calor abrasador del Desierto, el relámpago del Mar o el frío de la Tundra.",
       fuente: "XGtE",
     },
     {
       id: "senda_bestia",
       nombre: "Senda de la Bestia",
       descripcion:
-        "Tu furia desata la bestia interior, transformando tu cuerpo con garras, mordisco o cola como armas naturales.",
+        "Tu furia desata la bestia interior, transformando tu cuerpo con garras, mordisco o cola como armas naturales ferocísimas.",
       fuente: "TCoE",
     },
     {
       id: "senda_magia_salvaje",
       nombre: "Senda de la Magia Salvaje",
       descripcion:
-        "Tu furia genera surges de magia caótica con efectos aleatorios que pueden beneficiarte a ti y a tus aliados.",
+        "Tu furia genera surges de magia caótica con efectos aleatorios que pueden beneficiarte a ti y a tus aliados de formas imprevisibles.",
       fuente: "TCoE",
-    },
-    {
-      id: "senda_guardian_salvaje",
-      nombre: "Senda del Guardián Salvaje",
-      descripcion:
-        "Canalizas la furia de la naturaleza, conectándote con espíritus salvajes que potencian tus instintos y tu cuerpo.",
-      fuente: "UA",
     },
   ],
 
@@ -134,11 +134,11 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       fuente: "TCoE",
     },
     {
-      id: "colegio_espiritu",
-      nombre: "Colegio del Espíritu",
+      id: "colegio_danza",
+      nombre: "Colegio de la Danza",
       descripcion:
-        "Canalizas las historias de los héroes caídos. Cuando narras tus cuentos, las leyendas cobran vida a tu alrededor.",
-      fuente: "VRGtR",
+        "Tu arte es el movimiento. Tu danza inspira a tus aliados, desconcierta a tus enemigos y te protege del peligro.",
+      fuente: "PHB",
     },
   ],
 
@@ -201,84 +201,77 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       id: "dominio_vida",
       nombre: "Dominio de la Vida",
       descripcion:
-        "Te especializas en curación y protección divina. Tus conjuros curativos son más potentes y puedes restaurar más PG.",
+        "Te especializas en la energía positiva que sustenta la vida. Tus conjuros curativos son excepcionalmente potentes y puedes canalizar divinidad para restaurar PG masivamente.",
       fuente: "PHB",
     },
     {
       id: "dominio_luz",
       nombre: "Dominio de la Luz",
       descripcion:
-        "Canalizas el poder de la luz sagrada para deslumbrar, quemar e iluminar contra las fuerzas de la oscuridad.",
-      fuente: "PHB",
-    },
-    {
-      id: "dominio_guerra",
-      nombre: "Dominio de la Guerra",
-      descripcion:
-        "Eres un campeón divino en el campo de batalla. Ganas competencia en armas marciales y armaduras pesadas.",
-      fuente: "PHB",
-    },
-    {
-      id: "dominio_conocimiento",
-      nombre: "Dominio del Conocimiento",
-      descripcion:
-        "Tu deidad valora el saber. Aprendes idiomas adicionales y puedes acceder a conocimiento oculto a través de la fe.",
-      fuente: "PHB",
-    },
-    {
-      id: "dominio_naturaleza",
-      nombre: "Dominio de la Naturaleza",
-      descripcion:
-        "Sirves a una deidad de la naturaleza, obteniendo poder sobre plantas, animales y los elementos naturales.",
-      fuente: "PHB",
-    },
-    {
-      id: "dominio_tempestad",
-      nombre: "Dominio de la Tempestad",
-      descripcion:
-        "Dominas el poder de las tormentas. Puedes castigar a quienes te atacan con relámpagos y truenos divinos.",
+        "Canalizas el poder divino para traer fuego abrasador y revelación. Dispersas la oscuridad y castigas a los enemigos con resplandor radiante.",
       fuente: "PHB",
     },
     {
       id: "dominio_engano",
       nombre: "Dominio del Engaño",
       descripcion:
-        "Tu deidad favorece la astucia y la ilusión. Puedes crear duplicados ilusorios y mejorar tu sigilo y engaño.",
+        "Tu magia se centra en el engaño, la ilusión y el sigilo. Creas duplicados ilusorios, te teletransportas y desafías el orden establecido.",
+      fuente: "PHB",
+    },
+    {
+      id: "dominio_guerra",
+      nombre: "Dominio de la Guerra",
+      descripcion:
+        "Eres un campeón divino en el campo de batalla. Atacas con acción adicional, guías los golpes de tus aliados y resistes el daño físico.",
       fuente: "PHB",
     },
     {
       id: "dominio_forja",
       nombre: "Dominio de la Forja",
       descripcion:
-        "Canalizas el poder de la creación divina. Puedes bendecir armas y armaduras con magia sagrada.",
+        "Canalizas el poder de la creación divina. Puedes bendecir armas y armaduras con magia sagrada y crear objetos mediante rituales.",
       fuente: "XGtE",
     },
     {
       id: "dominio_tumba",
       nombre: "Dominio de la Tumba",
       descripcion:
-        "Vigilas el límite entre la vida y la muerte. Tienes poder sobre los no muertos y puedes proteger contra la muerte.",
+        "Vigilas el límite entre la vida y la muerte. Maximizas la curación en criaturas moribundas y marcas enemigos para su destrucción.",
       fuente: "XGtE",
+    },
+    {
+      id: "dominio_naturaleza",
+      nombre: "Dominio de la Naturaleza",
+      descripcion:
+        "Sirves a una deidad de la naturaleza, obteniendo poder sobre plantas, animales y los elementos naturales.",
+      fuente: "PHB'14",
+    },
+    {
+      id: "dominio_tempestad",
+      nombre: "Dominio de la Tempestad",
+      descripcion:
+        "Dominas el poder de las tormentas. Castigas a los atacantes con relámpagos y truenos, y canalizas daño elemental máximo.",
+      fuente: "PHB'14",
     },
     {
       id: "dominio_orden",
       nombre: "Dominio del Orden",
       descripcion:
-        "Representas la ley divina. Puedes comandar a otros para actuar en tu nombre y castigar a quienes desafían el orden.",
+        "Representas la ley divina. Comandas aliados para atacar como reacción y canalizas presencia intimidante para hechizar enemigos.",
       fuente: "TCoE",
     },
     {
       id: "dominio_paz",
       nombre: "Dominio de la Paz",
       descripcion:
-        "Tu fe promueve la armonía y la unión. Puedes crear vínculos entre aliados que comparten resistencia y fuerza.",
+        "Tu fe promueve la armonía. Creas vínculos entre aliados que comparten dados extra, se protegen mutuamente y se teletransportan para absorber daño.",
       fuente: "TCoE",
     },
     {
       id: "dominio_crepusculo",
       nombre: "Dominio del Crepúsculo",
       descripcion:
-        "Habitas el límite entre la luz y la oscuridad, otorgando visión en la oscuridad y refugio crepuscular a tus aliados.",
+        "Habitas el límite entre la luz y la oscuridad. Otorgas visión en la oscuridad a 90 m, refugio crepuscular con PG temporales y vuelo nocturno.",
       fuente: "TCoE",
     },
   ],
@@ -289,15 +282,29 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       id: "circulo_tierra",
       nombre: "Círculo de la Tierra",
       descripcion:
-        "Tu magia está ligada a un terreno concreto que te otorga conjuros adicionales y recuperación arcana.",
-      fuente: "PHB",
+        "Salvaguardas conocimiento y ritos antiguos. Eliges un tipo de tierra que te otorga conjuros, y canalizas la vitalidad de la naturaleza para curar y proteger.",
+      fuente: "PHB'24",
     },
     {
       id: "circulo_luna",
       nombre: "Círculo de la Luna",
       descripcion:
-        "Te especializas en la Forma Salvaje. Puedes transformarte en bestias más poderosas y luchar eficazmente en forma animal.",
-      fuente: "PHB",
+        "Usas magia lunar para transformarte en bestias más poderosas, con formas mejoradas, radiancia lunar y teletransporte.",
+      fuente: "PHB'24",
+    },
+    {
+      id: "circulo_mar",
+      nombre: "Círculo del Mar",
+      descripcion:
+        "Canalizas las fuerzas tempestuosas de océanos y tormentas. Tu Ira del Mar congela y empuja enemigos, y dominas el agua y el viento.",
+      fuente: "PHB'24",
+    },
+    {
+      id: "circulo_estrellas",
+      nombre: "Círculo de las Estrellas",
+      descripcion:
+        "Lees los astros y canalizas su poder. Puedes adoptar formas estelares (Arquero, Cáliz, Dragón) que potencian tu magia.",
+      fuente: "PHB'24",
     },
     {
       id: "circulo_suenos",
@@ -318,13 +325,6 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       nombre: "Círculo de las Esporas",
       descripcion:
         "Encuentras belleza en la descomposición. Usas esporas y necrosis como armas y puedes animar a los muertos.",
-      fuente: "TCoE",
-    },
-    {
-      id: "circulo_estrellas",
-      nombre: "Círculo de las Estrellas",
-      descripcion:
-        "Lees los astros y canalizas su poder. Puedes adoptar formas estelares que potencian tu magia y percepciones.",
       fuente: "TCoE",
     },
     {
@@ -395,43 +395,50 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       id: "campeon",
       nombre: "Campeón",
       descripcion:
-        "Excelencia en el combate puro. Amplías tu rango de golpe crítico y ganas resistencia atlética superior.",
-      fuente: "PHB",
+        "Persigues la excelencia física en combate. Amplías tu rango de crítico, ganas Inspiración Heroica en combate y resistes en las peores situaciones.",
+      fuente: "PHB'24",
     },
     {
       id: "maestro_batalla",
       nombre: "Maestro de Batalla",
       descripcion:
-        "Empleas maniobras tácticas especiales con dados de superioridad para controlar el campo de batalla.",
-      fuente: "PHB",
+        "Empleas maniobras tácticas con dados de superioridad para controlar el campo de batalla con precisión letal.",
+      fuente: "PHB'24",
     },
     {
       id: "caballero_sobrenatural",
       nombre: "Caballero Sobrenatural",
       descripcion:
-        "Complementas tu maestría marcial con conjuros arcanos, combinando espada y hechicería.",
-      fuente: "PHB",
-    },
-    {
-      id: "samurai",
-      nombre: "Samurái",
-      descripcion:
-        "Tu espíritu inquebrantable te permite luchar con una determinación que te otorga ventaja en ataques y resistencia mental.",
-      fuente: "XGtE",
-    },
-    {
-      id: "caballero_arcano",
-      nombre: "Caballero Arcano",
-      descripcion:
-        "Complementas tu destreza marcial con los conjuros del mago, especializándote en abjuración y evocación.",
-      fuente: "PHB",
+        "Complementas tu maestría marcial con conjuros arcanos de mago, combinando espada y hechicería.",
+      fuente: "PHB'24",
     },
     {
       id: "psi_warrior",
       nombre: "Guerrero Psiónico",
       descripcion:
-        "Usas poder psiónico para escudarte, golpear con fuerza mental y mover objetos con la mente.",
-      fuente: "TCoE",
+        "Despiertas el poder de tu mente para infundir golpes, crear escudos de fuerza y mover objetos con telequinesis.",
+      fuente: "PHB'24",
+    },
+    {
+      id: "arquero_arcano",
+      nombre: "Arquero Arcano",
+      descripcion:
+        "Estudias un método élfico de arquería que teje magia en tus flechas para producir efectos sobrenaturales.",
+      fuente: "XGtE",
+    },
+    {
+      id: "caballero",
+      nombre: "Caballero",
+      descripcion:
+        "Sobresales en combate montado y proteges a los que están bajo tu cuidado, marcando enemigos y controlando el campo de batalla.",
+      fuente: "XGtE",
+    },
+    {
+      id: "samurai",
+      nombre: "Samurái",
+      descripcion:
+        "Tu espíritu inquebrantable te otorga ventaja en ataques, PG temporales y la capacidad de desafiar a la muerte misma.",
+      fuente: "XGtE",
     },
     {
       id: "rune_knight",
@@ -445,17 +452,31 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
   // ─── HECHICERO ─────────────────────────────────────────────────────
   hechicero: [
     {
-      id: "linaje_draconico",
-      nombre: "Linaje Dracónico",
+      id: "mente_aberrante",
+      nombre: "Hechicería Aberrante",
       descripcion:
-        "Tu poder innato proviene de un ancestro dragón. Ganas resistencia al daño de su tipo y alas dracónicas a niveles altos.",
+        "Una influencia alienígena envuelve tu mente, otorgándote poder psiónico. Puedes tocar mentes ajenas y alterar el mundo a tu alrededor.",
+      fuente: "PHB",
+    },
+    {
+      id: "alma_relojeria",
+      nombre: "Hechicería de Relojería",
+      descripcion:
+        "La fuerza cósmica del orden te ha imbuido de magia. Tu poder proviene de Mecanus o un plano similar, moldeado por la eficiencia mecánica.",
+      fuente: "PHB",
+    },
+    {
+      id: "linaje_draconico",
+      nombre: "Hechicería Dracónica",
+      descripcion:
+        "Tu magia innata proviene del don de un dragón. Ganas escamas, afinidad elemental y alas dracónicas.",
       fuente: "PHB",
     },
     {
       id: "magia_salvaje",
       nombre: "Magia Salvaje",
       descripcion:
-        "Tu magia es caótica e impredecible. Los surges de magia salvaje pueden tener efectos aleatorios, beneficiosos o peligrosos.",
+        "Tu magia innata surge del caos. Oleadas impredecibles de magia pueden tener efectos aleatorios, beneficiosos o peligrosos.",
       fuente: "PHB",
     },
     {
@@ -466,31 +487,17 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       fuente: "XGtE",
     },
     {
-      id: "alma_relojeria",
-      nombre: "Alma de Relojería",
+      id: "alma_sombras",
+      nombre: "Magia de las Sombras",
       descripcion:
-        "Tu poder proviene de Mecanus, el plano del orden. Tu magia tiende a restaurar el equilibrio y la armonía.",
-      fuente: "TCoE",
-    },
-    {
-      id: "mente_aberrante",
-      nombre: "Mente Aberrante",
-      descripcion:
-        "Tu magia se origina en el Lejano Reino. Ganas poderes telepáticos y la capacidad de doblegar la realidad.",
-      fuente: "TCoE",
-    },
-    {
-      id: "tormenta_tempestuosa",
-      nombre: "Tormenta Tempestuosa",
-      descripcion:
-        "El poder de las tormentas fluye por tus venas. Puedes volar brevemente y dañar a enemigos cercanos con rayos.",
+        "Tu poder procede del Shadowfell. Te rodeas de oscuridad, invocas sabuesos sombríos y caminas entre las sombras.",
       fuente: "XGtE",
     },
     {
-      id: "alma_sombras",
-      nombre: "Alma de las Sombras",
+      id: "tormenta_tempestuosa",
+      nombre: "Hechicería de Tormenta",
       descripcion:
-        "Tu poder procede del Shadowfell. Te rodeas de oscuridad y puedes invocar un sabueso de sombras.",
+        "El poder de las tormentas fluye por tus venas. Controlas el viento, el rayo y el trueno a tu alrededor.",
       fuente: "XGtE",
     },
   ],
@@ -713,17 +720,17 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       fuente: "PHB",
     },
     {
+      id: "acechador_almas",
+      nombre: "Acechador de Almas",
+      descripcion:
+        "Manifiestas cuchillas psiónicas de energía pura y usas poder mental para comunicarte telepáticamente.",
+      fuente: "PHB",
+    },
+    {
       id: "espadachin",
       nombre: "Espadachín",
       descripcion:
         "Combinas encanto, agilidad y destreza con la espada. Provocas y esquivas con elegancia en combate.",
-      fuente: "XGtE",
-    },
-    {
-      id: "explorador_urbano",
-      nombre: "Explorador Urbano",
-      descripcion:
-        "Tu habilidad se centra en el reconocimiento y la supervivencia, moviéndote rápido y reaccionando antes que nadie.",
       fuente: "XGtE",
     },
     {
@@ -734,13 +741,6 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       fuente: "XGtE",
     },
     {
-      id: "fantasma",
-      nombre: "Fantasma",
-      descripcion:
-        "Conectas con los espíritus de los muertos, adquiriendo habilidades y conocimientos de las almas que te rodean.",
-      fuente: "TCoE",
-    },
-    {
       id: "espia_maestro",
       nombre: "Espía Maestro",
       descripcion:
@@ -748,11 +748,18 @@ export const SUBCLASS_OPTIONS: Record<ClassId, SubclassOption[]> = {
       fuente: "XGtE",
     },
     {
-      id: "acechador_almas",
-      nombre: "Acechador de Almas",
+      id: "fantasma",
+      nombre: "Fantasma",
       descripcion:
-        "Manifiestas cuchillas psiónicas de energía pura y usas poder mental para comunicarte telepáticamente.",
+        "Conectas con los espíritus de los muertos, adquiriendo habilidades y conocimientos de las almas que te rodean.",
       fuente: "TCoE",
+    },
+    {
+      id: "explorador",
+      nombre: "Explorador",
+      descripcion:
+        "Tu habilidad se centra en el reconocimiento y la supervivencia, moviéndote rápido y reaccionando antes que nadie.",
+      fuente: "XGtE",
     },
   ],
 };

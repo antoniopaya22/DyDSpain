@@ -64,7 +64,7 @@ export function TraitCard({ trait, onUse, onRestore }: TraitCardProps) {
           : trait.recharge ?? null;
 
   return (
-    <View className="bg-gray-200 dark:bg-dark-700 rounded-lg p-3 mb-2 border border-dark-100 dark:border-surface-border">
+    <View className="rounded-lg p-3 mb-2 border" style={{ backgroundColor: colors.bgSecondary, borderColor: colors.borderDefault }}>
       <TouchableOpacity
         className="flex-row items-center"
         onPress={() => setExpanded(!expanded)}
@@ -73,7 +73,7 @@ export function TraitCard({ trait, onUse, onRestore }: TraitCardProps) {
         {/* Info column */}
         <View className="flex-1">
           <View className="flex-row items-center">
-            <Text className="text-dark-900 dark:text-white text-sm font-semibold flex-1">
+            <Text className="text-sm font-semibold flex-1" style={{ color: colors.textPrimary }}>
               {trait.nombre}
             </Text>
             {/* Origin badge */}
@@ -94,12 +94,12 @@ export function TraitCard({ trait, onUse, onRestore }: TraitCardProps) {
           {(hasCharges || rechargeLabel) && (
             <View className="flex-row items-center mt-0.5">
               {hasCharges && (
-                <Text className="text-dark-400 text-[10px]">
+                <Text className="text-[10px]" style={{ color: colors.textMuted }}>
                   {chargesLeft}/{chargesMax} usos
                 </Text>
               )}
               {rechargeLabel && (
-                <Text className="text-dark-300 dark:text-dark-500 text-[10px] ml-2">
+                <Text className="text-[10px] ml-2" style={{ color: colors.textMuted }}>
                   · {rechargeLabel}
                 </Text>
               )}
@@ -111,24 +111,24 @@ export function TraitCard({ trait, onUse, onRestore }: TraitCardProps) {
         {showControls && (
           <View className="flex-row items-center mr-2">
             <TouchableOpacity
-              className="bg-parchment-card dark:bg-dark-600 rounded-lg px-2 py-1.5 mr-1 active:opacity-70"
+              className="rounded-lg px-2 py-1.5 mr-1 active:opacity-70"
               onPress={(e) => {
                 e.stopPropagation?.();
                 onUse();
               }}
               disabled={chargesLeft <= 0}
-              style={{ opacity: chargesLeft > 0 ? 1 : 0.4 }}
+              style={[{ backgroundColor: colors.bgCard }, { opacity: chargesLeft > 0 ? 1 : 0.4 }]}
             >
               <Ionicons name="remove" size={14} color={colors.accentDanger} />
             </TouchableOpacity>
             <TouchableOpacity
-              className="bg-parchment-card dark:bg-dark-600 rounded-lg px-2 py-1.5 active:opacity-70"
+              className="rounded-lg px-2 py-1.5 active:opacity-70"
               onPress={(e) => {
                 e.stopPropagation?.();
                 onRestore();
               }}
               disabled={chargesLeft >= chargesMax}
-              style={{ opacity: chargesLeft < chargesMax ? 1 : 0.4 }}
+              style={[{ backgroundColor: colors.bgCard }, { opacity: chargesLeft < chargesMax ? 1 : 0.4 }]}
             >
               <Ionicons name="add" size={14} color={colors.accentGreen} />
             </TouchableOpacity>
@@ -143,8 +143,8 @@ export function TraitCard({ trait, onUse, onRestore }: TraitCardProps) {
       </TouchableOpacity>
 
       {expanded && (
-        <View className="mt-2 pt-2 border-t border-dark-100 dark:border-surface-border/50">
-          <Text className="text-dark-500 dark:text-dark-300 text-xs leading-5">
+        <View className="mt-2 pt-2 border-t" style={{ borderColor: colors.borderDefault }}>
+          <Text className="text-xs leading-5" style={{ color: colors.textSecondary }}>
             {trait.descripcion}
           </Text>
         </View>

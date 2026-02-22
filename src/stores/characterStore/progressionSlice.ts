@@ -129,7 +129,7 @@ export function createProgressionSlice(
       ];
 
       // ── Actualizar personaje ──
-      const updatedChar: Character = {
+      let updatedChar: Character = {
         ...character,
         nivel: newLevel,
         abilityScores: updatedScores,
@@ -174,6 +174,19 @@ export function createProgressionSlice(
       if (updatedMagic) {
         set({ magicState: updatedMagic });
         await safeSetItem(STORAGE_KEYS.MAGIC_STATE(character.id), updatedMagic);
+
+        // Sincronizar knownSpellIds del personaje con magicState
+        if (updatedMagic.knownSpellIds.length !== updatedChar.knownSpellIds.length ||
+            updatedMagic.knownSpellIds.some(id => !updatedChar.knownSpellIds.includes(id))) {
+          updatedChar = {
+            ...updatedChar,
+            knownSpellIds: [...updatedMagic.knownSpellIds],
+            preparedSpellIds: [...updatedMagic.preparedSpellIds],
+            spellbookIds: [...updatedMagic.spellbookIds],
+          };
+          set({ character: updatedChar });
+          await safeSetItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+        }
       }
 
       return summary;
@@ -251,7 +264,6 @@ export function createProgressionSlice(
         deathSaves: { successes: 0, failures: 0 },
         conditions: [],
         concentration: null,
-        combatLog: [],
         proficiencyBonus: calcProficiencyBonus(1),
         traits: finalTraits,
         levelHistory: level1Record

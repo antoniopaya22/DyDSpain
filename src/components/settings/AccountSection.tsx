@@ -1,9 +1,9 @@
 /**
- * AccountSection — User profile, player code, mode switching, sign-out.
+ * AccountSection — User profile, character codes for sharing, mode switching, sign-out.
  * Shown in the Settings screen (HU-10.5, HU-14).
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,20 +11,26 @@ import {
   StyleSheet,
   Share,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useAuthStore, selectPlayerCode, selectAppMode } from "@/stores/authStore";
+import * as Clipboard from "expo-clipboard";
+import { useAuthStore, selectAppMode } from "@/stores/authStore";
+import { fetchUserCharacters } from "@/services/supabaseService";
 import { useTheme } from "@/hooks";
+import type { PersonajeRow } from "@/types/supabase";
+import type { Character } from "@/types/character";
 
 export function AccountSection() {
   const { colors } = useTheme();
   const router = useRouter();
   const { profile, signOut, user } = useAuthStore();
-  const playerCode = useAuthStore(selectPlayerCode);
   const appMode = useAuthStore(selectAppMode);
-  const [copied, setCopied] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [characters, setCharacters] = useState<PersonajeRow[]>([]);
+  const [loadingChars, setLoadingChars] = useState(false);
 
   // Cleanup copy timer on unmount
   useEffect(() => {
@@ -32,6 +38,24 @@ export function AccountSection() {
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
     };
   }, []);
+
+  // Fetch synced characters from Supabase
+  const loadCharacters = useCallback(async () => {
+    if (!user) return;
+    setLoadingChars(true);
+    try {
+      const chars = await fetchUserCharacters(user.id);
+      setCharacters(chars);
+    } catch (err) {
+      console.error("[AccountSection] Error fetching characters:", err);
+    } finally {
+      setLoadingChars(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    loadCharacters();
+  }, [loadCharacters]);
 
   if (!user || !profile) {
     return (
@@ -60,24 +84,17 @@ export function AccountSection() {
     );
   }
 
-  const handleCopyCode = async () => {
-    if (!playerCode) return;
-    if (Platform.OS === "web") {
-      await navigator.clipboard.writeText(playerCode);
-    } else {
-      // Clipboard API: expo-clipboard doesn't need import workaround
-      // For now, use Share
-    }
-    setCopied(true);
+  const handleCopyCode = async (code: string, charId: string) => {
+    await Clipboard.setStringAsync(code);
+    setCopiedId(charId);
     if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+    copyTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleShareCode = async () => {
-    if (!playerCode) return;
+  const handleShareCode = async (code: string, charName: string) => {
     try {
       await Share.share({
-        message: `Mi código de jugador en DyMEs: ${playerCode}`,
+        message: `Código de mi personaje "${charName}" en DyMEs: ${code}`,
       });
     } catch {
       // User cancelled
@@ -116,49 +133,109 @@ export function AccountSection() {
         </View>
       </View>
 
-      {/* Player Code */}
-      {playerCode && (
-        <View
-          style={[
-            styles.codeCard,
-            { backgroundColor: colors.bgSubtle, borderColor: colors.borderSubtle },
-          ]}
-        >
-          <Text style={[styles.codeLabel, { color: colors.textMuted }]}>
-            Tu código de jugador
+      {/* Character Codes — for sharing with Master */}
+      <View
+        style={[
+          styles.codeCard,
+          { backgroundColor: colors.bgSubtle, borderColor: colors.borderSubtle },
+        ]}
+      >
+        <Text style={[styles.codeLabel, { color: colors.textMuted }]}>
+          Códigos de personaje
+        </Text>
+        <Text style={[styles.codeHint, { color: colors.textMuted }]}>
+          Comparte el código de un personaje con tu Master para unirte a su campaña
+        </Text>
+
+        {loadingChars && (
+          <ActivityIndicator
+            size="small"
+            color={colors.accentGold}
+            style={{ marginTop: 10 }}
+          />
+        )}
+
+        {!loadingChars && characters.length === 0 && (
+          <Text
+            style={[
+              styles.codeHint,
+              { color: colors.textMuted, marginTop: 8, fontStyle: "italic" },
+            ]}
+          >
+            Aún no hay personajes sincronizados. Abre una hoja de personaje para
+            sincronizar.
           </Text>
-          <View style={styles.codeRow}>
-            <Text style={[styles.codeValue, { color: colors.accentGold }]}>
-              {playerCode}
-            </Text>
-            <View style={styles.codeActions}>
-              <TouchableOpacity
-                style={[styles.codeBtn, { backgroundColor: `${colors.accentGold}15` }]}
-                onPress={handleCopyCode}
-              >
-                <Ionicons
-                  name={copied ? "checkmark" : "copy-outline"}
-                  size={16}
-                  color={colors.accentGold}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.codeBtn, { backgroundColor: `${colors.accentBlue}15` }]}
-                onPress={handleShareCode}
-              >
-                <Ionicons
-                  name="share-outline"
-                  size={16}
-                  color={colors.accentBlue}
-                />
-              </TouchableOpacity>
+        )}
+
+        {characters.map((char) => {
+          const datos = char.datos as unknown as Character | undefined;
+          const charName = datos?.nombre ?? "Sin nombre";
+          const charClass = datos?.clase ?? "";
+          const charLevel = datos?.nivel ?? 0;
+          const code = char.codigo_personaje;
+          const isCopied = copiedId === char.id;
+
+          return (
+            <View
+              key={char.id}
+              style={[
+                styles.charCodeRow,
+                { borderTopColor: colors.borderSeparator },
+              ]}
+            >
+              <View style={styles.charCodeInfo}>
+                <Text
+                  style={[styles.charCodeName, { color: colors.textPrimary }]}
+                  numberOfLines={1}
+                >
+                  {charName}
+                </Text>
+                {charClass ? (
+                  <Text
+                    style={[
+                      styles.charCodeClass,
+                      { color: colors.textMuted },
+                    ]}
+                  >
+                    {charClass} Nv.{charLevel}
+                  </Text>
+                ) : null}
+              </View>
+              <Text style={[styles.charCodeValue, { color: colors.accentGold }]}>
+                {code}
+              </Text>
+              <View style={styles.codeActions}>
+                <TouchableOpacity
+                  style={[
+                    styles.codeBtn,
+                    { backgroundColor: `${colors.accentGold}15` },
+                  ]}
+                  onPress={() => handleCopyCode(code, char.id)}
+                >
+                  <Ionicons
+                    name={isCopied ? "checkmark" : "copy-outline"}
+                    size={16}
+                    color={colors.accentGold}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.codeBtn,
+                    { backgroundColor: `${colors.accentBlue}15` },
+                  ]}
+                  onPress={() => handleShareCode(code, charName)}
+                >
+                  <Ionicons
+                    name="share-outline"
+                    size={16}
+                    color={colors.accentBlue}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          <Text style={[styles.codeHint, { color: colors.textMuted }]}>
-            Comparte este código con tu Master para unirte a su campaña
-          </Text>
-        </View>
-      )}
+          );
+        })}
+      </View>
 
       {/* Mode Switch */}
       <TouchableOpacity
@@ -263,6 +340,32 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 8,
     lineHeight: 15,
+  },
+  charCodeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    gap: 8,
+  },
+  charCodeInfo: {
+    flex: 1,
+    minWidth: 0,
+  },
+  charCodeName: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  charCodeClass: {
+    fontSize: 11,
+    marginTop: 1,
+  },
+  charCodeValue: {
+    fontSize: 16,
+    fontWeight: "900",
+    letterSpacing: 3,
+    fontFamily: "monospace",
   },
   row: {
     flexDirection: "row",

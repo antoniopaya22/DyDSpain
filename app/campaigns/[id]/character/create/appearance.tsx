@@ -11,12 +11,13 @@ import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
 import type { Appearance } from "@/types/character";
-import { useTheme } from "@/hooks";
+import { useTheme, useScrollToTop } from "@/hooks";
 import { getCreationThemeOverrides } from "@/utils/creationStepTheme";
 
 const CURRENT_STEP = 10;
 
 export default function AppearanceStep() {
+  const scrollRef = useScrollToTop();
   const { colors } = useTheme();
   const themed = getCreationThemeOverrides(colors);
   const router = useRouter();
@@ -105,6 +106,7 @@ export default function AppearanceStep() {
   return (
     <View style={[styles.container, themed.container]}>
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={{ paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"

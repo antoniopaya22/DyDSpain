@@ -10,6 +10,7 @@ import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
 import { useTheme } from "@/hooks";
+import { withAlpha } from "@/utils/theme";
 import { getHpColor, getHpLabel } from "@/utils/combat";
 
 interface HPTrackerProps {
@@ -55,8 +56,8 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
   };
 
   return (
-    <View className="bg-parchment-card dark:bg-surface-card rounded-card border border-dark-100 dark:border-surface-border p-4 mb-4">
-      <Text className="text-dark-600 dark:text-dark-200 text-xs font-semibold uppercase tracking-wider mb-3">
+    <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
+      <Text className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: colors.textSecondary }}>
         Puntos de Golpe
       </Text>
 
@@ -66,7 +67,7 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
           <Text className="text-5xl font-bold" style={{ color: hpColor }}>
             {hp.current}
           </Text>
-          <Text className="text-dark-400 text-xl font-semibold ml-1">
+          <Text className="text-xl font-semibold ml-1" style={{ color: colors.textMuted }}>
             / {hp.max}
           </Text>
         </View>
@@ -74,7 +75,7 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
         {hp.temp > 0 && (
           <View className="flex-row items-center mb-1">
             <Ionicons name="shield" size={14} color={colors.accentBlue} />
-            <Text className="text-blue-400 text-sm font-semibold ml-1">
+            <Text className="text-sm font-semibold ml-1" style={{ color: colors.accentBlue }}>
               +{hp.temp} temporales
             </Text>
           </View>
@@ -88,7 +89,7 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
         </Text>
 
         {/* Progress bar */}
-        <View className="w-full h-3 bg-gray-200 dark:bg-dark-700 rounded-full mt-2 overflow-hidden">
+        <View className="w-full h-3 rounded-full mt-2 overflow-hidden" style={{ backgroundColor: colors.bgSecondary }}>
           <View
             className="h-full rounded-full"
             style={{
@@ -105,7 +106,8 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
         <View className="flex-1 mr-1.5">
           <View className="flex-row">
             <TextInput
-              className="flex-1 bg-gray-200 dark:bg-dark-700 rounded-l-lg px-3 py-2.5 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border border-r-0"
+              className="flex-1 rounded-l-lg px-3 py-2.5 text-sm border border-r-0"
+              style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary, borderColor: colors.borderDefault }}
               placeholder="Daño"
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
@@ -115,7 +117,8 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
               returnKeyType="done"
             />
             <TouchableOpacity
-              className="bg-red-600/80 rounded-r-lg px-3 items-center justify-center border border-red-600/80"
+              className="rounded-r-lg px-3 items-center justify-center border"
+              style={{ backgroundColor: withAlpha(colors.accentDanger, 0.8), borderColor: withAlpha(colors.accentDanger, 0.8) }}
               onPress={handleDamage}
             >
               <Ionicons name="remove" size={20} color="white" />
@@ -127,7 +130,8 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
         <View className="flex-1 ml-1.5">
           <View className="flex-row">
             <TextInput
-              className="flex-1 bg-gray-200 dark:bg-dark-700 rounded-l-lg px-3 py-2.5 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border border-r-0"
+              className="flex-1 rounded-l-lg px-3 py-2.5 text-sm border border-r-0"
+              style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary, borderColor: colors.borderDefault }}
               placeholder="Curar"
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
@@ -137,7 +141,8 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
               returnKeyType="done"
             />
             <TouchableOpacity
-              className="bg-green-600/80 rounded-r-lg px-3 items-center justify-center border border-green-600/80"
+              className="rounded-r-lg px-3 items-center justify-center border"
+              style={{ backgroundColor: withAlpha(colors.accentGreen, 0.8), borderColor: withAlpha(colors.accentGreen, 0.8) }}
               onPress={handleHeal}
             >
               <Ionicons name="add" size={20} color="white" />
@@ -149,7 +154,8 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
       {/* Temp HP */}
       <View className="flex-row">
         <TextInput
-          className="flex-1 bg-gray-200 dark:bg-dark-700 rounded-l-lg px-3 py-2.5 text-dark-900 dark:text-white text-sm border border-dark-100 dark:border-surface-border border-r-0"
+          className="flex-1 rounded-l-lg px-3 py-2.5 text-sm border border-r-0"
+          style={{ backgroundColor: colors.bgSecondary, color: colors.textPrimary, borderColor: colors.borderDefault }}
           placeholder="PG Temporales"
           placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
@@ -159,7 +165,8 @@ export function HPTracker({ onShowToast }: HPTrackerProps) {
           returnKeyType="done"
         />
         <TouchableOpacity
-          className="bg-blue-600/80 rounded-r-lg px-3 items-center justify-center border border-blue-600/80"
+          className="rounded-r-lg px-3 items-center justify-center border"
+          style={{ backgroundColor: withAlpha(colors.accentBlue, 0.8), borderColor: withAlpha(colors.accentBlue, 0.8) }}
           onPress={handleSetTempHP}
         >
           <Ionicons name="shield" size={18} color="white" />

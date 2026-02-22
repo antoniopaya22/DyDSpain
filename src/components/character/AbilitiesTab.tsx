@@ -28,6 +28,7 @@ import {
 import type { ClassId } from "@/types/character";
 import { getClassData } from "@/data/srd/classes";
 import { getSpellById } from "@/data/srd/spells";
+import { calcPreparedSpells } from "@/utils/spells";
 import { CLASS_ABILITY_THEME } from "@/constants/abilities";
 
 // Section components
@@ -47,19 +48,14 @@ export default function AbilitiesTab() {
     character,
     magicState,
     classResources,
-    useSpellSlot,
-    restoreSpellSlot,
-    restoreAllSpellSlots,
-    usePactSlot,
-    restoreAllPactSlots,
     setConcentration,
-    clearConcentration,
     useTraitCharge,
     restoreTraitCharges,
     useClassResource,
     useClassResourceAmount,
     restoreClassResource,
     restoreAllClassResources,
+    togglePreparedSpell,
   } = useCharacterStore();
 
   const [expandedAbility, setExpandedAbility] = useState<string | null>(null);
@@ -67,7 +63,7 @@ export default function AbilitiesTab() {
   if (!character) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Text className="text-dark-500 dark:text-dark-300 text-base">
+        <Text className="text-base" style={{ color: colors.textSecondary }}>
           No se ha cargado ningún personaje
         </Text>
       </View>
@@ -137,6 +133,9 @@ export default function AbilitiesTab() {
   const formatSpellName = (id: string): string => {
     const spell = getSpellById(id);
     if (spell) return spell.nombre;
+    // Custom spells: strip prefix and return the user-given name
+    if (id.startsWith("custom:truco:")) return id.slice("custom:truco:".length);
+    if (id.startsWith("custom:")) return id.slice("custom:".length);
     return id
       .replace(/^truco_/, "")
       .replace(/_/g, " ")
@@ -161,39 +160,30 @@ export default function AbilitiesTab() {
     return character.spellbookIds.includes(id);
   };
 
-  // ── Spell Slot Actions ──
+  // ── Prepared spell count ──
 
-  const handleUseSlot = async (level: number) => {
-    const success = await useSpellSlot(level);
-    if (success) showToast(`Espacio de nivel ${level} usado`);
-    else showToast(`No quedan espacios de nivel ${level}`);
+  const currentPreparedCount = magicState
+    ? magicState.preparedSpellIds.filter((id) => {
+        const s = getSpellById(id);
+        return s ? s.nivel > 0 : true;
+      }).length
+    : character.preparedSpellIds.filter((id) => {
+        const s = getSpellById(id);
+        return s ? s.nivel > 0 : true;
+      }).length;
+
+  const maxPreparedSpells =
+    (preparationType === "prepared" || preparationType === "spellbook") && spellcastingAbility
+      ? calcPreparedSpells(character.clase, character.nivel, abilityMod)
+      : undefined;
+
+  // ── Toggle prepared handler ──
+
+  const handleTogglePrepared = async (spellId: string) => {
+    if (!togglePreparedSpell) return;
+    const nowPrepared = await togglePreparedSpell(spellId);
+    showToast(nowPrepared ? "Conjuro preparado" : "Conjuro despreparado");
   };
-
-  const handleRestoreSlot = async (level: number) => {
-    await restoreSpellSlot(level);
-    showToast(`Espacio de nivel ${level} restaurado`);
-  };
-
-  const handleRestoreAllSlots = () => {
-    showConfirm(
-      "Restaurar Espacios",
-      "¿Restaurar todos los espacios de conjuro?",
-      async () => {
-        await restoreAllSpellSlots();
-        if (character.clase === "brujo") await restoreAllPactSlots();
-        showToast("Todos los espacios restaurados");
-      },
-      { confirmText: "Restaurar", cancelText: "Cancelar", type: "info" },
-    );
-  };
-
-  const handleUsePactSlot = async () => {
-    const success = await usePactSlot();
-    if (success) showToast("Espacio de pacto usado");
-    else showToast("No quedan espacios de pacto");
-  };
-
-  // ── Trait Actions ──
 
   const handleUseTraitCharge = async (traitId: string, traitName: string) => {
     await useTraitCharge(traitId);
@@ -327,14 +317,9 @@ export default function AbilitiesTab() {
           canCastSpell={canCastSpell}
           isPrepared={isPrepared}
           isInSpellbook={isInSpellbook}
-          onUseSlot={handleUseSlot}
-          onRestoreSlot={handleRestoreSlot}
-          onRestoreAllSlots={handleRestoreAllSlots}
-          onUsePactSlot={handleUsePactSlot}
-          onRestoreAllPactSlots={restoreAllPactSlots}
-          onClearConcentration={clearConcentration}
-          onShowToast={showToast}
-          showConfirm={showConfirm}
+          onTogglePrepared={handleTogglePrepared}
+          maxPreparedSpells={maxPreparedSpells}
+          currentPreparedCount={currentPreparedCount}
         />
         <CharacterTraitsSection
           traits={character.traits}

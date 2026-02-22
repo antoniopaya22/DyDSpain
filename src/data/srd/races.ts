@@ -4,12 +4,31 @@
  */
 
 import type { RaceId, SubraceId, AbilityKey, SkillKey, Size } from "@/types/character";
+import type { CustomRaceConfig } from "@/types/creation";
 
 // ─── Tipos de datos de raza ──────────────────────────────────────────
 
 export interface RaceTrait {
   nombre: string;
   descripcion: string;
+}
+
+/** Hechizo innato otorgado por la raza/subraza a un nivel determinado */
+export interface RacialSpellEntry {
+  /** ID del conjuro en la base de datos de hechizos */
+  spellId: string;
+  /** Nivel de personaje mínimo para obtenerlo (1 = desde el inicio) */
+  minLevel: number;
+  /** Si es un truco (cantrip) — se puede lanzar a voluntad */
+  isCantrip?: boolean;
+}
+
+/** Aptitud mágica innata de la raza/subraza */
+export interface RacialSpellcasting {
+  /** Característica de aptitud mágica */
+  ability: AbilityKey;
+  /** Lista de conjuros innatos con nivel mínimo */
+  spells: RacialSpellEntry[];
 }
 
 export interface SubraceData {
@@ -23,6 +42,8 @@ export interface SubraceData {
   toolProficiencies?: string[];
   /** Trucos o hechizos adicionales */
   cantrips?: string[];
+  /** Conjuros innatos de la subraza (con nivel mínimo) */
+  racialSpellcasting?: RacialSpellcasting;
   /** Idiomas adicionales */
   extraLanguages?: number;
   /** PG extra por nivel (ej: Enano de las Colinas) */
@@ -36,6 +57,12 @@ export interface RaceData {
   abilityBonuses: Partial<Record<AbilityKey, number>>;
   size: Size;
   speed: number;
+  /** Velocidad de vuelo en pies */
+  flySpeed?: number;
+  /** Velocidad de nado en pies */
+  swimSpeed?: number;
+  /** Velocidad de trepar en pies */
+  climbSpeed?: number;
   /** Velocidad no reducida por armadura pesada */
   speedNotReducedByArmor?: boolean;
   darkvision: boolean;
@@ -61,6 +88,8 @@ export interface RaceData {
   subraces: SubraceData[];
   /** Si la raza necesita elegir un linaje (ej: dracónido) */
   lineageRequired?: boolean;
+  /** Conjuros innatos de la raza (con nivel mínimo) */
+  racialSpellcasting?: RacialSpellcasting;
 }
 
 // ─── Linajes dracónidos ──────────────────────────────────────────────
@@ -288,6 +317,14 @@ export const RACES: Record<RaceId, RaceData> = {
           "Espada corta",
           "Ballesta de mano",
         ],
+        racialSpellcasting: {
+          ability: "car",
+          spells: [
+            { spellId: "luces_danzantes", minLevel: 1, isCantrip: true },
+            { spellId: "fuego_feerico", minLevel: 3 },
+            { spellId: "oscuridad", minLevel: 5 },
+          ],
+        },
       },
     ],
   },
@@ -439,6 +476,12 @@ export const RACES: Record<RaceId, RaceData> = {
           },
         ],
         cantrips: ["ilusion_menor"],
+        racialSpellcasting: {
+          ability: "int",
+          spells: [
+            { spellId: "ilusion_menor", minLevel: 1, isCantrip: true },
+          ],
+        },
       },
       {
         id: "gnomo_rocas",
@@ -569,10 +612,150 @@ export const RACES: Record<RaceId, RaceData> = {
     ],
     languages: ["Común", "Infernal"],
     subraces: [],
+    racialSpellcasting: {
+      ability: "car",
+      spells: [
+        { spellId: "taumaturgia", minLevel: 1, isCantrip: true },
+        { spellId: "reprension_infernal", minLevel: 3 },
+        { spellId: "oscuridad", minLevel: 5 },
+      ],
+    },
+  },
+
+  // ─── HADA (Expansión) ───────────────────────────────────────────────
+  hada: {
+    id: "hada",
+    nombre: "Hada",
+    descripcion:
+      "Las hadas son pequeñas criaturas feéricas aladas, vinculadas a la magia y a la naturaleza, que proceden de los Parajes Feéricos. Traviesas, curiosas y poderosas para su tamaño.",
+    abilityBonuses: {},
+    freeAbilityBonusCount: 3,
+    size: "pequeno",
+    speed: 30,
+    flySpeed: 30,
+    darkvision: false,
+    traits: [
+      {
+        nombre: "Tipo de Criatura: Feérico",
+        descripcion:
+          "Eres de tipo feérico en lugar de humanoide. Esto afecta a hechizos y efectos que especifiquen tipo de criatura (como hechizar persona).",
+      },
+      {
+        nombre: "Vuelo",
+        descripcion:
+          "Tienes velocidad de vuelo igual a tu velocidad en tierra. No puedes volar si llevas armadura media o pesada.",
+      },
+      {
+        nombre: "Magia Feérica",
+        descripcion:
+          "Conoces el truco prestidigitación. A partir del nivel 3, puedes lanzar hechizo de hada una vez al día. A partir del nivel 5, puedes lanzar aumentar/reducir una vez al día. Puedes elegir Inteligencia, Sabiduría o Carisma como aptitud mágica para estos conjuros. No necesitas componentes materiales.",
+      },
+    ],
+    languages: ["Común", "Silvano"],
+    subraces: [],
+    racialSpellcasting: {
+      ability: "car",
+      spells: [
+        { spellId: "prestidigitacion", minLevel: 1, isCantrip: true },
+        { spellId: "hechizo_de_hada", minLevel: 3 },
+        { spellId: "aumentar_reducir", minLevel: 5 },
+      ],
+    },
+  },
+
+  // ─── LIEBREN (Expansión) ───────────────────────────────────────────
+  liebren: {
+    id: "liebren",
+    nombre: "Liebren",
+    descripcion:
+      "Los liebren son humanoides con rasgos de liebre: orejas largas, patas fuertes y reflejos rápidos. Representan la suerte cambiante y la agilidad de los habitantes de los Parajes Feéricos.",
+    abilityBonuses: {},
+    freeAbilityBonusCount: 3,
+    size: "mediano",
+    speed: 30,
+    darkvision: false,
+    traits: [
+      {
+        nombre: "Reflejos de Liebre",
+        descripcion:
+          "Puedes sumar tu bonificador de competencia a tu tirada de iniciativa.",
+      },
+      {
+        nombre: "Salto Liebren",
+        descripcion:
+          "Como acción bonus, puedes saltar una distancia igual a 5 veces tu bonificador de competencia sin provocar ataques de oportunidad. Puedes usar este rasgo un número de veces igual a tu bonificador de competencia, y recuperas todos los usos tras un descanso largo.",
+      },
+      {
+        nombre: "Suerte Caprichosa",
+        descripcion:
+          "Cuando falles una prueba de característica, tirada de ataque, tirada de salvación o prueba de característica, puedes tirar un d4 y sumarlo al resultado, pudiendo cambiar el resultado. Puedes usar este rasgo un número de veces igual a tu bonificador de competencia y recuperas todos los usos tras un descanso largo.",
+      },
+      {
+        nombre: "Pies Ágiles",
+        descripcion:
+          "Tu caminar ágil te hace difícil de alcanzar. Tienes competencia en la habilidad Percepción.",
+      },
+    ],
+    languages: ["Común"],
+    extraLanguages: 1,
+    skillProficiencies: ["percepcion"],
+    subraces: [],
+  },
+
+  // ─── PERSONALIZADA ─────────────────────────────────────────────────
+  personalizada: {
+    id: "personalizada",
+    nombre: "Personalizada",
+    descripcion:
+      "Una raza personalizada con rasgos, bonificadores y habilidades definidos por el jugador.",
+    abilityBonuses: {},
+    size: "mediano",
+    speed: 30,
+    darkvision: false,
+    traits: [],
+    languages: ["Común"],
+    subraces: [],
   },
 };
 
 // ─── Funciones auxiliares ────────────────────────────────────────────
+
+/**
+ * Construye un RaceData a partir de una configuración de raza personalizada.
+ * Permite reutilizar toda la lógica de buildCharacter sin cambios.
+ */
+export function buildRaceDataFromCustom(config: CustomRaceConfig): RaceData {
+  return {
+    id: "personalizada",
+    nombre: config.nombre || "Personalizada",
+    descripcion: config.descripcion || "",
+    abilityBonuses: config.abilityBonuses,
+    size: config.size,
+    speed: config.speed,
+    flySpeed: config.flySpeed,
+    swimSpeed: config.swimSpeed,
+    climbSpeed: config.climbSpeed,
+    darkvision: config.darkvision,
+    darkvisionRange: config.darkvisionRange,
+    traits: config.traits.map((t) => ({ nombre: t.nombre, descripcion: t.descripcion })),
+    languages: config.languages.length > 0 ? config.languages : ["Común"],
+    skillProficiencies: config.skillProficiencies as SkillKey[] | undefined,
+    weaponProficiencies: config.weaponProficiencies,
+    armorProficiencies: config.armorProficiencies,
+    toolProficiencies: config.toolProficiencies,
+    subraces: [],
+    racialSpellcasting: config.racialSpells && config.racialSpells.length > 0
+      ? {
+          ability: "car" as AbilityKey, // Default spellcasting ability
+          spells: config.racialSpells.map((s) => ({
+            spellId: s.nombre.toLowerCase().replace(/\s+/g, "_"),
+            minLevel: s.minLevel,
+            isCantrip: s.isCantrip || undefined,
+          })),
+        }
+      : undefined,
+  };
+}
 
 /**
  * Obtiene los datos completos de una raza por su ID.
@@ -652,6 +835,65 @@ export function hasSubraces(raceId: RaceId): boolean {
 }
 
 /**
+ * Obtiene los conjuros innatos raciales disponibles a un nivel dado.
+ * Combina los de la raza base y la subraza (si tiene).
+ */
+export function getRacialSpellsForLevel(
+  raceId: RaceId,
+  subraceId: SubraceId,
+  characterLevel: number,
+): RacialSpellEntry[] {
+  const race = RACES[raceId];
+  const subrace = subraceId
+    ? race.subraces.find((s) => s.id === subraceId)
+    : null;
+
+  const entries: RacialSpellEntry[] = [];
+
+  if (race.racialSpellcasting) {
+    entries.push(
+      ...race.racialSpellcasting.spells.filter((s) => s.minLevel <= characterLevel),
+    );
+  }
+  if (subrace?.racialSpellcasting) {
+    entries.push(
+      ...subrace.racialSpellcasting.spells.filter((s) => s.minLevel <= characterLevel),
+    );
+  }
+
+  return entries;
+}
+
+/**
+ * Obtiene los conjuros innatos raciales que se desbloquean exactamente en un nivel.
+ */
+export function getRacialSpellsUnlockedAtLevel(
+  raceId: RaceId,
+  subraceId: SubraceId,
+  level: number,
+): RacialSpellEntry[] {
+  const race = RACES[raceId];
+  const subrace = subraceId
+    ? race.subraces.find((s) => s.id === subraceId)
+    : null;
+
+  const entries: RacialSpellEntry[] = [];
+
+  if (race.racialSpellcasting) {
+    entries.push(
+      ...race.racialSpellcasting.spells.filter((s) => s.minLevel === level),
+    );
+  }
+  if (subrace?.racialSpellcasting) {
+    entries.push(
+      ...subrace.racialSpellcasting.spells.filter((s) => s.minLevel === level),
+    );
+  }
+
+  return entries;
+}
+
+/**
  * Devuelve el icono emoji representativo de cada raza.
  */
 export const RACE_ICONS: Record<RaceId, string> = {
@@ -664,7 +906,13 @@ export const RACE_ICONS: Record<RaceId, string> = {
   semielfo: "🌿",
   semiorco: "💪",
   tiefling: "🔥",
+  hada: "🧚",
+  liebren: "🐇",
+  personalizada: "✨",
 };
+
+/** IDs de razas de expansión (no SRD básico) */
+export const EXPANSION_RACE_IDS: RaceId[] = ["hada", "liebren"];
 
 /**
  * Lista de todos los idiomas estándar y exóticos disponibles para elegir.

@@ -10,14 +10,12 @@ import type {
 import { STORAGE_KEYS } from "@/utils/storage";
 import { now } from "@/utils/providers";
 import {
-  createCombatLogEntry,
   rollDie,
   hitDieSides,
   safeSetItem,
   type InternalMagicState,
   type SlotInfo,
   type ClassResourceInfo,
-  COMBAT_LOG_MAX,
 } from "./helpers";
 import type { CharacterStore, RestActions } from "./types";
 
@@ -51,13 +49,6 @@ export function createRestSlice(
       const newCurrent = Math.min(
         character.hp.max,
         character.hp.current + totalHealed,
-      );
-
-      const logEntry = createCombatLogEntry(
-        "rest",
-        totalHealed,
-        newCurrent,
-        `Descanso corto: usa ${diceUsed} dado(s) de golpe, recupera ${totalHealed} PG`,
       );
 
       // Restore short rest traits
@@ -102,10 +93,6 @@ export function createRestSlice(
         hp: { ...character.hp, current: newCurrent },
         hitDice: { ...character.hitDice, remaining },
         traits: updatedTraits,
-        combatLog: [logEntry, ...character.combatLog].slice(
-          0,
-          COMBAT_LOG_MAX,
-        ),
         actualizadoEn: now(),
       };
 
@@ -202,13 +189,6 @@ export function createRestSlice(
         updatedClassResources = { resources: restoredResources };
       }
 
-      const logEntry = createCombatLogEntry(
-        "rest",
-        character.hp.max - character.hp.current,
-        newCurrent,
-        `Descanso largo: PG al máximo, ${dicesToRestore} dado(s) de golpe restaurados`,
-      );
-
       const updatedChar: Character = {
         ...character,
         hp: { ...character.hp, current: newCurrent, temp: 0 },
@@ -217,10 +197,6 @@ export function createRestSlice(
         conditions: [],
         concentration: null,
         traits: updatedTraits,
-        combatLog: [logEntry, ...character.combatLog].slice(
-          0,
-          COMBAT_LOG_MAX,
-        ),
         actualizadoEn: now(),
       };
 

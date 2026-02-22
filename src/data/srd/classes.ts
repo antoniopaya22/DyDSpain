@@ -167,13 +167,19 @@ export const CLASSES: Record<ClassId, ClassData> = {
       {
         nombre: "Furia",
         descripcion:
-          "Puedes usar una acción adicional para enfurecerte. Ganas ventaja en pruebas y salvaciones de FUE, bonificador al daño cuerpo a cuerpo (+2), y resistencia al daño contundente, cortante y perforante. Dura 1 minuto. Usos: 2 (aumentan con el nivel).",
+          "Puedes usar una acción adicional para enfurecerte. Ganas ventaja en pruebas y salvaciones de FUE, bonificador al daño cuerpo a cuerpo (+2), y resistencia al daño contundente, cortante y perforante. Dura 10 asaltos. Usos: 2 (aumentan con el nivel).",
         nivel: 1,
       },
       {
         nombre: "Defensa sin Armadura",
         descripcion:
           "Mientras no lleves armadura, tu CA es 10 + mod. Destreza + mod. Constitución. Puedes usar escudo y mantener este beneficio.",
+        nivel: 1,
+      },
+      {
+        nombre: "Maestría con Armas",
+        descripcion:
+          "Ganas la propiedad de Maestría de dos armas con las que tengas competencia. Puedes cambiar una cada descanso largo.",
         nivel: 1,
       },
     ],
@@ -243,7 +249,7 @@ export const CLASSES: Record<ClassId, ClassData> = {
 
     casterType: "full",
     spellcastingAbility: "car",
-    preparesSpells: false,
+    preparesSpells: true,
     cantripsAtLevel1: 2,
     spellsAtLevel1: 4,
 
@@ -296,7 +302,7 @@ export const CLASSES: Record<ClassId, ClassData> = {
       {
         nombre: "Lanzamiento de Conjuros",
         descripcion:
-          "Puedes lanzar conjuros de bardo usando el Carisma como aptitud mágica. Conoces 2 trucos y 4 conjuros de nivel 1.",
+          "Puedes lanzar conjuros de bardo usando el Carisma como aptitud mágica. Preparas conjuros de la lista de bardo tras cada descanso largo. Trucos: 2, Conjuros preparados: nivel de bardo + mod. de Carisma (mínimo 1).",
         nivel: 1,
       },
       {
@@ -520,18 +526,18 @@ export const CLASSES: Record<ClassId, ClassData> = {
       {
         nombre: "Lanzamiento de Conjuros",
         descripcion:
-          "Puedes lanzar conjuros de clérigo usando la Sabiduría como aptitud mágica. Conoces 3 trucos. Preparas conjuros: nivel de clérigo + mod. Sabiduría.",
+          "Puedes lanzar conjuros de clérigo usando la Sabiduría como aptitud mágica. Conoces 3 trucos (4 al nivel 4, 5 al nivel 10). Preparas conjuros de nivel 1+: elige 4 conjuros de nivel 1 de la lista de clérigo. Puedes cambiar la lista tras cada descanso largo.",
         nivel: 1,
       },
       {
-        nombre: "Dominio Divino",
+        nombre: "Orden Divino",
         descripcion:
-          "Elige un dominio relacionado con tu deidad: Conocimiento, Guerra, Luz, Naturaleza, Tempestad, Engaño o Vida. Tu dominio te otorga conjuros adicionales y rasgos especiales.",
+          "Elige un rol sagrado: Protector (competencia con armas marciales y armadura pesada) o Taumaturgo (un truco de clérigo extra y bonus de mod. SAB a pruebas de Arcano o Religión).",
         nivel: 1,
       },
     ],
 
-    subclassLevel: 1,
+    subclassLevel: 3,
     subclassLabel: "Dominio Divino",
     iconName: "medkit-outline",
     color: "#f59e0b",
@@ -628,20 +634,26 @@ export const CLASSES: Record<ClassId, ClassData> = {
 
     level1Features: [
       {
-        nombre: "Lanzamiento de Conjuros",
+        nombre: "Druídico",
         descripcion:
-          "Puedes lanzar conjuros de druida usando la Sabiduría como aptitud mágica. Conoces 2 trucos. Preparas conjuros: nivel de druida + mod. Sabiduría.",
+          "Conoces el druídico, el idioma secreto de los druidas. Siempre tienes preparado Hablar con Animales. Puedes dejar mensajes ocultos (CD 15 INT Investigación para detectar, no descifrar).",
         nivel: 1,
       },
       {
-        nombre: "Druídico",
+        nombre: "Orden Primordial",
         descripcion:
-          "Conoces el druídico, el idioma secreto de los druidas. Puedes dejar mensajes ocultos en él que solo otros druidas pueden encontrar.",
+          "Elige un rol sagrado. Mago: truco de druida extra y +mod. SAB (mín. +1) a pruebas de INT (Arcanos/Naturaleza). Guardián: competencia con armas marciales y armaduras medias.",
+        nivel: 1,
+      },
+      {
+        nombre: "Lanzamiento de Conjuros",
+        descripcion:
+          "Puedes lanzar conjuros de druida usando la Sabiduría como aptitud mágica. Conoces 2 trucos. Preparas conjuros de nv1+ según la tabla de Druida.",
         nivel: 1,
       },
     ],
 
-    subclassLevel: 2,
+    subclassLevel: 3,
     subclassLabel: "Círculo Druídico",
     iconName: "leaf-outline",
     color: "#16a34a",
@@ -858,13 +870,19 @@ export const CLASSES: Record<ClassId, ClassData> = {
       {
         nombre: "Estilo de Combate",
         descripcion:
-          "Adoptas un estilo de combate: Combate con Armas a Dos Manos, Combate con Dos Armas, Defensa, Duelo, Protección o Tiro con Arco.",
+          "Obtienes la dote de Estilo de Combate de tu elección (se recomienda Defensa). Al subir de nivel de guerrero puedes cambiarla.",
         nivel: 1,
       },
       {
         nombre: "Tomar Aliento",
         descripcion:
-          "Puedes usar una acción adicional para recuperar 1d10 + nivel de guerrero PG. Se recupera tras un descanso corto o largo.",
+          "Como acción adicional, recuperas PG = 1d10 + tu nivel de guerrero. 2 usos iniciales. Recuperas 1 en descanso corto, todos en descanso largo.",
+        nivel: 1,
+      },
+      {
+        nombre: "Maestría con Armas",
+        descripcion:
+          "Puedes usar las propiedades de maestría de 3 tipos de armas sencillas o marciales. Cambias una elección al terminar un descanso largo.",
         nivel: 1,
       },
     ],
@@ -909,7 +927,7 @@ export const CLASSES: Record<ClassId, ClassData> = {
 
     casterType: "full",
     spellcastingAbility: "car",
-    preparesSpells: false,
+    preparesSpells: true,
     cantripsAtLevel1: 4,
     spellsAtLevel1: 2,
 
@@ -956,18 +974,18 @@ export const CLASSES: Record<ClassId, ClassData> = {
       {
         nombre: "Lanzamiento de Conjuros",
         descripcion:
-          "Puedes lanzar conjuros de hechicero usando el Carisma como aptitud mágica. Conoces 4 trucos y 2 conjuros de nivel 1.",
+          "Puedes lanzar conjuros de hechicero usando el Carisma como aptitud mágica. Conoces 4 trucos y preparas 2 conjuros de nivel 1.",
         nivel: 1,
       },
       {
-        nombre: "Origen Mágico",
+        nombre: "Hechicería Innata",
         descripcion:
-          "Elige un origen mágico que describa la fuente de tu poder innato: Linaje Dracónico o Magia Salvaje. Tu origen te otorga rasgos especiales a nivel 1 y superiores.",
+          "Como acción adicional, desatas tu magia innata durante 1 minuto: la CD de tus conjuros de hechicero aumenta en 1 y tienes ventaja en tiradas de ataque de conjuros. 2 usos por descanso largo.",
         nivel: 1,
       },
     ],
 
-    subclassLevel: 1,
+    subclassLevel: 3,
     subclassLabel: "Origen Mágico",
     iconName: "sparkles-outline",
     color: "#dc2626",
@@ -1407,6 +1425,12 @@ export const CLASSES: Record<ClassId, ClassData> = {
         nombre: "Jerga de Ladrones",
         descripcion:
           "Conoces la jerga de ladrones, un lenguaje secreto de señales, símbolos y argot que permite ocultar mensajes en conversaciones aparentemente normales.",
+        nivel: 1,
+      },
+      {
+        nombre: "Maestría con Armas",
+        descripcion:
+          "Tu entrenamiento con armas te permite usar la propiedad de Maestría de dos tipos de arma con las que tengas competencia. Cuando terminas un descanso largo, puedes cambiar un tipo de arma por otro.",
         nivel: 1,
       },
     ],

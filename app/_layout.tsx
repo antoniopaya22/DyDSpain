@@ -4,7 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
-import { View, Text, StyleSheet, Animated, Easing } from "react-native";
+import { View, Text, StyleSheet, Animated, Easing, Platform } from "react-native";
+import * as Linking from "expo-linking";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
@@ -12,6 +13,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useTheme } from "@/hooks";
 import { DARK_THEME } from "@/utils/theme";
+import { supabase } from "@/lib/supabase";
 
 const MIN_SPLASH_MS = 1000;
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -169,6 +171,59 @@ function InnerLayout() {
     const unsubscribe = initialize();
     return unsubscribe;
   }, [initialize]);
+
+  // ── Global OAuth deep-link handler ──
+  // On native (especially Expo Go / Android), the OAuth callback URL
+  // may arrive as a Linking event instead of through WebBrowser.
+  // Supports both PKCE (?code=xxx) and implicit (#access_token=xxx) flows.
+  useEffect(() => {
+    if (Platform.OS === "web") return;
+
+    const handleAuthUrl = async (url: string) => {
+      try {
+        const parsed = new URL(url);
+        const fragment = parsed.hash.substring(1);
+        const hashParams = new URLSearchParams(fragment);
+        const queryParams = new URLSearchParams(parsed.search);
+
+        // PKCE flow: ?code=xxx
+        const code = queryParams.get("code");
+        if (code) {
+          console.log("[Layout] PKCE code detected, exchanging for session...");
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) console.error("[Layout] exchangeCodeForSession failed:", error.message);
+          return;
+        }
+
+        // Implicit flow: #access_token=xxx
+        const accessToken = hashParams.get("access_token");
+        const refreshToken = hashParams.get("refresh_token");
+        if (accessToken && refreshToken) {
+          console.log("[Layout] Implicit tokens detected, setting session...");
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (error) console.error("[Layout] setSession failed:", error.message);
+          return;
+        }
+      } catch (err) {
+        console.error("[Layout] Failed to parse auth callback URL:", err);
+      }
+    };
+
+    // Listen for incoming deep links
+    const subscription = Linking.addEventListener("url", (event) => {
+      handleAuthUrl(event.url);
+    });
+
+    // Also check the URL that launched the app (cold start after OAuth)
+    Linking.getInitialURL().then((url) => {
+      if (url) handleAuthUrl(url);
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   // ── Auth-based route protection ──
   // Redirect to login when not authenticated,

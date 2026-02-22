@@ -1,11 +1,11 @@
 /**
  * Account Screen
  *
- * Dedicated page for user profile, player code, mode switching and sign-out.
+ * Dedicated page for user profile, character codes for sharing, mode switching and sign-out.
  * Accessible via the avatar button in the AppHeader.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -16,12 +16,13 @@ import {
   StyleSheet,
   Share,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 import {
   useAuthStore,
-  selectPlayerCode,
   selectAppMode,
   selectIsPremium,
 } from "@/stores/authStore";
@@ -29,7 +30,10 @@ import {
   ScreenContainer,
   PageHeader,
 } from "@/components/ui";
+import { fetchUserCharacters } from "@/services/supabaseService";
 import { useTheme, useEntranceAnimation } from "@/hooks";
+import type { PersonajeRow } from "@/types/supabase";
+import type { Character } from "@/types/character";
 
 // ─── Component ───────────────────────────────────────────────────────
 
@@ -37,19 +41,38 @@ export default function AccountScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const { profile, signOut, user } = useAuthStore();
-  const playerCode = useAuthStore(selectPlayerCode);
   const appMode = useAuthStore(selectAppMode);
   const isPremium = useAuthStore(selectIsPremium);
 
-  const [copied, setCopied] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { opacity: contentFade } = useEntranceAnimation({ delay: 120 });
+  const [characters, setCharacters] = useState<PersonajeRow[]>([]);
+  const [loadingChars, setLoadingChars] = useState(false);
 
   useEffect(() => {
     return () => {
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
     };
   }, []);
+
+  // Fetch synced characters from Supabase
+  const loadCharacters = useCallback(async () => {
+    if (!user) return;
+    setLoadingChars(true);
+    try {
+      const chars = await fetchUserCharacters(user.id);
+      setCharacters(chars);
+    } catch (err) {
+      console.error("[AccountScreen] Error fetching characters:", err);
+    } finally {
+      setLoadingChars(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    loadCharacters();
+  }, [loadCharacters]);
 
   // ── Not logged in ──
   if (!user || !profile) {
@@ -106,21 +129,17 @@ export default function AccountScreen() {
     .toUpperCase()
     .slice(0, 2);
 
-  const handleCopyCode = async () => {
-    if (!playerCode) return;
-    if (Platform.OS === "web") {
-      await navigator.clipboard.writeText(playerCode);
-    }
-    setCopied(true);
+  const handleCopyCode = async (code: string, charId: string) => {
+    await Clipboard.setStringAsync(code);
+    setCopiedId(charId);
     if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+    copyTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleShareCode = async () => {
-    if (!playerCode) return;
+  const handleShareCode = async (code: string, charName: string) => {
     try {
       await Share.share({
-        message: `Mi código de jugador en DyMEs: ${playerCode}`,
+        message: `Código de mi personaje "${charName}" en DyMEs: ${code}`,
       });
     } catch {
       // User cancelled
@@ -234,60 +253,117 @@ export default function AccountScreen() {
             </View>
           </View>
 
-          {/* ── Player Code ── */}
-          {playerCode ? (
-            <View
-              style={[
-                styles.codeCard,
-                {
-                  backgroundColor: colors.bgCard,
-                  borderColor: colors.borderSubtle,
-                },
-              ]}
-            >
-              <Text style={[styles.codeLabel, { color: colors.textMuted }]}>
-                Tu código de jugador
+          {/* ── Character Codes ── */}
+          <View
+            style={[
+              styles.codeCard,
+              {
+                backgroundColor: colors.bgCard,
+                borderColor: colors.borderSubtle,
+              },
+            ]}
+          >
+            <Text style={[styles.codeLabel, { color: colors.textMuted }]}>
+              Códigos de personaje
+            </Text>
+            <Text style={[styles.codeHint, { color: colors.textMuted }]}>
+              Comparte el código de un personaje con tu Master para unirte a su campaña
+            </Text>
+
+            {loadingChars && (
+              <ActivityIndicator
+                size="small"
+                color={colors.accentGold}
+                style={{ marginTop: 10 }}
+              />
+            )}
+
+            {!loadingChars && characters.length === 0 && (
+              <Text
+                style={[
+                  styles.codeHint,
+                  { color: colors.textMuted, marginTop: 8, fontStyle: "italic" },
+                ]}
+              >
+                Aún no hay personajes sincronizados. Abre una hoja de personaje
+                para sincronizar.
               </Text>
-              <View style={styles.codeRow}>
-                <Text
-                  style={[styles.codeValue, { color: colors.accentGold }]}
+            )}
+
+            {characters.map((char) => {
+              const datos = char.datos as unknown as Character | undefined;
+              const charName = datos?.nombre ?? "Sin nombre";
+              const charClass = datos?.clase ?? "";
+              const charLevel = datos?.nivel ?? 0;
+              const code = char.codigo_personaje;
+              const isCopied = copiedId === char.id;
+
+              return (
+                <View
+                  key={char.id}
+                  style={[
+                    styles.charCodeRow,
+                    { borderTopColor: colors.borderSeparator },
+                  ]}
                 >
-                  {playerCode}
-                </Text>
-                <View style={styles.codeActions}>
-                  <TouchableOpacity
-                    style={[
-                      styles.codeBtn,
-                      { backgroundColor: `${colors.accentGold}15` },
-                    ]}
-                    onPress={handleCopyCode}
+                  <View style={styles.charCodeInfo}>
+                    <Text
+                      style={[
+                        styles.charCodeName,
+                        { color: colors.textPrimary },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {charName}
+                    </Text>
+                    {charClass ? (
+                      <Text
+                        style={[
+                          styles.charCodeClass,
+                          { color: colors.textMuted },
+                        ]}
+                      >
+                        {charClass} Nv.{charLevel}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <Text
+                    style={[styles.charCodeValue, { color: colors.accentGold }]}
                   >
-                    <Ionicons
-                      name={copied ? "checkmark" : "copy-outline"}
-                      size={16}
-                      color={colors.accentGold}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      styles.codeBtn,
-                      { backgroundColor: `${colors.accentBlue}15` },
-                    ]}
-                    onPress={handleShareCode}
-                  >
-                    <Ionicons
-                      name="share-outline"
-                      size={16}
-                      color={colors.accentBlue}
-                    />
-                  </TouchableOpacity>
+                    {code}
+                  </Text>
+                  <View style={styles.codeActions}>
+                    <TouchableOpacity
+                      style={[
+                        styles.codeBtn,
+                        { backgroundColor: `${colors.accentGold}15` },
+                      ]}
+                      onPress={() => handleCopyCode(code, char.id)}
+                    >
+                      <Ionicons
+                        name={isCopied ? "checkmark" : "copy-outline"}
+                        size={16}
+                        color={colors.accentGold}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.codeBtn,
+                        { backgroundColor: `${colors.accentBlue}15` },
+                      ]}
+                      onPress={() => handleShareCode(code, charName)}
+                    >
+                      <Ionicons
+                        name="share-outline"
+                        size={16}
+                        color={colors.accentBlue}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-              <Text style={[styles.codeHint, { color: colors.textMuted }]}>
-                Comparte este código con tu Master para unirte a su campaña
-              </Text>
-            </View>
-          ) : null}
+              );
+            })}
+          </View>
 
           {/* ── Actions ── */}
           <View
@@ -574,6 +650,32 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 8,
     lineHeight: 15,
+  },
+  charCodeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    gap: 8,
+  },
+  charCodeInfo: {
+    flex: 1,
+    minWidth: 0,
+  },
+  charCodeName: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  charCodeClass: {
+    fontSize: 11,
+    marginTop: 1,
+  },
+  charCodeValue: {
+    fontSize: 16,
+    fontWeight: "900",
+    letterSpacing: 3,
+    fontFamily: "monospace",
   },
 
   // ── Actions Card ──

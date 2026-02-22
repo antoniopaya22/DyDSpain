@@ -255,6 +255,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: "center",
     lineHeight: 17,
+    minHeight: 34,
   },
   premiumBadge: {
     position: "absolute",

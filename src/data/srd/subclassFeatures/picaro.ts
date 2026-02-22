@@ -1,28 +1,28 @@
-/**
- * Rasgos de subclase: Pícaro
+﻿/**
+ * Rasgos de subclase: Picaro
  */
 
 import type { SubclassFeatureData } from "./types";
 
 export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
-  // ── Ladrón ─────────────────────────────────────────────────────────
+  // -- Ladron -------------------------------------------------------
   {
     subclaseId: "ladron",
     claseId: "picaro",
-    nombre: "Ladrón",
+    nombre: "Ladron",
     niveles: [
       {
         nivel: 3,
         rasgos: [
           {
-            nombre: "Manos Rápidas",
+            nombre: "Manos Rapidas",
             descripcion:
-              "Puedes usar la acción adicional de Astucia para hacer una prueba de Destreza (Juego de Manos), usar herramientas de ladrón para desarmar trampas o abrir cerraduras, o usar la acción de Usar un Objeto.",
+              "Como accion bonus, puedes hacer una de las siguientes cosas: una prueba de DES (Juego de Manos) para abrir una cerradura o desarmar una trampa con herramientas de ladron, o robar un bolsillo; o usar la accion de Utilizar un Objeto o la accion de Magia para usar un objeto magico que la requiera.",
           },
           {
-            nombre: "Trepar como un Mono",
+            nombre: "Trabajo en Alturas",
             descripcion:
-              "Obtienes velocidad de trepar igual a tu velocidad de caminar. Además, al saltar, la distancia recorrida aumenta en un número de pies igual a tu mod. DES.",
+              "Ganas velocidad de Trepar igual a tu velocidad. Ademas, puedes calcular tu distancia de salto usando tu Destreza en lugar de tu Fuerza.",
           },
         ],
       },
@@ -32,7 +32,7 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Sigilo Supremo",
             descripcion:
-              "Tienes ventaja en pruebas de Destreza (Sigilo) si no te mueves más de la mitad de tu velocidad en el mismo turno.",
+              "Ganas la siguiente opcion de Golpe Astuto.\n\nAtaque Sigiloso (coste: 1d6). Si estas Invisible por la accion de Esconderte, este ataque no finaliza esa condicion si terminas el turno tras cobertura de tres cuartos o cobertura total.",
           },
         ],
       },
@@ -40,9 +40,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 13,
         rasgos: [
           {
-            nombre: "Usar Dispositivo Mágico",
+            nombre: "Usar Dispositivo Magico",
             descripcion:
-              "Puedes ignorar los requisitos de clase, raza y nivel para usar objetos mágicos.",
+              "Has aprendido a maximizar los objetos magicos:\n- Sintonizacion: puedes sintonizarte con hasta 4 objetos magicos a la vez.\n- Cargas: cuando uses una propiedad que gaste cargas, tira 1d6. Con un 6, no gastas la carga.\n- Pergaminos: puedes usar cualquier Pergamino de Conjuro, usando INT como caracteristica de lanzamiento. Si es truco o nivel 1, lo lanzas sin problema. Si es de nivel superior, debes superar una prueba de INT (Arcanos) CD 10 + nivel del conjuro.",
           },
         ],
       },
@@ -50,16 +50,16 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 17,
         rasgos: [
           {
-            nombre: "Reflejos de Ladrón",
+            nombre: "Reflejos de Ladron",
             descripcion:
-              "Puedes realizar dos turnos en la primera ronda de combate. El primer turno es en tu iniciativa normal y el segundo en tu iniciativa − 10.",
+              "Puedes realizar dos turnos en la primera ronda de combate. El primer turno es en tu iniciativa normal y el segundo en tu iniciativa - 10.",
           },
         ],
       },
     ],
   },
 
-  // ── Asesino ────────────────────────────────────────────────────────
+  // -- Asesino ------------------------------------------------------
   {
     subclaseId: "asesino",
     claseId: "picaro",
@@ -69,14 +69,14 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 3,
         rasgos: [
           {
-            nombre: "Competencias Adicionales",
-            descripcion:
-              "Ganas competencia con el kit de disfraz y el kit de venenos.",
-          },
-          {
             nombre: "Asesinar",
             descripcion:
-              "Tienes ventaja en tiradas de ataque contra cualquier criatura que no haya actuado aún en combate. Cualquier impacto que consigas contra una criatura sorprendida es un golpe crítico.",
+              "Tienes ventaja en tiradas de Iniciativa. Durante la primera ronda de combate, tienes ventaja en tiradas de ataque contra cualquier criatura que no haya actuado aun. Si tu Ataque Furtivo impacta durante esa ronda, el objetivo recibe dano extra del tipo del arma igual a tu nivel de picaro.",
+          },
+          {
+            nombre: "Herramientas de Asesino",
+            descripcion:
+              "Recibes un Kit de Disfraz y un Kit de Venenos, y ganas competencia con ambos.",
           },
         ],
         competenciasGanadas: {
@@ -87,9 +87,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 9,
         rasgos: [
           {
-            nombre: "Maestro del Engaño",
+            nombre: "Experiencia en Infiltracion",
             descripcion:
-              "Puedes crear identidades falsas de forma infalible. Gastas 25 po y 7 días de trabajo para establecer una identidad con documentación, conocidos y disfraz.",
+              "Eres experto en las siguientes tecnicas de infiltracion:\n- Imitacion Magistral: puedes imitar de forma infalible el habla, la caligrafia, o ambas, de otra persona si pasas al menos 1 hora estudiandola.\n- Apuntar en Movimiento: tu velocidad no se reduce a 0 cuando usas Apuntar Firme.",
           },
         ],
       },
@@ -97,9 +97,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 13,
         rasgos: [
           {
-            nombre: "Impostor",
+            nombre: "Armas Envenenadas",
             descripcion:
-              "Puedes imitar de forma infalible el habla, la escritura y el comportamiento de otra persona tras observarla al menos 3 horas.",
+              "Cuando uses la opcion de Veneno de tu Golpe Astuto, el objetivo tambien recibe 2d6 de dano de veneno cada vez que falle la tirada de salvacion. Este dano ignora la Resistencia al veneno.",
           },
         ],
       },
@@ -109,14 +109,14 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Golpe Mortal",
             descripcion:
-              "Cuando impactas a una criatura sorprendida, debe hacer una salvación de CON (CD 8 + mod. DES + bon. competencia) o recibe el doble de daño del ataque.",
+              "Cuando impactas con tu Ataque Furtivo en la primera ronda de combate, el objetivo debe superar una salvacion de CON (CD 8 + mod. DES + bon. competencia) o el dano del ataque se duplica contra el.",
           },
         ],
       },
     ],
   },
 
-  // ── Embaucador Arcano ──────────────────────────────────────────────
+  // -- Embaucador Arcano --------------------------------------------
   {
     subclaseId: "embaucador_arcano",
     claseId: "picaro",
@@ -126,14 +126,14 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 3,
         rasgos: [
           {
-            nombre: "Conjuración",
+            nombre: "Conjuracion",
             descripcion:
-              "Aprendes 3 trucos: Mano de Mago (obligatorio) y 2 más de la lista de mago. Aprendes 3 conjuros de nivel 1 de las escuelas de Encantamiento o Ilusión. Inteligencia es tu característica de conjuración.",
+              "Aprendes a lanzar conjuros. Conoces 3 trucos: Mano de Mago (obligatorio) y 2 mas de la lista de mago. Preparas 3 conjuros de nivel 1 de la lista de mago. INT es tu caracteristica de conjuracion. Puedes usar un foco arcano. Al nivel 10, aprendes un truco de mago adicional.",
           },
           {
-            nombre: "Mano de Mago Versátil",
+            nombre: "Mano de Mago Versatil",
             descripcion:
-              "Cuando lanzas Mano de Mago, puedes hacerla invisible. Además, puedes usarla para: colocar un objeto, sacarlo/meterlo en un contenedor, usar herramientas de ladrón a distancia. Puedes hacer todo esto como acción adicional.",
+              "Cuando lanzas Mano de Mago, puedes hacerla Invisible y lanzarla como accion bonus. Puedes controlarla como accion bonus y, a traves de ella, hacer pruebas de DES (Juego de Manos).",
           },
         ],
       },
@@ -141,9 +141,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 9,
         rasgos: [
           {
-            nombre: "Emboscada Mágica",
+            nombre: "Emboscada Magica",
             descripcion:
-              "Si estás oculto de una criatura cuando le lanzas un conjuro, tiene desventaja en su salvación contra ese conjuro en ese turno.",
+              "Si estas Invisible cuando lanzas un conjuro a una criatura, tiene desventaja en cualquier salvacion contra ese conjuro en ese turno.",
           },
         ],
       },
@@ -151,9 +151,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 13,
         rasgos: [
           {
-            nombre: "Embaucador Versátil",
+            nombre: "Embaucador Versatil",
             descripcion:
-              "Ganas la capacidad de robar los efectos activos de conjuros de otros. Cuando una criatura lanza un conjuro en sí misma, puedes usar tu Mano de Mago para robarlo (salvación INT contra tu CD).",
+              "Cuando uses la opcion de Tropiezo de tu Golpe Astuto, tambien puedes usar esa opcion en otra criatura a 1,5 m o menos de la mano espectral de Mano de Mago.",
           },
         ],
       },
@@ -161,20 +161,74 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 17,
         rasgos: [
           {
-            nombre: "Ladrón de Conjuros",
+            nombre: "Ladron de Conjuros",
             descripcion:
-              "Ganas la capacidad de robar conocimiento de conjuros. Cuando una criatura lanza un conjuro de nivel 1-4 que te incluya como objetivo, puedes usar tu reacción para obligarla a hacer una salvación contra tu CD. Si falla, el conjuro no tiene efecto y tú lo almacenas durante 8 horas.",
+              "Justo despues de que una criatura lance un conjuro que te incluya como objetivo o en su area, puedes usar tu reaccion para forzar una salvacion de INT contra tu CD de conjuros. Si falla, niegas el efecto del conjuro contra ti, y si es de nivel 1+ y de un nivel que puedas lanzar, lo robas: lo tienes preparado durante 8 horas y la criatura no puede lanzarlo durante ese tiempo. Una vez por descanso largo.",
           },
         ],
       },
     ],
   },
 
-  // ── Espadachín ─────────────────────────────────────────────────────
+  // -- Acechador de Almas -------------------------------------------
+  {
+    subclaseId: "acechador_almas",
+    claseId: "picaro",
+    nombre: "Acechador de Almas",
+    niveles: [
+      {
+        nivel: 3,
+        rasgos: [
+          {
+            nombre: "Poder Psionico",
+            descripcion:
+              "Tienes Dados de Energia Psionica que alimentan tus poderes. Empiezas con 4 dados d6 (suben a d8 en nv5, d10 en nv11, d12 en nv17; el numero sube a 6 en nv5, 8 en nv9, 10 en nv13, 12 en nv17). Recuperas 1 dado en un descanso corto y todos en un descanso largo.\n- Chispa de Pericia: si fallas una prueba con competencia, puedes tirar un dado psionico y sumarlo. Solo se gasta si la prueba tiene exito.\n- Susurros Psiquicos: como accion de Magia, elige hasta tu bon. de competencia en criaturas visibles y tira un dado psionico. Durante ese numero de horas, podeis comunicaros telepaticamente a 1,6 km. La primera vez por descanso largo es gratuita.",
+          },
+          {
+            nombre: "Cuchillas Psiquicas",
+            descripcion:
+              "Cuando usas la accion de Atacar o haces un ataque de oportunidad, puedes manifestar una Cuchilla Psiquica en tu mano libre. Es un arma sencilla cuerpo a cuerpo: 1d6 psiquico, Sutileza, Arrojadiza (18/36 m), maestria: Hostigar (no cuenta para tu limite de maestrias). La cuchilla desaparece tras impactar o fallar. Tras atacar con ella en tu turno, puedes atacar con una segunda como accion bonus (1d4 en lugar de 1d6).",
+          },
+        ],
+      },
+      {
+        nivel: 9,
+        rasgos: [
+          {
+            nombre: "Cuchillas del Alma",
+            descripcion:
+              "Ganas los siguientes poderes:\n- Golpes Rastreadores: si fallas un ataque con tu Cuchilla Psiquica, puedes tirar un dado psionico y sumarlo a la tirada. Si esto causa un impacto, el dado se gasta.\n- Teletransporte Psiquico: como accion bonus, manifiestas una Cuchilla Psiquica, gastas un dado psionico, lo tiras y te teletransportas a un espacio desocupado visible a un numero de pies igual a 10 x el resultado.",
+          },
+        ],
+      },
+      {
+        nivel: 13,
+        rasgos: [
+          {
+            nombre: "Velo Psiquico",
+            descripcion:
+              "Como accion de Magia, te vuelves Invisible durante 1 hora o hasta que lo desestimes (sin accion). La invisibilidad termina prematuramente si infliges dano o fuerzas una salvacion. Una vez por descanso largo, o gastando un dado psionico para restaurar el uso.",
+          },
+        ],
+      },
+      {
+        nivel: 17,
+        rasgos: [
+          {
+            nombre: "Desgarro Mental",
+            descripcion:
+              "Cuando infliges dano de Ataque Furtivo con tus Cuchillas Psiquicas, puedes forzar al objetivo a hacer una salvacion de SAB (CD 8 + mod. DES + bon. competencia). Si falla, queda Aturdido durante 1 minuto (repite la tirada al final de cada turno). Una vez por descanso largo, o gastando 3 dados psionicos para restaurar el uso.",
+          },
+        ],
+      },
+    ],
+  },
+
+  // -- Espadachin ---------------------------------------------------
   {
     subclaseId: "espadachin",
     claseId: "picaro",
-    nombre: "Espadachín",
+    nombre: "Espadachin",
     niveles: [
       {
         nivel: 3,
@@ -187,7 +241,7 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Audacia Temeraria",
             descripcion:
-              "Puedes añadir tu mod. de CAR a la iniciativa. Además, no necesitas ventaja en la tirada de ataque para usar Ataque Furtivo si estás a 1,5 m del objetivo y no hay otra criatura a 1,5 m de ti.",
+              "Puedes anadir tu mod. de CAR a las tiradas de iniciativa. Ademas, no necesitas ventaja para usar Ataque Furtivo si estas a 1,5 m del objetivo, no hay otra criatura a 1,5 m de ti y no tienes desventaja.",
           },
         ],
       },
@@ -197,7 +251,7 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Panache",
             descripcion:
-              "Como acción, puedes hacer una prueba de Persuasión contra la Perspicacia de una criatura. Si tienes éxito y no es hostil, queda hechizada 1 minuto. Si es hostil, se enfoca en ti (desventaja atacando a otros, no puede hacer ataques de oportunidad contra otros) durante 1 minuto.",
+              "Como accion, puedes hacer una prueba de CAR (Persuasion) contra la SAB (Perspicacia) de una criatura que pueda oirte y comparta un idioma contigo. Si tienes exito y es hostil: tiene desventaja en ataques contra otros y no puede hacer ataques de oportunidad contra otros salvo tu (1 min). Si no es hostil: queda hechizada 1 min. El efecto termina si tus companeros la atacan o danan.",
           },
         ],
       },
@@ -205,9 +259,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 13,
         rasgos: [
           {
-            nombre: "Elegancia en Combate",
+            nombre: "Maniobra Elegante",
             descripcion:
-              "Como acción adicional, ganas ventaja en la próxima prueba de Acrobacias o Atletismo en ese turno. Puedes lanzar Mano de Mago como parte de esta acción.",
+              "Como accion bonus, ganas ventaja en la siguiente prueba de DES (Acrobacias) o FUE (Atletismo) durante ese turno.",
           },
         ],
       },
@@ -217,68 +271,14 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Maestro Duelista",
             descripcion:
-              "Cuando fallas un ataque con un arma de finura, puedes tirar de nuevo con ventaja. Una vez por turno.",
+              "Cuando fallas una tirada de ataque, puedes repetirla con ventaja. Una vez por descanso corto o largo.",
           },
         ],
       },
     ],
   },
 
-  // ── Explorador Urbano ──────────────────────────────────────────────
-  {
-    subclaseId: "explorador_urbano",
-    claseId: "picaro",
-    nombre: "Explorador Urbano",
-    niveles: [
-      {
-        nivel: 3,
-        rasgos: [
-          {
-            nombre: "Oído al Suelo",
-            descripcion:
-              "Ganas competencia en una habilidad: Perspicacia, Investigación o Sigilo (si no la tienes). Tu bon. de competencia se dobla para pruebas de la habilidad elegida en entornos urbanos.",
-          },
-          {
-            nombre: "Ojo del Espía",
-            descripcion:
-              "Puedes leer los labios de criaturas que puedas ver y que estén hablando un idioma que conozcas. Usas tu acción adicional para percibir detalles ocultos en una zona de 9 m.",
-          },
-        ],
-      },
-      {
-        nivel: 9,
-        rasgos: [
-          {
-            nombre: "Red de Contactos",
-            descripcion:
-              "En cualquier ciudad, puedes establecer una red de informadores si pasas 3 días. Puedes solicitar información a través de esta red (el DM determina lo que aprenden).",
-          },
-        ],
-      },
-      {
-        nivel: 13,
-        rasgos: [
-          {
-            nombre: "Sombra Urbana",
-            descripcion:
-              "Puedes esconderte como acción adicional incluso si estás a plena vista, siempre y cuando estés en un entorno urbano concurrido.",
-          },
-        ],
-      },
-      {
-        nivel: 17,
-        rasgos: [
-          {
-            nombre: "Maestro de la Intriga",
-            descripcion:
-              "Puedes usar tu Ataque Furtivo incluso contra una criatura que no esté sorprendida o flanqueada, siempre que estéis en un entorno urbano. Además, tus ataques críticos en ciudades infligen un dado extra de Ataque Furtivo.",
-          },
-        ],
-      },
-    ],
-  },
-
-  // ── Inquisitivo ────────────────────────────────────────────────────
+  // -- Inquisitivo --------------------------------------------------
   {
     subclaseId: "inquisitivo",
     claseId: "picaro",
@@ -288,19 +288,19 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 3,
         rasgos: [
           {
-            nombre: "Oreja Atenta",
+            nombre: "Oido para el Engano",
             descripcion:
-              "Puedes usar una acción adicional para hacer una prueba de Percepción o Investigación. Puedes usar Perspicacia para encontrar criaturas ocultas: prueba de Perspicacia contra el Engaño de la criatura.",
+              "Cuando hagas una prueba de SAB (Perspicacia) para determinar si una criatura miente, puedes tratar cualquier resultado de 7 o menos en el d20 como un 8.",
           },
           {
-            nombre: "Ojo Perspicaz",
+            nombre: "Ojo para los Detalles",
             descripcion:
-              "Como acción adicional, puedes usar Perspicacia contra una criatura (tu Perspicacia vs. su Engaño). Si tienes éxito, puedes usar Ataque Furtivo contra esa criatura sin necesitar ventaja durante 1 minuto.",
+              "Como accion bonus, puedes hacer una prueba de SAB (Percepcion) para detectar una criatura u objeto oculto, o una prueba de INT (Investigacion) para descifrar pistas.",
           },
           {
-            nombre: "Ojo Insaciable",
+            nombre: "Combate Perspicaz",
             descripcion:
-              "Cuando realizas una prueba de Perspicacia, Investigación o Percepción, puedes tratar un resultado de 7 o menos como un 8.",
+              "Como accion bonus, haz una prueba de SAB (Perspicacia) contra el CAR (Engano) de una criatura visible no incapacitada. Si tienes exito, puedes usar tu Ataque Furtivo contra ella sin ventaja (pero no con desventaja) durante 1 minuto o hasta que lo uses contra otro objetivo.",
           },
         ],
       },
@@ -310,7 +310,7 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Ojo Firme",
             descripcion:
-              "Tu mínimo en pruebas de Percepción, Investigación y Perspicacia sube a tu bon. de competencia + mod. de SAB (mín 10).",
+              "Tienes ventaja en pruebas de SAB (Percepcion) e INT (Investigacion) si no te mueves mas de la mitad de tu velocidad en ese turno.",
           },
         ],
       },
@@ -318,9 +318,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 13,
         rasgos: [
           {
-            nombre: "Sentido Infalible",
+            nombre: "Ojo Infalible",
             descripcion:
-              "Puedes percibir cuando alguien miente. Si una criatura hace una prueba de Engaño contra ti, sabes automáticamente si miente o dice la verdad.",
+              "Como accion, detectas la presencia de ilusiones, cambiaformas fuera de su forma original y otra magia disenada para enganar los sentidos a 9 m (si no estas ciego ni sordo). Sabes que algo intenta enganarte, pero no su naturaleza. Usos = mod. SAB (min. 1) por descanso largo.",
           },
         ],
       },
@@ -330,14 +330,71 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Ojo de la Debilidad",
             descripcion:
-              "Cuando usas Ojo Perspicaz y tienes éxito, el daño de tu Ataque Furtivo contra ese objetivo aumenta en 3d6.",
+              "Mientras tu Combate Perspicaz este activo contra una criatura, tu dano de Ataque Furtivo contra ella aumenta en 3d6.",
           },
         ],
       },
     ],
   },
 
-  // ── Fantasma ───────────────────────────────────────────────────────
+  // -- Espia Maestro ------------------------------------------------
+  {
+    subclaseId: "espia_maestro",
+    claseId: "picaro",
+    nombre: "Espia Maestro",
+    niveles: [
+      {
+        nivel: 3,
+        rasgos: [
+          {
+            nombre: "Maestro de la Intriga",
+            descripcion:
+              "Ganas competencia con el kit de disfraz, el kit de falsificacion y un juego a tu eleccion. Aprendes dos idiomas adicionales. Ademas, puedes imitar de forma infalible el habla y acento de una criatura que hayas escuchado hablar al menos 1 minuto.",
+          },
+          {
+            nombre: "Maestro de Tacticas",
+            descripcion:
+              "Puedes usar la accion de Ayudar como accion bonus. Cuando usas Ayudar para asistir a un aliado atacando, el objetivo puede estar a 9 m de ti (en lugar de 1,5 m), siempre que pueda verte u oirte.",
+          },
+        ],
+        competenciasGanadas: {
+          herramientas: ["Kit de disfraz", "Kit de falsificacion"],
+        },
+      },
+      {
+        nivel: 9,
+        rasgos: [
+          {
+            nombre: "Manipulador Perspicaz",
+            descripcion:
+              "Si pasas al menos 1 minuto observando o interactuando con una criatura fuera de combate, puedes aprender cierta informacion sobre sus capacidades comparadas con las tuyas. El DM te dice si es igual, superior o inferior en dos de las siguientes: puntuacion de INT, SAB, CAR o niveles de clase.",
+          },
+        ],
+      },
+      {
+        nivel: 13,
+        rasgos: [
+          {
+            nombre: "Mala Direccion",
+            descripcion:
+              "Cuando seas objetivo de un ataque y una criatura a 1,5 m te de cobertura, puedes usar tu reaccion para que el ataque se dirija a esa criatura en su lugar.",
+          },
+        ],
+      },
+      {
+        nivel: 17,
+        rasgos: [
+          {
+            nombre: "Alma de Engano",
+            descripcion:
+              "Tus pensamientos no pueden ser leidos por telepatia u otros medios a menos que lo permitas. Puedes presentar pensamientos falsos (prueba de CAR (Engano) contra la SAB (Perspicacia) del lector). Ninguna magia puede determinar si mientes si no lo deseas, y no puedes ser obligado magicamente a decir la verdad.",
+          },
+        ],
+      },
+    ],
+  },
+
+  // -- Fantasma -----------------------------------------------------
   {
     subclaseId: "fantasma",
     claseId: "picaro",
@@ -349,12 +406,12 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Susurros de los Muertos",
             descripcion:
-              "Cuando terminas un descanso corto o largo, puedes ganar competencia en una habilidad o herramienta de tu elección. Esta competencia dura hasta que uses esta capacidad de nuevo.",
+              "Cuando terminas un descanso corto o largo, puedes ganar competencia en una habilidad o herramienta que no tengas. Esta competencia dura hasta que vuelvas a usar este rasgo.",
           },
           {
-            nombre: "Atisbo de la Muerte",
+            nombre: "Lamentos de la Tumba",
             descripcion:
-              "Cuando matas a una criatura con un Ataque Furtivo, puedes hacer que otro objetivo a 9 m de la víctima reciba la mitad del daño del Ataque Furtivo (daño necrótico). Usos iguales a tu bon. de competencia por descanso largo.",
+              "Justo despues de infligir dano de Ataque Furtivo en tu turno, puedes elegir una segunda criatura que puedas ver a 9 m de la primera. Tira la mitad de tus dados de Ataque Furtivo (redondeando arriba): la segunda criatura recibe dano necrotico igual al resultado. Usos = bon. de competencia por descanso largo.",
           },
         ],
       },
@@ -362,9 +419,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 9,
         rasgos: [
           {
-            nombre: "Fichas del Más Allá",
+            nombre: "Fichas del Mas Alla",
             descripcion:
-              "Cuando una vida termina a 9 m de ti, puedes crear una ficha espiritual. Mientras la llevas, tienes ventaja en tiradas de salvación contra muerte y de Constitución. Puedes tener un número igual a tu bon. de competencia.",
+              "Cuando una criatura visible muera a 9 m de ti, puedes usar tu reaccion para crear una ficha espiritual diminuta. Puedes tener hasta tu bon. de competencia en fichas.\n- Mientras lleves una ficha, tienes ventaja en salvaciones de muerte y de CON.\n- Puedes destruir una ficha al infligir Ataque Furtivo para usar Lamentos de la Tumba sin gastar un uso.\n- Como accion, destruyes una ficha para hacerle una pregunta al espiritu (responde brevemente en un idioma que conocia).",
           },
         ],
       },
@@ -374,7 +431,7 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Paseo Fantasmal",
             descripcion:
-              "Como acción adicional, puedes asumir una forma espectral. Ganas velocidad de vuelo de 3 m y puedes moverte a través de criaturas y objetos (recibes 1d10 de fuerza si terminas dentro). Dura 10 minutos. Una vez por descanso largo (o gastando una ficha).",
+              "Como accion bonus, adoptas una forma espectral durante 10 minutos. Ganas velocidad de vuelo de 3 m (puedes flotar) y puedes atravesar criaturas y objetos como terreno dificil (1d10 de fuerza si terminas tu turno dentro). Los ataques contra ti tienen desventaja. Una vez por descanso largo, o destruyendo una ficha como parte de la accion bonus.",
           },
         ],
       },
@@ -382,46 +439,47 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 17,
         rasgos: [
           {
-            nombre: "Marca de la Muerte",
+            nombre: "Amigo de la Muerte",
             descripcion:
-              "Puedes gastar una ficha para duplicar tu daño de Ataque Furtivo contra una criatura.",
+              "Cuando uses Lamentos de la Tumba, puedes infligir el dano necrotico tanto a la primera como a la segunda criatura. Ademas, al final de un descanso largo, si no tienes fichas espirituales, aparece una en tu mano automaticamente.",
           },
         ],
       },
     ],
   },
 
-  // ── Espía Maestro ──────────────────────────────────────────────────
+  // -- Explorador ---------------------------------------------------
   {
-    subclaseId: "espia_maestro",
+    subclaseId: "explorador",
     claseId: "picaro",
-    nombre: "Espía Maestro",
+    nombre: "Explorador",
     niveles: [
       {
         nivel: 3,
         rasgos: [
           {
-            nombre: "Maestro del Espionaje",
+            nombre: "Escaramuzador",
             descripcion:
-              "Ganas competencia en el kit de disfraz y kit de falsificación si no las tienes. Puedes preparar identidades falsas imborrables.",
+              "Cuando un enemigo termina su turno a 1,5 m de ti, puedes usar tu reaccion para moverte hasta la mitad de tu velocidad. Este movimiento no provoca ataques de oportunidad.",
           },
           {
-            nombre: "Tácticas de Espionaje",
+            nombre: "Superviviente",
             descripcion:
-              "Puedes usar tu Acción de Esconderse como acción adicional, incluso en combate. Además, puedes comunicarte en código secreto con cualquier criatura que comparta un lenguaje contigo.",
+              "Ganas competencia en Naturaleza y Supervivencia (si aun no la tienes). Tu bonificador de competencia se duplica para cualquier prueba que use esas competencias.",
           },
         ],
-        competenciasGanadas: {
-          herramientas: ["Kit de disfraz", "Kit de falsificación"],
+        habilidadesExtra: {
+          cantidad: 2,
+          entre: ["naturaleza", "supervivencia"],
         },
       },
       {
         nivel: 9,
         rasgos: [
           {
-            nombre: "Infiltración Maestra",
+            nombre: "Movilidad Superior",
             descripcion:
-              "Puedes adoptar una identidad diferente durante 7 días de preparación. En esa forma, recuerdas toda información y tienes ventaja en Engaño para mantener la identidad.",
+              "Tu velocidad de caminar aumenta en 3 m. Si tienes velocidad de trepar o nadar, tambien aumenta en 3 m.",
           },
         ],
       },
@@ -429,9 +487,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 13,
         rasgos: [
           {
-            nombre: "Impostor Perfecto",
+            nombre: "Maestro de Emboscadas",
             descripcion:
-              "Es virtualmente imposible detectar tu disfraz por medios no mágicos. Además, puedes leer los labios de cualquier criatura visible.",
+              "Tienes ventaja en tiradas de iniciativa. La primera criatura que impactes en la primera ronda de combate resulta mas facil de atacar: las tiradas de ataque contra ella tienen ventaja hasta el inicio de tu siguiente turno.",
           },
         ],
       },
@@ -439,63 +497,9 @@ export const PICARO_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 17,
         rasgos: [
           {
-            nombre: "Red de Espías",
+            nombre: "Ataque Repentino",
             descripcion:
-              "Tienes una red de espías en cada ciudad importante del mundo. Puedes solicitar información y obtener resultados en 1d4 días. Además, nunca puedes ser sorprendido.",
-          },
-        ],
-      },
-    ],
-  },
-
-  // ── Acechador de Almas ─────────────────────────────────────────────
-  {
-    subclaseId: "acechador_almas",
-    claseId: "picaro",
-    nombre: "Acechador de Almas",
-    niveles: [
-      {
-        nivel: 3,
-        rasgos: [
-          {
-            nombre: "Cuchilla Psíquica",
-            descripcion:
-              "Manifiestas cuchillas de energía psiónica. Tienes dados de Energía Psiónica (d6, número = bon. competencia × 2). Cuando usas Ataque Furtivo, infliges daño psíquico extra igual al dado. Recuperas todos con descanso largo, uno con acción adicional (1/descanso corto).",
-          },
-          {
-            nombre: "Susurro Psíquico",
-            descripcion:
-              "Puedes establecer comunicación telepática con una criatura a 36 m. Ambos podéis comunicaros a través del vínculo. Usos iguales al bon. de competencia por descanso largo.",
-          },
-        ],
-      },
-      {
-        nivel: 9,
-        rasgos: [
-          {
-            nombre: "Cuchillas del Alma",
-            descripcion:
-              "Tus cuchillas de energía psiónica ahora pueden usarse como un arma arrojadiza con alcance de 18 m. Puedes realizar ataques cuerpo a cuerpo y a distancia con ellas.",
-          },
-        ],
-      },
-      {
-        nivel: 13,
-        rasgos: [
-          {
-            nombre: "Velo Psíquico",
-            descripcion:
-              "Puedes hacerte invisible junto con todo lo que lleves durante 1 hora o hasta que ataques o fuerces una salvación. Usos iguales a tu bon. de competencia por descanso largo.",
-          },
-        ],
-      },
-      {
-        nivel: 17,
-        rasgos: [
-          {
-            nombre: "Desgarro Mental",
-            descripcion:
-              "Tras infligir daño de Ataque Furtivo, puedes forzar a la criatura a hacer salvación de SAB (CD 8 + mod. DES + bon. competencia). Si falla, queda aturdida hasta el final de tu siguiente turno. Una vez por descanso largo (o gastando 3 dados psíquicos).",
+              "Si realizas la accion de Atacar, puedes hacer un ataque adicional como accion bonus. Este ataque puede beneficiarse de tu Ataque Furtivo incluso si ya lo usaste este turno, pero no contra el mismo objetivo.",
           },
         ],
       },

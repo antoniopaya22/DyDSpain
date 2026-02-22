@@ -4,6 +4,7 @@
  */
 
 import type { BackgroundId, SkillKey } from "@/types/character";
+import type { CustomBackgroundConfig } from "@/types/creation";
 import { random } from "@/utils/providers";
 
 // ─── Tipos de datos de trasfondo ─────────────────────────────────────
@@ -902,7 +903,164 @@ export const BACKGROUNDS: Record<BackgroundId, BackgroundData> = {
     },
     icon: "🏚️",
   },
+  // ─── PEÓN DE BRUJALUZ (Expansión — El Brujaluz Más Allá) ─────────
+  peon_brujaluz: {
+    id: "peon_brujaluz",
+    nombre: "Peón de Brujaluz",
+    descripcion:
+      "Has trabajado en el Carnaval de la Brujaluz, una feria itinerante que viaja entre el mundo mortal y el Feywild. Seas acróbata, mago de feria, payaso o tramoyista, la vida del carnaval te ha enseñado a montar y desmontar rápidamente, a improvisar ante cualquier contratiempo y a ganarte a un público difícil con tu encanto y destreza.",
+    skillProficiencies: ["acrobacias", "interpretacion"],
+    toolProficiencies: ["Herramientas de carpintero"],
+    toolChoices: ["Kit de disfraz", "Instrumento musical (a elegir)"],
+    toolChoiceCount: 1,
+    extraLanguages: 1,
+    equipment: [
+      "Martillo de carpintero",
+      "Disfraz de feria",
+      "Carpa pequeña plegable",
+      "Recuerdo del carnaval (pluma iridiscente, entrada mágica, etc.)",
+      "Bolsa con 8 po",
+    ],
+    startingGold: 8,
+    featureName: "Montar el Espectáculo",
+    featureDescription:
+      "Puedes montar un campamento o carpa en la mitad del tiempo habitual. Además, cuando realizas una prueba de Interpretación para entretener a una audiencia, tienes ventaja en la tirada. Los trabajadores de ferias y carnavales te reconocen como uno de los suyos y te ofrecen alojamiento y comida básica.",
+    personality: {
+      traits: [
+        "Siempre estoy ensayando algún truco o acrobacia, incluso cuando no es necesario.",
+        "No puedo evitar sonreír cuando veo a alguien disfrutar de un espectáculo.",
+        "Hablo con un tono dramático y exagerado, como si siempre estuviera en escena.",
+        "Me resulta imposible quedarme quieto; siempre estoy moviéndome o haciendo malabares.",
+        "Trato cada situación como una actuación y busco arrancar aplausos.",
+        "Guardo una colección de objetos curiosos que he recogido en el carnaval.",
+        "Me pongo nervioso si paso demasiado tiempo sin una audiencia a quien entretener.",
+        "Siempre encuentro una forma de convertir el trabajo duro en algo divertido.",
+      ],
+      ideals: [
+        "Diversión. La risa es la mejor magia que existe (bueno).",
+        "Libertad. El camino abierto y una carpa son todo lo que necesito (caótico).",
+        "Comunidad. El carnaval es una familia, y la familia se protege (legal).",
+        "Codicia. Cada espectáculo es una oportunidad para llenar los bolsillos (malvado).",
+        "Creatividad. Siempre busco nuevas formas de asombrar al público (caótico).",
+        "Tradición. El espectáculo debe continuar, pase lo que pase (neutral).",
+      ],
+      bonds: [
+        "El Carnaval de la Brujaluz es mi hogar y haré lo que sea por protegerlo.",
+        "Perdí a alguien querido durante una actuación. Nunca lo olvidaré.",
+        "Mi disfraz de feria es lo más valioso que poseo; tiene un significado muy especial.",
+        "Debo un favor a quien me dio mi primer empleo en el carnaval.",
+        "Busco a un compañero que desapareció una noche bajo la luz feérica.",
+        "Llevo la marca de un accidente que sufrí durante un espectáculo. Me recuerda mis límites.",
+      ],
+      flaws: [
+        "No puedo resistirme a un buen reto, aunque sea peligroso.",
+        "Miento con facilidad, incluso cuando la verdad me beneficiaría más.",
+        "Soy adicto a la atención y me deprimo cuando me ignoran.",
+        "Tiendo a subestimar los peligros reales, creyendo que todo es parte del espectáculo.",
+        "Robo cosas pequeñas sin darme cuenta; es un viejo hábito del carnaval.",
+        "Confío demasiado en las apariencias y me engañan con facilidad.",
+      ],
+    },
+    icon: "🎪",
+  },
+  // ─── EXTRAVIADO FEÉRICO (Expansión — El Brujaluz Más Allá) ────────
+  extraviado_feerico: {
+    id: "extraviado_feerico",
+    nombre: "Extraviado Feérico",
+    descripcion:
+      "De niño te perdiste en el Feywild, el plano de las hadas, y pasaste lo que parecieron años —o quizá solo instantes— en un reino donde el tiempo, la lógica y las emociones funcionan de manera distinta. Cuando regresaste al mundo mortal, descubriste que habías cambiado: ves cosas que otros no ven, sientes la magia en el aire y nunca has dejado de añorar aquel lugar extraño y maravilloso.",
+    skillProficiencies: ["engano", "supervivencia"],
+    toolProficiencies: [],
+    extraLanguages: 2,
+    equipment: [
+      "Ropas que cambian sutilmente de color con la luz",
+      "Piedra de toque feérica (pequeño objeto del Feywild)",
+      "Frasquito de polvo de hada (decorativo)",
+      "Diario de sueños feéricos",
+      "Bolsa con 5 po",
+    ],
+    startingGold: 5,
+    featureName: "Toque Feérico",
+    featureDescription:
+      "Puedes lanzar el truco druidcraft o prestidigitación a voluntad (sin gasto de espacio de conjuro). Además, tienes ventaja en las pruebas de Perspicacia y Engaño cuando tratas con criaturas feéricas. Las criaturas del Feywild te reconocen como alguien marcado por su plano y tienden a tratarte con curiosidad antes que con hostilidad.",
+    personality: {
+      traits: [
+        "Hablo con animales y plantas como si pudieran entenderme… y a veces creo que lo hacen.",
+        "Se me olvida que las reglas del mundo mortal son diferentes a las del Feywild.",
+        "Me distraigo con facilidad ante cualquier cosa hermosa o brillante.",
+        "A veces digo verdades incómodas sin darme cuenta de que son inapropiadas.",
+        "Sueño despierto con frecuencia, y mis sueños parecen más reales que la vigilia.",
+        "No comprendo del todo las costumbres sociales y a menudo cometo errores de etiqueta.",
+        "Cuento historias sobre el Feywild que nadie cree, pero que son absolutamente ciertas.",
+        "Me invade la nostalgia cuando veo luciérnagas, setas luminosas o la luz de la luna llena.",
+      ],
+      ideals: [
+        "Asombro. El mundo está lleno de maravillas, y quiero descubrirlas todas (bueno).",
+        "Libertad. Nadie debería estar atado a un señor feérico ni a ningún amo (caótico).",
+        "Cautela. Aprendí en el Feywild que cada acuerdo tiene un precio oculto (legal).",
+        "Poder. El conocimiento feérico me da una ventaja sobre los demás (malvado).",
+        "Equilibrio. El mundo mortal y el Feywild deben coexistir en armonía (neutral).",
+        "Redención. Debo deshacer el daño causado por mi tiempo en el Feywild (bueno).",
+      ],
+      bonds: [
+        "Un ser feérico conoce mi nombre verdadero, y eso me ata a una deuda terrible.",
+        "Dejé atrás a alguien querido en el Feywild y no descansaré hasta volver.",
+        "El objeto feérico que llevo conmigo es lo único que me conecta con mi pasado.",
+        "Un archifey me ofreció un trato que aún no he cumplido.",
+        "Mi familia mortal me buscó durante años. Les debo una explicación.",
+        "Llevo conmigo polvo de hada que me recuerda que hay belleza incluso en lo peligroso.",
+      ],
+      flaws: [
+        "No distingo bien entre mentiras y verdad; en el Feywild todo es relativo.",
+        "Me resulta imposible romper una promesa, incluso una hecha bajo engaño.",
+        "Desconfío profundamente de cualquiera que me ofrezca algo «gratis».",
+        "A veces desaparezco durante horas, perdido en ensoñaciones feéricas.",
+        "Tengo un miedo irracional al hierro frío, como si fuera una criatura feérica.",
+        "Mi vínculo con el Feywild me hace parecer extraño e inquietante ante los demás.",
+      ],
+    },
+    icon: "🦋",
+  },
+  // ─── PERSONALIZADA (placeholder, datos reales vienen del editor) ───
+  personalizada: {
+    id: "personalizada",
+    nombre: "Personalizada",
+    descripcion: "Un trasfondo personalizado creado por el jugador.",
+    skillProficiencies: [],
+    toolProficiencies: [],
+    extraLanguages: 0,
+    equipment: [],
+    startingGold: 0,
+    featureName: "",
+    featureDescription: "",
+    personality: { traits: [], ideals: [], bonds: [], flaws: [] },
+    icon: "✏️",
+  },
 };
+
+// ─── Construir BackgroundData desde datos custom ─────────────────────
+
+/**
+ * Construye un BackgroundData a partir de la configuración de un trasfondo personalizado.
+ */
+export function buildBackgroundDataFromCustom(
+  config: CustomBackgroundConfig,
+): BackgroundData {
+  return {
+    id: "personalizada",
+    nombre: config.nombre || "Personalizada",
+    descripcion: config.descripcion,
+    skillProficiencies: config.skillProficiencies,
+    toolProficiencies: config.toolProficiencies,
+    extraLanguages: config.extraLanguages,
+    equipment: config.equipment,
+    startingGold: config.startingGold,
+    featureName: config.featureName,
+    featureDescription: config.featureDescription,
+    personality: { traits: [], ideals: [], bonds: [], flaws: [] },
+    icon: "✏️",
+  };
+}
 
 // ─── Funciones auxiliares ────────────────────────────────────────────
 
@@ -914,10 +1072,11 @@ export function getBackgroundData(backgroundId: BackgroundId): BackgroundData {
 }
 
 /**
- * Devuelve la lista de trasfondos como un array ordenado para selección.
+ * Devuelve la lista de trasfondos SRD como un array ordenado para selección.
+ * No incluye "personalizada".
  */
 export function getBackgroundList(): BackgroundData[] {
-  return Object.values(BACKGROUNDS);
+  return Object.values(BACKGROUNDS).filter((bg) => bg.id !== "personalizada");
 }
 
 /**
@@ -993,4 +1152,15 @@ export const BACKGROUND_ICONS: Record<BackgroundId, string> = {
   marinero: "⚓",
   soldado: "⚔️",
   huerfano: "🏚️",
+  peon_brujaluz: "🎪",
+  extraviado_feerico: "🦋",
+  personalizada: "✏️",
 };
+
+/**
+ * IDs de trasfondos de expansión (no SRD).
+ */
+export const EXPANSION_BACKGROUND_IDS: BackgroundId[] = [
+  "peon_brujaluz",
+  "extraviado_feerico",
+];

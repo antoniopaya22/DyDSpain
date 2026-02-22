@@ -3,7 +3,8 @@
  * Handles all magic-related state management for the character store.
  */
 
-import { STORAGE_KEYS } from "@/utils/storage";
+import { STORAGE_KEYS, setItem } from "@/utils/storage";
+import { now } from "@/utils/providers";
 import type { CharacterStore, MagicSliceState, MagicActions } from "./types";
 import type { InternalMagicState, SlotInfo } from "./helpers";
 import { safeSetItem } from "./helpers";
@@ -120,6 +121,34 @@ export function createMagicSlice(
 
     getMagicState: () => {
       return get().magicState;
+    },
+
+    togglePreparedSpell: async (spellId: string) => {
+      const { character, magicState } = get();
+      if (!character || !magicState) return false;
+
+      const currentIds = magicState.preparedSpellIds;
+      const isPrepared = currentIds.includes(spellId);
+      const newPreparedIds = isPrepared
+        ? currentIds.filter((id) => id !== spellId)
+        : [...currentIds, spellId];
+
+      // Update magicState
+      const updatedMagicState: InternalMagicState = {
+        ...magicState,
+        preparedSpellIds: newPreparedIds,
+      };
+      // Also update the character record so it persists across reloads
+      const updatedChar = {
+        ...character,
+        preparedSpellIds: newPreparedIds,
+        actualizadoEn: now(),
+      };
+
+      set({ magicState: updatedMagicState, character: updatedChar });
+      await safeSetItem(STORAGE_KEYS.MAGIC_STATE(character.id), updatedMagicState);
+      await setItem(STORAGE_KEYS.CHARACTER(character.id), updatedChar);
+      return !isPrepared; // returns new prepared state
     },
   };
 }

@@ -114,6 +114,10 @@ export default function LevelUpModal({
             setWantsToSwap={w.setWantsToSwap}
             spellSearch={w.spellSearch}
             setSpellSearch={w.setSpellSearch}
+            customCantripName={w.customCantripName}
+            setCustomCantripName={w.setCustomCantripName}
+            customSpellName={w.customSpellName}
+            setCustomSpellName={w.setCustomSpellName}
             expandedSpellIds={w.expandedSpellIds}
             setExpandedSpellIds={w.setExpandedSpellIds}
             getMagicState={w.getMagicState}

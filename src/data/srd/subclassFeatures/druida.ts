@@ -1,73 +1,29 @@
-/**
+﻿/**
  * Rasgos de subclase: Druida
+ * PHB'24 (Tierra, Luna, Mar, Estrellas) + XGE (Sueños, Pastor) + TCE (Esporas, Llama)
  */
 
 import type { SubclassFeatureData } from "./types";
 
 export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
-  // ── Círculo de la Tierra ───────────────────────────────────────────
+  // ── Círculo de la Tierra (PHB'24 p84) ──────────────────────────────
   {
     subclaseId: "circulo_tierra",
     claseId: "druida",
     nombre: "Círculo de la Tierra",
     niveles: [
       {
-        nivel: 2,
+        nivel: 3,
         rasgos: [
           {
-            nombre: "Truco Adicional",
+            nombre: "Conjuros del Círculo de la Tierra",
             descripcion:
-              "Aprendes un truco de druida adicional de tu elección.",
+              "Al terminar un descanso largo, elige un tipo de tierra: árida, polar, templada o tropical. Tienes preparados los conjuros listados para tu nivel de druida o inferior.\n\nÁrida: Borrosidad, Manos Ardientes, Descarga de Fuego (nv3); Bola de Fuego (nv5); Plaga (nv7); Muro de Piedra (nv9).\nPolar: Nube de Niebla, Inmovilizar Persona, Rayo de Escarcha (nv3); Cellisca (nv5); Tormenta de Hielo (nv7); Cono de Frío (nv9).\nTemplada: Paso Brumoso, Descarga Eléctrica, Sueño (nv3); Relámpago (nv5); Libertad de Movimiento (nv7); Paso entre Árboles (nv9).\nTropical: Salpicadura Ácida, Rayo de Enfermedad, Telaraña (nv3); Nube Apestosa (nv5); Polimorfar (nv7); Plaga de Insectos (nv9).",
           },
           {
-            nombre: "Recuperación Natural",
+            nombre: "Auxilio de la Tierra",
             descripcion:
-              "Durante un descanso corto, puedes recuperar espacios de conjuro cuya suma de niveles sea igual o menor a la mitad de tu nivel de druida (redondeado arriba). No puedes recuperar espacios de nivel 6 o superior. Una vez por descanso largo.",
-          },
-          {
-            nombre: "Conjuros del Círculo",
-            descripcion:
-              "Tu conexión con la tierra te otorga conjuros adicionales basados en el terreno que elijas.",
-            elecciones: [
-              {
-                id: "terreno_circulo",
-                nombre: "Terreno del Círculo",
-                instruccion: "Elige el terreno con el que estás vinculado:",
-                tipo: "single",
-                opciones: [
-                  { id: "artico", nombre: "Ártico", descripcion: "Conjuros extra: Inmovilizar persona, Crecimiento de espinas (nv3), Lentitud, Ventisca (nv5), Libertad de movimiento, Tormenta de hielo (nv7), Comunión con la naturaleza, Cono de frío (nv9)." },
-                  { id: "costa", nombre: "Costa", descripcion: "Conjuros extra: Imagen especular, Paso brumoso (nv3), Caminar sobre el agua, Respirar bajo el agua (nv5), Control del agua, Libertad de movimiento (nv7), Conjurar elemental, Escudriñar (nv9)." },
-                  { id: "desierto", nombre: "Desierto", descripcion: "Conjuros extra: Desenfoque, Silencio (nv3), Crear comida y agua, Protección contra energía (nv5), Perdición, Terreno alucinatorio (nv7), Plaga de insectos, Muro de piedra (nv9)." },
-                  { id: "bosque", nombre: "Bosque", descripcion: "Conjuros extra: Piel agallada, Telaraña (nv3), Invocar animales, Crecimiento vegetal (nv5), Adivinación, Libertad de movimiento (nv7), Comunión con la naturaleza, Paso entre árboles (nv9)." },
-                  { id: "pradera", nombre: "Pradera", descripcion: "Conjuros extra: Invisibilidad, Paso sin rastro (nv3), Luz del día, Acelerar (nv5), Adivinación, Libertad de movimiento (nv7), Ensueño, Plaga de insectos (nv9)." },
-                  { id: "montaña", nombre: "Montaña", descripcion: "Conjuros extra: Crecimiento de espinas, Araña trepadora (nv3), Relámpago, Fusionarse con la piedra (nv5), Forma pétrea, Muro de piedra (nv7), Paso entre muros, Paso entre árboles (nv9)." },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-
-  // ── Círculo de la Luna ─────────────────────────────────────────────
-  {
-    subclaseId: "circulo_luna",
-    claseId: "druida",
-    nombre: "Círculo de la Luna",
-    niveles: [
-      {
-        nivel: 2,
-        rasgos: [
-          {
-            nombre: "Forma Salvaje de Combate",
-            descripcion:
-              "Puedes usar Forma Salvaje como acción adicional (en lugar de acción). Mientras estés transformado, puedes gastar un espacio de conjuro como acción adicional para recuperar 1d8 PG por nivel del espacio.",
-          },
-          {
-            nombre: "Formas del Círculo",
-            descripcion:
-              "Puedes transformarte en bestias con CR hasta 1 (sin restricción de movimiento). A nivel 6 CR = nivel de druida ÷ 3.",
+              "Como acción mágica, gastas un uso de Forma Salvaje y eliges un punto a 18 m. En una esfera de 3 m de radio, cada criatura que elijas hace una salvación de CON contra tu CD de conjuros: 2d6 de daño necrótico en fallo (mitad en éxito). Una criatura que elijas en el área recupera 2d6 PG. El daño y curación aumentan a 3d6 al nv10 y 4d6 al nv14.",
           },
         ],
       },
@@ -75,9 +31,9 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Golpe Primigenio",
+            nombre: "Recuperación Natural",
             descripcion:
-              "Tus ataques en Forma Salvaje cuentan como mágicos para superar resistencias e inmunidades.",
+              "Puedes lanzar uno de los conjuros de nv1+ de tus Conjuros del Círculo sin gastar espacio, una vez por descanso largo. Además, al terminar un descanso corto puedes recuperar espacios de conjuro cuya suma de niveles sea ≤ la mitad de tu nivel de druida (redondeado arriba), sin espacios de nv6+. Una vez por descanso largo.",
           },
         ],
       },
@@ -85,9 +41,9 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 10,
         rasgos: [
           {
-            nombre: "Forma Salvaje Elemental",
+            nombre: "Protección de la Naturaleza",
             descripcion:
-              "Puedes gastar dos usos de Forma Salvaje para transformarte en un elemental de aire, tierra, fuego o agua.",
+              "Eres inmune a la condición de Envenenado y tienes resistencia a un tipo de daño según tu tierra actual: Árida → Fuego, Polar → Frío, Templada → Rayo, Tropical → Veneno.",
           },
         ],
       },
@@ -95,28 +51,190 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Mil Formas",
+            nombre: "Santuario de la Naturaleza",
             descripcion:
-              "Puedes lanzar Alterar Forma a voluntad sin gastar espacios de conjuro.",
+              "Como acción mágica, gastas un uso de Forma Salvaje para hacer aparecer árboles y enredaderas espectrales en un cubo de 4,5 m sobre el suelo a 36 m de ti. Duran 1 minuto. Tú y tus aliados tenéis media cobertura en el área, y tus aliados obtienen la resistencia actual de tu Protección de la Naturaleza. Como acción adicional puedes mover el cubo hasta 18 m.",
           },
         ],
       },
     ],
   },
 
-  // ── Círculo de los Sueños ──────────────────────────────────────────
+  // ── Círculo de la Luna (PHB'24 p86) ────────────────────────────────
+  {
+    subclaseId: "circulo_luna",
+    claseId: "druida",
+    nombre: "Círculo de la Luna",
+    niveles: [
+      {
+        nivel: 3,
+        rasgos: [
+          {
+            nombre: "Conjuros del Círculo de la Luna",
+            descripcion:
+              "Siempre tienes preparados: Curar Heridas, Rayo de Luna, Chispa Estelar (nv3); Conjurar Animales (nv5); Fuente de Luz Lunar (nv7); Curación en Masa (nv9). Puedes lanzar estos conjuros en Forma Salvaje.",
+          },
+          {
+            nombre: "Formas del Círculo",
+            descripcion:
+              "Tu Forma Salvaje mejora. CD máx. = tu nivel de druida ÷ 3 (redondeado abajo). Tu CA en forma salvaje es 13 + mod. SAB si es mayor que la CA de la bestia. Ganas PG temporales = 3 × tu nivel de druida (en lugar del normal).",
+          },
+        ],
+      },
+      {
+        nivel: 6,
+        rasgos: [
+          {
+            nombre: "Formas del Círculo Mejoradas",
+            descripcion:
+              "Radiancia Lunar: cada ataque en Forma Salvaje puede infligir su daño normal o daño radiante (eliges cada vez que impactas). Resistencia Aumentada: puedes sumar tu mod. SAB a tus salvaciones de CON.",
+          },
+        ],
+      },
+      {
+        nivel: 10,
+        rasgos: [
+          {
+            nombre: "Paso de Luz Lunar",
+            descripcion:
+              "Como acción adicional, te teletransportas hasta 9 m a un espacio desocupado que puedas ver, y tienes ventaja en la siguiente tirada de ataque antes del final de tu turno. Usos = mod. SAB (mín. 1) por descanso largo. También puedes gastar un espacio de nv2+ para recuperar un uso.",
+          },
+        ],
+      },
+      {
+        nivel: 14,
+        rasgos: [
+          {
+            nombre: "Forma Lunar",
+            descripcion:
+              "Radiancia Lunar Mejorada: una vez por turno, infliges 2d10 de daño radiante extra con un ataque en Forma Salvaje. Luz de Luna Compartida: cuando usas Paso de Luz Lunar, puedes teletransportar a una criatura voluntaria a 3 m de ti a un espacio desocupado a 3 m de tu destino.",
+          },
+        ],
+      },
+    ],
+  },
+
+  // ── Círculo del Mar (PHB'24 p87) ───────────────────────────────────
+  {
+    subclaseId: "circulo_mar",
+    claseId: "druida",
+    nombre: "Círculo del Mar",
+    niveles: [
+      {
+        nivel: 3,
+        rasgos: [
+          {
+            nombre: "Conjuros del Círculo del Mar",
+            descripcion:
+              "Siempre tienes preparados: Nube de Niebla, Ráfaga de Viento, Rayo de Escarcha, Despedazar, Onda Atronadora (nv3); Relámpago, Respirar bajo el Agua (nv5); Control del Agua, Tormenta de Hielo (nv7); Conjurar Elemental, Inmovilizar Monstruo (nv9).",
+          },
+          {
+            nombre: "Ira del Mar",
+            descripcion:
+              "Como acción adicional, gastas un uso de Forma Salvaje para manifestar una emanación de 1,5 m de rocío oceánico que te rodea durante 10 minutos. Al manifestarla y como acción adicional en turnos posteriores, elige una criatura en la emanación: debe superar una salvación de CON contra tu CD o recibir daño de Frío (d6 × tu mod. SAB, mín. 1d6) y ser empujada hasta 4,5 m si es Grande o menor.",
+          },
+        ],
+      },
+      {
+        nivel: 6,
+        rasgos: [
+          {
+            nombre: "Afinidad Acuática",
+            descripcion:
+              "La emanación de Ira del Mar aumenta a 3 m. Además, obtienes velocidad de nado igual a tu velocidad.",
+          },
+        ],
+      },
+      {
+        nivel: 10,
+        rasgos: [
+          {
+            nombre: "Hijo de la Tormenta",
+            descripcion:
+              "Mientras tu Ira del Mar esté activa: obtienes velocidad de vuelo igual a tu velocidad, y tienes resistencia al daño de Frío, Rayo y Trueno.",
+          },
+        ],
+      },
+      {
+        nivel: 14,
+        rasgos: [
+          {
+            nombre: "Don Oceánico",
+            descripcion:
+              "Puedes manifestar la emanación de Ira del Mar alrededor de una criatura voluntaria a 18 m en lugar de ti misma; esa criatura obtiene todos los beneficios y usa tu CD y mod. SAB. Si gastas dos usos de Forma Salvaje, puedes manifestarla alrededor de ambos (la criatura y tú).",
+          },
+        ],
+      },
+    ],
+  },
+
+  // ── Círculo de las Estrellas (PHB'24 p88) ──────────────────────────
+  {
+    subclaseId: "circulo_estrellas",
+    claseId: "druida",
+    nombre: "Círculo de las Estrellas",
+    niveles: [
+      {
+        nivel: 3,
+        rasgos: [
+          {
+            nombre: "Mapa Estelar",
+            descripcion:
+              "Has creado un mapa estelar (objeto Diminuto, foco druídico). Mientras lo sostienes, tienes preparados Guía y Rayo Orientador, y puedes lanzar Rayo Orientador sin gastar espacio un número de veces = mod. SAB (mín. 1) por descanso largo. Si pierdes el mapa, puedes recrearlo en 1 hora (durante un descanso).",
+          },
+          {
+            nombre: "Forma Estelar",
+            descripcion:
+              "Como acción adicional, gastas un uso de Forma Salvaje para adoptar una forma estelar (10 min, luz brillante 3 m + tenue 3 m). Elige constelación:\n\nArquero: al activar y como acción adicional, haz un ataque de conjuro a distancia (18 m): 1d8 + mod. SAB de daño radiante.\nCáliz: cuando lanzas un conjuro con espacio que restaure PG, tú u otra criatura a 9 m recupera 1d8 + mod. SAB PG.\nDragón: en pruebas de INT o SAB y salvaciones de CON para concentración, tratas un resultado de 9 o menos en el d20 como 10.",
+          },
+        ],
+      },
+      {
+        nivel: 6,
+        rasgos: [
+          {
+            nombre: "Augurio Cósmico",
+            descripcion:
+              "Al terminar un descanso largo, tira un dado. Según el resultado (par o impar), obtienes una reacción especial hasta tu próximo descanso largo:\n\nBienestar (par): cuando una criatura a 9 m vaya a hacer una prueba con d20, puedes usar tu reacción para tirar 1d6 y sumarlo.\nDesgracia (impar): lo mismo pero restando 1d6.\n\nUsos = mod. SAB (mín. 1) por descanso largo.",
+          },
+        ],
+      },
+      {
+        nivel: 10,
+        rasgos: [
+          {
+            nombre: "Constelaciones Centelleantes",
+            descripcion:
+              "Tus constelaciones mejoran: el 1d8 de Arquero y Cáliz se convierte en 2d8. Mientras Dragón esté activo, tienes velocidad de vuelo de 6 m y puedes levitar. Además, al inicio de cada turno en Forma Estelar puedes cambiar de constelación.",
+          },
+        ],
+      },
+      {
+        nivel: 14,
+        rasgos: [
+          {
+            nombre: "Lleno de Estrellas",
+            descripcion:
+              "Mientras estés en Forma Estelar, te vuelves parcialmente incorpóreo: tienes resistencia al daño contundente, perforante y cortante.",
+          },
+        ],
+      },
+    ],
+  },
+
+  // ── Círculo de los Sueños (XGE p22) ───────────────────────────────
   {
     subclaseId: "circulo_suenos",
     claseId: "druida",
     nombre: "Círculo de los Sueños",
     niveles: [
       {
-        nivel: 2,
+        nivel: 3,
         rasgos: [
           {
             nombre: "Bálsamo del Círculo Veraniego",
             descripcion:
-              "Tienes una reserva de energía feérica para curar. Dados de curación: d6 × tu nivel de druida. Como acción adicional, gasta dados (máx. la mitad de tu nivel de druida a la vez) para curar a una criatura a 36 m. El objetivo también gana 1 PG temporal por dado gastado. Recuperas todos los dados tras un descanso largo.",
+              "Tienes una reserva de energía feérica representada por d6 × tu nivel de druida. Como acción adicional, elige una criatura que puedas ver a 36 m y gasta dados (máx. la mitad de tu nivel de druida). Tira los dados gastados: el objetivo recupera PG iguales al total y gana 1 PG temporal por dado. Recuperas todos los dados tras un descanso largo.",
           },
         ],
       },
@@ -126,7 +244,7 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Hogar de Sombras del Claro de Luna",
             descripcion:
-              "Durante un descanso corto, puedes invocar un refugio feérico: una esfera invisible de 9 m de radio. Tú y tus aliados obtienen +5 a pruebas de Sigilo y SAB (Percepción). La luz y sonido del exterior no pueden penetrar. Dura 8 horas o hasta que lo desactives.",
+              "Durante un descanso corto o largo, tocas un punto y aparece una esfera mágica invisible de 9 m. Mientras estéis dentro, tú y tus aliados tenéis +5 a pruebas de DES (Sigilo) y SAB (Percepción). Las llamas abiertas en la esfera no son visibles desde fuera. Desaparece al final del descanso o al salir tú de ella.",
           },
         ],
       },
@@ -136,7 +254,7 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Pasajes Ocultos",
             descripcion:
-              "Como acción, 10 criaturas voluntarias a 9 m son teletransportadas hasta 18 m a espacios desocupados que puedas ver. Cada una puede ver a través de la niebla feérica durante 1 turno, ganando 1,5 m extra de velocidad. Una vez por descanso largo (o gasta un espacio de nivel 4+).",
+              "Como acción adicional, te teletransportas hasta 18 m a un espacio desocupado que puedas ver. Alternativamente, como acción, teletransportas a una criatura voluntaria que toques hasta 9 m. Usos = mod. SAB (mín. 1) por descanso largo.",
           },
         ],
       },
@@ -146,31 +264,31 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Caminante entre Sueños",
             descripcion:
-              "Al final de un descanso corto, puedes lanzar un conjuro similar a Puerta Arcana que te lleva al Feywild o de regreso al plano material. Hasta 8 criaturas voluntarias pueden entrar. Puedes elegir el punto de llegada.",
+              "Al terminar un descanso corto, puedes lanzar uno de estos conjuros sin gastar espacio ni componentes materiales: Ensueño (tú como mensajero), Escudriñar, o Círculo de Teletransporte (abre un portal al último lugar donde completaste un descanso largo en tu plano actual). Una vez por descanso largo.",
           },
         ],
       },
     ],
   },
 
-  // ── Círculo del Pastor ─────────────────────────────────────────────
+  // ── Círculo del Pastor (XGE p23) ───────────────────────────────────
   {
     subclaseId: "circulo_pastor",
     claseId: "druida",
     nombre: "Círculo del Pastor",
     niveles: [
       {
-        nivel: 2,
+        nivel: 3,
         rasgos: [
           {
-            nombre: "Habla de las Bestias",
+            nombre: "Habla del Bosque",
             descripcion:
-              "Puedes comunicarte con bestias como si compartierais un idioma.",
+              "Aprendes a hablar, leer y escribir Silvano. Las bestias pueden entender tu habla y puedes descifrar sus ruidos y movimientos.",
           },
           {
             nombre: "Tótem Espiritual",
             descripcion:
-              "Como acción adicional, invocas un espíritu incorpóreo en un punto que puedas ver a 18 m. Tiene un aura de 9 m y dura 1 minuto. Elige: Oso (cada aliado en aura gana PG temporales = 5 + tu nivel de druida), Halcón (aliados en aura pueden usar tu reacción para atacar), Unicornio (cuando lanzas curación, aliados en aura recuperan PG extra = tu nivel de druida). Usos iguales a tu bon. de competencia por descanso largo.",
+              "Como acción adicional, invocas un espíritu incorpóreo en un punto a 18 m. Crea un aura de 9 m y dura 1 minuto. Como acción adicional puedes moverlo 18 m. Elige tipo:\n\nOso: cada criatura que elijas en el aura gana PG temporales = 5 + tu nivel de druida. Aliados tienen ventaja en pruebas y salvaciones de FUE.\nHalcón: puedes usar tu reacción para dar ventaja a una tirada de ataque contra un objetivo en el aura. Aliados tienen ventaja en SAB (Percepción).\nUnicornio: aliados tienen ventaja en pruebas para detectar criaturas en el aura. Al lanzar curación con espacio, cada criatura que elijas en el aura recupera PG = tu nivel de druida.\n\nUna vez por descanso corto o largo.",
           },
         ],
       },
@@ -178,9 +296,9 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Espíritus Poderosos",
+            nombre: "Invocador Poderoso",
             descripcion:
-              "Las bestias y feéricos invocados por tus conjuros ganan beneficios: 2 PG extra por dado de golpe, y sus ataques con armas naturales cuentan como mágicos.",
+              "Las bestias y feéricos invocados o creados por tus conjuros ganan: 2 PG extra por dado de golpe, y el daño de sus armas naturales cuenta como mágico.",
           },
         ],
       },
@@ -188,9 +306,9 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 10,
         rasgos: [
           {
-            nombre: "Vigilia del Espíritu Guardian",
+            nombre: "Espíritu Guardián",
             descripcion:
-              "Tu Tótem Espiritual puede proteger. Cuando una criatura en el aura recibe daño, puedes usar tu reacción para reducir el daño en una cantidad igual a la mitad de tu nivel de druida.",
+              "Tu Tótem Espiritual protege a tus invocaciones. Cuando una bestia o feérico invocado/creado por tus conjuros termina su turno en el aura del tótem, recupera PG = la mitad de tu nivel de druida.",
           },
         ],
       },
@@ -200,31 +318,36 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Invocación Fiel",
             descripcion:
-              "Los espíritus de la naturaleza responden a tu llamada. Las criaturas invocadas por tus conjuros de conjuración ganan +2 a las tiradas de ataque y +2 PG por dado de golpe.",
+              "Si eres reducido a 0 PG o quedas incapacitado contra tu voluntad, obtienes inmediatamente los beneficios de Conjurar Animales como si fuera de nv9. Invoca cuatro bestias de CD 2 o menor a 6 m de ti. Si no reciben órdenes, te protegen y atacan a tus enemigos. 1 hora, sin concentración. Una vez por descanso largo.",
           },
         ],
       },
     ],
   },
 
-  // ── Círculo de las Esporas ─────────────────────────────────────────
+  // ── Círculo de las Esporas (TCE p36) ───────────────────────────────
   {
     subclaseId: "circulo_esporas",
     claseId: "druida",
     nombre: "Círculo de las Esporas",
     niveles: [
       {
-        nivel: 2,
+        nivel: 3,
         rasgos: [
           {
-            nombre: "Aura de Esporas",
+            nombre: "Conjuros del Círculo de las Esporas",
             descripcion:
-              "Tienes un halo de esporas invisible con radio de 3 m. Como reacción, cuando una criatura en el aura se mueve o te ataca, puedes infligir 1d4 de daño necrótico (salvación de CON). Daño aumenta: 1d6 (nv6), 1d8 (nv10), 1d10 (nv14).",
+              "Aprendes el truco Toque Gélido. Siempre tienes preparados: Ceguera/Sordera, Reposo Apacible (nv3); Animar Muertos, Forma Gaseosa (nv5); Plaga, Confusión (nv7); Nube Letal, Contagio (nv9).",
           },
           {
-            nombre: "Animación Simbiótica",
+            nombre: "Halo de Esporas",
             descripcion:
-              "Como acción, puedes gastar un uso de Forma Salvaje para despertar tus esporas: ganas 4 PG temporales por nivel de druida. Mientras tengas estos PG temporales, tu cuerpo a cuerpo inflige 1d6 de daño necrótico extra. Dura 10 minutos.",
+              "Cuando una criatura que puedas ver se mueve a un espacio a 3 m de ti o comienza su turno ahí, puedes usar tu reacción para infligir 1d4 de daño necrótico (salvación de CON). Aumenta a 1d6 (nv6), 1d8 (nv10), 1d10 (nv14).",
+          },
+          {
+            nombre: "Entidad Simbiótica",
+            descripcion:
+              "Como acción, gastas un uso de Forma Salvaje para despertar tus esporas. Ganas 4 PG temporales por nivel de druida. Mientras los tengas: tu Halo de Esporas tira el dado de daño dos veces, y tus ataques cuerpo a cuerpo infligen 1d6 de daño necrótico extra. Dura 10 minutos o hasta perder los PG temporales.",
           },
         ],
       },
@@ -232,9 +355,9 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Cadáver Animado",
+            nombre: "Infestación Fúngica",
             descripcion:
-              "Puedes animar cadáveres con tus esporas. Como acción, toca un cadáver: se levanta con 1 PG como zombi durante 1 hora. En combate, actúa en tu turno y puedes controlarlo. Máximo = tu mod. de SAB a la vez.",
+              "Si una bestia o humanoide Pequeño o Mediano muere a 3 m de ti, puedes usar tu reacción para animarlo: se levanta con 1 PG usando el bloque de zombie. Dura 1 hora. Obedece tus órdenes mentales y solo puede usar la acción de Ataque. Usos = mod. SAB (mín. 1) por descanso largo.",
           },
         ],
       },
@@ -244,7 +367,7 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Propagación de Esporas",
             descripcion:
-              "Tu Aura de Esporas puede crecer. Mientras Animación Simbiótica esté activa, puedes mover tu nube de esporas hasta 9 m como acción adicional.",
+              "Como acción adicional mientras Entidad Simbiótica esté activa, lanzas esporas hasta 9 m creando un cubo de 3 m que dura 1 minuto. Las criaturas que entren o empiecen su turno ahí reciben tu daño de Halo de Esporas (salvación de CON). Máx. una vez por turno por criatura. No puedes usar tu reacción de Halo mientras el cubo persista.",
           },
         ],
       },
@@ -254,85 +377,31 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
           {
             nombre: "Cuerpo Fúngico",
             descripcion:
-              "Tus esporas te dan resiliencia: no puedes ser cegado, ensordecido, asustado ni envenenado. Y cualquier golpe crítico contra ti se convierte en golpe normal.",
+              "No puedes ser cegado, ensordecido, asustado ni envenenado. Cualquier golpe crítico contra ti cuenta como golpe normal, a menos que estés incapacitado.",
           },
         ],
       },
     ],
   },
 
-  // ── Círculo de las Estrellas ───────────────────────────────────────
-  {
-    subclaseId: "circulo_estrellas",
-    claseId: "druida",
-    nombre: "Círculo de las Estrellas",
-    niveles: [
-      {
-        nivel: 2,
-        rasgos: [
-          {
-            nombre: "Mapa Estelar",
-            descripcion:
-              "Tienes un mapa estelar como foco druídico. Aprendes Guía y Rayo Orientador (no cuentan para tu límite). Puedes lanzar Rayo Orientador sin gastar espacio un número de veces igual a tu bon. de competencia por descanso largo.",
-          },
-          {
-            nombre: "Forma Estelar",
-            descripcion:
-              "Como acción adicional, gastas un uso de Forma Salvaje para adoptar una forma estelar durante 10 minutos. Elige: Arquero (puedes hacer un ataque a distancia de 18 m que inflige daño radiante = 1d8 + mod. SAB), Cáliz (cuando lanzas curación, tú o un aliado a 9 m recupera PG = 1d8 + mod. SAB), Dragón (mínimo 10 en pruebas de INT/SAB; y salvaciones de CON para concentración tienen mínimo 10).",
-          },
-        ],
-      },
-      {
-        nivel: 6,
-        rasgos: [
-          {
-            nombre: "Constelación Cósmica",
-            descripcion:
-              "Las formas Arquero y Cáliz mejoran: Arquero ahora hace 2d8. Cáliz ahora cura 2d8. Dragón otorga velocidad de vuelo de 6 m.",
-          },
-        ],
-      },
-      {
-        nivel: 10,
-        rasgos: [
-          {
-            nombre: "Resplandor Completo",
-            descripcion:
-              "Tu Forma Estelar gana un beneficio adicional: Arquero da resistencia al daño contundente/perforante/cortante. Cáliz da resistencia al daño necrótico/radiante. Dragón otorga visión verdadera a 9 m. Puedes cambiar de forma como acción adicional.",
-          },
-        ],
-      },
-      {
-        nivel: 14,
-        rasgos: [
-          {
-            nombre: "Forma Estelar Suprema",
-            descripcion:
-              "Tu Forma Estelar dura hasta que la desactives (no necesitas Forma Salvaje). Mientras esté activa, puedes cambiar la constelación al inicio de cada turno.",
-          },
-        ],
-      },
-    ],
-  },
-
-  // ── Círculo de la Llama ────────────────────────────────────────────
+  // ── Círculo de la Llama (TCE p39) ──────────────────────────────────
   {
     subclaseId: "circulo_llama",
     claseId: "druida",
     nombre: "Círculo de la Llama",
     niveles: [
       {
-        nivel: 2,
+        nivel: 3,
         rasgos: [
           {
-            nombre: "Conjuros de Círculo",
+            nombre: "Conjuros del Círculo de la Llama",
             descripcion:
-              "Siempre tienes preparados ciertos conjuros de fuego: Manos Ardientes, Esfera Ardiente (nv2), Forma llameante, Bola de fuego (nv3), Muro de fuego, Forma llameante mayor (nv4), Llama del alba (nv5).",
+              "Siempre tienes preparados: Manos Ardientes, Curar Heridas (nv2); Esfera Ardiente, Rayo Abrasador (nv3); Crecimiento Vegetal, Revivificar (nv5); Aura de Vida, Escudo de Fuego (nv7); Columna de Fuego, Curación en Masa (nv9).",
           },
           {
-            nombre: "Espíritu de Llama Salvaje",
+            nombre: "Invocar Espíritu de Llama",
             descripcion:
-              "Como acción, gastas un uso de Forma Salvaje para invocar un espíritu de llama a 9 m. Tiene CA = 13 + bon. comp., PG según tabla, y puede atacar como tu acción adicional: 1d6+bon. comp. de daño de fuego en 1,5 m, o 1d6+bon. comp. de daño de fuego a distancia 18 m.",
+              "Como acción, gastas un uso de Forma Salvaje para invocar tu espíritu de llama en un espacio desocupado a 9 m. Cada criatura a 3 m (salvo tú) hace salvación de DES o recibe 2d6 de daño de fuego. Es amistoso y obedece tus órdenes; en combate actúa justo después de ti. Solo hace Esquivar a menos que uses tu acción adicional para ordenarle otra cosa. Dura 1 hora o hasta caer a 0 PG.",
           },
         ],
       },
@@ -340,9 +409,9 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 6,
         rasgos: [
           {
-            nombre: "Vínculo Primordial",
+            nombre: "Vínculo Mejorado",
             descripcion:
-              "Tu Espíritu de Llama mejora: cuando tú o el espíritu infligís daño de fuego, suma tu mod. de SAB. Además cuando lanzas un conjuro de restaurar PG puedes hacerlo desde la posición del espíritu.",
+              "Cuando lanzas un conjuro que inflige daño de fuego o restaura PG mientras tu espíritu de llama está invocado, tira 1d8 y suma el resultado a una tirada de daño o curación del conjuro. Además, los conjuros con alcance distinto de \"personal\" pueden originarse desde ti o desde el espíritu.",
           },
         ],
       },
@@ -350,9 +419,9 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 10,
         rasgos: [
           {
-            nombre: "Teletransporte Flamígero",
+            nombre: "Llamas Cauterizantes",
             descripcion:
-              "Como sustituto de movimiento, tú o tu espíritu podéis teletransportaros hasta 4,5 m al lado del otro. La criatura que se teletransporta puede infligir 1d6 + mod. SAB de daño de fuego a criaturas a 1,5 m de donde aparece.",
+              "Cuando una criatura Pequeña o mayor muere a 9 m de ti o de tu espíritu, aparece una llama espectral en su espacio durante 1 minuto. Cuando una criatura entra en ese espacio, puedes usar tu reacción para extinguir la llama y curarla o infligirle daño de fuego = 2d10 + mod. SAB. Usos = bonificador de competencia por descanso largo.",
           },
         ],
       },
@@ -360,9 +429,9 @@ export const DRUIDA_SUBCLASS_FEATURES: SubclassFeatureData[] = [
         nivel: 14,
         rasgos: [
           {
-            nombre: "Llama Eterna",
+            nombre: "Resurgir Ardiente",
             descripcion:
-              "Si el espíritu cae a 0 PG, puedes usar tu reacción y gastar un espacio de conjuro de nivel 1+ para que el espíritu estalle (cada criatura a 3 m: salvación de DES o 2d10 + nivel espacio de fuego) y reaparezca con PG totales al inicio de tu siguiente turno.",
+              "Si tu espíritu de llama está a 36 m cuando caes a 0 PG y quedas inconsciente, puedes hacer que el espíritu caiga a 0 PG. Entonces recuperas la mitad de tus PG máximos y te pones de pie inmediatamente. Una vez por descanso largo.",
           },
         ],
       },

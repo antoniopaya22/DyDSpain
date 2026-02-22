@@ -197,7 +197,9 @@ export const METAMAGIC_NAMES: Record<MetamagicOption, string> = {
   hechizo_extendido: "Hechizo Extendido",
   hechizo_intensificado: "Hechizo Intensificado",
   hechizo_rapido: "Hechizo Rápido",
+  hechizo_buscador: "Hechizo Buscador",
   hechizo_sutil: "Hechizo Sutil",
+  hechizo_transmutado: "Hechizo Transmutado",
   hechizo_duplicado: "Hechizo Duplicado",
 };
 
@@ -206,29 +208,35 @@ export const METAMAGIC_COSTS: Record<MetamagicOption, number> = {
   hechizo_distante: 1,
   hechizo_potenciado: 1,
   hechizo_extendido: 1,
-  hechizo_intensificado: 3,
+  hechizo_intensificado: 2,
   hechizo_rapido: 2,
+  hechizo_buscador: 1,
   hechizo_sutil: 1,
+  hechizo_transmutado: 1,
   hechizo_duplicado: 1,
 };
 
 export const METAMAGIC_DESCRIPTIONS: Record<MetamagicOption, string> = {
   hechizo_cuidadoso:
-    "Al lanzar un conjuro que obliga a tiradas de salvación, protege a tantas criaturas como tu mod. CAR (superan automáticamente la salvación). Coste: 1 PH.",
+    "Al lanzar un conjuro que obliga a tiradas de salvación, protege a hasta mod. CAR criaturas (mín. 1): superan automáticamente la salvación y no reciben daño si normalmente recibirían mitad. Coste: 1 PH.",
   hechizo_distante:
     "Duplica el alcance de un conjuro (mín. 1,5 m) o cambia un conjuro de toque a 9 m de alcance. Coste: 1 PH.",
   hechizo_potenciado:
     "Repite hasta mod. CAR dados de daño de un conjuro (mín. 1). Compatible con otra Metamagia. Coste: 1 PH.",
   hechizo_extendido:
-    "Duplica la duración de un conjuro (mín. 1 minuto, máx. 24 h). Coste: 1 PH.",
+    "Duplica la duración de un conjuro (mín. 1 minuto, máx. 24 h). Si requiere Concentración, tienes ventaja en salvaciones para mantenerla. Coste: 1 PH.",
   hechizo_intensificado:
-    "Un objetivo del conjuro tiene desventaja en su primera tirada de salvación contra él. Coste: 3 PH.",
+    "Un objetivo del conjuro tiene desventaja en salvaciones contra él. Coste: 2 PH.",
   hechizo_rapido:
-    "Cambia el tiempo de lanzamiento de 1 acción a 1 acción adicional. Coste: 2 PH.",
+    "Cambia el tiempo de lanzamiento de 1 acción a 1 acción adicional. No puedes usar esto si ya lanzaste un conjuro de nivel 1+ este turno, ni lanzar uno después. Coste: 2 PH.",
+  hechizo_buscador:
+    "Si fallas una tirada de ataque con un conjuro, puedes repetir el d20 (debes usar el nuevo resultado). Compatible con otra Metamagia. Coste: 1 PH.",
   hechizo_sutil:
-    "Lanza el conjuro sin componentes somáticos ni verbales. Coste: 1 PH.",
+    "Lanza el conjuro sin componentes verbales, somáticos ni materiales (excepto los consumidos o con coste especificado). Coste: 1 PH.",
+  hechizo_transmutado:
+    "Cambia el tipo de daño de un conjuro a otro de la lista: Ácido, Frío, Fuego, Relámpago, Veneno, Trueno. Coste: 1 PH.",
   hechizo_duplicado:
-    "Haz objetivo a una segunda criatura con un conjuro de objetivo único. Coste: nivel del conjuro en PH (1 PH para trucos).",
+    "Al lanzar un conjuro que pueda subirse de nivel para afectar a una criatura adicional, aumenta su nivel efectivo en 1. Coste: 1 PH.",
 };
 
 export const ALL_METAMAGIC_OPTIONS: MetamagicOption[] = [
@@ -238,6 +246,8 @@ export const ALL_METAMAGIC_OPTIONS: MetamagicOption[] = [
   "hechizo_extendido",
   "hechizo_intensificado",
   "hechizo_rapido",
+  "hechizo_buscador",
   "hechizo_sutil",
+  "hechizo_transmutado",
   "hechizo_duplicado",
 ];

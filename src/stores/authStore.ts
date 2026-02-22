@@ -16,11 +16,15 @@ import { create } from "zustand";
 import { Platform } from "react-native";
 import { supabase } from "@/lib/supabase";
 import * as WebBrowser from "expo-web-browser";
-import * as Linking from "expo-linking";
 import { makeRedirectUri } from "expo-auth-session";
 import type { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
 import type { Profile, AppMode } from "@/types/master";
 import { translateAuthError } from "@/utils/auth";
+import { clearUserData } from "@/utils/storage";
+import { restoreFromCloud } from "@/services/supabaseService";
+import { useCharacterStore } from "./characterStore";
+import { useCampaignStore } from "./campaignStore";
+import { useMasterStore } from "./masterStore";
 
 // Warm up the browser on Android for faster OAuth popup
 if (Platform.OS === "android") {
@@ -40,6 +44,55 @@ function getRedirectUri(): string {
   return makeRedirectUri();
 }
 const REDIRECT_URI = getRedirectUri();
+
+/**
+ * Parse an OAuth callback URL and establish a Supabase session.
+ * Handles both PKCE (?code=xxx) and implicit (#access_token=xxx) flows.
+ * Returns true if a session was successfully established.
+ */
+async function extractAndSetSession(callbackUrl: string): Promise<boolean> {
+  try {
+    const url = new URL(callbackUrl);
+
+    // PKCE flow: ?code=xxx
+    const code = url.searchParams.get("code");
+    if (code) {
+      console.log("[AuthStore] PKCE code detected, exchanging for session...");
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (error) {
+        console.error("[AuthStore] exchangeCodeForSession failed:", error.message);
+        return false;
+      }
+      return true;
+    }
+
+    // Implicit flow: #access_token=xxx&refresh_token=xxx
+    const fragment = url.hash.substring(1);
+    if (fragment) {
+      const params = new URLSearchParams(fragment);
+      const accessToken = params.get("access_token");
+      const refreshToken = params.get("refresh_token");
+      if (accessToken && refreshToken) {
+        console.log("[AuthStore] Implicit tokens detected, setting session...");
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (error) {
+          console.error("[AuthStore] setSession failed:", error.message);
+          return false;
+        }
+        return true;
+      }
+    }
+
+    console.warn("[AuthStore] Callback URL had no code or tokens:", callbackUrl.substring(0, 100));
+    return false;
+  } catch (err) {
+    console.error("[AuthStore] extractAndSetSession error:", err);
+    return false;
+  }
+}
 
 // ─── State ───────────────────────────────────────────────────────────
 
@@ -85,7 +138,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   initialize: () => {
     // 1. Restore existing session
     supabase.auth.getSession()
-      .then(({ data: { session } }) => {
+      .then(async ({ data: { session } }) => {
         set({
           session,
           user: session?.user ?? null,
@@ -94,6 +147,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         });
         if (session?.user) {
           get().fetchProfile();
+          // Restore campaigns + characters from Supabase if local storage is empty
+          const restored = await restoreFromCloud(session.user.id);
+          if (restored > 0) {
+            console.log(`[AuthStore] Restored ${restored} campaigns from cloud`);
+            useCampaignStore.getState().loadCampaigns();
+          }
         }
       })
       .catch((err) => {
@@ -105,10 +164,18 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
-      (_event: AuthChangeEvent, session: Session | null) => {
-        set({ session, user: session?.user ?? null });
+      async (_event: AuthChangeEvent, session: Session | null) => {
+        set({ session, user: session?.user ?? null, loading: false });
         if (session?.user) {
           get().fetchProfile();
+          // On SIGNED_IN event, restore cloud data if local is empty
+          if (_event === "SIGNED_IN") {
+            const restored = await restoreFromCloud(session.user.id);
+            if (restored > 0) {
+              console.log(`[AuthStore] Restored ${restored} campaigns from cloud`);
+              useCampaignStore.getState().loadCampaigns();
+            }
+          }
         } else {
           set({ profile: null });
         }
@@ -152,57 +219,73 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       if (error || !data.url) throw error ?? new Error("No se obtuvo la URL de autorización");
 
       // 2. Open the auth URL in the system browser
-      const result = await WebBrowser.openAuthSessionAsync(
+      console.log("[AuthStore] Opening OAuth with REDIRECT_URI:", REDIRECT_URI);
+      console.log("[AuthStore] Auth URL (base):", data.url.split("?")[0]);
+
+      // Wrap openAuthSessionAsync with a timeout so it never hangs forever.
+      // If Supabase's allowed Redirect URLs don't include the exp:// URI,
+      // the browser will never redirect back and the promise won't resolve.
+      const BROWSER_TIMEOUT_MS = 120_000; // 2 minutes
+      const browserPromise = WebBrowser.openAuthSessionAsync(
         data.url,
         REDIRECT_URI,
       );
+      let didTimeout = false;
+      const timeoutPromise = new Promise<WebBrowser.WebBrowserAuthSessionResult>(
+        (resolve) =>
+          setTimeout(() => {
+            didTimeout = true;
+            resolve({ type: WebBrowser.WebBrowserResultType.DISMISS });
+          }, BROWSER_TIMEOUT_MS),
+      );
+      const result = await Promise.race([browserPromise, timeoutPromise]);
 
-      // If the browser was dismissed without completing, also try extracting
-      // from the initial URL that Expo Go may have received via deep linking
-      let callbackUrl: string | null = null;
+      // Clean up the Custom Tab on Android
+      if (Platform.OS === "android") {
+        WebBrowser.coolDownAsync();
+      }
 
-      if (result.type === "success" && result.url) {
-        callbackUrl = result.url;
-      } else if (result.type === "dismiss") {
-        // On some Android devices / Expo Go, the deep link arrives via Linking
-        // instead of through WebBrowser's return value
-        const initialUrl = await Linking.getInitialURL();
-        if (initialUrl?.includes("access_token")) {
-          callbackUrl = initialUrl;
+      console.log(
+        "[AuthStore] WebBrowser result:",
+        result.type,
+        didTimeout ? "(timed out)" : "",
+        result.type === "success" ? (result as { url?: string }).url?.substring(0, 100) : "",
+      );
+
+      // If timed out, try to close the browser popup
+      if (didTimeout) {
+        try { WebBrowser.dismissBrowser(); } catch { /* may not be open */ }
+      }
+
+      // On success, WebBrowser returns the callback URL directly
+      if (result.type === "success" && "url" in result && result.url) {
+        const sessionEstablished = await extractAndSetSession(result.url);
+        if (sessionEstablished) {
+          set({ loading: false });
+          return;
         }
       }
 
-      if (!callbackUrl) {
+      // On Android / Expo Go, openAuthSessionAsync often returns "dismiss"
+      // even though the redirect succeeded. The global URL handler in
+      // _layout.tsx will catch the deep link and call setSession/exchangeCode,
+      // which triggers onAuthStateChange → loading: false.
+      // Wait briefly for that to happen before giving up.
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      // If onAuthStateChange already set the session, we're done
+      if (get().session) {
         set({ loading: false });
         return;
       }
 
-      // 3. Extract tokens from the redirect URL fragment (#)
-      const url = new URL(callbackUrl);
-      // Tokens can be in the hash fragment or query params depending on config
-      const fragment = url.hash.substring(1);
-      const params = new URLSearchParams(fragment || url.search);
-      const accessToken = params.get("access_token");
-      const refreshToken = params.get("refresh_token");
-
-      if (!accessToken || !refreshToken) {
-        throw new Error("No se recibieron los tokens de autenticación");
-      }
-
-      // 4. Set the session in Supabase
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-
-      if (sessionError) throw sessionError;
-
-      set({
-        session: sessionData.session,
-        user: sessionData.user,
-        loading: false,
-      });
+      // Otherwise, clear loading — user will need to try again
+      console.warn(
+        "[AuthStore] OAuth: no session established. " +
+        "Ensure that the Redirect URL in Supabase Dashboard " +
+        "(Authentication → URL Configuration) includes: " + REDIRECT_URI,
+      );
+      set({ loading: false });
     } catch (err) {
       const raw =
         err instanceof Error ? err.message : "Error al iniciar sesión con Google";
@@ -291,6 +374,27 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+
+      // Clear all in-memory stores so the next user starts fresh
+      useCharacterStore.getState().clearCharacter();
+      useCampaignStore.setState({
+        campaigns: [],
+        activeCampaignId: null,
+        loading: false,
+        error: null,
+      });
+      useMasterStore.setState({
+        campaigns: [],
+        activeCampaignId: null,
+        players: [],
+        loadingCampaigns: false,
+        loadingPlayers: false,
+        error: null,
+      });
+
+      // Also wipe persisted user data from AsyncStorage (keeps settings)
+      await clearUserData();
+
       set({ session: null, user: null, profile: null, loading: false });
     } catch (err) {
       const raw =
