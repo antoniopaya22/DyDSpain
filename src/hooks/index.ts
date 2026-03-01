@@ -14,3 +14,4 @@ export { usePulseAnimation } from "./usePulseAnimation";
 export { useRealtimeCharacters } from "./useRealtimeCharacters";
 export { useCharacterSync } from "./useCharacterSync";
 export { useScrollToTop } from "./useScrollToTop";
+export { useHeaderScroll, HeaderScrollProvider } from "./useHeaderScroll";

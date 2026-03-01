@@ -6,7 +6,7 @@
  * Fully theme-aware — uses `colors` tokens from `useTheme()` throughout.
  */
 
-import { useCallback, useState, useRef, useEffect } from "react";
+import { useCallback, useState, useRef, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,9 @@ import {
   Easing,
   StyleSheet,
   Platform,
+  Image,
+  PanResponder,
+  useWindowDimensions,
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
@@ -24,6 +27,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useCharacterStore } from "@/stores/characterStore";
 import { useCharacterListStore } from "@/stores/characterListStore";
 import { useAuthStore } from "@/stores/authStore";
+import { getCharacterAvatar } from "@/utils/avatar";
+import { getClassData } from "@/data/srd/classes";
+import { getRaceData, getSubraceData } from "@/data/srd/races";
+import { AvatarPreviewModal } from "@/components/ui";
 
 import {
   OverviewTab,
@@ -33,7 +40,7 @@ import {
   NotesTab,
 } from "@/components/character";
 import { DiceFAB } from "@/components/dice";
-import { useTheme, useCharacterSync } from "@/hooks";
+import { useTheme, useCharacterSync, HeaderScrollProvider } from "@/hooks";
 
 // ─── Tab definitions ─────────────────────────────────────────────────
 
@@ -86,6 +93,12 @@ function getTabs(colors: import("@/utils/theme").ThemeColors): TabDef[] {
     },
   ];
 }
+
+// ─── Header Layout Constants ─────────────────────────────────────────
+
+const STATUS_BAR_TOP = Platform.OS === "ios" ? 54 : 38;
+const HERO_HEIGHT = 240;
+const COMPACT_BAR_H = STATUS_BAR_TOP + 52;
 
 // ─── HP Color Helper ─────────────────────────────────────────────────
 
@@ -387,7 +400,7 @@ function StatBadge({
 // ─── Main Component ──────────────────────────────────────────────────
 
 export default function CharacterSheetScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const TABS = getTabs(colors);
   const router = useRouter();
   const { id: characterId, tab } = useLocalSearchParams<{
@@ -408,6 +421,7 @@ export default function CharacterSheetScreen() {
   // Sync character to Supabase & get the shareable code
   const characterCode = useCharacterSync();
   const [codeCopied, setCodeCopied] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(false);
   const codeCopyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const validTabs = new Set<TabId>([
@@ -419,6 +433,12 @@ export default function CharacterSheetScreen() {
   ]);
   const resolvedTab = tab && validTabs.has(tab) ? tab : "overview";
   const [activeTab, setActiveTab] = useState<TabId>(resolvedTab);
+  const activeTabRef = useRef<TabId>(resolvedTab);
+
+  // Keep ref in sync
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
 
   // Sync activeTab when the `tab` query parameter changes (e.g. navigating back with a different tab)
   useEffect(() => {
@@ -430,6 +450,123 @@ export default function CharacterSheetScreen() {
   // HP bar animation
   const hpBarWidth = useRef(new Animated.Value(0)).current;
   const headerEntrance = useRef(new Animated.Value(0)).current;
+
+  // ── Collapsible header scroll ──
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
+  const collapsedRef = useRef(false);
+  const cooldownRef = useRef(0); // timestamp of last toggle
+  const headerOnScroll = useMemo(
+    () =>
+      Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        { useNativeDriver: false },
+      ),
+    [scrollY],
+  );
+  const headerScrollCtx = useMemo(
+    () => ({ scrollY, onScroll: headerOnScroll }),
+    [scrollY, headerOnScroll],
+  );
+
+  // Hysteresis: collapse at >30px, expand only when ≤0; 400ms cooldown
+  useEffect(() => {
+    const COLLAPSE_AT = 30;
+    const EXPAND_AT = 0;
+    const COOLDOWN_MS = 400;
+
+    const id = scrollY.addListener(({ value }) => {
+      const now = Date.now();
+      if (now - cooldownRef.current < COOLDOWN_MS) return;
+
+      if (!collapsedRef.current && value > COLLAPSE_AT) {
+        collapsedRef.current = true;
+        cooldownRef.current = now;
+        setHeaderCollapsed(true);
+      } else if (collapsedRef.current && value <= EXPAND_AT) {
+        collapsedRef.current = false;
+        cooldownRef.current = now;
+        setHeaderCollapsed(false);
+      }
+    });
+    return () => scrollY.removeListener(id);
+  }, [scrollY]);
+
+  // ── Swipe between tabs ──
+  const { width: screenWidth } = useWindowDimensions();
+  const SWIPE_THRESHOLD = screenWidth * 0.2;
+  const SWIPE_VELOCITY = 0.3;
+  const tabSlideAnim = useRef(new Animated.Value(0)).current;
+
+  const swipePanResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_evt, gestureState) => {
+          const { dx, dy } = gestureState;
+          return Math.abs(dx) > Math.abs(dy) * 1.5 && Math.abs(dx) > 10;
+        },
+        onMoveShouldSetPanResponderCapture: () => false,
+        onPanResponderMove: (_evt, gestureState) => {
+          tabSlideAnim.setValue(gestureState.dx);
+        },
+        onPanResponderRelease: (_evt, gestureState) => {
+          const { dx, vx } = gestureState;
+          const currentTab = activeTabRef.current;
+          const currentIndex = TABS.findIndex((t) => t.id === currentTab);
+          let newIndex = currentIndex;
+
+          if (
+            (dx < -SWIPE_THRESHOLD || vx < -SWIPE_VELOCITY) &&
+            currentIndex < TABS.length - 1
+          ) {
+            newIndex = currentIndex + 1;
+          } else if (
+            (dx > SWIPE_THRESHOLD || vx > SWIPE_VELOCITY) &&
+            currentIndex > 0
+          ) {
+            newIndex = currentIndex - 1;
+          }
+
+          if (newIndex !== currentIndex) {
+            const direction = newIndex > currentIndex ? -1 : 1;
+            // Animate out
+            Animated.timing(tabSlideAnim, {
+              toValue: direction * screenWidth,
+              duration: 150,
+              easing: Easing.out(Easing.cubic),
+              useNativeDriver: true,
+            }).start(() => {
+              setActiveTab(TABS[newIndex].id);
+              // Snap in from opposite side
+              tabSlideAnim.setValue(-direction * screenWidth * 0.3);
+              Animated.timing(tabSlideAnim, {
+                toValue: 0,
+                duration: 200,
+                easing: Easing.out(Easing.cubic),
+                useNativeDriver: true,
+              }).start();
+            });
+          } else {
+            // Snap back
+            Animated.spring(tabSlideAnim, {
+              toValue: 0,
+              friction: 8,
+              tension: 100,
+              useNativeDriver: true,
+            }).start();
+          }
+        },
+        onPanResponderTerminate: () => {
+          Animated.spring(tabSlideAnim, {
+            toValue: 0,
+            friction: 8,
+            tension: 100,
+            useNativeDriver: true,
+          }).start();
+        },
+      }),
+    [TABS, screenWidth, SWIPE_THRESHOLD, tabSlideAnim],
+  );
 
   // Load character data on focus
   useFocusEffect(
@@ -486,18 +623,6 @@ export default function CharacterSheetScreen() {
 
   // Compute themed gradient colors
   const mainGradient = colors.gradientMain;
-  // Header overlay gradient: from a slightly darker shade to transparent
-  const headerGradient: [string, string, ...string[]] = isDark
-    ? [colors.gradientMain[0], colors.gradientMain[1], colors.bgPrimary + "00"]
-    : [colors.bgSecondary, colors.bgSecondary, `${colors.bgPrimary}00`];
-
-  const headerBorderGradient: [string, string, ...string[]] = [
-    "transparent",
-    `${colors.borderDefault}66`,
-    colors.borderDefault,
-    `${colors.borderDefault}66`,
-    "transparent",
-  ];
 
   // ── Loading state ──
   if (loading && !character) {
@@ -643,6 +768,23 @@ export default function CharacterSheetScreen() {
     colors,
   );
 
+  // Resolve avatar + class/race display data
+  const avatarSource = getCharacterAvatar(character.clase, character.raza, character.sexo);
+  const classData = getClassData(character.clase);
+  const raceData = getRaceData(character.raza);
+  const subraceData = character.subraza
+    ? getSubraceData(character.raza, character.subraza)
+    : null;
+  const raceName =
+    character.customRaceData?.nombre ??
+    subraceData?.nombre ??
+    raceData?.nombre ??
+    "—";
+  const classIcon = (classData.iconName as keyof typeof Ionicons.glyphMap) ?? "shield-half-sharp";
+  const accentColor = classData.color ?? colors.accentRed;
+
+  // ── Collapsible header: simple show/hide, no height animation ──
+
   // ── Render active tab content ──
   const renderTabContent = () => {
     switch (activeTab) {
@@ -674,155 +816,188 @@ export default function CharacterSheetScreen() {
 
       {/* ── Header ── */}
       <View style={sheetStyles.header}>
-        <LinearGradient
-          colors={headerGradient}
-          style={StyleSheet.absoluteFill}
-        />
 
-        <Animated.View
-          style={[
-            sheetStyles.headerContent,
-            {
-              opacity: headerEntrance,
-              transform: [
-                {
-                  translateY: headerEntrance.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [8, 0],
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
-          {/* Top row: back + name + HP */}
-          <View style={sheetStyles.headerTopRow}>
-            {/* Back button */}
+        {/* ── Expanded hero OR Collapsed compact bar ── */}
+        {!headerCollapsed ? (
+          <View style={sheetStyles.heroImageContainer}>
+            {avatarSource ? (
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => setAvatarPreview(true)}
+                style={StyleSheet.absoluteFill}
+              >
+                <Image
+                  source={avatarSource}
+                  style={sheetStyles.heroImage}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            ) : (
+              <View style={[sheetStyles.heroPlaceholder, { backgroundColor: `${accentColor}18` }]}>
+                <Ionicons name={classIcon} size={72} color={`${accentColor}50`} />
+              </View>
+            )}
+
+            {/* Dark gradient overlay at bottom for text readability */}
+            <LinearGradient
+              colors={["transparent", "rgba(0,0,0,0.7)"]}
+              style={sheetStyles.heroGradient}
+              pointerEvents="none"
+            />
+
+            {/* Back button — floating top-left */}
+            <View style={sheetStyles.heroFloatingButtons}>
+              <TouchableOpacity
+                style={sheetStyles.heroBackButton}
+                onPress={handleGoBack}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="arrow-back" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Name + subtitle overlaid at bottom */}
+            <View style={sheetStyles.heroNameOverlay} pointerEvents="none">
+              <Text style={sheetStyles.heroName} numberOfLines={1}>
+                {character.nombre}
+              </Text>
+              <Text style={sheetStyles.heroSubtitle} numberOfLines={1}>
+                {classData.nombre} · {raceName}
+              </Text>
+            </View>
+          </View>
+        ) : (
+          <View
+            style={[
+              sheetStyles.collapsedBar,
+              {
+                backgroundColor: colors.bgElevated,
+                borderBottomColor: colors.borderSubtle,
+              },
+            ]}
+          >
             <TouchableOpacity
-              style={[
-                sheetStyles.headerBackButton,
-                {
-                  backgroundColor: colors.headerButtonBg,
-                  borderColor: colors.headerButtonBorder,
-                },
-              ]}
+              style={sheetStyles.collapsedBackBtn}
               onPress={handleGoBack}
               activeOpacity={0.7}
             >
-              <Ionicons
-                name="arrow-back"
-                size={20}
-                color={colors.textPrimary}
-              />
+              <Ionicons name="arrow-back" size={20} color={colors.textPrimary} />
             </TouchableOpacity>
 
-            {/* Character name and level */}
-            <View style={sheetStyles.headerCenter}>
+            {avatarSource ? (
+              <TouchableOpacity activeOpacity={0.8} onPress={() => setAvatarPreview(true)}>
+                <Image
+                  source={avatarSource}
+                  style={sheetStyles.collapsedAvatar}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            ) : (
+              <View style={[sheetStyles.collapsedAvatar, { backgroundColor: `${accentColor}20` }]}>
+                <Ionicons name={classIcon} size={18} color={accentColor} />
+              </View>
+            )}
+
+            <View style={sheetStyles.collapsedInfo}>
               <Text
-                style={[sheetStyles.headerName, { color: colors.textPrimary }]}
+                style={[sheetStyles.collapsedName, { color: colors.textPrimary }]}
                 numberOfLines={1}
               >
                 {character.nombre}
               </Text>
-              <View style={sheetStyles.headerStatsRow}>
-                <StatBadge
-                  label="NV"
-                  value={character.nivel}
-                  color={colors.accentGold}
-                  delay={100}
-                  labelColor={colors.statsLabel}
-                />
-                <StatBadge
-                  label="CA"
-                  value={ac}
-                  color={colors.accentBlue}
-                  delay={150}
-                  labelColor={colors.statsLabel}
-                />
-                <StatBadge
-                  label="VEL"
-                  value={`${character.speed.walk}`}
-                  color={colors.accentGreen}
-                  delay={200}
-                  labelColor={colors.statsLabel}
-                />
-              </View>
+              <Text
+                style={[sheetStyles.collapsedSub, { color: colors.textSecondary }]}
+                numberOfLines={1}
+              >
+                {classData.nombre} · Nv.{character.nivel}
+              </Text>
             </View>
 
-            {/* HP badge */}
-            <View style={sheetStyles.headerHpBadge}>
-              <View style={sheetStyles.headerHpValueRow}>
-                <Text style={[sheetStyles.headerHpCurrent, { color: hpColor }]}>
-                  {character.hp.current}
-                </Text>
-                <Text
-                  style={[
-                    sheetStyles.headerHpMax,
-                    { color: colors.statsLabel },
-                  ]}
-                >
-                  /{character.hp.max}
-                </Text>
-              </View>
-              {character.hp.temp > 0 && (
-                <View style={sheetStyles.headerHpTempBadge}>
-                  <Ionicons name="shield" size={8} color={colors.accentBlue} />
-                  <Text style={[sheetStyles.headerHpTempText, { color: colors.accentBlue }]}>
-                    +{character.hp.temp}
-                  </Text>
-                </View>
-              )}
-              <Text
-                style={[
-                  sheetStyles.headerHpLabel,
-                  { color: colors.statsLabel },
-                ]}
-              >
-                PG
+            {/* Compact HP */}
+            <View style={sheetStyles.collapsedHp}>
+              <Ionicons name="heart" size={12} color={hpColor} />
+              <Text style={[sheetStyles.collapsedHpText, { color: hpColor }]}>
+                {character.hp.current}/{character.hp.max}
               </Text>
             </View>
           </View>
+        )}
 
-          {/* HP Bar */}
-          <View style={sheetStyles.hpBarContainer}>
-            <View
-              style={[
-                sheetStyles.hpBarBg,
-                { backgroundColor: colors.borderSubtle },
-              ]}
-            >
-              <Animated.View
-                style={[
-                  sheetStyles.hpBarFill,
-                  {
-                    width: hpBarWidth.interpolate({
-                      inputRange: [0, 100],
-                      outputRange: ["0%", "100%"],
-                    }),
-                  },
-                ]}
-              >
-                <LinearGradient
-                  colors={hpGradient}
-                  start={{ x: 0, y: 0.5 }}
-                  end={{ x: 1, y: 0.5 }}
-                  style={sheetStyles.hpBarGradient}
-                />
-              </Animated.View>
-            </View>
-            {/* HP glow effect */}
-            <Animated.View
-              style={[
-                sheetStyles.hpBarGlow,
-                {
-                  backgroundColor: `${hpColor}15`,
-                  width: hpBarWidth.interpolate({
-                    inputRange: [0, 100],
-                    outputRange: ["0%", "100%"],
-                  }),
-                },
-              ]}
+        {/* Stats Footer */}
+        <Animated.View
+          style={[
+            sheetStyles.statsFooter,
+            {
+              backgroundColor: colors.bgElevated,
+              borderBottomColor: colors.borderSubtle,
+              opacity: headerEntrance,
+            },
+          ]}
+        >
+          <View style={sheetStyles.statsRow}>
+            <StatBadge
+              label="NV"
+              value={character.nivel}
+              color={colors.accentGold}
+              delay={100}
+              labelColor={colors.statsLabel}
             />
+            <StatBadge
+              label="CA"
+              value={ac}
+              color={colors.accentBlue}
+              delay={150}
+              labelColor={colors.statsLabel}
+            />
+            <StatBadge
+              label="VEL"
+              value={`${character.speed.walk}`}
+              color={colors.accentGreen}
+              delay={200}
+              labelColor={colors.statsLabel}
+            />
+
+            {/* HP Section */}
+            <View style={sheetStyles.hpFooterSection}>
+              <View style={sheetStyles.hpFooterValueRow}>
+                <Ionicons name="heart" size={14} color={hpColor} />
+                <Text style={[sheetStyles.hpFooterCurrent, { color: hpColor }]}>
+                  {character.hp.current}
+                </Text>
+                <Text style={[sheetStyles.hpFooterMax, { color: colors.statsLabel }]}>
+                  /{character.hp.max}
+                </Text>
+                {character.hp.temp > 0 && (
+                  <View style={sheetStyles.hpFooterTempBadge}>
+                    <Ionicons name="shield" size={8} color={colors.accentBlue} />
+                    <Text style={[sheetStyles.hpFooterTempText, { color: colors.accentBlue }]}>
+                      +{character.hp.temp}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              {/* Mini HP bar */}
+              <View style={[sheetStyles.hpFooterBarBg, { backgroundColor: colors.borderSubtle }]}>
+                <Animated.View
+                  style={[
+                    sheetStyles.hpFooterBarFill,
+                    {
+                      width: hpBarWidth.interpolate({
+                        inputRange: [0, 100],
+                        outputRange: ["0%", "100%"],
+                      }),
+                    },
+                  ]}
+                >
+                  <LinearGradient
+                    colors={hpGradient}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    style={{ flex: 1 }}
+                  />
+                </Animated.View>
+              </View>
+            </View>
           </View>
 
           {/* Character Code Chip — shareable code for Master */}
@@ -854,22 +1029,18 @@ export default function CharacterSheetScreen() {
             </TouchableOpacity>
           )}
         </Animated.View>
-
-        {/* Bottom border gradient */}
-        <View style={sheetStyles.headerBorder}>
-          <LinearGradient
-            colors={headerBorderGradient}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={{ height: 1, width: "100%" }}
-          />
-        </View>
       </View>
 
       {/* ── Tab Content ── */}
-      <View style={{ flex: 1 }} key={activeTab}>
-        {renderTabContent()}
-      </View>
+      <HeaderScrollProvider value={headerScrollCtx}>
+        <Animated.View
+          style={{ flex: 1, transform: [{ translateX: tabSlideAnim }] }}
+          key={activeTab}
+          {...swipePanResponder.panHandlers}
+        >
+          {renderTabContent()}
+        </Animated.View>
+      </HeaderScrollProvider>
 
       {/* ── Dice FAB (HU-11.1) ── */}
       <DiceFAB characterName={character.nombre} bottom={92} right={20} />
@@ -896,6 +1067,14 @@ export default function CharacterSheetScreen() {
           />
         ))}
       </View>
+
+      {/* Avatar preview modal */}
+      <AvatarPreviewModal
+        visible={avatarPreview}
+        source={getCharacterAvatar(character.clase, character.raza, character.sexo)}
+        characterName={character.nombre}
+        onClose={() => setAvatarPreview(false)}
+      />
     </View>
   );
 }
@@ -981,35 +1160,133 @@ const sheetStyles = StyleSheet.create({
     position: "relative",
     zIndex: 10,
   },
-  headerContent: {
-    paddingHorizontal: 16,
-    paddingTop: Platform.OS === "ios" ? 54 : 42,
-    paddingBottom: 8,
+
+  // ── Hero Image ──
+  heroImageContainer: {
+    height: HERO_HEIGHT,
+    position: "relative",
+    overflow: "hidden",
   },
-  headerTopRow: {
-    flexDirection: "row",
-    alignItems: "center",
+  heroImage: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: HERO_HEIGHT * 1.35,
+    width: "100%",
   },
-  headerBackButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderWidth: 1,
+  heroPlaceholder: {
+    ...StyleSheet.absoluteFillObject,
     alignItems: "center",
     justifyContent: "center",
   },
-  headerCenter: {
-    flex: 1,
-    marginHorizontal: 12,
+  heroGradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 120,
   },
-  headerName: {
-    fontSize: 17,
+  heroFloatingButtons: {
+    position: "absolute",
+    top: Platform.OS === "ios" ? 54 : 38,
+    left: 16,
+    right: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  heroBackButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  heroNameOverlay: {
+    position: "absolute",
+    left: 16,
+    right: 16,
+    bottom: 14,
+  },
+  heroName: {
+    fontSize: 24,
+    fontWeight: "900",
+    color: "#fff",
+    letterSpacing: -0.5,
+    textShadowColor: "rgba(0,0,0,0.6)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  heroSubtitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "rgba(255,255,255,0.8)",
+    marginTop: 2,
+    textShadowColor: "rgba(0,0,0,0.5)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+
+  // ── Collapsed Compact Bar ──
+  collapsedBar: {
+    height: COMPACT_BAR_H,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: STATUS_BAR_TOP,
+    paddingHorizontal: 12,
+    gap: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  collapsedBackBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  collapsedAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  collapsedInfo: {
+    flex: 1,
+  },
+  collapsedName: {
+    fontSize: 15,
     fontWeight: "800",
     letterSpacing: -0.3,
-    marginBottom: 4,
   },
-  headerStatsRow: {
+  collapsedSub: {
+    fontSize: 11,
+    fontWeight: "500",
+    marginTop: 1,
+  },
+  collapsedHp: {
     flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingRight: 4,
+  },
+  collapsedHpText: {
+    fontSize: 14,
+    fontWeight: "800",
+  },
+
+  // ── Stats Footer ──
+  statsFooter: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: 8,
+  },
+  statsRow: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
 
@@ -1034,74 +1311,49 @@ const sheetStyles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 
-  // ── HP Badge ──
-  headerHpBadge: {
-    alignItems: "center",
-    minWidth: 52,
+  // ── HP Footer Section ──
+  hpFooterSection: {
+    flex: 1,
+    marginLeft: 4,
   },
-  headerHpValueRow: {
+  hpFooterValueRow: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 4,
   },
-  headerHpCurrent: {
-    fontSize: 20,
+  hpFooterCurrent: {
+    fontSize: 16,
     fontWeight: "900",
-    letterSpacing: -0.5,
+    letterSpacing: -0.3,
   },
-  headerHpMax: {
+  hpFooterMax: {
     fontSize: 12,
     fontWeight: "600",
   },
-  headerHpTempBadge: {
+  hpFooterTempBadge: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(59,130,246,0.12)",
     paddingHorizontal: 5,
     paddingVertical: 1,
     borderRadius: 4,
-    marginTop: 1,
+    marginLeft: 2,
     gap: 2,
   },
-  headerHpTempText: {
-    color: "transparent", // themed inline via colors.accentBlue
+  hpFooterTempText: {
     fontSize: 9,
     fontWeight: "700",
   },
-  headerHpLabel: {
-    fontSize: 8,
-    fontWeight: "700",
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginTop: 1,
-  },
-
-  // ── HP Bar ──
-  hpBarContainer: {
-    marginTop: 10,
-    marginHorizontal: 2,
-    position: "relative",
-  },
-  hpBarBg: {
+  hpFooterBarBg: {
     height: 4,
     borderRadius: 2,
     overflow: "hidden",
   },
-  hpBarFill: {
+  hpFooterBarFill: {
     height: "100%",
     borderRadius: 2,
     overflow: "hidden",
-  },
-  hpBarGradient: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  hpBarGlow: {
-    position: "absolute",
-    top: -2,
-    left: 0,
-    height: 8,
-    borderRadius: 4,
   },
 
   // ── Character Code Chip ──
@@ -1180,9 +1432,4 @@ const sheetStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   } as const,
-
-  // ── Header Border ──
-  headerBorder: {
-    height: 1,
-  },
 });

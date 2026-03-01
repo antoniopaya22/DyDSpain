@@ -12,10 +12,12 @@ import {
   View,
   Text,
   ScrollView,
+  Animated,
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
+import { useHeaderScroll } from "@/hooks";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { useTheme, useDialog, useToast } from "@/hooks";
 import { withAlpha } from "@/utils/theme";
@@ -70,6 +72,7 @@ const CATEGORY_OPTIONS: { value: ItemCategory; label: string }[] = [
 
 export default function InventoryTab() {
   const { colors } = useTheme();
+  const { onScroll } = useHeaderScroll();
   const { toastProps, showInfo: showToast } = useToast();
   const {
     character,
@@ -357,16 +360,18 @@ export default function InventoryTab() {
 
   return (
     <View className="flex-1">
-      <ScrollView
+      <Animated.ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        onScroll={onScroll}
+        scrollEventThrottle={16}
       >
         {renderWeightBar()}
         {renderCoins()}
         {renderItemList()}
-      </ScrollView>
+      </Animated.ScrollView>
 
       <AddItemModal
         visible={showAddItem}

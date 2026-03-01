@@ -14,10 +14,11 @@
 import { useState } from "react";
 import {
   View,
-  ScrollView,
+  Animated,
   Text,
 } from "react-native";
 import { useCharacterStore } from "@/stores/characterStore";
+import { useHeaderScroll } from "@/hooks";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { useTheme, useDialog, useToast } from "@/hooks";
 import {
@@ -42,6 +43,7 @@ import CharacterTraitsSection from "./abilities/CharacterTraitsSection";
 
 export default function AbilitiesTab() {
   const { colors } = useTheme();
+  const { onScroll } = useHeaderScroll();
   const { dialogProps, showConfirm } = useDialog();
   const { toastProps, showInfo: showToast } = useToast();
   const {
@@ -251,10 +253,12 @@ export default function AbilitiesTab() {
   if (isNonCaster) {
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView
+        <Animated.ScrollView
           className="flex-1"
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
         >
           <ClassAbilitiesSection
             character={character}
@@ -281,7 +285,7 @@ export default function AbilitiesTab() {
             onUseCharge={handleUseTraitCharge}
             onRestoreCharges={handleRestoreTraitCharges}
           />
-        </ScrollView>
+        </Animated.ScrollView>
         <ConfirmDialog {...dialogProps} />
         <Toast {...toastProps} />
       </View>
@@ -291,10 +295,12 @@ export default function AbilitiesTab() {
   // Caster
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView
+      <Animated.ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
       >
         <CantripsSection
           cantrips={cantrips}
@@ -326,7 +332,7 @@ export default function AbilitiesTab() {
           onUseCharge={handleUseTraitCharge}
           onRestoreCharges={handleRestoreTraitCharges}
         />
-      </ScrollView>
+      </Animated.ScrollView>
       <ConfirmDialog {...dialogProps} />
       <Toast {...toastProps} />
     </View>

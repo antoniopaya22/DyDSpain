@@ -26,6 +26,7 @@ import { useRealtimeCharacters } from "@/hooks/useRealtimeCharacters";
 import { useTheme, useDialog, useToast } from "@/hooks";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { CLASS_ICONS, RACE_ICONS } from "@/data/srd";
+import { getCharacterAvatar } from "@/utils/avatar";
 import type { LobbyPlayer } from "@/types/master";
 import type { PersonajeRow } from "@/types/supabase";
 import type { Character, ClassId, RaceId } from "@/types/character";
@@ -196,6 +197,9 @@ export default function MasterCampaignLobby() {
     const clase = charData?.clase ?? "—";
     const nombre = charData?.nombre ?? "Sin personaje";
     const condiciones = charData?.conditions?.map((c) => c.condition) ?? [];
+    const portraitSource = charData
+      ? getCharacterAvatar(charData.clase as ClassId, charData.raza as RaceId, charData.sexo)
+      : null;
 
     const hpColor = getHpColor(pgCurrent, pgMax);
     const hpPercent = pgMax > 0 ? (pgCurrent / pgMax) * 100 : 0;
@@ -230,6 +234,11 @@ export default function MasterCampaignLobby() {
           {charData?.appearance?.avatarUri ? (
             <Image
               source={{ uri: charData.appearance.avatarUri }}
+              style={styles.playerAvatarImg}
+            />
+          ) : portraitSource ? (
+            <Image
+              source={portraitSource}
               style={styles.playerAvatarImg}
             />
           ) : (

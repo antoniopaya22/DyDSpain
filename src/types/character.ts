@@ -63,6 +63,14 @@ export type Alignment =
 
 export type Size = "diminuto" | "pequeno" | "mediano" | "grande";
 
+export type Sexo = "masculino" | "femenino" | "otro";
+
+export const SEXO_NAMES: Record<Sexo, string> = {
+  masculino: "Masculino",
+  femenino: "Femenino",
+  otro: "Otro",
+};
+
 export type HitDie = "d6" | "d8" | "d10" | "d12";
 
 export type ProficiencyLevel = "none" | "proficient" | "expertise";
@@ -367,6 +375,7 @@ export interface Character {
 
   // ── Información básica ──
   nombre: string;
+  sexo?: Sexo;
   raza: RaceId;
   subraza: SubraceId;
   /** Nombre de la raza personalizada (solo cuando raza === "personalizada") */

@@ -9,7 +9,7 @@
 
 import { create } from "zustand";
 import { randomUUID } from "expo-crypto";
-import type { Character, ClassId, RaceId, SubraceId } from "@/types/character";
+import type { Character, ClassId, RaceId, Sexo, SubraceId } from "@/types/character";
 import { STORAGE_KEYS, setItem, getItem, removeItem } from "@/utils/storage";
 import { now } from "@/utils/providers";
 import { useCharacterStore } from "./characterStore";
@@ -31,6 +31,8 @@ export interface CharacterSummary {
   raza: RaceId;
   /** Subraza (si aplica) */
   subraza: SubraceId;
+  /** Sexo del personaje */
+  sexo?: Sexo;
   /** Nivel actual */
   nivel: number;
   /** Nombre de raza personalizada */
@@ -91,6 +93,7 @@ export function toCharacterSummary(character: Character): CharacterSummary {
     clase: character.clase,
     raza: character.raza,
     subraza: character.subraza,
+    sexo: character.sexo,
     nivel: character.nivel,
     customRaceName: character.customRaceName,
     creadoEn: character.creadoEn,

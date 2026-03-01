@@ -24,6 +24,7 @@ import {
   ABILITY_ABBR,
   ABILITY_NAMES,
   ALIGNMENT_NAMES,
+  SEXO_NAMES,
   SKILLS,
   calcModifier,
   type AbilityKey,
@@ -360,6 +361,22 @@ export default function SummaryStep() {
                     </Text>
                     <Text style={[styles.summaryValue, themed.textPrimary]}>
                       {draft.nombre}
+                    </Text>
+                  </View>
+                )}
+
+                {draft.sexo && (
+                  <View
+                    style={[
+                      styles.summaryRow,
+                      { borderBottomColor: colors.borderSubtle },
+                    ]}
+                  >
+                    <Text style={[styles.summaryLabel, themed.textSecondary]}>
+                      Sexo
+                    </Text>
+                    <Text style={[styles.summaryValue, themed.textPrimary]}>
+                      {SEXO_NAMES[draft.sexo]}
                     </Text>
                   </View>
                 )}

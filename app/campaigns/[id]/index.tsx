@@ -12,11 +12,17 @@ import {
   Easing,
   StyleSheet,
   Platform,
+  Image,
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCampaignStore } from "@/stores/campaignStore";
+import { useCharacterStore } from "@/stores/characterStore";
+import { getCharacterAvatar } from "@/utils/avatar";
+import { getRaceData } from "@/data/srd/races";
+import { getClassData } from "@/data/srd/classes";
+import { withAlpha } from "@/utils/theme";
 import {
   ConfirmDialog,
   Toast,
@@ -306,6 +312,8 @@ export default function CampaignDetailScreen() {
     setActiveCampaign,
   } = useCampaignStore();
 
+  const { character, loadCharacter } = useCharacterStore();
+
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
@@ -335,6 +343,9 @@ export default function CampaignDetailScreen() {
         if (found) {
           setActiveCampaign(found.id);
           await touchCampaign(found.id);
+          if (found.personajeId) {
+            await loadCharacter(found.personajeId);
+          }
         }
         setLoading(false);
       };
@@ -757,6 +768,55 @@ export default function CampaignDetailScreen() {
               color={colors.accentRed}
               delay={100}
             />
+
+            {/* Character portrait card */}
+            {character && character.campaignId === campaign.id && (() => {
+              const avatarSource = getCharacterAvatar(character.clase, character.raza, character.sexo);
+              const rData = getRaceData(character.raza);
+              const cData = getClassData(character.clase);
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  onPress={handleOpenCharacterSheet}
+                  style={[
+                    detailStyles.characterCard,
+                    { backgroundColor: colors.bgCard, borderColor: colors.borderDefault },
+                  ]}
+                >
+                  {avatarSource ? (
+                    <Image
+                      source={avatarSource}
+                      style={detailStyles.characterAvatar}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View
+                      style={[
+                        detailStyles.characterAvatarFallback,
+                        { backgroundColor: withAlpha(colors.accentRed, 0.15) },
+                      ]}
+                    >
+                      <Ionicons name="person" size={32} color={colors.accentRed} />
+                    </View>
+                  )}
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      style={[detailStyles.characterName, { color: colors.textPrimary }]}
+                      numberOfLines={1}
+                    >
+                      {character.nombre}
+                    </Text>
+                    <Text
+                      style={[detailStyles.characterSubtitle, { color: colors.textSecondary }]}
+                      numberOfLines={1}
+                    >
+                      {character.customRaceName ?? rData.nombre} · {cData.nombre} Nv. {character.nivel}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                </TouchableOpacity>
+              );
+            })()}
 
             <ActionCard
               icon="shield-half-sharp"
@@ -1318,5 +1378,39 @@ const detailStyles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "500",
     marginLeft: 4,
+  },
+
+  // ── Character Card ──
+  characterCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 10,
+  },
+  characterAvatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    marginRight: 14,
+  },
+  characterAvatarFallback: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    marginRight: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  characterName: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 2,
+  },
+  characterSubtitle: {
+    fontSize: 13,
+    fontWeight: "500",
   },
 });

@@ -10,12 +10,14 @@ import {
   View,
   Text,
   FlatList,
+  RefreshControl,
   TouchableOpacity,
   StyleSheet,
   Animated,
   Easing,
   ActivityIndicator,
   TextInput,
+  Image,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -24,6 +26,8 @@ import { useAuthStore } from "@/stores/authStore";
 import { useMasterStore } from "@/stores/masterStore";
 import { useTheme, useDialog, useToast } from "@/hooks";
 import { ConfirmDialog, Toast, AppHeader } from "@/components/ui";
+import { CampaignImagePicker } from "@/components/campaigns";
+import { getCampaignImageSource, type CampaignImageId } from "@/constants/campaignImages";
 import type { MasterCampaign } from "@/types/master";
 
 // ─── Component ───────────────────────────────────────────────────────
@@ -45,6 +49,7 @@ export default function MasterHomeScreen() {
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [newDesc, setNewDesc] = useState("");
+  const [newImage, setNewImage] = useState<CampaignImageId | null>("campana1");
   const [creating, setCreating] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -73,10 +78,12 @@ export default function MasterHomeScreen() {
         .createCampaign(user.id, {
           nombre: newName,
           descripcion: newDesc || undefined,
+          imagen: newImage || undefined,
         });
       setShowCreate(false);
       setNewName("");
       setNewDesc("");
+      setNewImage("campana1");
       showSuccess("Campaña creada", `"${campaign.nombre}" lista para jugar`);
     } catch (_err) {
       // Error handled in store
@@ -126,22 +133,31 @@ export default function MasterHomeScreen() {
       onLongPress={() => handleDeleteCampaign(item)}
       activeOpacity={0.85}
     >
-      <View style={styles.campaignCardHeader}>
-        <View
-          style={[
-            styles.campaignIcon,
-            { backgroundColor: `${colors.accentGold}20` },
-          ]}
-        >
-          <Ionicons name="map-outline" size={24} color={colors.accentGold} />
-        </View>
-        <View style={styles.campaignInfo}>
+      {/* Header image */}
+      <View style={styles.cardImageContainer}>
+        <Image
+          source={getCampaignImageSource(item.imagen)}
+          style={styles.cardImage}
+          resizeMode="cover"
+        />
+        <LinearGradient
+          colors={["transparent", "rgba(0,0,0,0.55)"]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.cardImageGradient}
+        />
+        <View style={styles.cardImageOverlay}>
           <Text
-            style={[styles.campaignName, { color: colors.textPrimary }]}
+            style={styles.cardImageTitle}
             numberOfLines={1}
           >
             {item.nombre}
           </Text>
+        </View>
+      </View>
+
+      <View style={styles.campaignCardHeader}>
+        <View style={styles.campaignInfo}>
           {item.descripcion ? (
             <Text
               style={[styles.campaignDesc, { color: colors.textSecondary }]}
@@ -216,6 +232,14 @@ export default function MasterHomeScreen() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={renderEmpty}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={loadingCampaigns}
+            onRefresh={() => user && loadCampaigns(user.id)}
+            tintColor={colors.accentGold}
+            colors={[colors.accentGold]}
+          />
+        }
       />
 
       {/* FAB — Create Campaign */}
@@ -247,6 +271,11 @@ export default function MasterHomeScreen() {
             <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>
               Nueva campaña
             </Text>
+
+            <CampaignImagePicker
+              selected={newImage}
+              onSelect={setNewImage}
+            />
 
             <TextInput
               style={[
@@ -335,25 +364,47 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 16,
     paddingBottom: 100,
-    gap: 12,
+    gap: 16,
   },
   campaignCard: {
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     overflow: "hidden",
+  },
+  cardImageContainer: {
+    width: "100%",
+    aspectRatio: 2,
+    position: "relative",
+  },
+  cardImage: {
+    width: "100%",
+    height: "100%",
+  },
+  cardImageGradient: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  cardImageOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 14,
+    paddingBottom: 10,
+  },
+  cardImageTitle: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: -0.3,
+    textShadowColor: "rgba(0,0,0,0.5)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   campaignCardHeader: {
     flexDirection: "row",
     alignItems: "center",
     padding: 14,
     gap: 12,
-  },
-  campaignIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
   },
   campaignInfo: {
     flex: 1,

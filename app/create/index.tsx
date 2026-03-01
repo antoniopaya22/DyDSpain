@@ -10,6 +10,7 @@ import {
 import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCreationStore, TOTAL_STEPS } from "@/stores/creationStore";
+import { SEXO_NAMES, type Sexo } from "@/types/character";
 import { ConfirmDialog } from "@/components/ui";
 import { useTheme, useDialog } from "@/hooks";
 import { withAlpha } from "@/utils/theme";
@@ -20,10 +21,11 @@ export default function CharacterNameStep() {
   const { colors } = useTheme();
   const router = useRouter();
 
-  const { draft, startCreation, loadDraft, saveDraft, setNombre, isStepValid } =
+  const { draft, startCreation, loadDraft, saveDraft, setNombre, setSexo, isStepValid } =
     useCreationStore();
 
   const [nombre, setNombreLocal] = useState("");
+  const [sexo, setSexoLocal] = useState<Sexo | undefined>(undefined);
   const [initialized, setInitialized] = useState(false);
   const { dialogProps, showDestructive } = useDialog();
 
@@ -37,6 +39,9 @@ export default function CharacterNameStep() {
           const currentDraft = useCreationStore.getState().draft;
           if (currentDraft?.nombre) {
             setNombreLocal(currentDraft.nombre);
+          }
+          if (currentDraft?.sexo) {
+            setSexoLocal(currentDraft.sexo);
           }
         } else {
           // Crear nuevo borrador
@@ -56,26 +61,36 @@ export default function CharacterNameStep() {
     }
   }, [nombre, initialized, draftNombre, setNombre]);
 
-  const isValid = nombre.trim().length >= 1;
+  // Sincronizar el sexo local con el store
+  const draftSexo = draft?.sexo;
+  useEffect(() => {
+    if (initialized && sexo && sexo !== draftSexo) {
+      setSexo(sexo);
+    }
+  }, [sexo, initialized, draftSexo, setSexo]);
+
+  const isValid = nombre.trim().length >= 1 && !!sexo;
 
   const handleNext = async () => {
     if (!isValid) return;
     // Guardar borrador antes de navegar
     setNombre(nombre.trim());
+    if (sexo) setSexo(sexo);
     await saveDraft();
     router.push("/create/race");
   };
 
   const handleCancel = () => {
-    if (nombre.trim().length > 0) {
+    if (nombre.trim().length > 0 || sexo) {
       showDestructive(
         "Cancelar creación",
         "¿Estás seguro de que quieres cancelar? El borrador se guardará automáticamente y podrás continuar más tarde.",
         async () => {
           if (nombre.trim().length > 0) {
             setNombre(nombre.trim());
-            await saveDraft();
           }
+          if (sexo) setSexo(sexo);
+          await saveDraft();
           router.back();
         },
         { confirmText: "Salir", cancelText: "Seguir editando" },
@@ -160,6 +175,43 @@ export default function CharacterNameStep() {
             <Text className="text-xs mt-2 text-center" style={{ color: colors.textMuted }}>
               Máximo 50 caracteres · Se admiten tildes y caracteres especiales
             </Text>
+          </View>
+
+          {/* Selector de sexo */}
+          <View className="mb-6">
+            <Text className="text-xs font-semibold uppercase tracking-wider mb-3 text-center" style={{ color: colors.textMuted }}>
+              Sexo del personaje
+            </Text>
+            <View className="flex-row justify-center">
+              {(Object.entries(SEXO_NAMES) as [Sexo, string][]).map(([key, label]) => {
+                const selected = sexo === key;
+                const icon = key === "masculino" ? "male" : key === "femenino" ? "female" : "male-female";
+                return (
+                  <TouchableOpacity
+                    key={key}
+                    className="items-center justify-center rounded-xl px-5 py-3 mx-2 border"
+                    style={{
+                      backgroundColor: selected ? colors.accentRed : colors.bgCard,
+                      borderColor: selected ? colors.accentRed : colors.borderDefault,
+                      minWidth: 90,
+                    }}
+                    onPress={() => setSexoLocal(key)}
+                  >
+                    <Ionicons
+                      name={icon as any}
+                      size={22}
+                      color={selected ? "white" : colors.textSecondary}
+                    />
+                    <Text
+                      className="text-sm font-semibold mt-1"
+                      style={{ color: selected ? "white" : colors.textSecondary }}
+                    >
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
 
           {/* Sugerencias */}

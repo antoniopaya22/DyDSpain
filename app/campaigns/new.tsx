@@ -21,6 +21,8 @@ import {
   PageHeader,
   GradientButton,
 } from "@/components/ui";
+import { CampaignImagePicker } from "@/components/campaigns";
+import { type CampaignImageId } from "@/constants/campaignImages";
 import { useEntranceAnimation, useTheme, useDialog, useToast } from "@/hooks";
 
 export default function NewCampaignScreen() {
@@ -29,6 +31,7 @@ export default function NewCampaignScreen() {
   const { createCampaign } = useCampaignStore();
 
   const [nombre, setNombre] = useState("");
+  const [selectedImage, setSelectedImage] = useState<CampaignImageId | null>("campana1");
   const [saving, setSaving] = useState(false);
 
   const { dialogProps, showDestructive } = useDialog();
@@ -43,6 +46,7 @@ export default function NewCampaignScreen() {
     try {
       const campaign = await createCampaign({
         nombre: nombre.trim(),
+        imagen: selectedImage || undefined,
       });
       router.replace(`/campaigns/${campaign.id}`);
     } catch (error) {
@@ -92,6 +96,12 @@ export default function NewCampaignScreen() {
 
           {/* ── Form ── */}
           <Animated.View style={[styles.formContainer, formStyle]}>
+            {/* Selector de imagen */}
+            <CampaignImagePicker
+              selected={selectedImage}
+              onSelect={setSelectedImage}
+            />
+
             {/* Nombre de la partida */}
             <View style={styles.fieldGroup}>
               <Text

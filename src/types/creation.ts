@@ -17,6 +17,7 @@ import type {
   AbilityKey,
   Size,
   DamageType,
+  Sexo,
 } from "./character";
 
 // ─── Datos de raza personalizada ─────────────────────────────────────
@@ -111,6 +112,7 @@ export interface CharacterCreationDraft {
 
   // Pasos completados
   nombre?: string;
+  sexo?: Sexo;
   raza?: RaceId;
   subraza?: SubraceId;
   /** Datos de la raza personalizada (solo cuando raza === "personalizada") */

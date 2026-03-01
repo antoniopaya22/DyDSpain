@@ -121,3 +121,7 @@ export type { GradientButtonProps } from "./GradientButton";
 // ─── Segmented Tabs (animated tab selector) ──────────────────────────
 export { default as SegmentedTabs } from "./SegmentedTabs";
 export type { SegmentedTabsProps, TabItem } from "./SegmentedTabs";
+
+// ─── Avatar Preview Modal (tap-to-enlarge character photo) ───────────
+export { default as AvatarPreviewModal } from "./AvatarPreviewModal";
+export type { AvatarPreviewModalProps } from "./AvatarPreviewModal";

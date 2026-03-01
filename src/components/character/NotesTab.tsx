@@ -6,9 +6,10 @@
  */
 
 import { useState, useMemo, useCallback } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Animated, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
+import { useHeaderScroll } from "@/hooks";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { useTheme, useDialog, useToast } from "@/hooks";
 import { withAlpha } from "@/utils/theme";
@@ -31,6 +32,7 @@ import {
 
 export default function NotesTab() {
   const { colors } = useTheme();
+  const { onScroll } = useHeaderScroll();
   const { dialogProps, showDestructive } = useDialog();
   const { toastProps, showInfo: showToast } = useToast();
   const {
@@ -277,11 +279,13 @@ export default function NotesTab() {
 
   return (
     <View className="flex-1">
-      <ScrollView
+      <Animated.ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        onScroll={onScroll}
+        scrollEventThrottle={16}
       >
         {renderStatsBar()}
 
@@ -303,7 +307,7 @@ export default function NotesTab() {
         />
 
         {renderNotesList()}
-      </ScrollView>
+      </Animated.ScrollView>
 
       <NoteEditorModal
         visible={showEditor}

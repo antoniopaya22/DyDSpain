@@ -21,6 +21,7 @@ import type {
   Appearance,
   Character,
   SavingThrowProficiencies,
+  Sexo,
 } from "@/types/character";
 import type { CustomRaceConfig, CustomBackgroundConfig } from "@/types/creation";
 import { calcProficiencyBonus } from "@/types/character";
@@ -107,6 +108,8 @@ interface CreationActions {
   // ── Setters de cada paso del wizard ──
   /** Paso 1: Nombre */
   setNombre: (nombre: string) => void;
+  /** Paso 1: Sexo */
+  setSexo: (sexo: Sexo) => void;
   /** Paso 2: Raza y subraza */
   setRaza: (raza: RaceId, subraza: SubraceId) => void;
   /** Paso 2: Datos de raza personalizada */
@@ -290,6 +293,12 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
     set({ draft: { ...draft, nombre }, isDirty: true });
   },
 
+  setSexo: (sexo: Sexo) => {
+    const { draft } = get();
+    if (!draft) return;
+    set({ draft: { ...draft, sexo }, isDirty: true });
+  },
+
   setRaza: (raza: RaceId, subraza: SubraceId) => {
     const { draft } = get();
     if (!draft) return;
@@ -455,6 +464,7 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
 
       // Pre-filled: choices the user should NOT re-make
       nombre: character.nombre,
+      sexo: character.sexo,
       raza: character.raza,
       subraza: character.subraza ?? undefined,
       customRaceData: character.raza === "personalizada" ? character.customRaceData : undefined,
@@ -497,7 +507,7 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
 
     switch (step) {
       case 1: // Nombre
-        return !!draft.nombre && draft.nombre.trim().length >= 1;
+        return !!draft.nombre && draft.nombre.trim().length >= 1 && !!draft.sexo;
 
       case 2: // Raza
         if (!draft.raza) return false;
@@ -706,6 +716,7 @@ export const useCreationStore = create<CreationStore>((set, get) => ({
       id: characterId,
       campaignId: draft.campaignId === "current" ? undefined : draft.campaignId,
       nombre: draft.nombre.trim(),
+      sexo: draft.sexo,
       raza: draft.raza,
       subraza: draft.subraza ?? null,
       customRaceName: draft.raza === "personalizada" ? draft.customRaceData?.nombre?.trim() : undefined,

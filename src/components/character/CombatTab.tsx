@@ -7,9 +7,10 @@
  *   HPTracker, DeathSavesTracker, HitDiceSection, ConditionsSection
  */
 
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, Animated, TouchableOpacity, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
+import { useHeaderScroll } from "@/hooks";
 import { ConfirmDialog, Toast } from "@/components/ui";
 import { useTheme, useDialog, useToast } from "@/hooks";
 import { withAlpha } from "@/utils/theme";
@@ -29,6 +30,7 @@ import {
 
 export default function CombatTab() {
   const { colors } = useTheme();
+  const { onScroll } = useHeaderScroll();
   const { dialogProps, showAlert, showConfirm } = useDialog();
   const {
     toastProps,
@@ -248,11 +250,13 @@ export default function CombatTab() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView
+      <Animated.ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        onScroll={onScroll}
+        scrollEventThrottle={16}
       >
         <HPTracker onShowToast={showToast} />
         {renderStatsRow()}
@@ -269,7 +273,7 @@ export default function CombatTab() {
           onShowConfirm={showConfirm}
         />
         {renderRestButtons()}
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* Custom dialog (replaces Alert.alert) */}
       <ConfirmDialog {...dialogProps} />

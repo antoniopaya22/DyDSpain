@@ -10,6 +10,7 @@ import { useRef } from "react";
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
   StyleSheet,
   Animated,
@@ -18,6 +19,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme, useEntranceAnimation } from "@/hooks";
+import { getCampaignImageSource } from "@/constants/campaignImages";
 import type { Campaign } from "@/types/campaign";
 
 interface CampaignCardProps {
@@ -101,18 +103,46 @@ export function CampaignCard({
           },
         ]}
       >
-        {/* Accent left line */}
-        <View style={styles.cardAccentLineContainer}>
-          <LinearGradient
-            colors={[accentColor, `${accentColor}66`, `${accentColor}22`]}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={styles.cardAccentLine}
-          />
-        </View>
+        {/* Header image */}
+        {item.imagen ? (
+          <View style={styles.headerImageContainer}>
+            <Image
+              source={getCampaignImageSource(item.imagen)}
+              style={styles.headerImage}
+              resizeMode="cover"
+            />
+            <LinearGradient
+              colors={["transparent", `${colors.cardBg}CC`, colors.cardBg]}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              style={styles.headerImageGradient}
+            />
+            {/* Accent color bar over image */}
+            <View style={styles.headerAccentBar}>
+              <LinearGradient
+                colors={[accentColor, `${accentColor}00`]}
+                start={{ x: 0, y: 0.5 }}
+                end={{ x: 1, y: 0.5 }}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </View>
+        ) : (
+          <>
+            {/* Accent left line (fallback when no image) */}
+            <View style={styles.cardAccentLineContainer}>
+              <LinearGradient
+                colors={[accentColor, `${accentColor}66`, `${accentColor}22`]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+                style={styles.cardAccentLine}
+              />
+            </View>
+          </>
+        )}
 
         {/* Inner subtle gradient overlay */}
-        <View style={StyleSheet.absoluteFill}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <LinearGradient
             colors={[
               "rgba(255,255,255,0.025)",
@@ -242,10 +272,28 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 16,
     borderWidth: 1,
-    padding: 16,
-    paddingLeft: 20,
     overflow: "hidden",
     position: "relative",
+  },
+  headerImageContainer: {
+    width: "100%",
+    aspectRatio: 2.4,
+    position: "relative",
+  },
+  headerImage: {
+    width: "100%",
+    height: "100%",
+  },
+  headerImageGradient: {
+    ...StyleSheet.absoluteFillObject,
+    top: "40%",
+  },
+  headerAccentBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 2.5,
   },
   cardAccentLineContainer: {
     position: "absolute",
@@ -264,6 +312,8 @@ const styles = StyleSheet.create({
   cardRow: {
     flexDirection: "row",
     alignItems: "center",
+    padding: 14,
+    paddingLeft: 16,
   },
   cardIcon: {
     height: 52,

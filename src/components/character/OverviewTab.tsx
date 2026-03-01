@@ -8,7 +8,7 @@ import { useState, useCallback, createElement } from "react";
 import {
   View,
   Text,
-  ScrollView,
+  Animated,
   TouchableOpacity,
   LayoutAnimation,
   Platform,
@@ -18,6 +18,7 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useCharacterStore } from "@/stores/characterStore";
+import { useHeaderScroll } from "@/hooks";
 import { useCreationStore } from "@/stores/creationStore";
 import {
   ABILITY_NAMES,
@@ -55,6 +56,7 @@ const ABILITY_ORDER: AbilityKey[] = ABILITY_KEYS;
 
 export default function OverviewTab() {
   const { isDark, colors } = useTheme();
+  const { onScroll } = useHeaderScroll();
   const router = useRouter();
   const { character, saveCharacter, resetToLevel1, getSavingThrowBonus, getSkillBonus, updatePersonality, updateAppearance, updateAlignment, updateName } = useCharacterStore();
   const { startRecreation } = useCreationStore();
@@ -308,32 +310,9 @@ export default function OverviewTab() {
 
   // ── Render helpers ──
 
-  const renderBasicInfo = () => (
+  const renderBasicInfo = () => {
+    return (
     <View className="rounded-card border p-4 mb-4" style={{ backgroundColor: colors.bgCard, borderColor: colors.borderDefault }}>
-      <View className="flex-row items-center mb-3">
-        <View className="h-14 w-14 rounded-xl items-center justify-center mr-4" style={{ backgroundColor: withAlpha(colors.accentRed, 0.2) }}>
-          <Ionicons
-            name="shield-half-sharp"
-            size={28}
-            color={colors.accentRed}
-          />
-        </View>
-        <View className="flex-1">
-          <Text className="text-xl font-bold" style={{ color: colors.textPrimary }}>
-            {character.nombre}
-          </Text>
-          <Text className="text-sm" style={{ color: colors.textSecondary }}>
-            {character.customRaceName ?? raceData.nombre}
-            {character.subraza
-              ? ` (${getSubraceData(character.raza, character.subraza)?.nombre ?? ""})`
-              : ""}{" "}
-            · {classData.nombre}{character.subclase
-              ? ` (${getSubclassOptions(character.clase).find((s) => s.id === character.subclase || s.nombre === character.subclase)?.nombre ?? character.subclase})`
-              : ""} Nv. {character.nivel}
-          </Text>
-        </View>
-      </View>
-
       <View className="flex-row flex-wrap">
         <InfoBadge
           icon="book-outline"
@@ -386,6 +365,7 @@ export default function OverviewTab() {
       </View>
     </View>
   );
+  };
 
   const renderAbilityScores = () => (
     <CollapsibleSection
@@ -801,10 +781,12 @@ export default function OverviewTab() {
 
   return (
     <>
-      <ScrollView
+      <Animated.ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
       >
         {renderBasicInfo()}
         <ExperienceSection onLevelUp={handleLevelUp} />
@@ -851,7 +833,7 @@ export default function OverviewTab() {
             </Text>
           </TouchableOpacity>
         )}
-      </ScrollView>
+      </Animated.ScrollView>
 
       <LevelUpModal
         visible={showLevelUpModal}
@@ -876,6 +858,7 @@ export default function OverviewTab() {
           initialTab={editorTab}
         />
       )}
+
     </>
   );
 }
